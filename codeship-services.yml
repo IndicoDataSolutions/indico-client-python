@@ -1,0 +1,7 @@
+python3:
+  container_name: indico-ipa
+  default_cache_branch: "development"
+  cached: true
+  encrypted_env_file: codeship.env
+  volumes:
+    - .:/indico-ipa
