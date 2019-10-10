@@ -24,7 +24,11 @@ class RequestProxy(object):
         self.base_url = f"{config_options['protocol']}://{config_options['host']}"
         self.serializer = config_options["serializer"]
         self.api_token = config.resolve_api_token(path=config_options["token_path"])
-        self.request_session = config_options["request_session"] or requests.Session()
+        if config_options["request_session"]:
+            self.request_session = config_options["request_session"]
+        else:
+            self.request_session = requests.Session()
+            self.get_short_lived_access_token()
 
     def post(self, *args, json=None, **kwargs):
         return self._make_request("post", *args, json=json, **kwargs)
