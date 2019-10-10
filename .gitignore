@@ -47,3 +47,5 @@ venv27
 .pypirc
 
 .eggs
+
+indico_api_token.txt

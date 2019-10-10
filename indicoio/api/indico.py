@@ -1,7 +1,8 @@
 from indicoio.graphql import GraphClient
+from .base import ObjectProxy
 
 
-class Indico(object):
+class Indico(ObjectProxy):
     def __init__(self, config_options=None):
         self.request_client = GraphClient(config_options)
 

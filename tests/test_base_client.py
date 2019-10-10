@@ -1,7 +1,7 @@
 import logging
 
 from unittest import TestCase
-from indicoio.api.base import Indico
+from indicoio.api import Indico
 
 logging.getLogger("indicoio").setLevel(logging.DEBUG)
 
@@ -9,7 +9,7 @@ logging.getLogger("indicoio").setLevel(logging.DEBUG)
 class BaseRequestProxy(TestCase):
     def setUp(self):
         super().setUp()
-        self.indico = Indico(host="dev.indico.io")
+        self.indico = Indico(config_options={"host": "dev.indico.io"})
 
     def test_list_model_groups(self):
         results = self.indico.model_groups()
