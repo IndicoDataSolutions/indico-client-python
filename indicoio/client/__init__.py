@@ -1,1 +1,1 @@
-from .client import IndicoClient
+from .client import RequestProxy

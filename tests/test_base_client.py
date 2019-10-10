@@ -6,7 +6,7 @@ from indicoio.api.base import Indico
 logging.getLogger("indicoio").setLevel(logging.DEBUG)
 
 
-class BaseIndicoClient(TestCase):
+class BaseRequestProxy(TestCase):
     def setUp(self):
         super().setUp()
         self.indico = Indico(host="dev.indico.io")

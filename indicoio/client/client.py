@@ -8,34 +8,35 @@ from indicoio.client.serialization import deserialize
 logger = logging.getLogger(__file__)
 
 
-class IndicoClient(object):
-    def __init__(
-        self,
+class RequestProxy(object):
+    default_config_options = dict(
         host=config.host,
         protocol=config.url_protocol,
         serializer=config.serializer,
         short_lived_access_token=None,
         request_session=None,
         token_path=None,
-    ):
-        self.base_url = f"{protocol}://{host}"
-        self.serializer = serializer
-        self.api_token = config.resolve_api_token(path=token_path)
-        self.request_session = request_session or requests.Session()
-        if not request_session:
-            self.get_short_lived_access_token()
+    )
 
-    def get_short_lived_access_token(self):
-        return self.post(
-            "/auth/users/refresh_token",
-            headers={"Authorization": f"Bearer {self.api_token}"},
-        )
+    def __init__(self, config_options=None):
+        config_options = {**self.default_config_options, **(config_options or {})}
+
+        self.base_url = f"{config_options['protocol']}://{config_options['host']}"
+        self.serializer = config_options["serializer"]
+        self.api_token = config.resolve_api_token(path=config_options["token_path"])
+        self.request_session = config_options["request_session"] or requests.Session()
 
     def post(self, *args, json=None, **kwargs):
         return self._make_request("post", *args, json=json, **kwargs)
 
     def get(self, *args, params=None, **kwargs):
         return self._make_request("post", *args, params=params, **kwargs)
+
+    def get_short_lived_access_token(self):
+        return self.post(
+            "/auth/users/refresh_token",
+            headers={"Authorization": f"Bearer {self.api_token}"},
+        )
 
     def _make_request(self, method, path, headers=None, **request_kwargs):
         logger.debug(
@@ -65,3 +66,4 @@ class IndicoClient(object):
             )
 
         return content
+

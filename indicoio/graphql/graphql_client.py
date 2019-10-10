@@ -1,12 +1,12 @@
 import logging
-from indicoio.client import IndicoClient
+from indicoio.client import RequestProxy
 from indicoio.errors import IndicoRequestError
 
 logger = logging.getLogger(__file__)
 
 
-class GraphClient(IndicoClient):
-    def graphql(self, query: str) -> dict:
+class GraphClient(RequestProxy):
+    def gql_query(self, query: str) -> dict:
         """
         Base GraphQL query method
         """
@@ -21,8 +21,8 @@ class GraphClient(IndicoClient):
             )
         return response
 
-    def inspect(self, type_name):
-        return self.graphql(
+    def inspect_schema(self, type_name):
+        return self.gql_query(
             f"""query {{
             __type(name: "{type_name}") {{
                 name
