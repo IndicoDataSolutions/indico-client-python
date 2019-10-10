@@ -2,7 +2,7 @@ class IndicoIPAError(Exception):
     pass
 
 
-class IndicoIPARequestError(IndicoIPAError):
+class IndicoRequestError(IndicoIPAError):
     def __init__(self, error, code, extras=None):
         super().__init__(f"Status: {code}, Error: {error}\n\tExtras: {extras}")
 
