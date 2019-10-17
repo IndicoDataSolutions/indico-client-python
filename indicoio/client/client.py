@@ -4,31 +4,29 @@ import logging
 from indicoio import config
 from indicoio.errors import IndicoRequestError
 from indicoio.client.serialization import deserialize
+from indicoio.config import RequestConfigMixin
 
 logger = logging.getLogger(__file__)
 
 
-class RequestProxy(object):
-    default_config_options = dict(
-        host=config.host,
-        protocol=config.url_protocol,
-        serializer=config.serializer,
-        short_lived_access_token=None,
-        request_session=None,
-        token_path=None,
-    )
-
+class RequestProxy(RequestConfigMixin):
     def __init__(self, config_options=None):
-        config_options = {**self.default_config_options, **(config_options or {})}
+        super().__init__(config_options)
+        self.base_url = (
+            f"{self.config_options['protocol']}://{self.config_options['host']}"
+        )
+        self.serializer = self.config_options["serializer"]
+        self.api_token = config.resolve_api_token(
+            path=self.config_options["token_path"]
+        )
 
-        self.base_url = f"{config_options['protocol']}://{config_options['host']}"
-        self.serializer = config_options["serializer"]
-        self.api_token = config.resolve_api_token(path=config_options["token_path"])
-        if config_options["request_session"]:
-            self.request_session = config_options["request_session"]
+        if self.config_options["request_session"]:
+            self.request_session = self.config_options["request_session"]
         else:
             self.request_session = requests.Session()
             self.get_short_lived_access_token()
+
+        self.config_options["request_session"] = self.request_session
 
     def post(self, *args, json=None, **kwargs):
         return self._make_request("post", *args, json=json, **kwargs)

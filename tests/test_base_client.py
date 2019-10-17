@@ -14,6 +14,7 @@ class BaseRequestProxy(TestCase):
     def test_list_model_groups(self):
         results = self.indico.model_groups()
         self.assertIsInstance(results, list)
+
         for result in results:
             self.assertIn("id", result)
             self.assertIn("name", result)

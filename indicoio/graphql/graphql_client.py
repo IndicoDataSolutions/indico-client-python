@@ -6,7 +6,7 @@ logger = logging.getLogger(__file__)
 
 
 class GraphClient(RequestProxy):
-    def gql_query(self, query: str) -> dict:
+    def query(self, query: str) -> dict:
         """
         Base GraphQL query method
         """
@@ -22,7 +22,7 @@ class GraphClient(RequestProxy):
         return response
 
     def inspect_schema(self, type_name):
-        return self.gql_query(
+        return self.query(
             f"""query {{
             __type(name: "{type_name}") {{
                 name

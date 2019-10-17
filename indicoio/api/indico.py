@@ -1,18 +1,15 @@
-from indicoio.graphql import GraphClient
 from .base import ObjectProxy
+from .model_group import ModelGroup
 
 
 class Indico(ObjectProxy):
-    def __init__(self, config_options=None):
-        self.request_client = GraphClient(config_options)
-
     def model_groups(self, *fields):
         """
         Schema Introspection Client method generation should take care of query building
         and response extraction
         """
         fields = fields or ("id", "name")
-        model_groups_response = self.request_client.gql_query(
+        model_groups_response = self.graphql.query(
             f"""query {{
         modelGroups {{
             modelGroups {{
@@ -21,4 +18,7 @@ class Indico(ObjectProxy):
         }}}}"""
         )
 
-        return model_groups_response["data"]["modelGroups"]["modelGroups"]
+        return [
+            self.build_object(ModelGroup, **mg)
+            for mg in model_groups_response["data"]["modelGroups"]["modelGroups"]
+        ]

@@ -22,5 +22,23 @@ def resolve_api_token(path=None):
         )
 
     with path.open("r") as f:
-        return f.read()
+        return f.read().strip()
 
+
+default_config_options = {
+    "host": host,
+    "protocol": url_protocol,
+    "serializer": serializer,
+    "short_lived_access_token": None,
+    "request_session": None,
+    "token_path": None,
+}
+
+class RequestConfigMixin(object):
+    def __init__(self, config_options=None):
+        config_options = config_options or {}
+        for option, value in default_config_options.items():
+            if option not in config_options:
+                config_options[option] = value
+
+        self.config_options = config_options
