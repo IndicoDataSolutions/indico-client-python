@@ -1,21 +1,26 @@
+import time
 import json
 
 from .base import ObjectProxy
 
+max_interval = 10
+
 
 class JobResult(ObjectProxy):
-    def wait(self):
-        while self.get("ready", False):
-            response = self.graphql.query(
-                f"""query {{
+    def wait(self, interval=1):
+        response = self.graphql.query(
+            f"""query {{
                         job(id: "{self["id"]}") {{
                             ready
                             status
                         }}
                 }}"""
-            )
+        )
+        self.update(response["data"]["job"])
 
-            self.update(response["data"]["job"])
+        if self.get("ready", False) is not True:
+            time.sleep(interval)
+            self.wait(interval=interval + 1)
 
     def status(self):
         response = self.graphql.query(

@@ -4,8 +4,8 @@ Setup for indico apis
 from setuptools import setup, find_packages
 
 setup(
-    name="indico-ipa",
-    version="1.0.0",
+    name="indicoio",
+    version="2.0.0",
     packages=find_packages(),
     description="""A Python Wrapper for indico app API.""",
     license="MIT License (See LICENSE)",
