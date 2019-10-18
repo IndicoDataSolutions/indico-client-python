@@ -36,9 +36,15 @@ class ModelGroupTest(TestCase):
     def test_model_group_info(self):
         result = self.model_group.info()
 
-        # TODO: Break this test by task_type and have saved model groups for these tests. this will require a test user api token.
         self.assertIsInstance(result, dict)
         self.assertIn("class_counts", result)
         self.assertIn("class_names", result)
         self.assertIn("metrics", result)
 
+    def test_model_group_load(self):
+
+        """
+        TODO: Ensure this test passes with Finetune model
+        """
+        result = self.model_group.load()
+        self.assertEqual(result, "ready")
