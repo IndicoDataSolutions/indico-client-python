@@ -6,6 +6,15 @@ from indicoio.errors import IndicoInputError
 
 
 class ModelGroup(ObjectProxy):
+    def info(self):
+        response = self.graphql.query(
+            f"""query {{
+            modelGroupPredict(modelGroupId: {self["id"]}, data: {data}) {{
+                jobId
+            }}
+        }}"""
+        )
+
     def predict(self, data, job_results=False, **predict_kwargs):
         if not isinstance(data, list):
             raise IndicoInputError(
@@ -28,10 +37,29 @@ class ModelGroup(ObjectProxy):
             job.wait()
             return job.result()
 
+    def info(self):
+        response = self.graphql.query(
+            f"""query {{
+                modelGroups(modelGroupIds: [{self["id"]}]) {{
+                    modelGroups {{
+                        id
+                        selectedModel {{
+                            id
+                            modelInfo
+                        }}
+                }}
+            }}
+        }}"""
+        )
+
+        model = response["data"]["modelGroups"]["modelGroups"][0]["selectedModel"]
+        if model:
+            return json.loads(model.get("modelInfo"))
+
     def refresh(self):
         response = self.graphql.query(
             f"""query {{
-                modelGroups(modelGroupIds: [{self.id}]) {{
+                modelGroups(modelGroupIds: [{self["id"]}]) {{
                     modelGroups {{
                         id
                         name
@@ -47,6 +75,7 @@ class ModelGroup(ObjectProxy):
                         }}
                         selectedModel {{
                             id
+                            modelInfo
                         }}
                 }}
             }}

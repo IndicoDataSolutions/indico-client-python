@@ -33,3 +33,12 @@ class ModelGroupTest(TestCase):
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 1)
 
+    def test_model_group_info(self):
+        result = self.model_group.info()
+
+        # TODO: Break this test by task_type and have saved model groups for these tests. this will require a test user api token.
+        self.assertIsInstance(result, dict)
+        self.assertIn("class_counts", result)
+        self.assertIn("class_names", result)
+        self.assertIn("metrics", result)
+
