@@ -8,7 +8,7 @@ class Indico(ObjectProxy):
         Schema Introspection Client method generation should take care of query building
         and response extraction
         """
-        fields = fields or ("id", "name")
+        fields = fields or ("id", "name", "status", "retrainRequired")
         model_groups_response = self.graphql.query(
             f"""query {{
         modelGroups {{

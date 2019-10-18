@@ -9,6 +9,9 @@ class ObjectProxy(RequestConfigMixin):
         self.graphql = GraphClient(config_options=self.config_options)
         self.object_attrs = object_attrs or {}
 
+    def get(self, *args, **kwargs):
+        return self.object_attrs.get(*args, **kwargs)
+
     def __getitem__(self, *args, **kwargs):
         return self.object_attrs.__getitem__(*args, **kwargs)
 
@@ -17,6 +20,9 @@ class ObjectProxy(RequestConfigMixin):
 
     def __iter__(self):
         return self.object_attrs.__iter__()
+
+    def update(self, dict_obj):
+        self.object_attrs.update(dict_obj)
 
     def build_object(self, object_cls, **values):
         return object_cls(config_options=self.config_options, **values)
