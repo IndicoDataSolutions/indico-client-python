@@ -1,1 +1,1 @@
-Oct 7 2019: Package start
+Oct 16 2019 v2.0.0: Complete change of IndicoIo API through the Indico IPA platform. For IPA Platform API use only.
