@@ -1,20 +1,7 @@
-import logging
+def test_list_model_groups(indico):
+    results = indico.model_groups()
+    assert isinstance(results, list)
 
-from unittest import TestCase
-from indicoio.api import Indico
-
-logging.getLogger("indicoio").setLevel(logging.DEBUG)
-
-
-class BaseRequestProxy(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.indico = Indico(config_options={"host": "dev.indico.io"})
-
-    def test_list_model_groups(self):
-        results = self.indico.model_groups()
-        self.assertIsInstance(results, list)
-
-        for result in results:
-            self.assertIn("id", result)
-            self.assertIn("name", result)
+    for result in results:
+        assert "id" in result
+        assert "name" in result
