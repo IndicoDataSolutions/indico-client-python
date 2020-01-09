@@ -14,4 +14,4 @@ class IndicoDecodingError(IndicoError):
 
 class IndicoInputError(IndicoError):
     def __init__(self, msg):
-        super().__init__(error=msg, code=400)
+        super().__init__(msg)
