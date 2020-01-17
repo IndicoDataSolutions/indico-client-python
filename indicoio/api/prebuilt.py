@@ -35,3 +35,33 @@ class IndicoApi(Indico):
         else:
             job.wait()
             return job.result()
+
+    def document_extraction(self, data, job_results=False, **document_extraction_options):
+        if not isinstance(data, list):
+            raise IndicoInputError(
+                "This function expects a list input. If you have a single piece of data, please wrap it in a list"
+            )
+        data = [pdf_preprocess(datum) for datum in data]
+        data = json.dumps(data)
+        option_string = ",".join(
+            f"{key}: {json.dumps(option)}"
+            for key, option in document_extraction_options.items()
+        )
+ 
+        response = self.graphql.query(
+            f"""
+            mutation {{
+                documnentExtraction(data: {data}, {option_string}) {{
+                    jobId
+                }}
+            }}
+            """
+        )
+
+        job_id = response["data"]["pdfExtraction"]["jobId"]
+        job = self.build_object(JobResult, id=job_id)
+        if job_results:
+            return job
+        else:
+            job.wait()
+            return job.result()
