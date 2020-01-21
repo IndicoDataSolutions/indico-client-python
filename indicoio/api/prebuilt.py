@@ -51,14 +51,14 @@ class IndicoApi(Indico):
         response = self.graphql.query(
             f"""
             mutation {{
-                documnentExtraction(data: {data}, {option_string}) {{
+                documentExtraction(data: {data}, {option_string}) {{
                     jobId
                 }}
             }}
             """
         )
 
-        job_id = response["data"]["pdfExtraction"]["jobId"]
+        job_id = response["data"]["documentExtraction"]["jobId"]
         job = self.build_object(JobResult, id=job_id)
         if job_results:
             return job
