@@ -11,7 +11,26 @@ from indicoio.errors import IndicoInputError
 
 
 class ModelGroup(ObjectProxy):
-    def predict(self, data, model_id=None, job_results=False, **predict_kwargs):
+    """
+    Model Group
+
+    Example::
+
+        mg = ModelGroup(id=<model group id>)
+        mg.load()
+        mg.predict(["some text"])
+
+    :param config_options: configureation options for the model group
+    """
+
+    def predict(self, data=None, job_results=False, **predict_kwargs):
+        """
+        Gets the model predictions for a list of inputs
+
+        :param data: List of inputs for predictions.
+        :param model_id: Specify the specific model to use for predition. If empty, the currently selected model within this group will be used
+        :param job_results: True to return the id of the prediction job rather than the prediction results directly.
+        """
         if not isinstance(data, list):
             raise IndicoInputError(
                 "This function expects a list input. If you have a single piece of data, please wrap it in a list"
@@ -38,6 +57,11 @@ class ModelGroup(ObjectProxy):
             return job.result()
 
     def load(self, model_id=None):
+        """
+        Loads the requested model into memory for predictions
+
+        :param model_id: Specify the specific model to use for predition. If empty, the most recently trained model will be used.
+        """
         if self.info().get("load_status") == "ready":
             return "ready"
 
@@ -61,6 +85,9 @@ class ModelGroup(ObjectProxy):
         return status
 
     def info(self):
+        """
+        Returns information about this model group.
+        """
         response = self.graphql.query(
             f"""query {{
                 modelGroups(modelGroupIds: [{self["id"]}]) {{
@@ -81,6 +108,9 @@ class ModelGroup(ObjectProxy):
         return {}
 
     def get_selected_model(self):
+        """
+        Returns the ID of the currently selected model within this group
+        """
         response = self.graphql.query(
             f"""query {{
                 modelGroups(modelGroupIds: [{self["id"]}]) {{
@@ -98,6 +128,9 @@ class ModelGroup(ObjectProxy):
         return self["selectedModel"]
 
     def refresh(self):
+        """
+        Refreshes something... unclear
+        """
         response = self.graphql.query(
             f"""query {{
                 modelGroups(modelGroupIds: [{self["id"]}]) {{
