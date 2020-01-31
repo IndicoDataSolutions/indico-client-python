@@ -2,10 +2,10 @@
 Indico Prebuilt API
 ===================
 
-For prebuilt Indico models use :class:`~api.prebuilt.IndicoApi`
+For prebuilt Indico models use :class:`~indicoio.api.prebuilt.IndicoApi`
 
 indicoio.IndicoApi
 ------------------
 
-.. automodule:: api.prebuilt
+.. automodule:: indicoio.api.prebuilt
   :members:
