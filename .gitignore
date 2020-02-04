@@ -48,4 +48,8 @@ venv27
 
 .eggs
 
+.idea
+
 indico_api_token.txt
+
+docs/_build
