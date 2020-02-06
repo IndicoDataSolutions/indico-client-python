@@ -23,7 +23,7 @@ class ModelGroup(ObjectProxy):
     :param config_options: configureation options for the model group
     """
 
-    def predict(self, data=None, job_results=False, **predict_kwargs):
+    def predict(self, data=None, job_results=False, model_id=None, **predict_kwargs):
         """
         Gets the model predictions for a list of inputs
 
