@@ -8,10 +8,7 @@ from typing import List
 
 
 def _convert_options_to_str(options):
-    return ",".join(
-        f"{key}: {json.dumps(option)}"
-        for key, option in options.items()
-    )
+    return ",".join(f"{key}: {json.dumps(option)}" for key, option in options.items())
 
 
 class IndicoApi(Indico):
@@ -25,7 +22,9 @@ class IndicoApi(Indico):
 
     """
 
-    def pdf_extraction(self, data: List[str], job_results: bool = False, **pdf_extract_options):
+    def pdf_extraction(
+        self, data: List[str], job_results: bool = False, **pdf_extract_options
+    ):
         """
         Extracts and returns the contents of a PDF Document
 
@@ -60,7 +59,9 @@ class IndicoApi(Indico):
             job.wait()
             return job.result()
 
-    def document_extraction(self, data: List[str], job_results: bool = False, **document_extraction_options):
+    def document_extraction(
+        self, data: List[str], job_results: bool = False, **document_extraction_options
+    ):
         """
         Extracts and returns the contents of a Word Document
 

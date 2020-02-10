@@ -25,6 +25,7 @@ def test_document_extraction_file(indicoapi):
     for field in ("metadata", "pages"):
         assert field in results[0]
 
+
 def document_extraction_detaild(indicoapi):
     results = indicoapi.document_extraction(["http://www.pdf995.com/samples/pdf.pdf"])
     assert isinstance(results, list)
