@@ -54,3 +54,9 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_style = 'css/indicotheme.css'
+html_logo = './_static/logo-white.png'
+html_favicon = './_static/favicon.png'
+html_theme_options = {
+    'style_nav_header_background': 'linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)'
+}

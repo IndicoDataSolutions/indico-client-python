@@ -6,5 +6,4 @@ requests>=2.22.0
 setuptools>=41.4.0
 Sphinx==2.3.1
 sphinx-autodoc-typehints==1.10.3
-sphinx-autodoc-typehints==1.10.3
 sphinx-rtd-theme==0.4.3
