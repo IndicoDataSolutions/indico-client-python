@@ -19,8 +19,6 @@ class ModelGroup(ObjectProxy):
         mg = ModelGroup(id=<model group id>)
         mg.load()
         mg.predict(["some text"])
-
-    :param config_options: configureation options for the model group
     """
 
     def predict(self, data=None, job_results=False, model_id=None, **predict_kwargs):
@@ -28,7 +26,7 @@ class ModelGroup(ObjectProxy):
         Gets the model predictions for a list of inputs
 
         :param data: List of inputs for predictions.
-        :param model_id: Specify the specific model to use for predition. If empty, the currently selected model within this group will be used
+        :param model_id: Specify the specific model to use for prediction. If empty, the currently selected model within this group will be used
         :param job_results: True to return the id of the prediction job rather than the prediction results directly.
         """
         if not isinstance(data, list):
@@ -60,7 +58,7 @@ class ModelGroup(ObjectProxy):
         """
         Loads the requested model into memory for predictions
 
-        :param model_id: Specify the specific model to use for predition. If empty, the most recently trained model will be used.
+        :param model_id: Specify the specific model to use for prediction. If empty, the most recently trained model will be used.
         """
         if self.info().get("load_status") == "ready":
             return "ready"
@@ -129,7 +127,7 @@ class ModelGroup(ObjectProxy):
 
     def refresh(self):
         """
-        Refreshes something... unclear
+        Refreshes the model information
         """
         response = self.graphql.query(
             f"""query {{
