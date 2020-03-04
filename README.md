@@ -58,6 +58,6 @@ so = job.result()
 
 json_data = indico.call(RetrieveStorageObject(so))
 print(json_data)
+```
 
-## API example asyncio
 

@@ -55,9 +55,9 @@ def test_deserialize_msgpack(mock_loader):
 def test_deserialize_unknown(mock_loader):
     response = mock_loader("unknown", "")
     try:
-        logging.getLogger("indicoio.client.serialization").setLevel(logging.CRITICAL)
+        logging.getLogger("indico.http.serialization").setLevel(logging.CRITICAL)
         deserialize(response)
     except Exception as e:
         assert isinstance(e, IndicoDecodingError)
     finally:
-        logging.getLogger("indicoio.client.serialization").setLevel(logging.DEBUG)
+        logging.getLogger("indico.http.serialization").setLevel(logging.DEBUG)

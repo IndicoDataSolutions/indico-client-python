@@ -1,43 +1,42 @@
 
 import logging
 import requests
-from indico.config import RequestConfigMixin
+from collections import defaultdict
+from typing import Union
+from indico.config import IndicoConfig
 from indico.http.serialization import deserialize
+from indico.errors import IndicoRequestError
+from indico.client.request import HTTPRequest
 
 logger = logging.getLogger(__file__)
 
-class RequestProxy(RequestConfigMixin):
-    def __init__(self, config_options=None):
-        super().__init__(config_options)
+
+class HTTPCLient:
+    def __init__(self, config: IndicoConfig=None):
+        self.config = config
         self.base_url = (
-            f"{self.config_options['protocol']}://{self.config_options['host']}"
-        )
-        self.serializer = self.config_options["serializer"]
-        self.api_token = config.resolve_api_token(
-            path=self.config_options["token_path"]
+            f"{self.config.protocol}://{self.config.host}"
         )
 
-        if self.config_options["request_session"]:
-            self.request_session = self.config_options["request_session"]
-        else:
-            self.request_session = requests.Session()
-            self.get_short_lived_access_token()
+        self.request_session = requests.Session()
+        self.get_short_lived_access_token()
 
-        self.config_options["request_session"] = self.request_session
-
-    def post(self, *args, json=None, **kwargs):
+    def post(self, *args, json: Union[dict, list]=None, **kwargs):
         return self._make_request("post", *args, json=json, **kwargs)
 
-    def get(self, *args, params=None, **kwargs):
+    def get(self, *args, params: dict=None, **kwargs):
         return self._make_request("post", *args, params=params, **kwargs)
 
     def get_short_lived_access_token(self):
         return self.post(
             "/auth/users/refresh_token",
-            headers={"Authorization": f"Bearer {self.api_token}"},
+            headers={"Authorization": f"Bearer {self.config.api_token}"},
         )
 
-    def _make_request(self, method, path, headers=None, **request_kwargs):
+    def execute_request(self, request: HTTPRequest):
+        return self._make_request(method=request.method, path=request.path, data=request.data)
+
+    def _make_request(self, method: str, path: str, headers: dict=None, **request_kwargs):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )

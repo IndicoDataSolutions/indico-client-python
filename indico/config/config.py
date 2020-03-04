@@ -1,17 +1,20 @@
 from os import getenv
 from pathlib import Path
 from indico.errors import IndicoInvalidConfigSetting
+from requests import Session
 
-class IndicoConfig():
+
+class IndicoConfig:
     """
     Configuration for indico client 
 
-    Support setting configuration using environment variables or directly as keywords argument of this class
+    Support setting configuration options either using environment variables or directly as keywords argument of this class
     """
     host: str = getenv("INDICO_HOST", "app.indico.io")
     url_protocol: str = getenv("INDICO_PROTOCOL", "https")
     serializer: str = getenv("INDICO_SERIALIZER", "msgpack")
     api_token_path: str = getenv("INDICO_API_TOKEN_PATH", Path.home()) 
+    api_token: str = None
 
     def __init__(self, **kwargs):
         for key,value in kwargs.items():
@@ -19,7 +22,9 @@ class IndicoConfig():
                 setattr(self, key, value)
             else:
                 raise IndicoInvalidConfigSetting(key)
-        self.api_token_path, self.api_token = self._resolve_api_token()
+
+        if not self.api_token:
+            self.api_token_path, self.api_token = self._resolve_api_token()
 
     def _resolve_api_token(self):
         path = self.api_token_path
@@ -41,9 +46,3 @@ class IndicoConfig():
         with path.open("r") as f:
             return path, f.read().strip()
 
-
-class RequestConfigMixin(object):
-    def __init__(self, config: IndicoConfig=None):
-        if not config:
-            config = IndicoConfig()
-        self.config_options = config

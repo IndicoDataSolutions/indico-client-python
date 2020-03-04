@@ -8,7 +8,7 @@ import logging
 import msgpack
 import traceback
 
-from indicoio.errors import IndicoDecodingError
+from indico.errors import IndicoDecodingError
 
 logger = logging.getLogger(__name__)
 
