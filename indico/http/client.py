@@ -11,7 +11,7 @@ from indico.client.request import HTTPRequest
 logger = logging.getLogger(__file__)
 
 
-class HTTPCLient:
+class HTTPClient:
     def __init__(self, config: IndicoConfig=None):
         self.config = config
         self.base_url = (
@@ -34,7 +34,7 @@ class HTTPCLient:
         )
 
     def execute_request(self, request: HTTPRequest):
-        return self._make_request(method=request.method, path=request.path, data=request.data)
+        return self._make_request(method=request.method.value.lower(), path=request.path, data=request.data)
 
     def _make_request(self, method: str, path: str, headers: dict=None, **request_kwargs):
         logger.debug(

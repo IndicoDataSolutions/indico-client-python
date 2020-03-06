@@ -11,7 +11,7 @@ class IndicoConfig:
     Support setting configuration options either using environment variables or directly as keywords argument of this class
     """
     host: str = getenv("INDICO_HOST", "app.indico.io")
-    url_protocol: str = getenv("INDICO_PROTOCOL", "https")
+    protocol: str = getenv("INDICO_PROTOCOL", "https")
     serializer: str = getenv("INDICO_SERIALIZER", "msgpack")
     api_token_path: str = getenv("INDICO_API_TOKEN_PATH", Path.home()) 
     api_token: str = None

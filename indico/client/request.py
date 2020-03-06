@@ -11,12 +11,12 @@ class HTTPMethod(Enum):
     OPTIONS = "OPTIONS"
 
 class HTTPRequest:
-    def __init__(self, method: HTTPMethod, path: str, data: Dict[str, Any]):
+    def __init__(self, method: HTTPMethod, path: str, data: Dict[str, Any]=None):
         self.method = method
         self.path = path
         self.data = data
 
-    def process_respone(self, response):
+    def process_response(self, response):
         return response
 
 class GraphQLRequest(HTTPRequest):
@@ -34,7 +34,7 @@ class GraphQLRequest(HTTPRequest):
         }
 
     def process_response(self, response):
-        response = super.process_respone(response)
+        response = super().process_response(response)
         errors = response.pop("errors", [])
         if errors:
             extras = {"locations": [error.pop("locations") for error in errors]}

@@ -1,24 +1,28 @@
 from typing import Union, Dict, Any
 
 from indico.config import IndicoConfig
-from indico.graphql.client import GraphQLClient
-from indico.http.client import HttpClient
+from indico.http.client import HTTPClient, HTTPRequest
 from indico.queries.query import BaseQuery
 from indico.client.request import GraphQLRequest
 
 class IndicoClient:
-    def __init___(self, config: IndicoConfig=None):
+    
+    def __init__(self, config: IndicoConfig=None):
         if not config:
             config = IndicoConfig()
         self.config = config
+        self._http = HTTPClient(config)
 
-        self.http = HttpClient(config)
-        self.graphql = GraphQLClient(config, self.http)
-
-    def call(self, query: Union[str, BaseQuery], variables: Dict[str, Any]=None):
+    def _call_graphql_query(self, query: Union[str, BaseQuery], variables: Dict[str, Any]=None):
         if isinstance(query, str):
-            return query.build_result(self.graphql.execute(GraphQLRequest(query=query, variables=variables)))        
-        
-        
+            query = GraphQLRequest(query=query, variables=variables)
+        return query.process_response(self._http.execute_request(query))
 
-        return query.build_result(self.graphql.execute(query, variables))
+    def call(self, request: Union[HTTPRequest, BaseQuery, str]=None, variables: Dict[str, Any]=None):
+        """
+        Make a call to the indico IPA platform
+        """
+        if isinstance(request, str) or isinstance(request, BaseQuery):
+            return self._call_graphql_query(query=request, variables=variables)
+        elif request and isinstance(request, HTTPRequest):
+            return self._http.execute_request(request)
