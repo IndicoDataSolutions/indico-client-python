@@ -6,11 +6,13 @@ logger = logging.getLogger(__file__)
 
 
 class GraphClient(RequestProxy):
-    def query(self, query: str) -> dict:
+    def query(self, query: str, variables=None) -> dict:
         """
         Base GraphQL query method
         """
-        response = self.post("/graph/api/graphql", json={"query": query})
+        response = self.post(
+            "/graph/api/graphql", json={"query": query, "variables": variables}
+        )
         errors = response.pop("errors", [])
         if errors:
             extras = {"locations": [error.pop("locations") for error in errors]}
