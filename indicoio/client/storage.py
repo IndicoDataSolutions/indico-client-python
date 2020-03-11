@@ -39,7 +39,7 @@ class StorageClient(RequestProxy):
 
 
 def _parse_uploaded_files(uploaded_files: List[dict]):
-    return [
+    files =  [
         {
             "filename": f["name"],
             "filemeta": json.dumps(
@@ -48,6 +48,8 @@ def _parse_uploaded_files(uploaded_files: List[dict]):
         }
         for f in uploaded_files
     ]
+    print(files)
+    return files
 
 
 def _resolve_indico_protocol(base_url, url):

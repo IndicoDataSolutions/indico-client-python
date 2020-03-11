@@ -20,7 +20,7 @@ class HTTPRequest:
         return response
 
 class GraphQLRequest(HTTPRequest):
-    def __init__(self, query: str, variables: Dict[str, Any]):
+    def __init__(self, query: str, variables: Dict[str, Any]=None):
         self.query = query
         self.variables = variables
         self.method = HTTPMethod.POST
@@ -43,4 +43,10 @@ class GraphQLRequest(HTTPRequest):
                 code=400,
                 extras=extras,
             )
-        return response
+        return response["data"]
+
+
+class RequestChain():
+    def __next__(self):
+        raise StopIteration
+

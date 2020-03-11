@@ -34,7 +34,7 @@ class HTTPClient:
         )
 
     def execute_request(self, request: HTTPRequest):
-        return self._make_request(method=request.method.value.lower(), path=request.path, data=request.data)
+        return request.process_response(self._make_request(method=request.method.value.lower(), path=request.path, json=request.data))
 
     def _make_request(self, method: str, path: str, headers: dict=None, **request_kwargs):
         logger.debug(

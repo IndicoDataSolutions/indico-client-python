@@ -12,13 +12,13 @@ def resolve_api_token(path=None):
     path = path or api_token_path
     if path is None:
         path = "."
-    if not isinstance(path, Path):
-        path = Path(path)
-    if not path.exists():
-        path = Path.home()
-    if not path.is_file():
-        path = path / "indico_api_token.txt"
-
+    if Path(path + "/indico_api_token.txt").is_file():
+       path = Path(path + "/indico_api_token.txt").is_file()
+    elif Path("./indico_api_token.txt").is_file():
+        path = Path("./indico_api_token.txt").is_file()
+    else:
+        path = Path(str(Path.home()) + "/indico_api_token.txt")
+    print(path)
     if not path.exists():
         raise RuntimeError(
             "Expected indico_api_token.txt in current directory, home directory, "

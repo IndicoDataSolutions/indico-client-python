@@ -60,4 +60,24 @@ json_data = indico.call(RetrieveStorageObject(so))
 print(json_data)
 ```
 
+### Pure GraphQL example
+```
+from indico import IndicoClient
+from indico.client.request import GraphQLRequest
 
+client = IndicoClient()
+response = client.call(GraphQLRequest(
+    query="""
+        query modelGroupQueries($ids: [Int]) {
+	        modelGroups(modelGroupIds: $ids){
+                modelGroups{
+                    id
+                }
+            }
+        }
+    """, 
+    variables={"ids": [1]}
+))
+
+model_groups = response["model_groups"]["model_groups"]
+```
