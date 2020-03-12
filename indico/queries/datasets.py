@@ -62,30 +62,35 @@ class GetDatasetStatus(GraphQLRequest):
 
 
 class CreateDataset(RequestChain):
+
     def __init__(self, name: str, files: List[str]):
         self.files = files
         self.name = name
         super().__init__()
 
     def _upload_files(self):
-        return lambda: _UploadDatasetFiles(self.files)
-    
+        _UploadDatasetFiles(files=self.files)
+
+    def check_file_status(self):
+        return lambda dataset: GetDatasetFileStatus(id=dataset.id)
+
     def _create_dataset(self):
         return lambda metadata: _CreateDataset(metadata)
 
     def _process_dataset(self):
         return lambda dataset: _ProcessDataset(dataset.id, self.name)
 
-    def __next__(self):
-        yield self._upload_files
-        yield self._create_dataset
-        yield self._process_dataset
-        raise StopIteration
+    def requests(self, previous):
+        yield _UploadDatasetFiles(files=self.files)
+        yield _CreateDataset(previous)
+        while not previous.files or not all(previous.files in ["downloaded", "failed"]):
+            yield GetDatasetFileStatus(id=previous.id)
+        yield _ProcessDataset(id=previous.id, name=self.name)
 
 
 class _UploadDatasetFiles(HTTPRequest):
     def __init__(self, files: List[str]):
-        super().__init__(method=HTTP)
+        super().__init__(method=HTTPMethod.POST, path="")
 
 class _CreateDataset(GraphQLRequest):
     query = """

@@ -11,10 +11,10 @@ class HTTPMethod(Enum):
     OPTIONS = "OPTIONS"
 
 class HTTPRequest:
-    def __init__(self, method: HTTPMethod, path: str, data: Dict[str, Any]=None):
+    def __init__(self, method: HTTPMethod, path: str, **kwargs):
         self.method = method
         self.path = path
-        self.data = data
+        self.kwargs = kwargs
 
     def process_response(self, response):
         return response
@@ -27,10 +27,12 @@ class GraphQLRequest(HTTPRequest):
         self.path = "/graph/api/graphql"
 
     @property
-    def data(self):
+    def kwargs(self):
         return {
-            "query": self.query, 
-            "variables": self.variables
+            "json": {
+                "query": self.query, 
+                "variables": self.variables
+            } 
         }
 
     def process_response(self, response):
