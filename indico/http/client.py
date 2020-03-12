@@ -1,6 +1,8 @@
 
 import logging
 import requests
+from pathlib import Path
+from contextlib import contextmanager
 from collections import defaultdict
 from typing import Union
 from indico.config import IndicoConfig
@@ -36,14 +38,30 @@ class HTTPClient:
     def execute_request(self, request: HTTPRequest):
         return request.process_response(self._make_request(method=request.method.value.lower(), path=request.path, **request.kwargs))
 
+    @contextmanager
+    def _handle_files(self, req_kwargs):
+        files = []
+        file_arg = {}
+        if "files" in req_kwargs:
+            for filepath in req_kwargs["files"]:
+                path = Path(filepath)
+                fd = path.open("rb")
+                files.append(fd)
+                file_arg[path.stem] = fd
+            req_kwargs["files"] = file_arg
+        yield
+
+        if files:
+            [f.close() for f in files]
+
     def _make_request(self, method: str, path: str, headers: dict=None, **request_kwargs):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
-
-        response = getattr(self.request_session, method)(
-            f"{self.base_url}{path}", headers=headers, **request_kwargs
-        )
+        with self._handle_files(request_kwargs):
+            response = getattr(self.request_session, method)(
+                f"{self.base_url}{path}", headers=headers, **request_kwargs
+            )   
 
         # code, api_response =
         content = deserialize(response)
@@ -62,5 +80,4 @@ class HTTPClient:
             raise IndicoRequestError(
                 error=error, code=response.status_code, extras=extras
             )
-
         return content

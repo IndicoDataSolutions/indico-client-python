@@ -1,6 +1,20 @@
+import time
+from pathlib import Path
 from indico.client import IndicoClient
-from indico.queries.datasets import GetDataset, GetDatasetFileStatus
+from indico.queries.datasets import GetDataset, GetDatasetFileStatus, CreateDataset
 from indico.types.dataset import Dataset
+
+def test_create_dataset():
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
+    
+    response = client.call(CreateDataset(name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]))
+
+    assert type(response) == Dataset
+    assert response.status == "COMPLETE"
+    assert type(response.id) == int 
+
+
 def test_get_datasets(): 
     client = IndicoClient()
     dataset = client.call(GetDataset(id=773))

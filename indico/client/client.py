@@ -13,11 +13,11 @@ class IndicoClient:
         self._http = HTTPClient(config)
 
     def _handle_request_chain(self, chain: RequestChain):
-        response = ""
-
-        for request_generator in chain:
-            next_request = request_generator(response)
-            response = self._http.execute_request(next_request)
+        response = None
+        for request in chain.requests():
+            print(request.path)
+            response = self._http.execute_request(request)
+            chain.previous = response
 
         return response
 

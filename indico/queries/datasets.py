@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from indico.client.request import GraphQLRequest, RequestChain, HTTPRequest, HTTPMethod
@@ -62,35 +63,29 @@ class GetDatasetStatus(GraphQLRequest):
 
 
 class CreateDataset(RequestChain):
-
-    def __init__(self, name: str, files: List[str]):
+    previous = None
+    def __init__(self, name: str, files: List[str], wait=True):
         self.files = files
         self.name = name
+        self.wait = wait
         super().__init__()
 
-    def _upload_files(self):
-        _UploadDatasetFiles(files=self.files)
-
-    def check_file_status(self):
-        return lambda dataset: GetDatasetFileStatus(id=dataset.id)
-
-    def _create_dataset(self):
-        return lambda metadata: _CreateDataset(metadata)
-
-    def _process_dataset(self):
-        return lambda dataset: _ProcessDataset(dataset.id, self.name)
-
-    def requests(self, previous):
+    def requests(self):
         yield _UploadDatasetFiles(files=self.files)
-        yield _CreateDataset(previous)
-        while not previous.files or not all(previous.files in ["downloaded", "failed"]):
-            yield GetDatasetFileStatus(id=previous.id)
-        yield _ProcessDataset(id=previous.id, name=self.name)
+        yield _CreateDataset(metadata=self.previous)
+        yield GetDatasetFileStatus(self.previous.id)
+        while not all(f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files):
+            yield GetDatasetFileStatus(id=self.previous.id)
+        yield _ProcessDataset(id=self.previous.id, name=self.name)
+        yield GetDataset(id=self.previous.id)
+        if self.wait == True:
+            while not self.previous.status in ["COMPLETE", "FAILED"]:
+                yield GetDataset(id=self.previous.id)
 
 
 class _UploadDatasetFiles(HTTPRequest):
     def __init__(self, files: List[str]):
-        super().__init__(method=HTTPMethod.POST, path="")
+        super().__init__(method=HTTPMethod.POST, path="/storage/files/upload", files=files)
 
 class _CreateDataset(GraphQLRequest):
     query = """
@@ -103,16 +98,17 @@ class _CreateDataset(GraphQLRequest):
     """
 
     def __init__(self, metadata: str):
-        super().__init__(self.query, variables={"metadata": metadata})
+        print(metadata)
+        super().__init__(self.query, variables={"metadata": json.dumps(metadata)})
 
     def process_response(self, response):
-        return Dataset(**super().process_response(response))
+        return Dataset(**super().process_response(response)["newDataset"])
 
     
 class _ProcessDataset(GraphQLRequest):
     query = """
-        mutation ProcessDataset($datasetId: Int!, $name: String) {
-            processDataset(datasetId: $datasetId, name: $name) {
+        mutation ProcessDataset($id: Int!, $name: String) {
+            processDataset(datasetId: $id, name: $name) {
                     id
                     status
             }
@@ -123,5 +119,6 @@ class _ProcessDataset(GraphQLRequest):
         super().__init__(self.query, variables={"id": id, "name": name})
 
     def process_response(self, response):
-        return Dataset(**super().process_response(response))
+        print(response)
+        return Dataset(**super().process_response(response)["processDataset"])
 
