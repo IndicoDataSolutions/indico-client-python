@@ -15,7 +15,6 @@ class IndicoClient:
     def _handle_request_chain(self, chain: RequestChain):
         response = None
         for request in chain.requests():
-            print(request.path)
             response = self._http.execute_request(request)
             chain.previous = response
 

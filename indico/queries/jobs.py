@@ -16,7 +16,26 @@ class _JobStatus(GraphQLRequest):
         super().__init__(self.query, variables={"id": id})
 
     def process_response(self, response):
-        return Job(**super().process_response(response))
+        return Job(**super().process_response(response)["job"])
+
+
+class _JobStatusWithResult(GraphQLRequest):
+    query = """
+        query JobStatus($id: String) {
+            job(id: $id) {
+                id
+                ready
+                status
+                result
+            }
+        }
+    """
+
+    def __init__(self, id):
+        super().__init__(self.query, variables={"id": id})
+
+    def process_response(self, response):
+        return Job(**super().process_response(response)["job"])
 
 class JobStatus(RequestChain):
     previous: Job = None

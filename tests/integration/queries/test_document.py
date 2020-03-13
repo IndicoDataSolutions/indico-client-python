@@ -13,10 +13,10 @@ def test_document_extraction():
     assert len(jobs) == 1
     job = jobs[0]
     assert job.id != None
-    print(job.id)
-    print(type(job.id))
     job = client.call(JobStatus(id=job.id))
     assert job.status == "SUCCESS"
     assert job.ready == True
+
+
 
 
