@@ -4,13 +4,13 @@ Setup for indico apis
 from setuptools import setup, find_packages
 
 setup(
-    name="indicoio",
+    name="indico-client-python",
     version="2.0.2",
     packages=find_packages(),
     description="""A Python Wrapper for indico app API.""",
     license="MIT License (See LICENSE)",
     long_description=open("README.rst").read(),
-    url="https://github.com/IndicoDataSolutions/indico-ipa",
+    url="https://github.com/IndicoDataSolutions/indico-client-python",
     author="indico",
     author_email="engineering@indico.io",
     tests_require=[
