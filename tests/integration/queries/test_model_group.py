@@ -35,11 +35,9 @@ def test_create_model_group_with_wait(indico, airlines_dataset: Dataset):
     assert mg.selected_model.status == "COMPLETE"
 
 
-
-
 def test_predict(indico, airlines_dataset):
     client = IndicoClient()
-    
+
     name = f"TestCreateModelGroup-{int(time.time())}"
     mg: ModelGroup = client.call(CreateModelGroup(
         name=name,
@@ -56,6 +54,6 @@ def test_predict(indico, airlines_dataset):
 
     assert type(job.id) == str
 
-    result = client.call(JobStatus(id=job.id, wait=True))
-    print(result)
-    assert len(result) == 1
+    job = client.call(JobStatus(id=job.id, wait=True))
+    print(job.result)
+    assert len(job.result) == 1

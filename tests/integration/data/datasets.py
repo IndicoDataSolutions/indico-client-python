@@ -3,9 +3,9 @@ import time
 from pathlib import Path
 from indico.client import IndicoClient
 from indico.queries.datasets import CreateDataset
-
+import os
 @pytest.fixture(scope="module")
-def airlines_dataset():
+def airlines_dataset(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[0]) + "/AirlineComplaints.csv"
     

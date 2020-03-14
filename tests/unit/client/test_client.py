@@ -22,7 +22,6 @@ def test_client_basic_http_request(indico_request, auth):
 
     indico_request("get", "/users/details", json={"test": True})
     response = client.call(request=HTTPRequest(method=HTTPMethod.GET, path="/users/details"))
-    print(response)
     assert response == {"test": True}
 
 def test_client_graphql_text_request(indico_request, auth):

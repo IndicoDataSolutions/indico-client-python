@@ -42,5 +42,4 @@ class BaseType:
                 subtype = list_subtype(attr_type)
                 if subtype and issubclass(subtype, BaseType):
                     v = [subtype(**x) for x in v]
-                    print(v)
                 setattr(self, k, v)

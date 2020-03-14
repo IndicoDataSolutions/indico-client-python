@@ -4,7 +4,7 @@ import os
 
 from indico.config import IndicoConfig
 
-logging.getLogger("indicoio").setLevel(logging.DEBUG)
+logging.getLogger("indico").setLevel(logging.DEBUG)
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -16,3 +16,4 @@ def pytest_addoption(parser):
 def indico(request):
     host = request.config.getoption("--host")
     os.environ["INDICO_HOST"] = host
+

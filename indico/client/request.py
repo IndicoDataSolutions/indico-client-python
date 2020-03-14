@@ -39,7 +39,6 @@ class GraphQLRequest(HTTPRequest):
         response = super().process_response(response)
         errors = response.pop("errors", [])
         if errors:
-            print(errors)
             extras = {"locations": [error.pop("locations") for error in errors]}
             raise IndicoRequestError(
                 error="\n".join(error["message"] for error in errors),

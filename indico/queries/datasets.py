@@ -112,7 +112,6 @@ class _CreateDataset(GraphQLRequest):
     """
 
     def __init__(self, metadata: str):
-        print(metadata)
         super().__init__(self.query, variables={"metadata": json.dumps(metadata)})
 
     def process_response(self, response):
@@ -133,6 +132,5 @@ class _ProcessDataset(GraphQLRequest):
         super().__init__(self.query, variables={"id": id, "name": name})
 
     def process_response(self, response):
-        print(response)
         return Dataset(**super().process_response(response)["processDataset"])
 

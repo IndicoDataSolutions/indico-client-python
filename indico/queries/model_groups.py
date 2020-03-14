@@ -134,10 +134,11 @@ class CreateModelGroup(RequestChain):
 
 class ModelGroupPredict(GraphQLRequest):
     query= """
-        mutation ModelGroupPredict($modelId: Int, $data: [String]) {
-            modelPredict(modelId: $modelId, data: $data) {{
+        mutation ModelGroupPredict($modelId: Int!, $data: [String]) {
+            modelPredict(modelId: $modelId, data: $data) {
                 jobId
             }
+        }
         """
     def __init__(self, model_id: int, data: List[str]):
         super().__init__(query=self.query, variables={
