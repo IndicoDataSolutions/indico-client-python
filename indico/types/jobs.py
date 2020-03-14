@@ -1,9 +1,11 @@
-from indico.types.base import BaseType
+import json
+from typing import Any
+from indico.types.base import BaseType, JSONType
 
 class Job(BaseType):
     id: int
     status: str
-    result: dict
+    result: JSONType
     ready: bool
 
     def __init__(self, **kwargs):

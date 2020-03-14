@@ -1,5 +1,6 @@
 import inspect
-from typing import List
+import json
+from typing import List, Any
 from indico.types.utils import cc_to_snake
 
 generic_alias_cls = type(List)
@@ -23,7 +24,7 @@ class BaseType:
                 k:v
                 for k, v in c.__annotations__.items()
                 if ((inspect.isclass(v) and issubclass(v, BaseType)) 
-                    or v in [str, int, float, bool] 
+                    or v in [str, int, float, bool, JSONType] 
                     or list_subtype(v))
             })
 
@@ -39,7 +40,13 @@ class BaseType:
                 if inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
                     v = attrs[k](**v)
                     
+                if inspect.isclass(attr_type) and issubclass(attr_type, JSONType):
+                    v = json.dumps(v)
+                    
                 subtype = list_subtype(attr_type)
                 if subtype and issubclass(subtype, BaseType):
                     v = [subtype(**x) for x in v]
                 setattr(self, k, v)
+
+class JSONType:
+    pass

@@ -35,6 +35,7 @@ class _JobStatusWithResult(GraphQLRequest):
         super().__init__(self.query, variables={"id": id})
 
     def process_response(self, response):
+        print(response)
         return Job(**super().process_response(response)["job"])
 
 class JobStatus(RequestChain):
@@ -50,3 +51,4 @@ class JobStatus(RequestChain):
             while (not (self.previous.status in ["SUCCESS"] and self.previous.ready == True) 
                 or self.previous.status in ["FAILURE", "REJECTED", "REVOKED", "IGNORED", "RETRY"]):
                 yield _JobStatus(id=self.id)
+            yield _JobStatusWithResult(id=self.id)
