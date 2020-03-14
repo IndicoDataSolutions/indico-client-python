@@ -1,5 +1,5 @@
 from typing import List
-from indico.types.base import BaseType
+from indico.types.base import BaseType, JSONType
 
 def test_setting_attributes_from_dict():
     class A(BaseType):
@@ -51,3 +51,11 @@ def test_camel_case_properties():
     x = A(**{"somethingInSnake": "sssss"})
 
     assert x.something_in_snake == "sssss"
+
+def test_json_field():
+    class A(BaseType):
+        json_field: JSONType
+
+    x = A(**{"jsonField": '{"test": "ing"}'})
+
+    assert x.json_field == {"test": "ing"}

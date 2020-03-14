@@ -13,9 +13,12 @@ def test_document_extraction(indico):
     assert len(jobs) == 1
     job = jobs[0]
     assert job.id != None
-    job = client.call(JobStatus(id=job.id))
+    job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "SUCCESS"
     assert job.ready == True
+    print(type(job.result))
+    assert type(job.result["url"]) == str
+
 
 
 

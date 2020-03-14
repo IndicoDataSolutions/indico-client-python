@@ -40,8 +40,8 @@ class BaseType:
                 if inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
                     v = attrs[k](**v)
                     
-                if inspect.isclass(attr_type) and issubclass(attr_type, JSONType):
-                    v = json.dumps(v)
+                if attr_type == JSONType:
+                    v = json.loads(v)
                     
                 subtype = list_subtype(attr_type)
                 if subtype and issubclass(subtype, BaseType):
