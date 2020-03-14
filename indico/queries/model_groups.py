@@ -23,14 +23,12 @@ class GetModelGroup(GraphQLRequest):
         """
 
     def __init__(self, id:int):
-        print(f"ID: {id}")
         super().__init__(query=self.query, variables={
             "id": id
         })
 
     def process_response(self, response):
         mg = ModelGroup(**super().process_response(response)["modelGroups"]["modelGroups"][0])
-        print(f"MG ID: {mg.id}")
         return mg
 
 class _CreateModelGroup(GraphQLRequest):
@@ -67,7 +65,7 @@ class _CreateModelGroup(GraphQLRequest):
                 "name": name,
                 "datasetId": dataset_id,
                 "sourceColumnId": source_column_id,
-                "labelset_id": labelset_id
+                "labelsetColumnId": labelset_id
             }
         )
 

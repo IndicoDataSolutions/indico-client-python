@@ -4,7 +4,7 @@ from indico.queries.documents import DocumentExtraction
 from indico.queries.jobs import JobStatus
 from indico.types.jobs import Job
 
-def test_document_extraction():
+def test_document_extraction(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
     

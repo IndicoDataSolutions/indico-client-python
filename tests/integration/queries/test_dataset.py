@@ -4,7 +4,7 @@ from indico.client import IndicoClient
 from indico.queries.datasets import GetDataset, GetDatasetFileStatus, CreateDataset
 from indico.types.dataset import Dataset
 
-def test_create_dataset():
+def test_create_dataset(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
     
@@ -15,14 +15,14 @@ def test_create_dataset():
     assert type(response.id) == int 
 
 
-def test_get_datasets(): 
+def test_get_datasets(indico): 
     client = IndicoClient()
     dataset = client.call(GetDataset(id=773))
     
     assert type(dataset) == Dataset
     assert dataset.id == 773
 
-def test_get_dataset_file_status():
+def test_get_dataset_file_status(indico):
     client = IndicoClient()
     dataset = client.call(GetDatasetFileStatus(id=773))
     
