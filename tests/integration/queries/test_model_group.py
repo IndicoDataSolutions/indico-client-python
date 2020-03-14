@@ -55,5 +55,4 @@ def test_predict(indico, airlines_dataset):
     assert type(job.id) == str
 
     job = client.call(JobStatus(id=job.id, wait=True))
-    print(job.result)
     assert len(job.result) == 1

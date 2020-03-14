@@ -9,6 +9,7 @@ from indico.config import IndicoConfig
 from indico.http.serialization import deserialize
 from indico.errors import IndicoRequestError
 from indico.client.request import HTTPRequest
+from requests import Response
 
 logger = logging.getLogger(__file__)
 
@@ -54,17 +55,28 @@ class HTTPClient:
         if files:
             [f.close() for f in files]
 
-    def _make_request(self, method: str, path: str, headers: dict=None, **request_kwargs):
+    def _make_request(self, method: str, path: str, headers: dict=None,  **request_kwargs):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
         with self._handle_files(request_kwargs):
             response = getattr(self.request_session, method)(
-                f"{self.base_url}{path}", headers=headers, **request_kwargs
+                f"{self.base_url}{path}", headers=headers, stream=True, **request_kwargs
             )   
 
+        
+        
         # code, api_response =
-        content = deserialize(response)
+        url_parts =  path.split(".")
+        json = False
+        gzip = False
+        if len(url_parts) > 1 and (url_parts[-1] == "json" or url_parts[-2] == "json"):
+            json = True
+        
+        if url_parts[-1] == "gz":
+            gzip = True
+
+        content = deserialize(response, force_json=json, gzip=gzip)
 
         if response.status_code >= 400:
             if isinstance(content, dict):

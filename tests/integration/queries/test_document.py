@@ -1,7 +1,6 @@
 from pathlib import Path
 from indico.client import IndicoClient
-from indico.queries.documents import DocumentExtraction
-from indico.queries.jobs import JobStatus
+from indico.queries import RetrieveStorageObject, JobStatus, DocumentExtraction
 from indico.types.jobs import Job
 
 def test_document_extraction(indico):
@@ -16,10 +15,12 @@ def test_document_extraction(indico):
     job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "SUCCESS"
     assert job.ready == True
-    print(type(job.result))
     assert type(job.result["url"]) == str
 
+    extract = client.call(RetrieveStorageObject(
+        job.result
+    ))
 
-
-
+    assert type(extract) == dict
+    assert "pages" in extract
 

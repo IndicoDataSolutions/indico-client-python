@@ -38,7 +38,6 @@ class _DocumentExtraction(GraphQLRequest):
 
     def process_response(self, response):
         jobs = super().process_response(response)["documentExtraction"]["jobIds"]
-        print(jobs)
         if jobs:
             return [Job(id=j) for j in jobs]
         else: 

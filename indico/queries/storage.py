@@ -9,4 +9,6 @@ class RetrieveStorageObject(HTTPRequest):
             url = storage_object["url"]
         else:
             url = storage_object
+
+        url = url.replace("indico-file://", "")
         super().__init__(method=HTTPMethod.GET, path=url)

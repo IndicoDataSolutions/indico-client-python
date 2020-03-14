@@ -31,7 +31,6 @@ class GetDataset(GraphQLRequest):
     
     def process_response(self, response) -> Dataset:
         response = super().process_response(response)
-        print
         return Dataset(**response["dataset"])
 
 
