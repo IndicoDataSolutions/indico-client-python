@@ -1,7 +1,7 @@
 import unittest.mock
 import pytest
 
-from indico.client import IndicoClient, HTTPRequest, HTTPMethod
+from indico.client import IndicoClient, HTTPRequest, HTTPMethod, GraphQLRequest
 
 
 @pytest.fixture(scope="function")
@@ -28,6 +28,6 @@ def test_client_graphql_text_request(indico_request, auth):
     client = IndicoClient()
     indico_request("post", "/graph/api/graphql", json={"datasets": []})
 
-    response = client.call(request="query list_datasets($ids: List(Int)) { datasets(ids: $ids) { id } }", variables={"ids": [1,2,3,4]})
+    response = client.call(GraphQLRequest(query="query list_datasets($ids: List(Int)) { datasets(ids: $ids) { id } }", variables={"ids": [1,2,3,4]}))
     assert response == {"datasets": []}
 
