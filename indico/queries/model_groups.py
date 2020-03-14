@@ -1,8 +1,37 @@
+from time import sleep
 from typing import List
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.model_group import ModelGroup
 from indico.types.jobs import Job
+
+class GetModelGroup(GraphQLRequest):
+    query = """
+        query GetModelGroup($id: Int){
+            modelGroups(modelGroupIds: [$id]) {
+                    modelGroups {
+                        id
+                        name
+                        status
+                        selectedModel {
+                            id
+                            status
+                        }
+                    }
+                }
+            }
+        """
+
+    def __init__(self, id:int):
+        print(f"ID: {id}")
+        super().__init__(query=self.query, variables={
+            "id": id
+        })
+
+    def process_response(self, response):
+        mg = ModelGroup(**super().process_response(response)["modelGroups"]["modelGroups"][0])
+        print(f"MG ID: {mg.id}")
+        return mg
 
 class _CreateModelGroup(GraphQLRequest):
     query = """
@@ -20,6 +49,7 @@ class _CreateModelGroup(GraphQLRequest):
                 ) {
                     id
                     status
+                    name
                 }
             }
     """
@@ -44,16 +74,15 @@ class _CreateModelGroup(GraphQLRequest):
     def process_response(self, response):
         return ModelGroup(**super().process_response(response)["createModelGroup"])
 
-class GetModelGroup(GraphQLRequest):
+class GetModelGroupSelectedModelStatus(GraphQLRequest):
     query = """
         query GetModelGroup($id: Int) {
                 modelGroups(modelGroupIds: [$id]) {
                     modelGroups {
                         id
-                        name
-                        status
                         selectedModel {
                             id
+                            status
                         }
                     }
                 }
@@ -62,11 +91,48 @@ class GetModelGroup(GraphQLRequest):
 
     def __init__(self, id:int):
         super().__init__(query=self.query, variables={
-            id: id
+            "id": id
         })
 
     def process_response(self, response):
-        return ModelGroup(**super().process_response(response)["modelGroups"]["modelGroups"])
+        mg = ModelGroup(**super().process_response(response)["modelGroups"]["modelGroups"][0])
+        return mg.selected_model.status 
+
+
+class CreateModelGroup(RequestChain):
+    def __init__(
+        self,
+        name: str,
+        dataset_id: int,
+        source_column_id: int,
+        labelset_id: int,
+        wait: bool=False
+    ):
+        self.name = name
+        self.dataset_id = dataset_id
+        self.source_column_id = source_column_id
+        self.labelset_id = labelset_id
+        self.wait = wait
+
+    def requests(self):
+        yield _CreateModelGroup(
+            name=self.name,
+            dataset_id=self.dataset_id,
+            source_column_id=self.source_column_id,
+            labelset_id=self.labelset_id,
+        )
+        model_group_id = self.previous.id
+        if self.wait:
+            req =  GetModelGroupSelectedModelStatus(
+                id = model_group_id
+            )
+            yield req
+            while self.previous not in ["FAILED", "COMPLETE"]:
+                sleep(1)
+                yield req
+
+            yield GetModelGroup(id=model_group_id)
+
 
 class ModelGroupPredict(GraphQLRequest):
     query= """
@@ -75,7 +141,7 @@ class ModelGroupPredict(GraphQLRequest):
                 jobId
             }
         """
-    def __init__(self, model_id: int, data: List(str)):
+    def __init__(self, model_id: int, data: List[str]):
         super().__init__(query=self.query, variables={
             "modelId": model_id,
             "data": data

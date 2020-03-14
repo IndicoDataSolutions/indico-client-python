@@ -1,5 +1,6 @@
 import inspect
 from typing import List
+from indico.types.utils import cc_to_snake
 
 generic_alias_cls = type(List)
 list_origin = List.__origin__
@@ -32,6 +33,7 @@ class BaseType:
         attrs = self._get_attrs()
 
         for k, v in kwargs.items():
+            k = cc_to_snake(k)
             if k in attrs:
                 attr_type = attrs[k]
                 if inspect.isclass(attr_type) and issubclass(attr_type, BaseType):

@@ -14,6 +14,14 @@ class GetDataset(GraphQLRequest):
                 rowCount
                 status
                 permissions
+                datacolumns {
+                    id
+                    name
+                }
+                labelsets{
+                    id
+                    name
+                }
             }
         }
     """
@@ -57,6 +65,10 @@ class GetDatasetStatus(GraphQLRequest):
             }
         }
     """
+    def  __init__(self, id: int):
+        super().__init__(self.query, variables={
+            "id": id
+        })
 
     def process_response(self, response) -> str:
         return response["data"]["dataset"]["status"]
@@ -73,14 +85,16 @@ class CreateDataset(RequestChain):
     def requests(self):
         yield _UploadDatasetFiles(files=self.files)
         yield _CreateDataset(metadata=self.previous)
-        yield GetDatasetFileStatus(self.previous.id)
+        dataset_id = self.previous.id
+        yield GetDatasetFileStatus(id=dataset_id)
         while not all(f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files):
             yield GetDatasetFileStatus(id=self.previous.id)
         yield _ProcessDataset(id=self.previous.id, name=self.name)
-        yield GetDataset(id=self.previous.id)
+        yield GetDatasetStatus(id=dataset_id)
         if self.wait == True:
-            while not self.previous.status in ["COMPLETE", "FAILED"]:
-                yield GetDataset(id=self.previous.id)
+            while not self.previous in ["COMPLETE", "FAILED"]:
+                yield GetDatasetStatus(id=dataset_id)
+        yield GetDataset(id=dataset_id)
 
 
 class _UploadDatasetFiles(HTTPRequest):

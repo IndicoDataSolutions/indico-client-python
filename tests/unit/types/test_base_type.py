@@ -43,3 +43,11 @@ def test_nested_list_simple_type():
     x = B(**{"id": 1, "a": ["this is meta"]})
     assert x.id == 1
     assert x.a[0] == "this is meta"
+
+def test_camel_case_properties():
+    class A(BaseType):
+        something_in_snake: str
+
+    x = A(**{"somethingInSnake": "sssss"})
+
+    assert x.something_in_snake == "sssss"
