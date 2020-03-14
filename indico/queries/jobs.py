@@ -35,7 +35,6 @@ class _JobStatusWithResult(GraphQLRequest):
         super().__init__(self.query, variables={"id": id})
 
     def process_response(self, response):
-        print(response)
         return Job(**super().process_response(response)["job"])
 
 class JobStatus(RequestChain):
