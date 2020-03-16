@@ -1,11 +1,11 @@
-# Indico IPA platform API
+# Indico IPA platform Client
 ### A python client library for the [Indico IPA Platform](https://app.indico.io/).
 
 # Installation
 --------------
 From PyPI:
 ```bash
-pip3 install indicoio
+pip3 install indico-client
 ```
 
 From source:
@@ -16,8 +16,8 @@ python3 setup.py install
 
 Running in a Docker container:
 ```
-docker build -t indicoio .
-docker run -it indicoio bash
+docker build -t indico-client .
+docker run -it indico-client bash
 ```
 
 # Getting Started
@@ -26,15 +26,58 @@ First, download an API token from your [user dashboard](https://app.indico.io/au
 
 ## API Examples
 ```python3
-import indicoio
-from indicoio import ModelGroup, IndicoApi
+import indico
+from indico import IndicoClient
+from indico.queries.model_groups import ListModelGroups, ModelGroupPredict
+from indico.queries.job import JobResult
+from indico.types import JobStatus
 
-# Model Predictions
-mg = ModelGroup(id=<model group id>)
-mg.load()
-mg.predict(["some text"])
+indico = IndicoClient()
+mg = indico.call(ListModelGroups(ids=[1234]))[0]
 
-# PDF Extraction
-api_client = IndicoApi()
-api_client.pdf_extraction(["url or file"], **options)
+data = ["Test example", "Test example 2"]
+job = indico.call(ModelGroupPredict(model_group=mg, data=data))
+
+job = indico.call(JobResult(job=job, wait=True))
+
+print(job.result())
+```
+``` python3 
+import indico
+from indico import IndicoClient
+from indico.queries.documents import DocumentExtraction
+from indico.queries.job import JobResult
+from indico.types import JobStatus
+from indico.storage import RetrieveStorageObject
+
+indico = IndicoClient()
+job = indico.call(DocumentExtraction(files=[open("test.pdf", 'r'), config={"preset": "legacy"}])
+job = indico.call(JobResult(job=job, wait=True))
+
+so = job.result()
+
+json_data = indico.call(RetrieveStorageObject(so))
+print(json_data)
+```
+
+### Pure GraphQL example
+```
+from indico import IndicoClient
+from indico.client.request import GraphQLRequest
+
+client = IndicoClient()
+response = client.call(GraphQLRequest(
+    query="""
+        query modelGroupQueries($ids: [Int]) {
+	        modelGroups(modelGroupIds: $ids){
+                modelGroups{
+                    id
+                }
+            }
+        }
+    """, 
+    variables={"ids": [1]}
+))
+
+model_groups = response["model_groups"]["model_groups"]
 ```
