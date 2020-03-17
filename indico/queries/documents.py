@@ -31,6 +31,8 @@ class _DocumentExtraction(GraphQLRequest):
     """
 
     def __init__(self, files, json_config={"preset_config": "simple"}):
+        if json_config and type(json_config) == dict:
+            json_config = json.dumps(json_config)
         super().__init__(query=self.query, variables={
             "files": files,
             "jsonConfig": json_config
