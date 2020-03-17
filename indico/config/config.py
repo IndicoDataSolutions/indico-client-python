@@ -1,15 +1,32 @@
+# -*- coding: utf-8 -*-
+
 import os
+
 from pathlib import Path
 from indico.errors import IndicoInvalidConfigSetting
-from requests import Session
 
 
 class IndicoConfig:
     """
-    Configuration for indico client 
-
-    Support setting configuration options either using environment variables or directly as keywords argument of this class
+    Configuration for the IndicoClient.
+    
+    Args:
+        host= (str, optional): Indico Platform hostname (ie indico.myco.com)
+        api_token_path= (str, optional): Path to the Indico API token file indico_api_token.txt
+    
+    Returns:
+        IndicoConfig object
+    
+    Raises:
+        RuntimeError: If api_token_path does not exist.
+    
+    Notes:
+        By default, the IndicoConfig constructor will set host and api_token_path from the 
+        INDICO_HOST and INDICO_API_TOKEN_PATH environment variables. If these variable are
+        not set then it will use ``app.indico.io`` as the host and will look for the
+        indico_api_token.txt file in the user's home directory.
     """
+
     host: str 
     protocol: str
     serializer: str
