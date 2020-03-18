@@ -12,11 +12,11 @@ From PyPI:
 
 .. code:: bash
 
-    pip install indicoio
+    pip install indico-client
 
 From source:
 
 .. code:: bash
 
-    git clone https://github.com/IndicoDataSolutions/IndicoIo-py.git
+    git clone https://github.com/IndicoDataSolutions/indico-client-python.git
     python setup.py install
