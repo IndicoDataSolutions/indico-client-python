@@ -13,6 +13,9 @@ from requests import Response
 
 logger = logging.getLogger(__file__)
 
+class CookiePolicyOverride(http.cookiejar.DefaultCookiePolicy):
+    def set_ok(self, cookie, request):
+        return True
 
 class HTTPClient:
     def __init__(self, config: IndicoConfig=None):
@@ -22,7 +25,9 @@ class HTTPClient:
         )
 
         self.request_session = requests.Session()
+        self.request_session.cookies.set_policy(CookiePolicyOverride())
         self.get_short_lived_access_token()
+
 
     def post(self, *args, json: Union[dict, list]=None, **kwargs):
         return self._make_request("post", *args, json=json, **kwargs)
