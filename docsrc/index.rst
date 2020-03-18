@@ -14,6 +14,7 @@ indicoio Python Client Library
 
     graphql-ex
     train-predict-ex
+    singleocr-ex
 
 .. toctree::
     :maxdepth: 2
