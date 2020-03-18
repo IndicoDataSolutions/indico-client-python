@@ -1,6 +1,7 @@
 
 import logging
 import requests
+import http.cookiejar
 from pathlib import Path
 from contextlib import contextmanager
 from collections import defaultdict
