@@ -23,17 +23,20 @@ def main(args):
         print(f'Invalid or non-existing file {src_path}')
         sys.exit(0)
 
+    # Create an Indico API client
     my_config = IndicoConfig(
         host='dev.indico.io',
         api_token_path=Path(__file__).parent / 'indico_api_token.txt'
     )
     client = IndicoClient(config=my_config)
 
+    # OCR a single file and wait for it to complete
     job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "simple"}'))
     job = client.call(JobStatus(id=job[0].id, wait=True))
     if job is not None and job.status == 'SUCCESS':
         json_data = client.call(RetrieveStorageObject(job.result))
         print(json.dumps(json_data, indent=4))
+
 
 if __name__ == '__main__':
     os.chdir(Path(__name__).parent)
