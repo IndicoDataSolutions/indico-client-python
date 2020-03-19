@@ -6,6 +6,8 @@ indicoio Python Client Library
     :caption: User Guide
 
     intro
+    docextract_settings
+    model_predictions
 
 **Examples**
 
