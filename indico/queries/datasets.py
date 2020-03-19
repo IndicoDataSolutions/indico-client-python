@@ -5,6 +5,27 @@ from indico.client.request import GraphQLRequest, RequestChain, HTTPRequest, HTT
 from indico.types.dataset import Dataset
 
 
+class ListDatasets(GraphQLRequest):
+    query = """
+        query ListDatasets($limit: Int){
+	        datasetsPage(limit: $limit) {
+                datasets {
+                    id
+                    name
+                    rowCount
+                }
+            }
+        }
+    """
+
+    def __init__(self, limit: int=100):
+        super().__init__(self.query, variables={"limit": limit})
+
+    def process_response(self, response) -> Dataset:
+        response = super().process_response(response)
+        return [Dataset(**dataset) for dataset in response["datasetsPage"]["datasets"]]
+
+
 class GetDataset(GraphQLRequest):
     query = """
         query GetDataset($id: Int) {

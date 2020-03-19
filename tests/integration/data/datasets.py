@@ -4,6 +4,8 @@ from pathlib import Path
 from indico.client import IndicoClient
 from indico.queries.datasets import CreateDataset
 import os
+
+
 @pytest.fixture(scope="module")
 def airlines_dataset(indico):
     client = IndicoClient()
