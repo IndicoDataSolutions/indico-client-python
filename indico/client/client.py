@@ -42,10 +42,10 @@ class IndicoClient:
         Make a call to the Indico IPA Platform
 
         Args:
-            request (HTTPRequest or RequestChain): GraphQL request to send to the Indico Platform
+            request (GraphQLRequest or RequestChain): GraphQL request to send to the Indico Platform
         
         Returns:
-            JSON Response of the request
+            Response appropriate to the class of the provided request parameter. Often JSON but not always.
         
         Raises:
             IndicoRequestError: With errors in processing the request
