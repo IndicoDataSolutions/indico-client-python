@@ -39,11 +39,7 @@ def predict(client: IndicoClient, model_group: ModelGroup, data: List[str]):
 if __name__ == "__main__":
     os.chdir(Path(__file__).parent)
 
-    config = IndicoConfig(
-        host='dev.indico.io',
-        api_token_path=Path(__file__).parent / 'indico_api_token.txt'
-    )
-
+    config = IndicoConfig(host='conduct.indico.io')
     client = IndicoClient(config=config)
     dataset = create_dataset(client)
     mg = create_model_group(client, dataset)
