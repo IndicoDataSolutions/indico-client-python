@@ -88,10 +88,13 @@
               <p class="caption"><span class="caption-text">User Guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="graphql-ex.html">Simple GraphQL Query Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="train-predict-ex.html">Train a Classifier and Predict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="singleocr-ex.html">OCR a Single File with DocumentExtraction</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -190,10 +193,10 @@
 <dd><p>Make a call to the Indico IPA Platform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request</strong> (<em>HTTPRequest</em><em> or </em><em>RequestChain</em>) – GraphQL request to send to the Indico Platform</p>
+<dd class="field-odd"><p><strong>request</strong> (<em>GraphQLRequest</em><em> or </em><em>RequestChain</em>) – GraphQL request to send to the Indico Platform</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>JSON Response of the request</p>
+<dd class="field-even"><p>Response appropriate to the class of the provided request parameter. Often JSON but not always.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>IndicoRequestError</strong> – With errors in processing the request</p>
