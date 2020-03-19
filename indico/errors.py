@@ -19,3 +19,7 @@ class IndicoInputError(IndicoError):
 class IndicoInvalidConfigSetting(IndicoError):
     def __init__(self, setting_name,):
         super().__init__(f"{setting_name} is not a valid configuration setting")
+
+class IndicoNotFound(IndicoError):
+    def __init__(self, cls):
+        super().__init__(f"Could not find {cls}")

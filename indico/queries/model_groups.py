@@ -3,7 +3,9 @@ from typing import List
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.model_group import ModelGroup
+from indico.types.model import Model
 from indico.types.jobs import Job
+from indico.errors import IndicoNotFound
 
 class GetModelGroup(GraphQLRequest):
     query = """
@@ -30,6 +32,40 @@ class GetModelGroup(GraphQLRequest):
     def process_response(self, response):
         mg = ModelGroup(**super().process_response(response)["modelGroups"]["modelGroups"][0])
         return mg
+
+class GetTrainingModelWithProgress(GraphQLRequest):
+    query = """ 
+        query ModelGroupProgress($id: Int){
+	        modelGroups(modelGroupIds: [$id]){
+                modelGroups{
+                    models {
+                        id
+                        status
+                        trainingProgress {
+                            percentComplete
+                        }
+                    }
+                }
+            }
+        }
+    """
+    def __init__(self, id:int):
+        super().__init__(query=self.query, variables={
+            "id": id
+        })
+
+    def process_response(self, response):
+        response = super().process_response(response)
+        model_groups = response["modelGroups"]["modelGroups"]
+        if len(model_groups) != 1:
+            raise IndicoNotFound("Model Group")
+        models = model_groups[0]["models"]
+        
+        last = max(models, key=lambda m: m["id"])
+        if not last:
+            raise IndicoNotFound("Training Model")
+        
+        return Model(**last)
 
 class _CreateModelGroup(GraphQLRequest):
     query = """
