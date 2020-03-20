@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.jobs import Job
+
 
 class _JobStatus(GraphQLRequest):
     query = """
@@ -37,7 +40,24 @@ class _JobStatusWithResult(GraphQLRequest):
     def process_response(self, response):
         return Job(**super().process_response(response)["job"])
 
+
 class JobStatus(RequestChain):
+    """
+    Status of a Job in the Indico Platform. 
+
+    JobStatus is used to either wait for completion or query the status of an asynchronous
+    job in the Indico Platform.
+    
+    Args:
+        id (int): id of the job to query for status.
+        wait (bool): Wait for the job to complete? Default is True
+    
+    Returns:
+        Job: With the job result available in a result attribute. Note that the result
+        will often be JSON but can also be a dict with the URL of a StorageObject on
+        the Indico Platform. 
+    """
+
     previous: Job = None
     def __init__(self, id: str, wait: bool=True):
         self.id = id
