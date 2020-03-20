@@ -17,6 +17,12 @@ logger = logging.getLogger(__file__)
 class CookiePolicyOverride(http.cookiejar.DefaultCookiePolicy):
     def set_ok(self, cookie, request):
         return True
+    def return_ok(self, cookie, request):
+        return True
+    def path_return_ok(self, path, request):
+        return True
+    def domain_return_ok(self, domain, request):
+        return True
 
 class HTTPClient:
     def __init__(self, config: IndicoConfig=None):
@@ -37,10 +43,18 @@ class HTTPClient:
         return self._make_request("post", *args, params=params, **kwargs)
 
     def get_short_lived_access_token(self):
-        return self.post(
+        r = self.post(
             "/auth/users/refresh_token",
             headers={"Authorization": f"Bearer {self.config.api_token}"},
         )
+
+        # Disable cookie domain in cases where the domain won't match due to using short name domains
+        if self.config._disable_cookie_domain:
+            value = self.request_session.cookies.get("auth_token")
+            self.request_session.cookies.pop("auth_token")
+            self.request_session.cookies.set_cookie(requests.cookies.create_cookie(name="auth_token", value=value))
+        
+        return r
 
     def execute_request(self, request: HTTPRequest):
         return request.process_response(self._make_request(method=request.method.value.lower(), path=request.path, **request.kwargs))
