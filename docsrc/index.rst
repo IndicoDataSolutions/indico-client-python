@@ -1,27 +1,26 @@
+******************************
 indicoio Python Client Library
-==============================
+******************************
+
+User Guide
+==========
 
 .. toctree::
-    :maxdepth: 2
-    :caption: User Guide
+    :maxdepth: 1
 
     intro
+    concepts
     docextract_settings
     model_predictions
+    examples
 
-**Examples**
+Reference
+=========
 
-.. toctree::
-    :maxdepth: 2
-
-    graphql-ex
-    train-predict-ex
-    singleocr-ex
-    training-progress
+**Classes**
 
 .. toctree::
     :maxdepth: 2
-    :caption: Reference
 
     config
     client
@@ -30,7 +29,13 @@ indicoio Python Client Library
     model_groups
     jobs
     storage
-    
 
+**Types**
 
-    
+.. toctree::
+    :maxdepth: 2
+
+    dataset-type
+    jobs-type
+    model-group-type
+    model-type
