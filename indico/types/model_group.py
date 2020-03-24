@@ -6,4 +6,3 @@ class ModelGroup(BaseType):
     name: str
     status: str
     selected_model: Model
-
