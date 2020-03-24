@@ -7,6 +7,8 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = _build
+HTMLDIR       = _build/html
+DOCDIR        = ../docs
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -15,8 +17,8 @@ help:
 # Target to build the docs for Github Pages
 github:
 	@make html
-	@cp -a _build/html/. ../docs
-	@touch ../docs/.nojekyll
+	@cp -a $(HTMLDIR)/. $(DOCDIR)
+	@touch $(DOCDIR)/.nojekyll
 
 .PHONY: help Makefile
 
@@ -24,4 +26,3 @@ github:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	@touch _build/html/.nojekyll
