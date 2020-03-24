@@ -7,7 +7,12 @@ from typing import List
 from indico import IndicoClient
 from indico.config import IndicoConfig
 from indico.types import Dataset, ModelGroup
-from indico.queries import CreateDataset, CreateModelGroup, ModelGroupPredict, JobStatus
+from indico.queries import (
+    CreateDataset,
+    GetDatasetStatus,
+    CreateModelGroup,
+    ModelGroupPredict,
+    JobStatus)
 
 
 def create_dataset(client) -> Dataset:
@@ -22,7 +27,7 @@ def create_model_group(client, dataset) -> ModelGroup:
         dataset_id=dataset.id,
         source_column_id=dataset.datacolumn_by_name("Text").id,
         labelset_id=dataset.labelset_by_name("Target_1").id,
-        wait=True   # Waits for model group to finish training 
+        wait=True   # Waits for model group to finish training
     ))
     return mg
 
@@ -39,10 +44,12 @@ def predict(client: IndicoClient, model_group: ModelGroup, data: List[str]):
 if __name__ == "__main__":
     os.chdir(Path(__file__).parent)
 
-    config = IndicoConfig(host='conduct.indico.io')
+    config = IndicoConfig(host='dev.indico.io')
     client = IndicoClient(config=config)
+
     dataset = create_dataset(client)
+    status = client.call(GetDatasetStatus(dataset.id))
+    print(f"Dataset status: {status}")
+
     mg = create_model_group(client, dataset)
     predict(client, mg, ["I need wifi"])
-
-    

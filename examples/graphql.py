@@ -7,7 +7,7 @@ from indico.config import IndicoConfig
 from indico.client.request import GraphQLRequest
 
 
-def main(args):
+def main():
     # Create a config object to manually set the host and path to
     # indico_api_token.txt. By default, IndicoClient will look read
     # environment variables to find this information

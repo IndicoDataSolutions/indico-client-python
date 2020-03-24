@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 from typing import List
 
@@ -6,9 +8,22 @@ from indico.types.dataset import Dataset
 
 
 class ListDatasets(GraphQLRequest):
+    """
+    List all of your datasets
+
+    Args:
+        limit (int): Max number of datasets to retrieve. Default is 100
+
+    Returns:
+        List[Dataset]
+
+    Raises:
+
+    """
+
     query = """
         query ListDatasets($limit: Int){
-	        datasetsPage(limit: $limit) {
+            datasetsPage(limit: $limit) {
                 datasets {
                     id
                     name
@@ -27,11 +42,24 @@ class ListDatasets(GraphQLRequest):
 
 
 class GetDataset(GraphQLRequest):
+    """
+    Retrieve a dataset description object 
+
+    Args:
+        id (int): id of the dataset to query
+
+    Returns:
+        Dataset object
+
+    Raises:
+
+    """
+
     query = """
         query GetDataset($id: Int) {
-	        dataset(id: $id) {
+            dataset(id: $id) {
                 id
-                name    
+                name
                 rowCount
                 status
                 permissions
@@ -49,13 +77,26 @@ class GetDataset(GraphQLRequest):
 
     def __init__(self, id: int):
         super().__init__(self.query, variables={"id": id})
-    
+
     def process_response(self, response) -> Dataset:
         response = super().process_response(response)
         return Dataset(**response["dataset"])
 
 
 class GetDatasetFileStatus(GetDataset):
+    """
+    Get the status of dataset file upload
+
+    Args:
+        id (int): id of the dataset to query
+    
+    Returns:
+        status (str): DOWNLOADED or FAILED
+    
+    Raises:
+        
+    """
+
     query = """
         query DatasetUploadStatus($id: Int!) {
             dataset(id: $id) {
@@ -78,6 +119,19 @@ class GetDatasetFileStatus(GetDataset):
 
 
 class GetDatasetStatus(GraphQLRequest):
+    """
+    Get the status of a dataset 
+
+    Args:
+        id (int): id of the dataset to query
+
+    Returns:
+        status (str): COMPLETE or FAILED
+
+    Raises:
+
+    """
+
     query = """
         query datasetStatus($id: Int!) {
             dataset(id: $id) {
@@ -85,6 +139,7 @@ class GetDatasetStatus(GraphQLRequest):
             }
         }
     """
+
     def  __init__(self, id: int):
         super().__init__(self.query, variables={
             "id": id
@@ -95,7 +150,23 @@ class GetDatasetStatus(GraphQLRequest):
 
 
 class CreateDataset(RequestChain):
+    """
+    Create a dataset and upload the associated files.
+
+    Args:
+        name (str): Name of the dataset
+        files (List[str]): List of pathnames to the dataset files
+        wait (bool): Wait for the dataset to upload and finish
+
+    Returns:
+        Dataset object
+
+    Raises:
+
+    """
+
     previous = None
+
     def __init__(self, name: str, files: List[str], wait=True):
         self.files = files
         self.name = name
@@ -120,6 +191,7 @@ class CreateDataset(RequestChain):
 class _UploadDatasetFiles(HTTPRequest):
     def __init__(self, files: List[str]):
         super().__init__(method=HTTPMethod.POST, path="/storage/files/upload", files=files)
+
 
 class _CreateDataset(GraphQLRequest):
     query = """
