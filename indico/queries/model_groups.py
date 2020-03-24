@@ -234,7 +234,7 @@ class ModelGroupPredict(GraphQLRequest):
     Generate predictions from a model group on new data
 
     Args:
-        model_id= (int): model group id use for predictions
+        model_id= (int): selected model id use for predictions
         data= (List[str]): list of samples to predict
 
     Returns:
