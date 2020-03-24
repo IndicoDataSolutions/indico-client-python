@@ -8,6 +8,7 @@ from indico.types.model_group import ModelGroup
 from indico.types.model import Model, TrainingProgress
 from ..data.datasets import airlines_dataset
 from indico.errors import IndicoNotFound
+
 def test_create_model_group(airlines_dataset: Dataset):
     client = IndicoClient()
     
