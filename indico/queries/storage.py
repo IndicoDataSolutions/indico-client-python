@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
-
+import json
+from typing import List
 from indico.client.request import HTTPMethod, HTTPRequest
 
 
@@ -27,7 +27,18 @@ class RetrieveStorageObject(HTTPRequest):
         url = url.replace("indico-file://", "")
         super().__init__(method=HTTPMethod.GET, path=url)
 
-class UploadDocument(HTTPRequest):
+class UploadDocument(HTTPRequest):    
+    """
+    Upload an object stored on the Indico Platform 
+
+    Used internally for uploading documents to indico platform for later processing
+    
+    Args:
+        filepaths (str): list of filepaths to upload
+    
+    Returns:
+        files: storage objects to be use for further processing requests E.G. Document extraction (implicitly called)
+    """
     def __init__(self, files: List[str]):
         super().__init__(HTTPMethod.POST, "/storage/files/store", files=files)
     

@@ -251,6 +251,9 @@ class LoadModel(GraphQLRequest):
     def __init__(self, model_id: int):
         super().__init__(self.query, variables={"modelId": model_id})
 
+    def process_response(self, response):
+        return super().process_response(response)["modelLoad"]["status"]
+
 class _ModelGroupPredict(GraphQLRequest):
     query= """
         mutation ModelGroupPredict($modelId: Int!, $data: [String]) {
