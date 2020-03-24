@@ -7,7 +7,7 @@ def test_workflow_submission(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
     
-    jobs = client.call(WorkflowSubmission(workflow_id=0, files=[dataset_filepath]))
+    jobs = client.call(WorkflowSubmission(workflow_id=449, files=[dataset_filepath]))
 
     assert len(jobs) == 1
     job = jobs[0]

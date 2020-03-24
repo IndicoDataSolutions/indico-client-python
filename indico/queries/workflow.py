@@ -5,12 +5,13 @@ from indico.types.jobs import Job
 from indico.queries.storage import UploadDocument
 
 class _WorkflowSubmission(GraphQLRequest):
-    query =""""
+    query ="""
         mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!) {
             workflowSubmission(workflowId: $workflowId, files: $files) {
-                    jobId
+                jobId
             }
-    }"""
+        }
+    """
 
     def __init__(self, workflow_id, files: List[str]):
         super().__init__(query=self.query, variables={
@@ -32,4 +33,5 @@ class WorkflowSubmission(RequestChain):
         self.workflow_id = workflow_id    
     def requests(self):
         yield UploadDocument(files=self.files)
+        print(self.previous)
         yield _WorkflowSubmission(files=self.previous, workflow_id=self.workflow_id)

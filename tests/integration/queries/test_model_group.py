@@ -1,7 +1,7 @@
 import pytest
 import time
 from indico.client import IndicoClient
-from indico.queries.model_groups import GetModelGroup, CreateModelGroup, ModelGroupPredict, GetTrainingModelWithProgress
+from indico.queries.model_groups import GetModelGroup, CreateModelGroup, ModelGroupPredict, GetTrainingModelWithProgress, LoadModel
 from indico.queries.jobs import JobStatus
 from indico.types.dataset import Dataset
 from indico.types.model_group import ModelGroup
@@ -83,3 +83,22 @@ def test_predict(indico, airlines_dataset):
 
     job = client.call(JobStatus(id=job.id, wait=True))
     assert len(job.result) == 1
+
+
+def test_load_model(indico, airlines_dataset):
+    client = IndicoClient()
+
+    name = f"TestCreateModelGroup-{int(time.time())}"
+    mg: ModelGroup = client.call(CreateModelGroup(
+        name=name,
+        dataset_id=airlines_dataset.id,
+        source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
+        labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
+        wait=True
+    ))
+
+    status = client.call(LoadModel(
+        model_id=mg.selected_model.id,
+    ))
+
+    assert status == "ready"

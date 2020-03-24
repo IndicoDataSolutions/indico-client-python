@@ -75,7 +75,7 @@ class HTTPClient:
         if files:
             [f.close() for f in files]
 
-    def _make_request(self, method: str, path: str, headers: dict=None,  **request_kwargs):
+    def _make_request(self, method: str, path: str, headers: dict=None, _refresh=False, **request_kwargs):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
@@ -95,6 +95,11 @@ class HTTPClient:
             gzip = True
 
         content = deserialize(response, force_json=json, gzip=gzip)
+        
+        # If auth expired refresh
+        if response.status_code == 402 and _refresh == False:
+            self.get_short_lived_access_token()
+            return self._make_request(method, path, headers, _refresh=True, **request_kwargs)
 
         if response.status_code >= 400:
             if isinstance(content, dict):

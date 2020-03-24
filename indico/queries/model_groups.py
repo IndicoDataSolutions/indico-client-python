@@ -5,7 +5,7 @@ from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.model_group import ModelGroup
 from indico.types.model import Model
 from indico.types.jobs import Job
-from indico.errors import IndicoNotFound
+from indico.errors import IndicoNotFound, IndicoError
 
 
 class GetModelGroup(GraphQLRequest):
@@ -228,23 +228,31 @@ class CreateModelGroup(RequestChain):
 
             yield GetModelGroup(id=model_group_id)
 
-
-class ModelGroupPredict(GraphQLRequest):
+class LoadModel(GraphQLRequest):
     """
-    Generate predictions from a model group on new data
+    Load model into system cache (implicit in ModelGroupPredict unless load=False)
 
     Args:
         model_id= (int): selected model id use for predictions
-        data= (List[str]): list of samples to predict
 
     Returns:
-        Job associated with this model group predict task
-
+        Status "ready" if loaded
     Raises:
-
+        IndicoError if model fails to load after retries
+    """
+    query = """
+        mutation ModelLoad($modelId: Int!) {
+            modelLoad(modelId: $modelId) {
+                status
+            }
+        }
     """
 
-    query = """
+    def __init__(self, model_id: int):
+        super().__init__(self.query, variables={"modelId": model_id})
+
+class _ModelGroupPredict(GraphQLRequest):
+    query= """
         mutation ModelGroupPredict($modelId: Int!, $data: [String]) {
             modelPredict(modelId: $modelId, data: $data) {
                 jobId
@@ -260,3 +268,36 @@ class ModelGroupPredict(GraphQLRequest):
 
     def process_response(self, response):
         return Job(**super().process_response(response)["modelPredict"])
+
+
+class ModelGroupPredict(RequestChain):
+    """
+    Generate predictions from a model group on new data
+
+    Args:
+        model_id= (int): selected model id use for predictions
+        data= (List[str]): list of samples to predict
+
+    Returns:
+        Job associated with this model group predict task
+
+    Raises:
+
+    """
+    def __init__(self, model_id: int, data: List[str], load: bool=True):
+        self.model_id = model_id
+        self.data = data
+        self.load = load
+
+    def requests(self):
+        retries = 0
+        if self.load:
+            while retries < 3 and self.previous != "ready":
+                retries += 1
+                yield LoadModel(self.model_id)
+                if retries > 0:
+                    sleep(1)
+            if self.previous != "ready":
+                raise IndicoError(f"Model {self.model_id} failed to load status {self.previous}")
+            
+        yield _ModelGroupPredict(model_id=self.model_id, data=self.data)

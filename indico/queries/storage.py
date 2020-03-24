@@ -26,3 +26,19 @@ class RetrieveStorageObject(HTTPRequest):
 
         url = url.replace("indico-file://", "")
         super().__init__(method=HTTPMethod.GET, path=url)
+
+class UploadDocument(HTTPRequest):
+    def __init__(self, files: List[str]):
+        super().__init__(HTTPMethod.POST, "/storage/files/store", files=files)
+    
+    def process_response(self, uploaded_files: List[dict]):
+        files = [
+            {
+                "filename": f["name"],
+                "filemeta": json.dumps(
+                    {"path": f["path"], "name": f["name"], "uploadType": f["upload_type"]}
+                ),
+            }
+            for f in uploaded_files
+        ]
+        return files
