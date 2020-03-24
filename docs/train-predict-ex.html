@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Train a Classifier and Predict &mdash; Indico Python Client 3.1.0 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OCR a Single File with DocumentExtraction" href="singleocr-ex.html" />
+    <link rel="prev" title="Simple GraphQL Query Example" href="graphql-ex.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+          
+
+          
+            
+            <img src="_static/logo-white.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="graphql-ex.html">Simple GraphQL Query Example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Train a Classifier and Predict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="singleocr-ex.html">OCR a Single File with DocumentExtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training-progress.html">Check Model Training Progress</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Indico Python Client</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="examples.html">Examples</a> &raquo;</li>
+        
+      <li>Train a Classifier and Predict</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/train-predict-ex.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="train-a-classifier-and-predict">
+<h1>Train a Classifier and Predict<a class="headerlink" href="#train-a-classifier-and-predict" title="Permalink to this headline">¶</a></h1>
+<p>Train a classifier and get predictions</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+
+<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
+<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.types</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">ModelGroup</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreateDataset</span><span class="p">,</span>
+    <span class="n">GetDatasetStatus</span><span class="p">,</span>
+    <span class="n">CreateModelGroup</span><span class="p">,</span>
+    <span class="n">ModelGroupPredict</span><span class="p">,</span>
+    <span class="n">JobStatus</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
+    <span class="n">dataset_filepath</span> <span class="o">=</span> <span class="s2">&quot;./airline-comments.csv&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CreateDataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AirlineComplaints-test-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">dataset_filepath</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="k">def</span> <span class="nf">create_model_group</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelGroup</span><span class="p">:</span>
+    <span class="n">mg</span><span class="p">:</span> <span class="n">ModelGroup</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CreateModelGroup</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;TestCreateModelGroup-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">source_column_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">datacolumn_by_name</span><span class="p">(</span><span class="s2">&quot;Text&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span><span class="s2">&quot;Target_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">wait</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Waits for model group to finish training</span>
+    <span class="p">))</span>
+    <span class="k">return</span> <span class="n">mg</span>
+
+
+<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">model_group</span><span class="p">:</span> <span class="n">ModelGroup</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ModelGroupPredict</span><span class="p">(</span>
+        <span class="n">model_id</span><span class="o">=</span><span class="n">model_group</span><span class="o">.</span><span class="n">selected_model</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span>
+    <span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;dev.indico.io&#39;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetDatasetStatus</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset status: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">mg</span> <span class="o">=</span> <span class="n">create_model_group</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+    <span class="n">predict</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">mg</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;I need wifi&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="singleocr-ex.html" class="btn btn-neutral float-right" title="OCR a Single File with DocumentExtraction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="graphql-ex.html" class="btn btn-neutral float-left" title="Simple GraphQL Query Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Indico
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
