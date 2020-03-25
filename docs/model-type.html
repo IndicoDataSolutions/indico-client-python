@@ -174,12 +174,60 @@
 <dl class="class">
 <dt id="indico.types.model.Model">
 <em class="property">class </em><code class="sig-prename descclassname">indico.types.model.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.model.Model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A Model in the Indico Platform.</p>
+<p>Models are a part of a Model Group</p>
+<dl class="attribute">
+<dt id="indico.types.model.Model.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.model.Model.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The model id. This is different from the model group id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.model.Model.status">
+<code class="sig-name descname">status</code><a class="headerlink" href="#indico.types.model.Model.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>“CREATED”, “TRAINING”, “COMPLETE” or “FAILED”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.model.Model.training_progress">
+<code class="sig-name descname">training_progress</code><a class="headerlink" href="#indico.types.model.Model.training_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Percent complete training progress on a model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#indico.types.model.TrainingProgress" title="indico.types.model.TrainingProgress">TrainingProgress</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="indico.types.model.TrainingProgress">
 <em class="property">class </em><code class="sig-prename descclassname">indico.types.model.</code><code class="sig-name descname">TrainingProgress</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.model.TrainingProgress" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Model training progress</p>
+<p>Shows percent complete for a model training</p>
+<dl class="attribute">
+<dt id="indico.types.model.TrainingProgress.percent_complete">
+<code class="sig-name descname">percent_complete</code><a class="headerlink" href="#indico.types.model.TrainingProgress.percent_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Percent complete for a model that’s training</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </div>
 
