@@ -10,7 +10,7 @@ pip3 install indico-client
 
 From source:
 ```bash
-git clone https://github.com/IndicoDataSolutions/indicoio-py.git
+git clone https://github.com/IndicoDataSolutions/indico-client-python.git
 python3 setup.py install
 ```
 
