@@ -7,11 +7,11 @@ Introduction
 The Indico Platform includes a sophisticated OCR engine that's capable of extracting raw
 text from a variety of document formats including PDF and TIF. OCR functionality is provided
 by the ``DocumentExtraction`` class. Here's how to OCR one document with DocumentExtraction::
-    
+
     from indico import IndicoClient
     from indico.queries.documents import DocumentExtraction
     from indico.queries import JobStatus, RetrieveStorageObject
-    
+
     # assumes you have your api token in your working or home directory
     client = IndicoClient()
     files_to_extract = client.call(DocumentExtraction(files=['./path_to_document.pdf']))
@@ -19,14 +19,14 @@ by the ``DocumentExtraction`` class. Here's how to OCR one document with Documen
     json_result = client.call(RetrieveStorageObject(extracted_file.result))
 
 In this example, given the path to a document, we called DocumentExtraction with a single file and waited for the result.
-With most use cases, this is all you will need to do. 
+With most use cases, this is all you will need to do.
 
-``DocumentExtraction`` is highly configurable. You can customize settings at the document, page, block, token or 
-character level. You can also choose from a selection of preset configurations. You configure DocumentExtraction 
+``DocumentExtraction`` is highly configurable. You can customize settings at the document, page, block, token or
+character level. You can also choose from a selection of preset configurations. You configure DocumentExtraction
 by passing in a Python dictionary or JSON string.
 
 Here's an Example::
-    
+
     my_ocr_config = {
         "preset_config": "simple"
     }
@@ -93,7 +93,7 @@ Setting::
     "force_render": True
     "force_render": False (default)
 
-Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering. 
+Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.
 
 Reblocking
@@ -103,7 +103,7 @@ Setting::
 
     "reblocking": ["style", "lists"]
 
-Whether we should use a page-level reblocking strategy that can utilize style information, or 
+Whether we should use a page-level reblocking strategy that can utilize style information, or
 specifically handle list-like documents well, or both.
 
 
@@ -236,8 +236,8 @@ Setting::
         "format": "standard" | "edges" | "corners"
         ”units”: “pixels” | “percentage”
 
-"standard" returns position as x, y, width, height. "edges" returns top, bottom, left, right. 
-"corners" returns top-left, top-right, bottom-left, bottom-right. In all cases the token and character 
+"standard" returns position as x, y, width, height. "edges" returns top, bottom, left, right.
+"corners" returns top-left, top-right, bottom-left, bottom-right. In all cases the token and character
 levels will also include “baseline”
 
 Units "percentage" is 0 - 1 normalized values. Both sets of units use the top-left corner as (0, 0)
@@ -254,8 +254,8 @@ Setting::
     "style": True
     "style": False
 
-Return style information for the token. Example Return:: 
-    
+Return style information for the token. Example Return::
+
     {"bold": true, "underlined": true, "italics": true, "font_size": 14, "background_color": "hex", "text_color": "hex"}
 
 Token Level Confidence
@@ -358,12 +358,12 @@ Setting::
 
     {“FileSize” & “Pages” & ”Encrypted” & ”PageRot” & ”Title” & ”Author” & ”Creator” & ”Producer” & ”CreationDate” & ”ModDate” & ”PDFVersion” | "all"}
 
-Include any of a variety of document metadata fields. Input format is anything that supports the python "in" 
+Include any of a variety of document metadata fields. Input format is anything that supports the python "in"
 operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get all available metadata.
 
 
 Preset Configuration Details
-=======================
+============================
 
 These are the exact settings included in the presets.
 

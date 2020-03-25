@@ -6,34 +6,38 @@ Introduction
 
 The Indico Platform includes a sophisticated OCR engine that's capable of extracting raw
 text from a variety of document formats including PDF and TIF. OCR functionality is provided
-by the ``DocumentExtraction`` function. Here's how to make a simple call to DocumentExtraction::
+by the ``DocumentExtraction`` class. Here's how to OCR one document with DocumentExtraction::
 
-    job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "simple"}'))
-    job = client.call(JobStatus(id=job[0].id, wait=True))
-    if job is not None and job.status == 'SUCCESS':
-        json_data = client.call(RetrieveStorageObject(job.result))
-        print(json.dumps(json_data, indent=4))
+    from indico import IndicoClient
+    from indico.queries.documents import DocumentExtraction
+    from indico.queries import JobStatus, RetrieveStorageObject
 
-In this example, we just call DocumentExtraction with a single file and wait for the result.
-With most use cases, this is all you will need to do. 
+    # assumes you have your api token in your working or home directory
+    client = IndicoClient()
+    files_to_extract = client.call(DocumentExtraction(files=['./path_to_document.pdf']))
+    extracted_file = client.call(JobStatus(id=files_to_extract[0].id, wait=True))
+    json_result = client.call(RetrieveStorageObject(extracted_file.result))
 
-``DocumentExtraction`` is highly configurable. You can choose to customize setting at the
-document, page, block, token or character level. You configure DocumentExtraction by passing
-in either a Python dictionary or JSON string.
+In this example, given the path to a document, we called DocumentExtraction with a single file and waited for the result.
+With most use cases, this is all you will need to do.
+
+``DocumentExtraction`` is highly configurable. You can customize settings at the document, page, block, token or
+character level. You can also choose from a selection of preset configurations. You configure DocumentExtraction
+by passing in a Python dictionary or JSON string.
 
 Here's an Example::
-    
+
     my_ocr_config = {
         "preset_config": "simple"
     }
 
-    job = client.call(DocumentExtraction(files=[src_path], json_config=my_ocr_config))
+    job = client.call(DocumentExtraction(files=['./path_to_doc.pdf'], json_config=my_ocr_config))
 
 
 Global Settings
 ===============
 
-Pre-Set Configurations
+Preset Configurations
 ----------------------
 
 Setting::
@@ -42,11 +46,10 @@ Setting::
     "preset_config": "legacy"
     "preset_config": "detailed"
 
-Three pre-set ocr configurations are provided: ``legacy``, ``simple`` and ``detailed``. Most users will
+Three preset ocr configurations are provided: ``legacy``, ``simple`` and ``detailed``. Most users will
 only need to use "simple". "legacy" is intended for users who ran Indico's original pdf_extraction
-function to extract text and train modes. Use "legacy" if you need to OCR new documents for input
-to these models. "detailed" will provide a lot of detail, down to the character level and a 
-correspondingly large amount of data.
+function to extract text and train models. Use "legacy" if you are adding samples to models that were trained with
+the original pdf_extraction. "detailed" provides OCR metrics and details down to the character level- it's a lot of data.
 
 The exact settings included in "legacy", "simple" and "detailed" are shown at the bottom
 of this page.
@@ -56,31 +59,31 @@ Result Granularity
 
 Setting::
 
-    "top_level": "page"
+    "top_level": "page" (default)
     "top_level": "document"
 
-Choose to have the JSON result returned be either one single result for the entire document or
-broken into a list with one item for each page.
+The JSON result can be a single result for the entire document ("document") or
+broken into a list with one item for each page ("page").
 
 Parse Order
 -----------
 
 Setting::
 
-    "single_column": True
+    "single_column": True (default)
     "single_column": False
 
-Set to ``True`` to have the document strictly parsed top to bottom as a single column of text.
+Set to ``True`` to have the document parsed top to bottom as a single column of text.
 
 Table Read Order
 ----------------
 
 Setting::
 
-    "table_read_order": "row"
+    "table_read_order": "row" (default)
     "table_read_order": "column"
 
-Enforce either row or column reading order of tables.
+You can read tables by either row or column.
 
 Force Render
 ------------
@@ -88,9 +91,9 @@ Force Render
 Setting::
 
     "force_render": True
-    "force_render": False
+    "force_render": False (default)
 
-Force rendering of document. Beware of increased computation cost for increased reliability of page rendering. 
+Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.
 
 Reblocking
@@ -98,20 +101,10 @@ Reblocking
 
 Setting::
 
-    "reblocking": ["style" & "lists"]
+    "reblocking": ["style", "lists"]
 
-Whether we should use a page-level reblocking strategy that can utilize style information, or 
-specifically handle list-like documents well or both.
-
-Number of Threads
------------------
-
-Setting::
-
-    "n_threads": int
-
-How many threads should be used for the portions of the flow that can be multiprocessed? Currently only metadata extraction runs in parallel and defaults to 8 threads, but 
-where we find other opportunities for performance improvements they should use this flag.
+Whether we should use a page-level reblocking strategy that can utilize style information, or
+specifically handle list-like documents well, or both.
 
 
 Document Level Settings
@@ -133,7 +126,7 @@ Page Thumbnails
 Setting::
 
     "thumbnail":
-        "resolution": "<x>x<y>"   # IE - 200x300, defaults to 128x165
+        "resolution": "128x165" (default)   # i.e. - <x-dimension>x<y-dimension>
 
 Provide this setting to return page thumbnails of the specified resolution. Separate from full
 sized images.
@@ -146,7 +139,7 @@ Setting::
     "doc_offset": True
     "doc_offset": False
 
-Set to ``True`` to incude document-level offsets in the JSON result.
+Set to ``True`` to include document-level offsets in the JSON result.
 
 Page Text
 ---------
@@ -243,8 +236,8 @@ Setting::
         "format": "standard" | "edges" | "corners"
         ”units”: “pixels” | “percentage”
 
-"standard" is x, y, width, height. "edges" is top, bottom, left, right. 
-"corners" is top-left, top-right, bottom-left, bottom-right. In all cases the token and character 
+"standard" returns position as x, y, width, height. "edges" returns top, bottom, left, right.
+"corners" returns top-left, top-right, bottom-left, bottom-right. In all cases the token and character
 levels will also include “baseline”
 
 Units "percentage" is 0 - 1 normalized values. Both sets of units use the top-left corner as (0, 0)
@@ -261,8 +254,8 @@ Setting::
     "style": True
     "style": False
 
-Include calculated style information for the token. Example Return:: 
-    
+Return style information for the token. Example Return::
+
     {"bold": true, "underlined": true, "italics": true, "font_size": 14, "background_color": "hex", "text_color": "hex"}
 
 Token Level Confidence
@@ -311,7 +304,7 @@ Setting::
 
     "position":
         "format": "standard" | "edges" | "corners"
-        ”units”: “pixels” | “percentage”
+        "units": "pixels" | "percentage"
 
 
 Character Level Settings
@@ -355,7 +348,7 @@ Settings::
         "format": "standard" | "edges" | "corners"
         ”units”: “pixels” | “percentage”
 
-The above settings serve a similar function to their token-level counterparts.
+The settings above serve a similar function to their token-level counterparts.
 
 
 Metadata Settings
@@ -365,14 +358,14 @@ Setting::
 
     {“FileSize” & “Pages” & ”Encrypted” & ”PageRot” & ”Title” & ”Author” & ”Creator” & ”Producer” & ”CreationDate” & ”ModDate” & ”PDFVersion” | "all"}
 
-Include any of a variety of document metadata fields. Input format is anything that supports the in 
-operation. (e.g. set, list, dict). Optionally simply pass in “all” to get all available metadata.
+Include any of a variety of document metadata fields. Input format is anything that supports the python "in"
+operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get all available metadata.
 
 
-Pre-set Settings Detail
-=======================
+Preset Configuration Details
+============================
 
-These are the exact settings included in the pre-sets.
+These are the exact settings included in the presets.
 
 Settings included in presets::
 
@@ -386,7 +379,6 @@ Settings included in presets::
         "nest": True,
         "top_level": "document",
         "native_pdf": True,
-        "multiprocessing": True,
         "document": {"text"},
         "pages": {"text", "size", "dpi", "doc_offset", "page_num", "image"},
         "blocks": {"text", "position", "doc_offset", "page_offset"},
@@ -398,7 +390,6 @@ Settings included in presets::
         "top_level": "document",
         "reblocking": {"style", "list", "inline-header"},
         "metadata": {"all"},
-        "multithreading": False,
         "document": {"text"},
         "pages": {"image", "doc_offset", "text", "dpi", "size", "page_num"},
         "blocks": {"block_type", "doc_offset", "text", "style", "position"},

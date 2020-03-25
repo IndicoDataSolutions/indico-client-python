@@ -91,13 +91,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">OCR With DocumentExtraction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#global-settings">Global Settings</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pre-set-configurations">Pre-Set Configurations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preset-configurations">Preset Configurations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#result-granularity">Result Granularity</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#parse-order">Parse Order</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#table-read-order">Table Read Order</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#force-render">Force Render</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reblocking">Reblocking</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#number-of-threads">Number of Threads</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#document-level-settings">Document Level Settings</a><ul>
@@ -134,7 +133,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#metadata-settings">Metadata Settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pre-set-settings-detail">Pre-set Settings Detail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preset-configuration-details">Preset Configuration Details</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
@@ -224,101 +223,95 @@
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The Indico Platform includes a sophisticated OCR engine that’s capable of extracting raw
 text from a variety of document formats including PDF and TIF. OCR functionality is provided
-by the <code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> function. Here’s how to make a simple call to DocumentExtraction:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="s1">&#39;{&quot;preset_config&quot;: &quot;simple&quot;}&#39;</span><span class="p">))</span>
-<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;SUCCESS&#39;</span><span class="p">:</span>
-    <span class="n">json_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+by the <code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> class. Here’s how to OCR one document with DocumentExtraction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
+<span class="kn">from</span> <span class="nn">indico.queries.documents</span> <span class="kn">import</span> <span class="n">DocumentExtraction</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">RetrieveStorageObject</span>
+
+<span class="c1"># assumes you have your api token in your working or home directory</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">()</span>
+<span class="n">files_to_extract</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_document.pdf&#39;</span><span class="p">]))</span>
+<span class="n">extracted_file</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">files_to_extract</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">json_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">extracted_file</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>In this example, we just call DocumentExtraction with a single file and wait for the result.
+<p>In this example, given the path to a document, we called DocumentExtraction with a single file and waited for the result.
 With most use cases, this is all you will need to do.</p>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> is highly configurable. You can choose to customize setting at the
-document, page, block, token or character level. You configure DocumentExtraction by passing
-in either a Python dictionary or JSON string.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> is highly configurable. You can customize settings at the document, page, block, token or
+character level. You can also choose from a selection of preset configurations. You configure DocumentExtraction
+by passing in a Python dictionary or JSON string.</p>
 <p>Here’s an Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_ocr_config</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span>
 <span class="p">}</span>
 
-<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="n">my_ocr_config</span><span class="p">))</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_doc.pdf&#39;</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="n">my_ocr_config</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="global-settings">
 <h2>Global Settings<a class="headerlink" href="#global-settings" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="pre-set-configurations">
-<h3>Pre-Set Configurations<a class="headerlink" href="#pre-set-configurations" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="preset-configurations">
+<h3>Preset Configurations<a class="headerlink" href="#preset-configurations" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span>
 <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;legacy&quot;</span>
 <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;detailed&quot;</span>
 </pre></div>
 </div>
-<p>Three pre-set ocr configurations are provided: <code class="docutils literal notranslate"><span class="pre">legacy</span></code>, <code class="docutils literal notranslate"><span class="pre">simple</span></code> and <code class="docutils literal notranslate"><span class="pre">detailed</span></code>. Most users will
+<p>Three preset ocr configurations are provided: <code class="docutils literal notranslate"><span class="pre">legacy</span></code>, <code class="docutils literal notranslate"><span class="pre">simple</span></code> and <code class="docutils literal notranslate"><span class="pre">detailed</span></code>. Most users will
 only need to use “simple”. “legacy” is intended for users who ran Indico’s original pdf_extraction
-function to extract text and train modes. Use “legacy” if you need to OCR new documents for input
-to these models. “detailed” will provide a lot of detail, down to the character level and a
-correspondingly large amount of data.</p>
+function to extract text and train models. Use “legacy” if you are adding samples to models that were trained with
+the original pdf_extraction. “detailed” provides OCR metrics and details down to the character level- it’s a lot of data.</p>
 <p>The exact settings included in “legacy”, “simple” and “detailed” are shown at the bottom
 of this page.</p>
 </div>
 <div class="section" id="result-granularity">
 <h3>Result Granularity<a class="headerlink" href="#result-granularity" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span>
 </pre></div>
 </div>
-<p>Choose to have the JSON result returned be either one single result for the entire document or
-broken into a list with one item for each page.</p>
+<p>The JSON result can be a single result for the entire document (“document”) or
+broken into a list with one item for each page (“page”).</p>
 </div>
 <div class="section" id="parse-order">
 <h3>Parse Order<a class="headerlink" href="#parse-order" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;single_column&quot;</span><span class="p">:</span> <span class="kc">True</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;single_column&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 <span class="s2">&quot;single_column&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to have the document strictly parsed top to bottom as a single column of text.</p>
+<p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to have the document parsed top to bottom as a single column of text.</p>
 </div>
 <div class="section" id="table-read-order">
 <h3>Table Read Order<a class="headerlink" href="#table-read-order" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;table_read_order&quot;</span><span class="p">:</span> <span class="s2">&quot;row&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;table_read_order&quot;</span><span class="p">:</span> <span class="s2">&quot;row&quot;</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 <span class="s2">&quot;table_read_order&quot;</span><span class="p">:</span> <span class="s2">&quot;column&quot;</span>
 </pre></div>
 </div>
-<p>Enforce either row or column reading order of tables.</p>
+<p>You can read tables by either row or column.</p>
 </div>
 <div class="section" id="force-render">
 <h3>Force Render<a class="headerlink" href="#force-render" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;force_render&quot;</span><span class="p">:</span> <span class="kc">True</span>
-<span class="s2">&quot;force_render&quot;</span><span class="p">:</span> <span class="kc">False</span>
+<span class="s2">&quot;force_render&quot;</span><span class="p">:</span> <span class="kc">False</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Force rendering of document. Beware of increased computation cost for increased reliability of page rendering.
+<p>Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.</p>
 </div>
 <div class="section" id="reblocking">
 <h3>Reblocking<a class="headerlink" href="#reblocking" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;style&quot;</span> <span class="o">&amp;</span> <span class="s2">&quot;lists&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;lists&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Whether we should use a page-level reblocking strategy that can utilize style information, or
-specifically handle list-like documents well or both.</p>
-</div>
-<div class="section" id="number-of-threads">
-<h3>Number of Threads<a class="headerlink" href="#number-of-threads" title="Permalink to this headline">¶</a></h3>
-<p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;n_threads&quot;</span><span class="p">:</span> <span class="nb">int</span>
-</pre></div>
-</div>
-<p>How many threads should be used for the portions of the flow that can be multiprocessed? Currently only metadata extraction runs in parallel and defaults to 8 threads, but
-where we find other opportunities for performance improvements they should use this flag.</p>
+specifically handle list-like documents well, or both.</p>
 </div>
 </div>
 <div class="section" id="document-level-settings">
@@ -336,7 +329,7 @@ where we find other opportunities for performance improvements they should use t
 <h3>Page Thumbnails<a class="headerlink" href="#page-thumbnails" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;thumbnail&quot;</span><span class="p">:</span>
-    <span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;x&gt;x&lt;y&gt;&quot;</span>   <span class="c1"># IE - 200x300, defaults to 128x165</span>
+    <span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="s2">&quot;128x165&quot;</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>   <span class="c1"># i.e. - &lt;x-dimension&gt;x&lt;y-dimension&gt;</span>
 </pre></div>
 </div>
 <p>Provide this setting to return page thumbnails of the specified resolution. Separate from full
@@ -349,7 +342,7 @@ sized images.</p>
 <span class="s2">&quot;doc_offset&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to incude document-level offsets in the JSON result.</p>
+<p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include document-level offsets in the JSON result.</p>
 </div>
 <div class="section" id="page-text">
 <h3>Page Text<a class="headerlink" href="#page-text" title="Permalink to this headline">¶</a></h3>
@@ -436,8 +429,8 @@ as they appear on the page.</p>
     ”units”: “pixels” | “percentage”
 </pre></div>
 </div>
-<p>“standard” is x, y, width, height. “edges” is top, bottom, left, right.
-“corners” is top-left, top-right, bottom-left, bottom-right. In all cases the token and character
+<p>“standard” returns position as x, y, width, height. “edges” returns top, bottom, left, right.
+“corners” returns top-left, top-right, bottom-left, bottom-right. In all cases the token and character
 levels will also include “baseline”</p>
 <p>Units “percentage” is 0 - 1 normalized values. Both sets of units use the top-left corner as (0, 0)</p>
 </div>
@@ -451,7 +444,7 @@ levels will also include “baseline”</p>
 <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>Include calculated style information for the token. Example Return:</p>
+<p>Return style information for the token. Example Return:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;underlined&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;italics&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;font_size&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;background_color&quot;</span><span class="p">:</span> <span class="s2">&quot;hex&quot;</span><span class="p">,</span> <span class="s2">&quot;text_color&quot;</span><span class="p">:</span> <span class="s2">&quot;hex&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
@@ -494,9 +487,9 @@ calculated from the character-level confidence values.</p>
 <div class="section" id="token-level-position">
 <h3>Token Level Position<a class="headerlink" href="#token-level-position" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&quot;position&quot;:
-    &quot;format&quot;: &quot;standard&quot; | &quot;edges&quot; | &quot;corners&quot;
-    ”units”: “pixels” | “percentage”
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;position&quot;</span><span class="p">:</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span> <span class="o">|</span> <span class="s2">&quot;edges&quot;</span> <span class="o">|</span> <span class="s2">&quot;corners&quot;</span>
+    <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;pixels&quot;</span> <span class="o">|</span> <span class="s2">&quot;percentage&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -539,7 +532,7 @@ calculated from the character-level confidence values.</p>
     ”units”: “pixels” | “percentage”
 </pre></div>
 </div>
-<p>The above settings serve a similar function to their token-level counterparts.</p>
+<p>The settings above serve a similar function to their token-level counterparts.</p>
 </div>
 </div>
 <div class="section" id="metadata-settings">
@@ -548,12 +541,12 @@ calculated from the character-level confidence values.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{“FileSize” &amp; “Pages” &amp; ”Encrypted” &amp; ”PageRot” &amp; ”Title” &amp; ”Author” &amp; ”Creator” &amp; ”Producer” &amp; ”CreationDate” &amp; ”ModDate” &amp; ”PDFVersion” | &quot;all&quot;}
 </pre></div>
 </div>
-<p>Include any of a variety of document metadata fields. Input format is anything that supports the in
-operation. (e.g. set, list, dict). Optionally simply pass in “all” to get all available metadata.</p>
+<p>Include any of a variety of document metadata fields. Input format is anything that supports the python “in”
+operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get all available metadata.</p>
 </div>
-<div class="section" id="pre-set-settings-detail">
-<h2>Pre-set Settings Detail<a class="headerlink" href="#pre-set-settings-detail" title="Permalink to this headline">¶</a></h2>
-<p>These are the exact settings included in the pre-sets.</p>
+<div class="section" id="preset-configuration-details">
+<h2>Preset Configuration Details<a class="headerlink" href="#preset-configuration-details" title="Permalink to this headline">¶</a></h2>
+<p>These are the exact settings included in the presets.</p>
 <p>Settings included in presets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">legacy</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
@@ -565,7 +558,6 @@ operation. (e.g. set, list, dict). Optionally simply pass in “all” to get al
     <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
     <span class="s2">&quot;native_pdf&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;multiprocessing&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
     <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">},</span>
     <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">},</span>
@@ -577,7 +569,6 @@ operation. (e.g. set, list, dict). Optionally simply pass in “all” to get al
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
     <span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;inline-header&quot;</span><span class="p">},</span>
     <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;multithreading&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
     <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
     <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">},</span>
     <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;block_type&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">},</span>
