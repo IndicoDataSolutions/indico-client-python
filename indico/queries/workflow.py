@@ -5,6 +5,8 @@ from indico.types.jobs import Job
 from indico.types.workflow import Workflow
 from indico.queries.storage import UploadDocument
 from indico.errors import IndicoError
+
+
 class ListWorkflowsForDataset(GraphQLRequest):
     query = """
         query ListWorkflows($datasetId: Int){
@@ -46,6 +48,7 @@ class _WorkflowSubmission(GraphQLRequest):
         if not job_id:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
         return Job(id=job_id)
+
 
 class WorkflowSubmission(RequestChain):
     def __init__(self, files: List[str], workflow_id: int):
