@@ -68,7 +68,7 @@ class JobStatus(RequestChain):
         yield _JobStatus(id=self.id)
         if self.wait:
             # Check status of job until done if wait == True
-            while not (
+            while not ((
                 self.previous.status in ["SUCCESS"] and self.previous.ready == True
             ) or self.previous.status in [
                 "FAILURE",
@@ -76,6 +76,6 @@ class JobStatus(RequestChain):
                 "REVOKED",
                 "IGNORED",
                 "RETRY",
-            ]:
+            ]):
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
