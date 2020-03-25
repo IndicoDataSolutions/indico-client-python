@@ -6,7 +6,7 @@ from indico.queries.jobs import JobStatus
 from indico.types.dataset import Dataset
 from indico.types.model_group import ModelGroup
 from indico.types.model import Model, TrainingProgress
-from ..data.datasets import airlines_dataset
+from ..data.datasets import airlines_dataset, airlines_model_group
 from indico.errors import IndicoNotFound
 
 def test_create_model_group(airlines_dataset: Dataset):
@@ -63,20 +63,11 @@ def test_model_group_progress_bad_model_group_id(indico, airlines_dataset: Datas
     with pytest.raises(IndicoNotFound):
         client.call((GetTrainingModelWithProgress(id=-1)))
 
-def test_predict(indico, airlines_dataset):
+def test_predict(indico, airlines_dataset, airlines_model_group):
     client = IndicoClient()
 
-    name = f"TestCreateModelGroup-{int(time.time())}"
-    mg: ModelGroup = client.call(CreateModelGroup(
-        name=name,
-        dataset_id=airlines_dataset.id,
-        source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
-        labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
-        wait=True
-    ))
-
     job = client.call(ModelGroupPredict(
-        model_id=mg.selected_model.id,
+        model_id=airlines_model_group.selected_model.id,
         data=["I hate this airline"]
     ))
 
@@ -86,20 +77,11 @@ def test_predict(indico, airlines_dataset):
     assert len(job.result) == 1
 
 
-def test_load_model(indico, airlines_dataset):
+def test_load_model(indico, airlines_dataset, airlines_model_group):
     client = IndicoClient()
 
-    name = f"TestCreateModelGroup-{int(time.time())}"
-    mg: ModelGroup = client.call(CreateModelGroup(
-        name=name,
-        dataset_id=airlines_dataset.id,
-        source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
-        labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
-        wait=True
-    ))
-
     status = client.call(LoadModel(
-        model_id=mg.selected_model.id,
+        model_id=airlines_model_group.selected_model.id,
     ))
 
     assert status == "ready"

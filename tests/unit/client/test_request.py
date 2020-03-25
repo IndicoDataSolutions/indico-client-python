@@ -8,7 +8,7 @@ def test_http_request_properties():
     path = "/something/api/test"
     req = HTTPRequest(method=HTTPMethod.GET, path=path, data=data)
 
-    assert req.data == data
+    assert req.kwargs == {"data": data}
     assert req.path == path
     assert req.method == HTTPMethod.GET
 
@@ -17,7 +17,7 @@ def test_http_request_process_response():
     path = "/something/api/test"
     req = HTTPRequest(method=HTTPMethod.GET, path=path, data=data)
 
-    assert req.process_respone(data) == data
+    assert req.process_response(data) == data
 
 def test_graphql_request_properties():
     query = "query($ids: List(Int)) { dataset(ids: $ids) { name } }"
@@ -27,4 +27,4 @@ def test_graphql_request_properties():
 
     assert req.path == "/graph/api/graphql"
     assert req.method == HTTPMethod.POST
-    assert req.data == {"query": query, "variables": variables}
+    assert req.kwargs["json"] == {"query": query, "variables": variables}

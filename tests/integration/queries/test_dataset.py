@@ -16,12 +16,12 @@ def test_create_dataset(indico):
     assert type(response.id) == int 
 
 
-def test_get_datasets(indico): 
+def test_get_datasets(indico, airlines_dataset): 
     client = IndicoClient()
-    dataset = client.call(GetDataset(id=773))
+    dataset = client.call(GetDataset(id=airlines_dataset.id))
     
     assert type(dataset) == Dataset
-    assert dataset.id == 773
+    assert dataset.id == airlines_dataset.id
 
 def test_get_dataset_file_status(indico, airlines_dataset):
     client = IndicoClient()
