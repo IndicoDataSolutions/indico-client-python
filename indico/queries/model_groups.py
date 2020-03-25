@@ -5,7 +5,7 @@ from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.model_group import ModelGroup
 from indico.types.model import Model
 from indico.types.jobs import Job
-from indico.errors import IndicoNotFound
+from indico.errors import IndicoNotFound, IndicoError
 
 
 class GetModelGroup(GraphQLRequest):
@@ -38,13 +38,13 @@ class GetModelGroup(GraphQLRequest):
             }
         """
 
-    def __init__(self, id:int):
-        super().__init__(query=self.query, variables={
-            "id": id
-        })
+    def __init__(self, id: int):
+        super().__init__(query=self.query, variables={"id": id})
 
     def process_response(self, response):
-        mg = ModelGroup(**super().process_response(response)["modelGroups"]["modelGroups"][0])
+        mg = ModelGroup(
+            **super().process_response(response)["modelGroups"]["modelGroups"][0]
+        )
         return mg
 
 
@@ -78,10 +78,8 @@ class GetTrainingModelWithProgress(GraphQLRequest):
         }
     """
 
-    def __init__(self, id:int):
-        super().__init__(query=self.query, variables={
-            "id": id
-        })
+    def __init__(self, id: int):
+        super().__init__(query=self.query, variables={"id": id})
 
     def process_response(self, response):
         response = super().process_response(response)
@@ -119,11 +117,7 @@ class _CreateModelGroup(GraphQLRequest):
     """
 
     def __init__(
-        self,
-        name: str,
-        dataset_id: int,
-        source_column_id: int,
-        labelset_id: int,
+        self, name: str, dataset_id: int, source_column_id: int, labelset_id: int,
     ):
         super().__init__(
             query=self.query,
@@ -131,8 +125,8 @@ class _CreateModelGroup(GraphQLRequest):
                 "name": name,
                 "datasetId": dataset_id,
                 "sourceColumnId": source_column_id,
-                "labelsetColumnId": labelset_id
-            }
+                "labelsetColumnId": labelset_id,
+            },
         )
 
     def process_response(self, response):
@@ -167,13 +161,13 @@ class GetModelGroupSelectedModelStatus(GraphQLRequest):
             }
         """
 
-    def __init__(self, id:int):
-        super().__init__(query=self.query, variables={
-            "id": id
-        })
+    def __init__(self, id: int):
+        super().__init__(query=self.query, variables={"id": id})
 
     def process_response(self, response):
-        mg = ModelGroup(**super().process_response(response)["modelGroups"]["modelGroups"][0])
+        mg = ModelGroup(
+            **super().process_response(response)["modelGroups"]["modelGroups"][0]
+        )
         return mg.selected_model.status
 
 
@@ -201,7 +195,7 @@ class CreateModelGroup(RequestChain):
         dataset_id: int,
         source_column_id: int,
         labelset_id: int,
-        wait: bool = False
+        wait: bool = False,
     ):
         self.name = name
         self.dataset_id = dataset_id
@@ -218,9 +212,7 @@ class CreateModelGroup(RequestChain):
         )
         model_group_id = self.previous.id
         if self.wait:
-            req = GetModelGroupSelectedModelStatus(
-                id = model_group_id
-            )
+            req = GetModelGroupSelectedModelStatus(id=model_group_id)
             yield req
             while self.previous not in ["FAILED", "COMPLETE"]:
                 sleep(1)
@@ -229,7 +221,53 @@ class CreateModelGroup(RequestChain):
             yield GetModelGroup(id=model_group_id)
 
 
-class ModelGroupPredict(GraphQLRequest):
+class LoadModel(GraphQLRequest):
+    """
+    Load model into system cache (implicit in ModelGroupPredict unless load=False)
+
+    Args:
+        model_id= (int): selected model id use for predictions
+
+    Returns:
+        Status "ready" if loaded
+    Raises:
+        IndicoError if model fails to load after retries
+    """
+
+    query = """
+        mutation ModelLoad($modelId: Int!) {
+            modelLoad(modelId: $modelId) {
+                status
+            }
+        }
+    """
+
+    def __init__(self, model_id: int):
+        super().__init__(self.query, variables={"modelId": model_id})
+
+    def process_response(self, response):
+        return super().process_response(response)["modelLoad"]["status"]
+
+
+class _ModelGroupPredict(GraphQLRequest):
+    query = """
+        mutation ModelGroupPredict($modelId: Int!, $data: [String]) {
+            modelPredict(modelId: $modelId, data: $data) {
+                jobId
+            }
+        }
+        """
+
+    def __init__(self, model_id: int, data: List[str]):
+        super().__init__(
+            query=self.query, variables={"modelId": model_id, "data": data}
+        )
+
+    def process_response(self, response):
+        return Job(**super().process_response(response)["modelPredict"])
+
+
+class ModelGroupPredict(RequestChain):
     """
     Generate predictions from a model group on new data
 
@@ -244,19 +282,22 @@ class ModelGroupPredict(GraphQLRequest):
 
     """
 
-    query = """
-        mutation ModelGroupPredict($modelId: Int!, $data: [String]) {
-            modelPredict(modelId: $modelId, data: $data) {
-                jobId
-            }
-        }
-        """
+    def __init__(self, model_id: int, data: List[str], load: bool = True):
+        self.model_id = model_id
+        self.data = data
+        self.load = load
 
-    def __init__(self, model_id: int, data: List[str]):
-        super().__init__(query=self.query, variables={
-            "modelId": model_id,
-            "data": data
-        })
+    def requests(self):
+        retries = 0
+        if self.load:
+            while retries < 3 and self.previous != "ready":
+                retries += 1
+                yield LoadModel(self.model_id)
+                if retries > 0:
+                    sleep(1)
+            if self.previous != "ready":
+                raise IndicoError(
+                    f"Model {self.model_id} failed to load status {self.previous}"
+                )
 
-    def process_response(self, response):
-        return Job(**super().process_response(response)["modelPredict"])
+        yield _ModelGroupPredict(model_id=self.model_id, data=self.data)

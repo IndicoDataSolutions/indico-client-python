@@ -23,3 +23,8 @@ class IndicoInvalidConfigSetting(IndicoError):
 class IndicoNotFound(IndicoError):
     def __init__(self, cls):
         super().__init__(f"Could not find {cls}")
+
+
+class IndicoAuthenticationFailed(IndicoError):
+    def __init__(self):
+        super().__init__("Failed to authenticate")

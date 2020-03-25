@@ -33,7 +33,7 @@ class ListDatasets(GraphQLRequest):
         }
     """
 
-    def __init__(self, limit: int=100):
+    def __init__(self, limit: int = 100):
         super().__init__(self.query, variables={"limit": limit})
 
     def process_response(self, response) -> Dataset:
@@ -140,10 +140,8 @@ class GetDatasetStatus(GraphQLRequest):
         }
     """
 
-    def  __init__(self, id: int):
-        super().__init__(self.query, variables={
-            "id": id
-        })
+    def __init__(self, id: int):
+        super().__init__(self.query, variables={"id": id})
 
     def process_response(self, response) -> str:
         return response["data"]["dataset"]["status"]
@@ -178,7 +176,9 @@ class CreateDataset(RequestChain):
         yield _CreateDataset(metadata=self.previous)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
-        while not all(f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files):
+        while not all(
+            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
+        ):
             yield GetDatasetFileStatus(id=self.previous.id)
         yield _ProcessDataset(id=self.previous.id, name=self.name)
         yield GetDatasetStatus(id=dataset_id)
@@ -190,7 +190,9 @@ class CreateDataset(RequestChain):
 
 class _UploadDatasetFiles(HTTPRequest):
     def __init__(self, files: List[str]):
-        super().__init__(method=HTTPMethod.POST, path="/storage/files/upload", files=files)
+        super().__init__(
+            method=HTTPMethod.POST, path="/storage/files/upload", files=files
+        )
 
 
 class _CreateDataset(GraphQLRequest):
@@ -209,7 +211,7 @@ class _CreateDataset(GraphQLRequest):
     def process_response(self, response):
         return Dataset(**super().process_response(response)["newDataset"])
 
-    
+
 class _ProcessDataset(GraphQLRequest):
     query = """
         mutation ProcessDataset($id: Int!, $name: String) {
@@ -225,4 +227,3 @@ class _ProcessDataset(GraphQLRequest):
 
     def process_response(self, response):
         return Dataset(**super().process_response(response)["processDataset"])
-
