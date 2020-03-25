@@ -175,22 +175,203 @@
 <span class="target" id="module-indico.types.datafile"></span><dl class="class">
 <dt id="indico.types.dataset.Dataset">
 <em class="property">class </em><code class="sig-prename descclassname">indico.types.dataset.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A Dataset in the Indico Platform</p>
+<dl class="attribute">
+<dt id="indico.types.dataset.Dataset.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.dataset.Dataset.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Dataset id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.Dataset.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#indico.types.dataset.Dataset.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.Dataset.rowCount">
+<code class="sig-name descname">rowCount</code><a class="headerlink" href="#indico.types.dataset.Dataset.rowCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of rows in the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.Dataset.permissions">
+<code class="sig-name descname">permissions</code><a class="headerlink" href="#indico.types.dataset.Dataset.permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permissions on the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.Dataset.files">
+<code class="sig-name descname">files</code><a class="headerlink" href="#indico.types.dataset.Dataset.files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Names of the file(s) included in the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.Dataset.labelsets">
+<code class="sig-name descname">labelsets</code><a class="headerlink" href="#indico.types.dataset.Dataset.labelsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>LabelSets associated with this dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#indico.types.dataset.LabelSet" title="indico.types.dataset.LabelSet">LabelSet</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.Dataset.datacolumns">
+<code class="sig-name descname">datacolumns</code><a class="headerlink" href="#indico.types.dataset.Dataset.datacolumns" title="Permalink to this definition">¶</a></dt>
+<dd><p>DataColumn(s) of the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#indico.types.dataset.DataColumn" title="indico.types.dataset.DataColumn">DataColumn</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="indico.types.dataset.DataColumn">
 <em class="property">class </em><code class="sig-prename descclassname">indico.types.dataset.</code><code class="sig-name descname">DataColumn</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.dataset.DataColumn" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A DataColumn in the Indico Platform</p>
+<dl class="attribute">
+<dt id="indico.types.dataset.DataColumn.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.dataset.DataColumn.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DataColumn id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.DataColumn.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#indico.types.dataset.DataColumn.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>DataColumn name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="indico.types.dataset.LabelSet">
 <em class="property">class </em><code class="sig-prename descclassname">indico.types.dataset.</code><code class="sig-name descname">LabelSet</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.dataset.LabelSet" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A LabelSet in the Indico Platform</p>
+<dl class="attribute">
+<dt id="indico.types.dataset.LabelSet.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.dataset.LabelSet.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The LabelSet id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.dataset.LabelSet.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#indico.types.dataset.LabelSet.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>LabelSet name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="class">
 <dt id="indico.types.datafile.Datafile">
 <em class="property">class </em><code class="sig-prename descclassname">indico.types.datafile.</code><code class="sig-name descname">Datafile</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.datafile.Datafile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A Datafile in the Indico Platform.</p>
+<p>Datafiles are primarlily used in retrieving stored results.</p>
+<dl class="attribute">
+<dt id="indico.types.datafile.Datafile.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.datafile.Datafile.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Datafile id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.datafile.Datafile.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#indico.types.datafile.Datafile.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Datafile name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.datafile.Datafile.deleted">
+<code class="sig-name descname">deleted</code><a class="headerlink" href="#indico.types.datafile.Datafile.deleted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Has the datafile been marked for deletion</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.datafile.Datafile.rainbowUrl">
+<code class="sig-name descname">rainbowUrl</code><a class="headerlink" href="#indico.types.datafile.Datafile.rainbowUrl" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL of the datafile within the Indico Platform</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="indico.types.datafile.Datafile.fileType">
+<code class="sig-name descname">fileType</code><a class="headerlink" href="#indico.types.datafile.Datafile.fileType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filetype of the datafile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </div>
 

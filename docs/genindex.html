@@ -173,6 +173,7 @@
 <div class="genindex-jumpbox">
  <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
@@ -204,13 +205,29 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.dataset.DataColumn">DataColumn (class in indico.types.dataset)</a>
 </li>
+      <li><a href="dataset-type.html#indico.types.dataset.Dataset.datacolumns">datacolumns (indico.types.dataset.Dataset attribute)</a>
+</li>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile">Datafile (class in indico.types.datafile)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset">Dataset (class in indico.types.dataset)</a>
 </li>
+      <li><a href="dataset-type.html#indico.types.datafile.Datafile.deleted">deleted (indico.types.datafile.Datafile attribute)</a>
+</li>
       <li><a href="docextract.html#indico.queries.documents.DocumentExtraction">DocumentExtraction (class in indico.queries.documents)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dataset-type.html#indico.types.dataset.Dataset.files">files (indico.types.dataset.Dataset attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dataset-type.html#indico.types.datafile.Datafile.fileType">fileType (indico.types.datafile.Datafile attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -236,9 +253,17 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="jobs-type.html#indico.types.jobs.Job.id">id (indico.types.jobs.Job attribute)</a>
+      <li><a href="dataset-type.html#indico.types.datafile.Datafile.id">id (indico.types.datafile.Datafile attribute)</a>
 
       <ul>
+        <li><a href="dataset-type.html#indico.types.dataset.DataColumn.id">(indico.types.dataset.DataColumn attribute)</a>
+</li>
+        <li><a href="dataset-type.html#indico.types.dataset.Dataset.id">(indico.types.dataset.Dataset attribute)</a>
+</li>
+        <li><a href="dataset-type.html#indico.types.dataset.LabelSet.id">(indico.types.dataset.LabelSet attribute)</a>
+</li>
+        <li><a href="jobs-type.html#indico.types.jobs.Job.id">(indico.types.jobs.Job attribute)</a>
+</li>
         <li><a href="model-type.html#indico.types.model.Model.id">(indico.types.model.Model attribute)</a>
 </li>
         <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.id">(indico.types.model_group.ModelGroup attribute)</a>
@@ -250,12 +275,12 @@
 </li>
       <li><a href="datasets.html#module-indico.queries.datasets">indico.queries.datasets (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docextract.html#module-indico.queries.documents">indico.queries.documents (module)</a>
 </li>
       <li><a href="jobs.html#module-indico.queries.jobs">indico.queries.jobs (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model_groups.html#module-indico.queries.model_groups">indico.queries.model_groups (module)</a>
 </li>
       <li><a href="storage.html#module-indico.queries.storage">indico.queries.storage (module)</a>
@@ -296,6 +321,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dataset-type.html#indico.types.dataset.Dataset.labelsets">labelsets (indico.types.dataset.Dataset attribute)</a>
+</li>
       <li><a href="datasets.html#indico.queries.datasets.ListDatasets">ListDatasets (class in indico.queries.datasets)</a>
 </li>
   </ul></td>
@@ -318,8 +345,18 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.name">name (indico.types.model_group.ModelGroup attribute)</a>
+      <li><a href="dataset-type.html#indico.types.datafile.Datafile.name">name (indico.types.datafile.Datafile attribute)</a>
+
+      <ul>
+        <li><a href="dataset-type.html#indico.types.dataset.DataColumn.name">(indico.types.dataset.DataColumn attribute)</a>
 </li>
+        <li><a href="dataset-type.html#indico.types.dataset.Dataset.name">(indico.types.dataset.Dataset attribute)</a>
+</li>
+        <li><a href="dataset-type.html#indico.types.dataset.LabelSet.name">(indico.types.dataset.LabelSet attribute)</a>
+</li>
+        <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.name">(indico.types.model_group.ModelGroup attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -329,16 +366,24 @@
       <li><a href="model-type.html#indico.types.model.TrainingProgress.percent_complete">percent_complete (indico.types.model.TrainingProgress attribute)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dataset-type.html#indico.types.dataset.Dataset.permissions">permissions (indico.types.dataset.Dataset attribute)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dataset-type.html#indico.types.datafile.Datafile.rainbowUrl">rainbowUrl (indico.types.datafile.Datafile attribute)</a>
+</li>
       <li><a href="jobs-type.html#indico.types.jobs.Job.ready">ready (indico.types.jobs.Job attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="storage.html#indico.queries.storage.RetrieveStorageObject">RetrieveStorageObject (class in indico.queries.storage)</a>
+</li>
+      <li><a href="dataset-type.html#indico.types.dataset.Dataset.rowCount">rowCount (indico.types.dataset.Dataset attribute)</a>
 </li>
   </ul></td>
 </tr></table>
