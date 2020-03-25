@@ -14,21 +14,22 @@ from indico.errors import IndicoDecodingError
 
 logger = logging.getLogger(__name__)
 
+
 def decompress(response):
-        response.raw.decode_content = True
-        value = io.BytesIO(response.raw.data).getvalue()
-        return gzip.decompress(value)
+    response.raw.decode_content = True
+    value = io.BytesIO(response.raw.data).getvalue()
+    return gzip.decompress(value)
 
 
 def deserialize(response, gzip=False, force_json=False):
     content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
-    
+
     content = None
     if gzip:
         content = decompress(response)
-    else: 
+    else:
         content = response.content
-    
+
     charset = params.get("charset", "utf-8")
 
     # For storage object for example where the content is json based on url ending

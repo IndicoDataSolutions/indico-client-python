@@ -8,6 +8,7 @@ from indico.errors import IndicoError
 
 
 class ListWorkflowsForDataset(GraphQLRequest):
+
     query = """
         query ListWorkflows($datasetId: Int){
 	        workflows(datasetIds: [$datasetId]){
@@ -18,17 +19,20 @@ class ListWorkflowsForDataset(GraphQLRequest):
             }
         }
     """
-    
+
     def __init__(self, dataset_id: int):
         super().__init__(self.query, variables={"datasetId": dataset_id})
 
-
     def process_response(self, response):
-        return [Workflow(**w) for w in super().process_response(response)["workflows"]["workflows"]]
+        return [
+            Workflow(**w)
+            for w in super().process_response(response)["workflows"]["workflows"]
+        ]
 
 
 class _WorkflowSubmission(GraphQLRequest):
-    query ="""
+
+    query = """
         mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!) {
             workflowSubmission(workflowId: $workflowId, files: $files) {
                 jobId
@@ -38,10 +42,9 @@ class _WorkflowSubmission(GraphQLRequest):
 
     def __init__(self, workflow_id, files: List[str]):
         self.workflow_id = workflow_id
-        super().__init__(query=self.query, variables={
-            "files": files,
-            "workflowId": workflow_id
-        })
+        super().__init__(
+            query=self.query, variables={"files": files, "workflowId": workflow_id}
+        )
 
     def process_response(self, response):
         job_id = super().process_response(response)["workflowSubmission"]["jobId"]
@@ -53,7 +56,8 @@ class _WorkflowSubmission(GraphQLRequest):
 class WorkflowSubmission(RequestChain):
     def __init__(self, files: List[str], workflow_id: int):
         self.files = files
-        self.workflow_id = workflow_id    
+        self.workflow_id = workflow_id
+
     def requests(self):
         yield UploadDocument(files=self.files)
         yield _WorkflowSubmission(files=self.previous, workflow_id=self.workflow_id)

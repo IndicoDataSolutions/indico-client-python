@@ -2,6 +2,7 @@ from typing import Dict, Any
 from enum import Enum
 from indico.errors import IndicoRequestError
 
+
 class HTTPMethod(Enum):
     GET = "GET"
     POST = "POST"
@@ -9,6 +10,7 @@ class HTTPMethod(Enum):
     DELETE = "DELETE"
     HEAD = "HEAD"
     OPTIONS = "OPTIONS"
+
 
 class HTTPRequest:
     def __init__(self, method: HTTPMethod, path: str, **kwargs):
@@ -19,8 +21,9 @@ class HTTPRequest:
     def process_response(self, response):
         return response
 
+
 class GraphQLRequest(HTTPRequest):
-    def __init__(self, query: str, variables: Dict[str, Any]=None):
+    def __init__(self, query: str, variables: Dict[str, Any] = None):
         self.query = query
         self.variables = variables
         self.method = HTTPMethod.POST
@@ -28,12 +31,7 @@ class GraphQLRequest(HTTPRequest):
 
     @property
     def kwargs(self):
-        return {
-            "json": {
-                "query": self.query, 
-                "variables": self.variables
-            } 
-        }
+        return {"json": {"query": self.query, "variables": self.variables}}
 
     def process_response(self, response):
         response = super().process_response(response)
@@ -48,8 +46,8 @@ class GraphQLRequest(HTTPRequest):
         return response["data"]
 
 
-class RequestChain():
+class RequestChain:
     previous: Any = None
+
     def requests(self):
         pass
-

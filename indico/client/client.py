@@ -22,8 +22,8 @@ class IndicoClient:
     Raises:
         RuntimeError: If api_token_path does not exist.
     """
-    
-    def __init__(self, config: IndicoConfig=None):
+
+    def __init__(self, config: IndicoConfig = None):
         if not config:
             config = IndicoConfig()
         self.config = config
