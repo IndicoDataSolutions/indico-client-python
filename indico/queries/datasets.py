@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import json
+import tempfile
+from pathlib import Path
+
 from typing import List
 
 from indico.client.request import GraphQLRequest, RequestChain, HTTPRequest, HTTPMethod
 from indico.types.dataset import Dataset
 from indico.errors import IndicoNotFound
+from indico.queries.storage import UploadDocument
+
 
 class ListDatasets(GraphQLRequest):
     """
@@ -167,14 +172,29 @@ class CreateDataset(RequestChain):
 
     previous = None
 
-    def __init__(self, name: str, files: List[str], wait=True):
+    def __init__(
+        self,
+        name: str,
+        files: List[str],
+        wait: bool = True,
+        from_local_images: bool = False,
+    ):
         self.files = files
         self.name = name
         self.wait = wait
+        self.from_local_images = from_local_images
         super().__init__()
 
     def requests(self):
-        yield _UploadDatasetFiles(files=self.files)
+        if self.from_local_images:
+            yield UploadImages(self.files)
+            with tempfile.TemporaryDirectory() as tmpdir:
+                image_csv_path = str(Path(tmpdir) / "image_urls.csv")
+                with open(str(image_csv_path), "w") as csv_file:
+                    csv_file.write(self.previous)
+                yield _UploadDatasetFiles(files=[image_csv_path])
+        else:
+            yield _UploadDatasetFiles(files=self.files)
         yield _CreateDataset(metadata=self.previous)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
@@ -195,6 +215,17 @@ class _UploadDatasetFiles(HTTPRequest):
         super().__init__(
             method=HTTPMethod.POST, path="/storage/files/upload", files=files
         )
+
+
+class UploadImages(UploadDocument):
+    """
+    Upload image files stored on a local filepath to the indico platform.
+    """
+
+    def process_response(self, uploaded_files: List[dict]) -> str:
+        urls = [f["path"] for f in uploaded_files]
+        files_string = "image_urls\n" + "\n".join(urls)
+        return files_string
 
 
 class _CreateDataset(GraphQLRequest):

@@ -61,3 +61,20 @@ def test_list_datasets(indico, airlines_dataset):
     assert len(datasets) == 1
     assert type(datasets[0]) == Dataset
 
+
+def test_create_dataset_images(indico):
+    client = IndicoClient()
+    image_base_path = Path(__file__).parents[1] / "data"
+    image_paths = [str(image_base_path / f"img{i}.png") for i in range(2)]
+
+    response = client.call(
+        CreateDataset(
+            name=f"image-dataset-test-{int(time.time())}",
+            files=image_paths,
+            from_local_images=True,
+        )
+    )
+
+    assert type(response) == Dataset
+    assert response.status == "COMPLETE"
+    assert type(response.id) == int
