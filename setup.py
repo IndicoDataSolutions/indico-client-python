@@ -24,5 +24,6 @@ setup(
         "Pillow>=6.2.0",
         "requests>=2.22.0",
         "setuptools>=41.4.0",
+        "pandas==0.23.4",
     ],
 )

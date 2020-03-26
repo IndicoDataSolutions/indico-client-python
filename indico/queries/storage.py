@@ -3,6 +3,9 @@ from typing import List
 from indico.client.request import HTTPMethod, HTTPRequest
 
 
+URL_PREFIX = "indico-file:///storage"
+
+
 class RetrieveStorageObject(HTTPRequest):
     """
     Retrieve an object stored on the Indico Platform 
