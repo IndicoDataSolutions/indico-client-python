@@ -48,6 +48,10 @@ Old::
         job_options={"job": True})
 
 New::
+    from indico import IndicoClient
+    from indico.config import IndicoConfig
+    from indico.queries.documents import DocumentExtraction
+    from indico.queries.jobs import JobStatus
 
     job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
     job = client.call(JobStatus(id=job[0].id, wait=True))
@@ -77,6 +81,9 @@ New::
         ))
 
         return client.call(JobStatus(id=job.id, wait=True)).result
+
+    #... later in your script, call predict
+    predict(client, mg, ["I need wifi"])
 
 Collections have been replaced with Model Groups in the Indico Client Library. Instead of passing
 a collection name to create a model, you would now pass in the model group id. For predictions, you
