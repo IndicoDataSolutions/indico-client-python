@@ -16,16 +16,15 @@ Old::
     import indicoio
 
     indicoio.config.api_key = "my api key"
-    indicoio.config.host = "indico.myco.com"
+    indicoio.config.host = "indico.mycompany.com"
 
 
 New::
 
-    from indico import IndicoClient
-    from indico.config import IndicoConfig
+    from indico.client import IndicoClient, IndicoConfig
 
     my_config = IndicoConfig(
-        host='app.mycompany.com',
+        host='indico.mycompany.com',
         api_token_path='/home/myuser/projects/trades/indico_api_token.txt'
     )
 
@@ -38,7 +37,7 @@ Optical Character Recognition (OCR)
 Old::
 
     json_result = indicoio.pdf_extraction(
-        src_path,
+        ['./path_to_file.pdf'],
         version=2,
         single_column=False,
         text=False,
@@ -49,13 +48,11 @@ Old::
 
 New::
 
-    from indico import IndicoClient
-    from indico.config import IndicoConfig
-    from indico.queries.documents import DocumentExtraction
-    from indico.queries.jobs import JobStatus
+    from indico.queries import JobStatus, RetrieveStorageObject, DocumentExtraction
 
-    jobs = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
+    jobs = client.call(DocumentExtraction(files=['./path_to_file.pdf']))
     job = client.call(JobStatus(id=jobs[0].id, wait=True))
+    json_result = client.call(RetrieveStorageObject(job.result))
 
 The new DocumentExtraction class has many more configurable options. Be sure to consult the
 :doc:`docextract_settings` page and find the best combination of setting to match your use case.
@@ -66,25 +63,24 @@ Getting Model Predictions
 
 Old::
 
-    texts = []
-
-    # ... samples are appended to texts
-
-    model = Collection("4137_23703_1582037135")
+    texts = ['document text...', 'document text...']
+    model = Collection('4137_23703_1582037135')
     all_preds = model.predict(texts)
 
 New::
+    
+    from indico.queries import ModelGroupPredict, JobStatus
+    
+    job = client.call(
+        ModelGroupPredict(
+            model_id=921, # derived from ModelGroup.selected_model.id
+            data=['a text sample'],
+            )
+        )
+    prediction = client.call(
+        JobStatus(id=job.id, wait=True)
+        ).result
 
-    def predict(client: IndicoClient, model_group: ModelGroup, data: List[str]):
-        job = client.call(ModelGroupPredict(
-            model_id=model_group.selected_model.id,
-            data=data
-        ))
-
-        return client.call(JobStatus(id=job.id, wait=True)).result
-
-    #... later in your script, call predict
-    predict(client, mg, ["I need wifi"])
 
 Collections have been replaced with Model Groups in the Indico Client Library. Instead of passing
 a collection name to create a model, you would now pass in the model group id. For predictions, you
@@ -110,45 +106,21 @@ Old::
 
 New::
 
-    import os
-    import time
-    from pathlib import Path
-    from typing import List
 
-
-    from indico import IndicoClient
-    from indico.config import IndicoConfig
     from indico.types import Dataset, ModelGroup
-    from indico.queries import (
-        CreateDataset,
-        GetDatasetStatus,
-        CreateModelGroup,
-        JobStatus)
+    from indico.queries import CreateDataset, CreateModelGroup
 
 
-    def create_dataset(client) -> Dataset:
-        dataset_filepath = "./airline-comments.csv"
-        response = client.call(CreateDataset(name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]))
-        return response
-
-    def create_model_group(client, dataset) -> ModelGroup:
-        mg: ModelGroup = client.call(CreateModelGroup(
-            name=f"TestCreateModelGroup-{int(time.time())}",
+    dataset = client.call(
+            CreateDataset(name="financial_documents", files=['./financial_docs.csv'])
+        )
+    
+    mg = client.call(
+        CreateModelGroup(
+            name='my_classification_model',
             dataset_id=dataset.id,
-            source_column_id=dataset.datacolumn_by_name("Text").id,
-            labelset_id=dataset.labelset_by_name("Target_1").id,
-            wait=True   # Waits for model group to finish training
-        ))
-        return mg
-
-    if __name__ == "__main__":
-        os.chdir(Path(__file__).parent)
-
-        config = IndicoConfig(host='indico.myco.com')
-        client = IndicoClient(config=config)
-
-        dataset = create_dataset(client)
-        status = client.call(GetDatasetStatus(dataset.id))
-        print(f"Dataset status: {status}")
-
-        mg = create_model_group(client, dataset)
+            source_column_id=dataset.datacolumn_by_name('text').id,
+            labelset_id=dataset.labelset_by_name('target_class').id,
+            wait=True # wait for training to finish
+            )
+        )
