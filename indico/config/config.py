@@ -57,8 +57,6 @@ class IndicoConfig:
 
     def _resolve_api_token(self):
         path = self.api_token_path
-        if path is None:
-            path = "."
         if not isinstance(path, Path):
             path = Path(path)
         if not path.exists():
@@ -68,8 +66,8 @@ class IndicoConfig:
 
         if not path.exists():
             raise RuntimeError(
-                "Expected indico_api_token.txt in current directory, home directory, "
-                "or provided as indicoio.config.token_path"
+                "Expected indico_api_token.txt in home directory, "
+                "or provided as indicoio.config.api_token_path"
             )
 
         with path.open("r") as f:
