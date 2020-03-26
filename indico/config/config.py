@@ -67,7 +67,7 @@ class IndicoConfig:
         if not path.exists():
             raise RuntimeError(
                 "Expected indico_api_token.txt in home directory, "
-                "or provided as indicoio.config.token_path"
+                "or provided as indicoio.config.api_token_path"
             )
 
         with path.open("r") as f:
