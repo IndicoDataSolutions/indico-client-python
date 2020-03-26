@@ -48,7 +48,7 @@ Setting::
     "preset_config": "ondocument"
     "preset_config": "standard"
 
-Three preset ocr configurations are provided: ``legacy``, ``simple``, ``ondocument``, ``standard``, 
+Five preset ocr configurations are provided: ``legacy``, ``simple``, ``ondocument``, ``standard``, 
 and ``detailed``. Most users will only need to use "standard" to get text and block positions in 
 a nested response format. "simple" provides a basic and fast (3-5x faster) OCR option for native PDFs 
 (it will not work with scanned documents). "legacy" is intended for users who ran Indico's 
