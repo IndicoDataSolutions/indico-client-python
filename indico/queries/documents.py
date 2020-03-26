@@ -38,7 +38,7 @@ class _DocumentExtraction(GraphQLRequest):
         }
     """
 
-    def __init__(self, files, json_config={"preset_config": "simple"}):
+    def __init__(self, files, json_config={"preset_config": "legacy"}):
         if json_config and type(json_config) == dict:
             json_config = json.dumps(json_config)
         super().__init__(
@@ -70,13 +70,17 @@ class DocumentExtraction(RequestChain):
     Raises:
 
     Notes:
-        DocumentExtraction is extremely configurable. Three preset configurations are provided:
+        DocumentExtraction is extremely configurable. Four preset configurations are provided:
 
-        simple - Most applications won't need more than this.
+        simple - Provides a simple and fast response for native PDFs (3-5x faster). Will NOT work with scanned PDFs.
 
-        legacy - Provided to mimic the behavior of Indico's older pdf_extraction function. Use this if your model was trained with data from pdf_extraction.
+        legacy - Provided to mimic the behavior of Indico's older pdf_extraction function. Use this if your model was trained with data from the older pdf_extraction.
         
-        detailed - Provides detailed bounding box information on tokens and characters.
+        detailed - Provides detailed bounding box information on tokens and characters. Returns data in a nested format at the document level with all metadata included.
+
+        ondocument - Provides detailed information at the page-level in an unnested format.
+
+        standard - Provides page text and block text/position in a nested format.
 
         For more information, please see the DocumentExtraction settings page.
 
@@ -84,11 +88,9 @@ class DocumentExtraction(RequestChain):
 
         Call DocumentExtraction and wait for the result::
 
-            job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "simple"}'))
+            job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
             job = client.call(JobStatus(id=job[0].id, wait=True))
-            if job is not None and job.status == 'SUCCESS':
-                json_data = client.call(RetrieveStorageObject(job.result))
-                print(json.dumps(json_data, indent=4))
+            extracted_data = client.call(RetrieveStorageObject(job.result))
     """
 
     def __init__(self, files: List[str], json_config: dict = None):
