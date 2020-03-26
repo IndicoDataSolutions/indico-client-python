@@ -12,7 +12,7 @@ To install in the Python Client Library::
 Authentication
 ==============
 
-The Indico Platform and Client Libraries use JSON Web Tokens (JWT) for user authentication. You can 
+The Indico Platform and Client Libraries use JSON Web Tokens (JWT) for user authentication. You can
 download a token from your `user dashboard`_ by clicking the large, blue "Download new API Token" button.
 Most browsers will download the API token as ``indico_api_token.txt`` and place it in your Downloads directory. You
 should move the token file from Downloads to either your home directory or another location in your development
@@ -36,6 +36,9 @@ IndicoConfig Class
 
 The IndicoConfig class gives you the maximum control over Python Client Library configuration. Here's how you
 might instantiate an IndicoConfig object and set the host and token path::
+
+    from indico import IndicoClient
+    from indico.config import IndicoConfig
 
     my_config = IndicoConfig(
         host='app.mycompany.com',

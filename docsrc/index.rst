@@ -12,6 +12,7 @@ User Guide
     concepts
     docextract_settings
     model_predictions
+    migration
     examples
 
 Reference
