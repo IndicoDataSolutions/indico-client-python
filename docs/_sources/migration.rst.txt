@@ -54,8 +54,8 @@ New::
     from indico.queries.documents import DocumentExtraction
     from indico.queries.jobs import JobStatus
 
-    job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
-    job = client.call(JobStatus(id=job[0].id, wait=True))
+    jobs = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
+    job = client.call(JobStatus(id=jobs[0].id, wait=True))
 
 The new DocumentExtraction class has many more configurable options. Be sure to consult the
 :doc:`docextract_settings` page and find the best combination of setting to match your use case.
