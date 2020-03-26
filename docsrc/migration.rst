@@ -48,6 +48,7 @@ Old::
         job_options={"job": True})
 
 New::
+
     from indico import IndicoClient
     from indico.config import IndicoConfig
     from indico.queries.documents import DocumentExtraction
