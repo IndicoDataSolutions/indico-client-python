@@ -137,6 +137,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
@@ -242,7 +243,7 @@ character level. You can also choose from a selection of preset configurations. 
 by passing in a Python dictionary or JSON string.</p>
 <p>Here’s an Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_ocr_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span>
+    <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span>
 <span class="p">}</span>
 
 <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_doc.pdf&#39;</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="n">my_ocr_config</span><span class="p">))</span>
@@ -257,14 +258,21 @@ by passing in a Python dictionary or JSON string.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span>
 <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;legacy&quot;</span>
 <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;detailed&quot;</span>
+<span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;ondocument&quot;</span>
+<span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span>
 </pre></div>
 </div>
-<p>Three preset ocr configurations are provided: <code class="docutils literal notranslate"><span class="pre">legacy</span></code>, <code class="docutils literal notranslate"><span class="pre">simple</span></code> and <code class="docutils literal notranslate"><span class="pre">detailed</span></code>. Most users will
-only need to use “simple”. “legacy” is intended for users who ran Indico’s original pdf_extraction
-function to extract text and train models. Use “legacy” if you are adding samples to models that were trained with
-the original pdf_extraction. “detailed” provides OCR metrics and details down to the character level- it’s a lot of data.</p>
-<p>The exact settings included in “legacy”, “simple” and “detailed” are shown at the bottom
-of this page.</p>
+<p>Five preset ocr configurations are provided: <code class="docutils literal notranslate"><span class="pre">legacy</span></code>, <code class="docutils literal notranslate"><span class="pre">simple</span></code>, <code class="docutils literal notranslate"><span class="pre">ondocument</span></code>, <code class="docutils literal notranslate"><span class="pre">standard</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">detailed</span></code>. Most users will only need to use “standard” to get text and block positions in
+a nested response format. “simple” provides a basic and fast (3-5x faster) OCR option for native PDFs
+(it will not work with scanned documents). “legacy” is intended for users who ran Indico’s
+original pdf_extraction function to extract text and train models. Use “legacy” if you are
+adding samples to models that were trained with the original pdf_extraction. “detailed” provides
+OCR metrics and details down to the character level- it’s a lot of data. “ondocument” provides
+similar information to “detailed” but at the page rather than document-level, in an unnested format,
+and without document metadata.</p>
+<p>The exact settings included in “legacy”, “simple”, “ondocument”, “standard”, and “detailed”
+are shown at the bottom of this page.</p>
 </div>
 <div class="section" id="result-granularity">
 <h3>Result Granularity<a class="headerlink" href="#result-granularity" title="Permalink to this headline">¶</a></h3>
@@ -575,6 +583,27 @@ operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get a
     <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">},</span>
     <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_index&quot;</span><span class="p">,</span> <span class="s2">&quot;alternate_ocr&quot;</span><span class="p">},</span>
     <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">standard</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;native_pdf&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">ondocument</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;lists&quot;</span><span class="p">,</span> <span class="s2">&quot;inline-header&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;thumbnail&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;block_type&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;block_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_index&quot;</span><span class="p">,</span> <span class="s2">&quot;block_index&quot;</span><span class="p">,</span> <span class="s2">&quot;page_index&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span>
 <span class="p">}</span>
 </pre></div>
 </div>

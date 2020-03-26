@@ -192,18 +192,18 @@ extract raw text for model training and prediction.</p>
 </dl>
 <p>Raises:</p>
 <p class="rubric">Notes</p>
-<p>DocumentExtraction is extremely configurable. Three preset configurations are provided:</p>
-<p>simple - Most applications won’t need more than this.</p>
-<p>legacy - Provided to mimic the behavior of Indico’s older pdf_extraction function. Use this if your model was trained with data from pdf_extraction.</p>
-<p>detailed - Provides detailed bounding box information on tokens and characters.</p>
+<p>DocumentExtraction is extremely configurable. Four preset configurations are provided:</p>
+<p>simple - Provides a simple and fast response for native PDFs (3-5x faster). Will NOT work with scanned PDFs.</p>
+<p>legacy - Provided to mimic the behavior of Indico’s older pdf_extraction function. Use this if your model was trained with data from the older pdf_extraction.</p>
+<p>detailed - Provides detailed bounding box information on tokens and characters. Returns data in a nested format at the document level with all metadata included.</p>
+<p>ondocument - Provides detailed information at the page-level in an unnested format.</p>
+<p>standard - Provides page text and block text/position in a nested format.</p>
 <p>For more information, please see the DocumentExtraction settings page.</p>
 <p class="rubric">Example</p>
 <p>Call DocumentExtraction and wait for the result:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="s1">&#39;{&quot;preset_config&quot;: &quot;simple&quot;}&#39;</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="s1">&#39;{&quot;preset_config&quot;: &quot;legacy&quot;}&#39;</span><span class="p">))</span>
 <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;SUCCESS&#39;</span><span class="p">:</span>
-    <span class="n">json_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">extracted_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd></dl>

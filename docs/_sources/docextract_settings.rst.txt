@@ -28,7 +28,7 @@ by passing in a Python dictionary or JSON string.
 Here's an Example::
 
     my_ocr_config = {
-        "preset_config": "simple"
+        "preset_config": "standard"
     }
 
     job = client.call(DocumentExtraction(files=['./path_to_doc.pdf'], json_config=my_ocr_config))
@@ -45,14 +45,21 @@ Setting::
     "preset_config": "simple"
     "preset_config": "legacy"
     "preset_config": "detailed"
+    "preset_config": "ondocument"
+    "preset_config": "standard"
 
-Three preset ocr configurations are provided: ``legacy``, ``simple`` and ``detailed``. Most users will
-only need to use "simple". "legacy" is intended for users who ran Indico's original pdf_extraction
-function to extract text and train models. Use "legacy" if you are adding samples to models that were trained with
-the original pdf_extraction. "detailed" provides OCR metrics and details down to the character level- it's a lot of data.
+Five preset ocr configurations are provided: ``legacy``, ``simple``, ``ondocument``, ``standard``, 
+and ``detailed``. Most users will only need to use "standard" to get text and block positions in 
+a nested response format. "simple" provides a basic and fast (3-5x faster) OCR option for native PDFs 
+(it will not work with scanned documents). "legacy" is intended for users who ran Indico's 
+original pdf_extraction function to extract text and train models. Use "legacy" if you are 
+adding samples to models that were trained with the original pdf_extraction. "detailed" provides 
+OCR metrics and details down to the character level- it's a lot of data. "ondocument" provides 
+similar information to "detailed" but at the page rather than document-level, in an unnested format, 
+and without document metadata. 
 
-The exact settings included in "legacy", "simple" and "detailed" are shown at the bottom
-of this page.
+The exact settings included in "legacy", "simple", "ondocument", "standard", and "detailed" 
+are shown at the bottom of this page.
 
 Result Granularity
 ------------------
@@ -396,4 +403,25 @@ Settings included in presets::
         "tokens": {"text", "page_num", "position", "style", "doc_offset", "confidence"},
         "chars": {"text", "position", "confidence", "doc_index", "alternate_ocr"},
         "batch_size": 1,
+    }
+
+    standard = {
+        "nest": True,
+        "top_level": "document",
+        "native_pdf": False,
+        "document": {"text"},
+        "pages": {"text", "doc_offset", "page_num"},
+        "blocks": {"text", "position", "doc_offset", "page_offset"},
+        "batch_size": 1,
+    }
+
+    ondocument = {
+        "top_level": "page",
+        "nest": False,
+        "reblocking": {"style", "lists", "inline-header"},
+        "pages": {"text", "size", "dpi", "doc_offset", "page_num", "image", "thumbnail"},
+        "blocks": {"text", "doc_offset", "page_offset", "position", "block_type", "page_num"},
+        "tokens": {"text", "doc_offset", "page_offset", "block_offset", "position", "page_num", "style"},
+        "chars": {"text", "doc_index", "block_index", "page_index", "page_num", "position"},
+        "batch_size": 1
     }

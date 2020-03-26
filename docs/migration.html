@@ -189,15 +189,14 @@ few more lines of code.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">indicoio</span>
 
 <span class="n">indicoio</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;my api key&quot;</span>
-<span class="n">indicoio</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;indico.myco.com&quot;</span>
+<span class="n">indicoio</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;indico.mycompany.com&quot;</span>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
-<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.client</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
 
 <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;app.mycompany.com&#39;</span><span class="p">,</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;indico.mycompany.com&#39;</span><span class="p">,</span>
     <span class="n">api_token_path</span><span class="o">=</span><span class="s1">&#39;/home/myuser/projects/trades/indico_api_token.txt&#39;</span>
 <span class="p">)</span>
 
@@ -209,7 +208,7 @@ few more lines of code.</p>
 <h2>Optical Character Recognition (OCR)<a class="headerlink" href="#optical-character-recognition-ocr" title="Permalink to this headline">¶</a></h2>
 <p>Old:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">json_result</span> <span class="o">=</span> <span class="n">indicoio</span><span class="o">.</span><span class="n">pdf_extraction</span><span class="p">(</span>
-    <span class="n">src_path</span><span class="p">,</span>
+    <span class="p">[</span><span class="s1">&#39;./path_to_file.pdf&#39;</span><span class="p">],</span>
     <span class="n">version</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">single_column</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">text</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -220,13 +219,11 @@ few more lines of code.</p>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
-<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries.documents</span> <span class="kn">import</span> <span class="n">DocumentExtraction</span>
-<span class="kn">from</span> <span class="nn">indico.queries.jobs</span> <span class="kn">import</span> <span class="n">JobStatus</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">RetrieveStorageObject</span><span class="p">,</span> <span class="n">DocumentExtraction</span>
 
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="s1">&#39;{&quot;preset_config&quot;: &quot;legacy&quot;}&#39;</span><span class="p">))</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_file.pdf&#39;</span><span class="p">]))</span>
 <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">json_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The new DocumentExtraction class has many more configurable options. Be sure to consult the
@@ -235,25 +232,23 @@ few more lines of code.</p>
 <div class="section" id="getting-model-predictions">
 <h2>Getting Model Predictions<a class="headerlink" href="#getting-model-predictions" title="Permalink to this headline">¶</a></h2>
 <p>Old:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="c1"># ... samples are appended to texts</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="s2">&quot;4137_23703_1582037135&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;document text...&#39;</span><span class="p">,</span> <span class="s1">&#39;document text...&#39;</span><span class="p">]</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="s1">&#39;4137_23703_1582037135&#39;</span><span class="p">)</span>
 <span class="n">all_preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">model_group</span><span class="p">:</span> <span class="n">ModelGroup</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-    <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ModelGroupPredict</span><span class="p">(</span>
-        <span class="n">model_id</span><span class="o">=</span><span class="n">model_group</span><span class="o">.</span><span class="n">selected_model</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">data</span>
-    <span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">ModelGroupPredict</span><span class="p">,</span> <span class="n">JobStatus</span>
 
-    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span>
-
-<span class="c1">#... later in your script, call predict</span>
-<span class="n">predict</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">mg</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;I need wifi&quot;</span><span class="p">])</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">ModelGroupPredict</span><span class="p">(</span>
+        <span class="n">model_id</span><span class="o">=</span><span class="mi">921</span><span class="p">,</span> <span class="c1"># derived from ModelGroup.selected_model.id</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a text sample&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">result</span>
 </pre></div>
 </div>
 <p>Collections have been replaced with Model Groups in the Indico Client Library. Instead of passing
@@ -276,48 +271,23 @@ this for you automatically.</p>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.types</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">ModelGroup</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span><span class="p">,</span> <span class="n">CreateModelGroup</span>
 
 
-<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
-<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.types</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">ModelGroup</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">CreateDataset</span><span class="p">,</span>
-    <span class="n">GetDatasetStatus</span><span class="p">,</span>
-    <span class="n">CreateModelGroup</span><span class="p">,</span>
-    <span class="n">JobStatus</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+        <span class="n">CreateDataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;financial_documents&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./financial_docs.csv&#39;</span><span class="p">])</span>
+    <span class="p">)</span>
 
-
-<span class="k">def</span> <span class="nf">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
-    <span class="n">dataset_filepath</span> <span class="o">=</span> <span class="s2">&quot;./airline-comments.csv&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CreateDataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AirlineComplaints-test-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">dataset_filepath</span><span class="p">]))</span>
-    <span class="k">return</span> <span class="n">response</span>
-
-<span class="k">def</span> <span class="nf">create_model_group</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelGroup</span><span class="p">:</span>
-    <span class="n">mg</span><span class="p">:</span> <span class="n">ModelGroup</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CreateModelGroup</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;TestCreateModelGroup-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="n">mg</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">CreateModelGroup</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_classification_model&#39;</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">source_column_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">datacolumn_by_name</span><span class="p">(</span><span class="s2">&quot;Text&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span><span class="s2">&quot;Target_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">wait</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Waits for model group to finish training</span>
-    <span class="p">))</span>
-    <span class="k">return</span> <span class="n">mg</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
-
-    <span class="n">config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;indico.myco.com&#39;</span><span class="p">)</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetDatasetStatus</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset status: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">mg</span> <span class="o">=</span> <span class="n">create_model_group</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+        <span class="n">source_column_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">datacolumn_by_name</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span><span class="s1">&#39;target_class&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">wait</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># wait for training to finish</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
