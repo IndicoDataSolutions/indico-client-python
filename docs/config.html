@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul class="current">
@@ -181,6 +182,8 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>host=</strong> (<em>str</em><em>, </em><em>optional</em>) – Indico Platform hostname (ie indico.myco.com)</p></li>
 <li><p><strong>api_token_path=</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the Indico API token file indico_api_token.txt</p></li>
+<li><p><strong>api_token=</strong> (<em>str</em><em>, </em><em>optional</em>) – The actual text of the API Token</p></li>
+<li><p><strong>verify_ssl=</strong> (<em>bool</em><em>, </em><em>optional</em>) – Verify the host’s SSL certificate? Default=True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -195,6 +198,8 @@
 INDICO_HOST and INDICO_API_TOKEN_PATH environment variables. If these variable are
 not set then it will use <code class="docutils literal notranslate"><span class="pre">app.indico.io</span></code> as the host and will look for the
 indico_api_token.txt file in the user’s home directory.</p>
+<p>If your Indico Platform host is configured to use http instead of https or if the
+host has an invalid SSL certificate then be sure to set verify_ssl=True</p>
 </dd></dl>
 
 </div>

@@ -102,6 +102,7 @@
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
@@ -228,7 +229,10 @@ environment.</p>
 <h3>IndicoConfig Class<a class="headerlink" href="#indicoconfig-class" title="Permalink to this headline">¶</a></h3>
 <p>The IndicoConfig class gives you the maximum control over Python Client Library configuration. Here’s how you
 might instantiate an IndicoConfig object and set the host and token path:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
+<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
+
+<span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
     <span class="n">host</span><span class="o">=</span><span class="s1">&#39;app.mycompany.com&#39;</span><span class="p">,</span>
     <span class="n">api_token_path</span><span class="o">=</span><span class="s1">&#39;/home/myuser/projects/trades/indico_api_token.txt&#39;</span>
 <span class="p">)</span>
