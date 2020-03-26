@@ -219,11 +219,15 @@ few more lines of code.</p>
     <span class="n">job_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;job&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="s1">&#39;{&quot;preset_config&quot;: &quot;legacy&quot;}&#39;</span><span class="p">))</span>
-<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-</pre></div>
-</div>
+<dl>
+<dt>New::</dt><dd><p>from indico import IndicoClient
+from indico.config import IndicoConfig
+from indico.queries.documents import DocumentExtraction
+from indico.queries.jobs import JobStatus</p>
+<p>job = client.call(DocumentExtraction(files=[src_path], json_config=’{“preset_config”: “legacy”}’))
+job = client.call(JobStatus(id=job[0].id, wait=True))</p>
+</dd>
+</dl>
 <p>The new DocumentExtraction class has many more configurable options. Be sure to consult the
 <a class="reference internal" href="docextract_settings.html"><span class="doc">OCR With DocumentExtraction</span></a> page and find the best combination of setting to match your use case.</p>
 </div>
@@ -246,6 +250,9 @@ few more lines of code.</p>
     <span class="p">))</span>
 
     <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span>
+
+<span class="c1">#... later in your script, call predict</span>
+<span class="n">predict</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">mg</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;I need wifi&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Collections have been replaced with Model Groups in the Indico Client Library. Instead of passing
