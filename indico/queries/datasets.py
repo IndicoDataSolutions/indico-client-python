@@ -190,19 +190,19 @@ class CreateDataset(RequestChain):
 
     def requests(self):
         if self.from_local_images:
-            import ipdb
-
-            ipdb.set_trace()
             # Assume image filenames are in the same directory as the csv with
             # image labels and that there is a column representing their name
             df = pd.read_csv(self.files)
             img_filenames = df[self.image_filename_col].tolist()
+            img_filepaths = [
+                str(Path(self.files).parent / imgfn) for imgfn in img_filenames
+            ]
+            yield UploadImages(img_filepaths)
+            df["urls"] = self.previous
 
-            yield UploadImages(self.files)
             with tempfile.TemporaryDirectory() as tmpdir:
                 image_csv_path = str(Path(tmpdir) / "image_urls.csv")
-                with open(str(image_csv_path), "w") as csv_file:
-                    csv_file.write(self.previous)
+                df.to_csv(image_csv_path)
                 yield _UploadDatasetFiles(files=[image_csv_path])
         else:
             yield _UploadDatasetFiles(files=self.files)
@@ -213,11 +213,15 @@ class CreateDataset(RequestChain):
             f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
+            self.wait_request()
+        self.reset_timeout()
         yield _ProcessDataset(id=self.previous.id, name=self.name)
         yield GetDatasetStatus(id=dataset_id)
         if self.wait == True:
             while not self.previous in ["COMPLETE", "FAILED"]:
                 yield GetDatasetStatus(id=dataset_id)
+                self.wait_request()
+                print("timeout:", self.timeout, "previous: ", self.previous)
         yield GetDataset(id=dataset_id)
 
 
@@ -233,17 +237,12 @@ class UploadImages(UploadDocument):
     Upload image files stored on a local filepath to the indico platform.
     """
 
-    def process_response(self, uploaded_files: List[dict]) -> str:
-        errors = [f["errors"] for f in uploaded_files]
+    def process_response(self, uploaded_files: List[dict]) -> List[str]:
+        errors = [f["error"] for f in uploaded_files if f.get("error")]
         if errors:
-            # TODO: call out specific files that might have failed
-            return IndicoInputError(
-                "Make sure all of the image files are uncorrupted image files"
-            )
+            return IndicoInputError(error="\n".join(error for error in errors),)
         urls = [URL_PREFIX + f["path"] for f in uploaded_files]
-        files_string = "image_urls\n" + "\n".join(urls)
-        print(files_string)
-        return files_string
+        return urls
 
 
 class _CreateDataset(GraphQLRequest):

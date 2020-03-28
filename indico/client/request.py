@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from enum import Enum
 from indico.errors import IndicoRequestError
+import time
 
 
 class HTTPMethod(Enum):
@@ -48,6 +49,17 @@ class GraphQLRequest(HTTPRequest):
 
 class RequestChain:
     previous: Any = None
+    
+    def __init__(self):
+        self.timeout = 0
 
     def requests(self):
         pass
+
+    def wait_request(self):
+        self.timeout += 0.5
+        time.sleep(self.timeout)
+
+    def reset_timeout(self):
+        self.timeout = 0
+

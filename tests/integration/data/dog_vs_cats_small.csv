@@ -1,6 +1,6 @@
 filename,label
-1.jpg,"[{'top': 57, 'bottom': 495, 'left': 103, 'right': 302, 'label': 'Dog\n'}]"
-2.jpg,"[{'top': 28, 'bottom': 292, 'left': 1, 'right': 260, 'label': 'Dog\n'}]"
-3.jpg,"[{'top': 57, 'bottom': 259, 'left': 44, 'right': 253, 'label': 'Dog\n'}]"
-4.jpg,"[{'top': 30, 'bottom': 270, 'left': 15, 'right': 360, 'label': 'Dog\n'}]"
-5.jpg,"[{'top': 6, 'bottom': 399, 'left': 81, 'right': 394, 'label': 'Cat'}]"
+1.jpg,"[{""top"": 57, ""bottom"": 495, ""left"": 103, ""right"": 302, ""label"": ""Dog\n""}]"
+2.jpg,"[{""top"": 28, ""bottom"": 292, ""left"": 1, ""right"": 260, ""label"": ""Dog\n""}]"
+3.jpg,"[{""top"": 57, ""bottom"": 259, ""left"": 44, ""right"": 253, ""label"": ""Dog\n""}]"
+4.jpg,"[{""top"": 30, ""bottom"": 270, ""left"": 15, ""right"": 360, ""label"": ""Dog\n""}]"
+5.jpg,"[{""top"": 6, ""bottom"": 399, ""left"": 81, ""right"": 394, ""label"": ""Cat""}]"
