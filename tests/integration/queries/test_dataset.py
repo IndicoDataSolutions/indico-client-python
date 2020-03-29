@@ -73,9 +73,6 @@ def test_images(indico):
             from_local_images=True,
         )
     )
-    import ipdb; ipdb.set_trace()
     assert type(response) == Dataset
     assert response.status == "COMPLETE"
     assert type(response.id) == int
-    # image_base_path = Path(__file__).parents[1] / "data"
-    # image_paths = [str(image_base_path / f"img{i}.png") for i in range(2)]
