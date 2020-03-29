@@ -1,3 +1,4 @@
+import json
 from time import sleep
 from typing import List
 
@@ -117,7 +118,12 @@ class _CreateModelGroup(GraphQLRequest):
     """
 
     def __init__(
-        self, name: str, dataset_id: int, source_column_id: int, labelset_id: int,
+        self,
+        name: str,
+        dataset_id: int,
+        source_column_id: int,
+        labelset_id: int,
+        model_training_options: dict,
     ):
         super().__init__(
             query=self.query,
@@ -126,6 +132,7 @@ class _CreateModelGroup(GraphQLRequest):
                 "datasetId": dataset_id,
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_id,
+                "model_training_options": json.dumps(model_training_options),
             },
         )
 
@@ -196,12 +203,14 @@ class CreateModelGroup(RequestChain):
         source_column_id: int,
         labelset_id: int,
         wait: bool = False,
+        model_training_options: dict = None,
     ):
         self.name = name
         self.dataset_id = dataset_id
         self.source_column_id = source_column_id
         self.labelset_id = labelset_id
         self.wait = wait
+        self.model_training_options = model_training_options
 
     def requests(self):
         yield _CreateModelGroup(
@@ -209,6 +218,7 @@ class CreateModelGroup(RequestChain):
             dataset_id=self.dataset_id,
             source_column_id=self.source_column_id,
             labelset_id=self.labelset_id,
+            model_training_options=self.model_training_options,
         )
         model_group_id = self.previous.id
         if self.wait:
