@@ -11,20 +11,43 @@ from indico.types import ModelGroup, Dataset
 def airlines_dataset(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[0]) + "/AirlineComplaints.csv"
-    
-    response = client.call(CreateDataset(name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]))
+
+    response = client.call(
+        CreateDataset(
+            name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]
+        )
+    )
     assert response.status == "COMPLETE"
     return response
+
 
 @pytest.fixture(scope="module")
 def airlines_model_group(indico, airlines_dataset: Dataset) -> ModelGroup:
     client = IndicoClient()
     name = f"TestCreateModelGroup-{int(time.time())}"
-    mg: ModelGroup = client.call(CreateModelGroup(
-        name=name,
-        dataset_id=airlines_dataset.id,
-        source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
-        labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
-        wait=True
-    ))
+    mg: ModelGroup = client.call(
+        CreateModelGroup(
+            name=name,
+            dataset_id=airlines_dataset.id,
+            source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
+            labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
+            wait=True,
+        )
+    )
     return mg
+
+
+@pytest.fixture(scope="module")
+def cats_dogs_image_dataset(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[0]) + "/dog_vs_cats_small.csv"
+
+    response = client.call(
+        CreateDataset(
+            name=f"AirlineComplaints-test-{int(time.time())}",
+            files=[dataset_filepath],
+            from_local_images=True,
+        )
+    )
+    assert response.status == "COMPLETE"
+    return response

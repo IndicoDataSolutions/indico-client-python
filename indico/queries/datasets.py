@@ -221,7 +221,6 @@ class CreateDataset(RequestChain):
             while not self.previous in ["COMPLETE", "FAILED"]:
                 yield GetDatasetStatus(id=dataset_id)
                 self.wait_request()
-                print("timeout:", self.timeout, "previous: ", self.previous)
         yield GetDataset(id=dataset_id)
 
 

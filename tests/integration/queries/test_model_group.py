@@ -12,7 +12,11 @@ from indico.queries.jobs import JobStatus
 from indico.types.dataset import Dataset
 from indico.types.model_group import ModelGroup
 from indico.types.model import Model, TrainingProgress
-from ..data.datasets import airlines_dataset, airlines_model_group
+from ..data.datasets import (
+    airlines_dataset,
+    airlines_model_group,
+    cats_dogs_image_dataset,
+)
 from indico.errors import IndicoNotFound
 
 
@@ -30,6 +34,19 @@ def test_create_model_group(airlines_dataset: Dataset):
     )
 
     assert mg.name == name
+
+
+def test_create_image_model_group(cats_dogs_image_dataset: Dataset):
+    client = IndicoClient()
+    name = f"TestObjectDetectCreateModelGroup-{int(time.time())}"
+    mg: ModelGroup = client.call(
+        CreateModelGroup(
+            name=name,
+            dataset_id=cats_dogs_image_dataset.id,
+            source_column_id=airlines_dataset.datacolumn_by_name("urls").id,
+            labelset_id=airlines_dataset.labelset_by_name("label").id,
+        )
+    )
 
 
 def test_create_model_group_with_wait(indico, airlines_dataset: Dataset):
