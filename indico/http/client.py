@@ -43,6 +43,12 @@ class HTTPClient:
         return self._make_request("post", *args, params=params, **kwargs)
 
     def get_short_lived_access_token(self):
+        # If the cookie here is already due to _disable_cookie_domain set and we try to pop it later
+        # it will error out because we have two cookies with the same name. We just remove the old one 
+        # here as we are about to refresh it. 
+        if "auth_token" in self.request_session.cookies:
+            self.request_session.cookies.pop("auth_token")
+
         r = self.post(
             "/auth/users/refresh_token",
             headers={"Authorization": f"Bearer {self.config.api_token}"},
@@ -51,7 +57,9 @@ class HTTPClient:
 
         # Disable cookie domain in cases where the domain won't match due to using short name domains
         if self.config._disable_cookie_domain:
-            value = self.request_session.cookies.get("auth_token")
+            value = self.request_session.cookies.get("auth_token", None)
+            if not value:
+                raise IndicoAuthenticationFailed()
             self.request_session.cookies.pop("auth_token")
             self.request_session.cookies.set_cookie(requests.cookies.create_cookie(name="auth_token", value=value))
         
