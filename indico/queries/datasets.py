@@ -80,7 +80,7 @@ class GetDataset(GraphQLRequest):
 
     def process_response(self, response) -> Dataset:
         response = super().process_response(response)
-        if not "dataset" in response or type(response) != dict:
+        if not "dataset" in response or not isinstance(response["dataset"], dict):
             raise IndicoNotFound("Failed to find dataset")
         return Dataset(**response["dataset"])
 
