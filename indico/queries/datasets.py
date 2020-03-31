@@ -5,7 +5,7 @@ from typing import List
 
 from indico.client.request import GraphQLRequest, RequestChain, HTTPRequest, HTTPMethod
 from indico.types.dataset import Dataset
-
+from indico.errors import IndicoNotFound
 
 class ListDatasets(GraphQLRequest):
     """
@@ -80,6 +80,8 @@ class GetDataset(GraphQLRequest):
 
     def process_response(self, response) -> Dataset:
         response = super().process_response(response)
+        if not "dataset" in response or type(response) != dict:
+            raise IndicoNotFound("Failed to find dataset")
         return Dataset(**response["dataset"])
 
 

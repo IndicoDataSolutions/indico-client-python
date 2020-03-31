@@ -23,6 +23,16 @@ def test_disable_cookie_domain(indico):
     response = client.call(HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details"))
     assert "email" in response
 
+def test_cookie_reset(indico):
+    client = IndicoClient(IndicoConfig(_disable_cookie_domain=True))
+    client._http.get_short_lived_access_token()
+    cookies = client._http.request_session.cookies
+    auth_token = next(c for c in cookies if c.name == "auth_token")
+    assert auth_token.domain == ""
+    response = client.call(HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details"))
+    assert "email" in response
+
+
 def test_graphql_request(indico):
     client = IndicoClient()
     response = client.call(GraphQLRequest(query="""
