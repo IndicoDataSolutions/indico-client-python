@@ -93,13 +93,19 @@
 <li class="toctree-l2"><a class="reference internal" href="#global-settings">Global Settings</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#preset-configurations">Preset Configurations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#result-granularity">Result Granularity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nesting">Nesting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#parse-order">Parse Order</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#table-read-order">Table Read Order</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#force-render">Force Render</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#native-pdf">Native PDF</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reblocking">Reblocking</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#document-level-settings">Document Level Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#document-text">Document Text</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#page-level-settings">Page Level Settings</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#page-image">Page Image</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#page-thumbnails">Page Thumbnails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#document-level-offsets">Document Level Offsets</a></li>
@@ -284,6 +290,15 @@ are shown at the bottom of this page.</p>
 <p>The JSON result can be a single result for the entire document (“document”) or
 broken into a list with one item for each page (“page”).</p>
 </div>
+<div class="section" id="nesting">
+<h3>Nesting<a class="headerlink" href="#nesting" title="Permalink to this headline">¶</a></h3>
+<p>Setting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span>
+<span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to nest the JSON result. (i.e. {“pages”: [{“blocks”:) or flat? (i.e. {“pages”: [], “blocks”: [],)</p>
+</div>
 <div class="section" id="parse-order">
 <h3>Parse Order<a class="headerlink" href="#parse-order" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
@@ -312,6 +327,15 @@ broken into a list with one item for each page (“page”).</p>
 <p>Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.</p>
 </div>
+<div class="section" id="native-pdf">
+<h3>Native PDF<a class="headerlink" href="#native-pdf" title="Permalink to this headline">¶</a></h3>
+<p>Setting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;native_pdf: True</span>
+<span class="s2">&quot;native_pdf&quot;</span><span class="p">:</span> <span class="kc">False</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if you are certain that you are processing only native PDFs for a 3-5X performance increase.</p>
+</div>
 <div class="section" id="reblocking">
 <h3>Reblocking<a class="headerlink" href="#reblocking" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
@@ -324,6 +348,19 @@ specifically handle list-like documents well, or both.</p>
 </div>
 <div class="section" id="document-level-settings">
 <h2>Document Level Settings<a class="headerlink" href="#document-level-settings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="document-text">
+<h3>Document Text<a class="headerlink" href="#document-text" title="Permalink to this headline">¶</a></h3>
+<p>Setting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">True</span>
+<span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include whole document-level text in the JSON result. Document-level text will always include tables
+as they appear on the page.</p>
+</div>
+</div>
+<div class="section" id="page-level-settings">
+<h2>Page Level Settings<a class="headerlink" href="#page-level-settings" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="page-image">
 <h3>Page Image<a class="headerlink" href="#page-image" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
@@ -558,52 +595,47 @@ operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get a
 <p>Settings included in presets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">legacy</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
 <span class="p">}</span>
 
 <span class="n">simple</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
     <span class="s2">&quot;native_pdf&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">],</span>
 <span class="p">}</span>
 
 <span class="n">detailed</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;inline-header&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;block_type&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_index&quot;</span><span class="p">,</span> <span class="s2">&quot;alternate_ocr&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;inline-header&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;block_type&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;confidence&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_index&quot;</span><span class="p">,</span> <span class="s2">&quot;alternate_ocr&quot;</span><span class="p">],</span>
 <span class="p">}</span>
 
 <span class="n">standard</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
     <span class="s2">&quot;native_pdf&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">],</span>
 <span class="p">}</span>
 
 <span class="n">ondocument</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;lists&quot;</span><span class="p">,</span> <span class="s2">&quot;inline-header&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;thumbnail&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;block_type&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;block_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_index&quot;</span><span class="p">,</span> <span class="s2">&quot;block_index&quot;</span><span class="p">,</span> <span class="s2">&quot;page_index&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;lists&quot;</span><span class="p">,</span> <span class="s2">&quot;inline-header&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;thumbnail&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;block_type&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;block_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_index&quot;</span><span class="p">,</span> <span class="s2">&quot;block_index&quot;</span><span class="p">,</span> <span class="s2">&quot;page_index&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">],</span>
 <span class="p">}</span>
 </pre></div>
 </div>

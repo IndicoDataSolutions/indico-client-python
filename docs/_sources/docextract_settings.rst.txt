@@ -48,17 +48,17 @@ Setting::
     "preset_config": "ondocument"
     "preset_config": "standard"
 
-Five preset ocr configurations are provided: ``legacy``, ``simple``, ``ondocument``, ``standard``, 
-and ``detailed``. Most users will only need to use "standard" to get text and block positions in 
-a nested response format. "simple" provides a basic and fast (3-5x faster) OCR option for native PDFs 
-(it will not work with scanned documents). "legacy" is intended for users who ran Indico's 
-original pdf_extraction function to extract text and train models. Use "legacy" if you are 
-adding samples to models that were trained with the original pdf_extraction. "detailed" provides 
-OCR metrics and details down to the character level- it's a lot of data. "ondocument" provides 
-similar information to "detailed" but at the page rather than document-level, in an unnested format, 
-and without document metadata. 
+Five preset ocr configurations are provided: ``legacy``, ``simple``, ``ondocument``, ``standard``,
+and ``detailed``. Most users will only need to use "standard" to get text and block positions in
+a nested response format. "simple" provides a basic and fast (3-5x faster) OCR option for native PDFs
+(it will not work with scanned documents). "legacy" is intended for users who ran Indico's
+original pdf_extraction function to extract text and train models. Use "legacy" if you are
+adding samples to models that were trained with the original pdf_extraction. "detailed" provides
+OCR metrics and details down to the character level- it's a lot of data. "ondocument" provides
+similar information to "detailed" but at the page rather than document-level, in an unnested format,
+and without document metadata.
 
-The exact settings included in "legacy", "simple", "ondocument", "standard", and "detailed" 
+The exact settings included in "legacy", "simple", "ondocument", "standard", and "detailed"
 are shown at the bottom of this page.
 
 Result Granularity
@@ -71,6 +71,16 @@ Setting::
 
 The JSON result can be a single result for the entire document ("document") or
 broken into a list with one item for each page ("page").
+
+Nesting
+-------
+
+Setting::
+
+    "nest": True
+    "nest": False
+
+Set to ``True`` to nest the JSON result. (i.e. {“pages”: [{“blocks”:) or flat? (i.e. {“pages”: [], “blocks”: [],)
 
 Parse Order
 -----------
@@ -103,6 +113,16 @@ Setting::
 Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.
 
+Native PDF
+----------
+
+Setting::
+
+    "native_pdf: True
+    "native_pdf": False (default)
+
+Set to ``True`` if you are certain that you are processing only native PDFs for a 3-5X performance increase.
+
 Reblocking
 ----------
 
@@ -115,6 +135,21 @@ specifically handle list-like documents well, or both.
 
 
 Document Level Settings
+=======================
+
+Document Text
+-------------
+
+Setting::
+
+    "text": True
+    "text": False
+
+Set to ``True`` to include whole document-level text in the JSON result. Document-level text will always include tables
+as they appear on the page.
+
+
+Page Level Settings
 =======================
 
 Page Image
@@ -378,50 +413,45 @@ Settings included in presets::
 
     legacy = {
         "top_level": "document",
-        "document": {"text"},
-        "batch_size": 1,
+        "document": ["text"],
     }
 
     simple = {
         "nest": True,
         "top_level": "document",
         "native_pdf": True,
-        "document": {"text"},
-        "pages": {"text", "size", "dpi", "doc_offset", "page_num", "image"},
-        "blocks": {"text", "position", "doc_offset", "page_offset"},
-        "batch_size": 1,
+        "document": ["text"],
+        "pages": ["text", "size", "dpi", "doc_offset", "page_num", "image"],
+        "blocks": ["text", "position", "doc_offset", "page_offset"],
     }
 
     detailed = {
         "nest": True,
         "top_level": "document",
-        "reblocking": {"style", "list", "inline-header"},
-        "metadata": {"all"},
-        "document": {"text"},
-        "pages": {"image", "doc_offset", "text", "dpi", "size", "page_num"},
-        "blocks": {"block_type", "doc_offset", "text", "style", "position"},
-        "tokens": {"text", "page_num", "position", "style", "doc_offset", "confidence"},
-        "chars": {"text", "position", "confidence", "doc_index", "alternate_ocr"},
-        "batch_size": 1,
+        "reblocking": ["style", "list", "inline-header"],
+        "metadata": ["all"],
+        "document": ["text"],
+        "pages": ["image", "doc_offset", "text", "dpi", "size", "page_num"],
+        "blocks": ["block_type", "doc_offset", "text", "style", "position"],
+        "tokens": ["text", "page_num", "position", "style", "doc_offset", "confidence"],
+        "chars": ["text", "position", "confidence", "doc_index", "alternate_ocr"],
     }
 
     standard = {
         "nest": True,
         "top_level": "document",
         "native_pdf": False,
-        "document": {"text"},
-        "pages": {"text", "doc_offset", "page_num"},
-        "blocks": {"text", "position", "doc_offset", "page_offset"},
-        "batch_size": 1,
+        "document": ["text"],
+        "pages": ["text", "doc_offset", "page_num"],
+        "blocks": ["text", "position", "doc_offset", "page_offset"],
     }
 
     ondocument = {
         "top_level": "page",
         "nest": False,
-        "reblocking": {"style", "lists", "inline-header"},
-        "pages": {"text", "size", "dpi", "doc_offset", "page_num", "image", "thumbnail"},
-        "blocks": {"text", "doc_offset", "page_offset", "position", "block_type", "page_num"},
-        "tokens": {"text", "doc_offset", "page_offset", "block_offset", "position", "page_num", "style"},
-        "chars": {"text", "doc_index", "block_index", "page_index", "page_num", "position"},
-        "batch_size": 1
+        "reblocking": ["style", "lists", "inline-header"],
+        "pages": ["text", "size", "dpi", "doc_offset", "page_num", "image", "thumbnail"],
+        "blocks": ["text", "doc_offset", "page_offset", "position", "block_type", "page_num"],
+        "tokens": ["text", "doc_offset", "page_offset", "block_offset", "position", "page_num", "style"],
+        "chars": ["text", "doc_index", "block_index", "page_index", "page_num", "position"],
     }
