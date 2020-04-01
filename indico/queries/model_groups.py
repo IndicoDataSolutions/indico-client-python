@@ -103,11 +103,13 @@ class _CreateModelGroup(GraphQLRequest):
             $sourceColumnId: Int!,
             $labelsetColumnId: Int,
             $name: String!,
+            $modelTrainingOptions: JSONString
         ) {
                 createModelGroup(
                     datasetId: $datasetId,
                     sourceColumnId: $sourceColumnId,
                     labelsetColumnId: $labelsetColumnId,
+                    modelTrainingOptions: $modelTrainingOptions,
                     name: $name,
                 ) {
                     id
@@ -123,8 +125,10 @@ class _CreateModelGroup(GraphQLRequest):
         dataset_id: int,
         source_column_id: int,
         labelset_id: int,
-        model_training_options: dict,
+        model_training_options: dict = None,
     ):
+        if model_training_options:
+            model_training_options = json.dumps(model_training_options)
         super().__init__(
             query=self.query,
             variables={
@@ -132,7 +136,7 @@ class _CreateModelGroup(GraphQLRequest):
                 "datasetId": dataset_id,
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_id,
-                "model_training_options": json.dumps(model_training_options),
+                "modelTrainingOptions": model_training_options,
             },
         )
 

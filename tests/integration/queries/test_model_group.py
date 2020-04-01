@@ -36,7 +36,7 @@ def test_create_model_group(airlines_dataset: Dataset):
     assert mg.name == name
 
 
-def test_create_object_detection(cats_dogs_image_dataset: Dataset):
+def test_object_detection(cats_dogs_image_dataset: Dataset):
     client = IndicoClient()
     name = f"TestCreateObjectDetectionMg-{int(time.time())}"
 
