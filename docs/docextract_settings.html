@@ -469,15 +469,14 @@ as they appear on the page.</p>
 <div class="section" id="block-position">
 <h3>Block Position<a class="headerlink" href="#block-position" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&quot;position&quot;:
-    &quot;format&quot;: &quot;standard&quot; | &quot;edges&quot; | &quot;corners&quot;
-    ”units”: “pixels” | “percentage”
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">True</span>
+<span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>“standard” returns position as x, y, width, height. “edges” returns top, bottom, left, right.
-“corners” returns top-left, top-right, bottom-left, bottom-right. In all cases the token and character
-levels will also include “baseline”</p>
-<p>Units “percentage” is 0 - 1 normalized values. Both sets of units use the top-left corner as (0, 0)</p>
+<p>Returns: top, left, bottom, right, bbTop, bbLeft, bbRight, bbBot. The values without a “bb”
+prefix are “tight” bounding boxes, close to the character boundaries. The values prefixed
+with “bb” are looser bounding boxes where tops and bottoms are consistent throughout a line,
+and the left and right boundaries between characters won’t have pixel gaps within a token.</p>
 </div>
 </div>
 <div class="section" id="token-level-settings">
@@ -490,7 +489,7 @@ levels will also include “baseline”</p>
 </pre></div>
 </div>
 <p>Return style information for the token. Example Return:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;underlined&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;italics&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;font_size&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;background_color&quot;</span><span class="p">:</span> <span class="s2">&quot;hex&quot;</span><span class="p">,</span> <span class="s2">&quot;text_color&quot;</span><span class="p">:</span> <span class="s2">&quot;hex&quot;</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;underlined&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;italics&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;font_size&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;background_color&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">hex</span><span class="o">&gt;</span> <span class="n">color</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;text_color&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">hex</span><span class="o">&gt;</span> <span class="n">color</span> <span class="n">value</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -532,9 +531,8 @@ calculated from the character-level confidence values.</p>
 <div class="section" id="token-level-position">
 <h3>Token Level Position<a class="headerlink" href="#token-level-position" title="Permalink to this headline">¶</a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;position&quot;</span><span class="p">:</span>
-    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span> <span class="o">|</span> <span class="s2">&quot;edges&quot;</span> <span class="o">|</span> <span class="s2">&quot;corners&quot;</span>
-    <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;pixels&quot;</span> <span class="o">|</span> <span class="s2">&quot;percentage&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">True</span>
+<span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 </div>
@@ -548,10 +546,7 @@ calculated from the character-level confidence values.</p>
 <span class="s2">&quot;alternatives&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-<p>Include alternative OCR characters along with their associated confidences. Example Return:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[{“o”: 0.1, “0”: 0.05}]
-</pre></div>
-</div>
+<p>Include alternative OCR characters.</p>
 </div>
 <div class="section" id="character-level-offsets">
 <h3>Character Level Offsets<a class="headerlink" href="#character-level-offsets" title="Permalink to this headline">¶</a></h3>
@@ -565,16 +560,14 @@ calculated from the character-level confidence values.</p>
 <div class="section" id="other-character-level-settings">
 <h3>Other Character Level Settings<a class="headerlink" href="#other-character-level-settings" title="Permalink to this headline">¶</a></h3>
 <p>Settings:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&quot;page_index&quot;: True | False
-&quot;block_index&quot;: True | False
-&quot;token_index&quot;: True | False
-&quot;text&quot;: True | False
-&quot;style&quot;: True | False
-&quot;confidence&quot;: True | False
-&quot;page_num&quot;: True | False
-&quot;position&quot;:
-    &quot;format&quot;: &quot;standard&quot; | &quot;edges&quot; | &quot;corners&quot;
-    ”units”: “pixels” | “percentage”
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;page_index&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
+<span class="s2">&quot;block_index&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
+<span class="s2">&quot;token_index&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
+<span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
+<span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
+<span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
+<span class="s2">&quot;page_num&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
+<span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>The settings above serve a similar function to their token-level counterparts.</p>

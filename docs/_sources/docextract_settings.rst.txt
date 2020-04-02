@@ -274,15 +274,13 @@ Block Position
 
 Setting::
 
-    "position":
-        "format": "standard" | "edges" | "corners"
-        ”units”: “pixels” | “percentage”
+    "position": True
+    "position": False
 
-"standard" returns position as x, y, width, height. "edges" returns top, bottom, left, right.
-"corners" returns top-left, top-right, bottom-left, bottom-right. In all cases the token and character
-levels will also include “baseline”
-
-Units "percentage" is 0 - 1 normalized values. Both sets of units use the top-left corner as (0, 0)
+Returns: top, left, bottom, right, bbTop, bbLeft, bbRight, bbBot. The values without a "bb"
+prefix are "tight" bounding boxes, close to the character boundaries. The values prefixed
+with "bb" are looser bounding boxes where tops and bottoms are consistent throughout a line,
+and the left and right boundaries between characters won't have pixel gaps within a token.
 
 
 Token Level Settings
@@ -298,7 +296,7 @@ Setting::
 
 Return style information for the token. Example Return::
 
-    {"bold": true, "underlined": true, "italics": true, "font_size": 14, "background_color": "hex", "text_color": "hex"}
+    {"bold": true, "underlined": true, "italics": true, "font_size": 14, "background_color": <hex> color value, "text_color": <hex> color value}
 
 Token Level Confidence
 ----------------------
@@ -344,9 +342,8 @@ Token Level Position
 
 Setting::
 
-    "position":
-        "format": "standard" | "edges" | "corners"
-        "units": "pixels" | "percentage"
+    "position": True
+    "position": False
 
 
 Character Level Settings
@@ -360,9 +357,7 @@ Setting::
     "alternatives": True
     "alternatives": False
 
-Include alternative OCR characters along with their associated confidences. Example Return::
-
-    [{“o”: 0.1, “0”: 0.05}]
+Include alternative OCR characters.
 
 Character Level Offsets
 -----------------------
@@ -386,9 +381,7 @@ Settings::
     "style": True | False
     "confidence": True | False
     "page_num": True | False
-    "position":
-        "format": "standard" | "edges" | "corners"
-        ”units”: “pixels” | “percentage”
+    "position": True | False
 
 The settings above serve a similar function to their token-level counterparts.
 
