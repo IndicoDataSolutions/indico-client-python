@@ -44,7 +44,7 @@ def cats_dogs_image_dataset(indico):
 
     response = client.call(
         CreateDataset(
-            name=f"AirlineComplaints-test-{int(time.time())}",
+            name=f"DogsAndCats-test-{int(time.time())}",
             files=dataset_filepath,
             from_local_images=True,
         )

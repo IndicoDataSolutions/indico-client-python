@@ -45,7 +45,7 @@ def test_object_detection(cats_dogs_image_dataset: Dataset):
         "lr": 0.1,
         "batch_size": 1,
         "filter_empty": False,
-        "test_size": 0.5,
+        "test_size": 0.2,
         "use_small_model": False,
     }
 
