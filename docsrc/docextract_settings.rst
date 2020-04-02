@@ -296,7 +296,7 @@ Setting::
 
 Return style information for the token. Example Return::
 
-    {"bold": true, "underlined": true, "italics": true, "font_size": 14, "background_color": "hex", "text_color": "hex"}
+    {"bold": true, "underlined": true, "italics": true, "font_size": 14, "background_color": <hex> color value, "text_color": <hex> color value}
 
 Token Level Confidence
 ----------------------
