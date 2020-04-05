@@ -92,6 +92,7 @@ class HTTPClient:
             response = getattr(self.request_session, method)(
                 f"{self.base_url}{path}", headers=headers, stream=True, verify=self.config.verify_ssl, **request_kwargs
             )
+            print(response.text)
 
         # code, api_response =
         url_parts =  path.split(".")

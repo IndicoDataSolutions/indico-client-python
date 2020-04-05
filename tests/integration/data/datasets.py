@@ -51,3 +51,30 @@ def cats_dogs_image_dataset(indico):
     )
     assert response.status == "COMPLETE"
     return response
+
+
+@pytest.fixture(scope="module")
+def cats_dogs_modelgroup(indico, cats_dogs_image_dataset: Dataset) -> ModelGroup:
+    client = IndicoClient()
+    name = f"TestCreateObjectDetectionMg-{int(time.time())}"
+
+    model_training_options = {
+        "max_iter": 20,
+        "lr": 0.1,
+        "batch_size": 1,
+        "filter_empty": False,
+        "test_size": 0.2,
+        "use_small_model": True,
+    }
+
+    mg: ModelGroup = client.call(
+        CreateModelGroup(
+            name=name,
+            dataset_id=cats_dogs_image_dataset.id,
+            source_column_id=cats_dogs_image_dataset.datacolumn_by_name("urls").id,
+            labelset_id=cats_dogs_image_dataset.labelset_by_name("label").id,
+            model_training_options=model_training_options,
+            wait=True,
+        )
+    )
+    return mg

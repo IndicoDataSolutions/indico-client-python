@@ -1,5 +1,8 @@
 import pytest
 import time
+import os
+import json
+from pathlib import Path
 from indico.client import IndicoClient
 from indico.queries.model_groups import (
     GetModelGroup,
@@ -8,6 +11,7 @@ from indico.queries.model_groups import (
     GetTrainingModelWithProgress,
     LoadModel,
 )
+from indico.queries.storage import UploadDocument, URL_PREFIX
 from indico.queries.jobs import JobStatus
 from indico.types.dataset import Dataset
 from indico.types.model_group import ModelGroup
@@ -16,6 +20,7 @@ from ..data.datasets import (
     airlines_dataset,
     airlines_model_group,
     cats_dogs_image_dataset,
+    cats_dogs_modelgroup,
 )
 from indico.errors import IndicoNotFound
 
@@ -46,7 +51,7 @@ def test_object_detection(cats_dogs_image_dataset: Dataset):
         "batch_size": 1,
         "filter_empty": False,
         "test_size": 0.2,
-        "use_small_model": False,
+        "use_small_model": True,
     }
 
     mg: ModelGroup = client.call(
@@ -121,6 +126,35 @@ def test_predict(indico, airlines_dataset, airlines_model_group):
 
     job = client.call(JobStatus(id=job.id, wait=True))
     assert len(job.result) == 1
+
+
+def get_storage_urls_from_fnames(client, image_fnames):
+    client = IndicoClient()
+    image_filenames = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"]
+    base_dir = Path(__file__).parent.parent / "data"
+    image_filepaths = [os.path.join(base_dir, fname) for fname in image_filenames]
+    response = client.call(UploadDocument(files=image_filepaths))
+    storage_urls = [URL_PREFIX + json.loads(r["filemeta"])["path"] for r in response]
+    return storage_urls
+
+
+def test_object_detection_predict_storage(
+    indico, cats_dogs_image_dataset, cats_dogs_modelgroup
+):
+    client = IndicoClient()
+    storage_urls = get_storage_urls_from_fnames(
+        client, ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"]
+    )
+    import ipdb; ipdb.set_trace()
+    job = client.call(
+        ModelGroupPredict(model_id=cats_dogs_modelgroup.selected_model.id, data=storage_urls)
+    )
+
+
+def test_object_detection_predict_url(
+    indico, cats_dogs_image_dataset, cats_dogs_modelgroup
+):
+    pass
 
 
 def test_load_model(indico, airlines_dataset, airlines_model_group):
