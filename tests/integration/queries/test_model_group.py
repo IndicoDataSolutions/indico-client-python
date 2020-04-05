@@ -46,12 +46,12 @@ def test_object_detection(cats_dogs_image_dataset: Dataset):
     name = f"TestCreateObjectDetectionMg-{int(time.time())}"
 
     model_training_options = {
-        "max_iter": 20,
+        "max_iter": 2000,
         "lr": 0.1,
         "batch_size": 1,
         "filter_empty": False,
         "test_size": 0.2,
-        "use_small_model": True,
+        "use_small_model": False,
     }
 
     mg: ModelGroup = client.call(
@@ -145,16 +145,17 @@ def test_object_detection_predict_storage(
     storage_urls = get_storage_urls_from_fnames(
         client, ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"]
     )
-    import ipdb; ipdb.set_trace()
     job = client.call(
-        ModelGroupPredict(model_id=cats_dogs_modelgroup.selected_model.id, data=storage_urls)
+        ModelGroupPredict(
+            model_id=cats_dogs_modelgroup.selected_model.id, data=storage_urls
+        )
     )
 
+    assert type(job.id) == str
 
-def test_object_detection_predict_url(
-    indico, cats_dogs_image_dataset, cats_dogs_modelgroup
-):
-    pass
+    result = client.call(JobStatus(job.id, wait=True))
+
+    assert len(result.result) == 5
 
 
 def test_load_model(indico, airlines_dataset, airlines_model_group):
