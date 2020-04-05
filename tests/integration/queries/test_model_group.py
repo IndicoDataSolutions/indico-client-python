@@ -64,6 +64,8 @@ def test_object_detection(cats_dogs_image_dataset: Dataset):
         )
     )
 
+    assert mg.name == name
+
 
 def test_create_model_group_with_wait(indico, airlines_dataset: Dataset):
     client = IndicoClient()
