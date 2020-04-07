@@ -157,6 +157,7 @@ def test_object_detection_predict_storage(
 
     result = client.call(JobStatus(job.id, wait=True))
 
+    assert result.status != "FAILURE"
     assert len(result.result) == 5
 
 
