@@ -80,11 +80,11 @@ Result Granularity
 
 Setting::
 
-    "top_level": "page" (default)
-    "top_level": "document"
+    "top_level": "page" 
+    "top_level": "document" (default) 
 
 The "document" kwarg will return a nested dictionary with text data at both the page and document level 
-(i.e. unified document text *and* text data at the page-level). The "page" kwarg will return 
+(i.e. text data at the page-level *and* the full document text). The "page" kwarg will return 
 a list of dictionaries where each dictionary is page-level text data and no document-level data is included.
 
 Nesting
