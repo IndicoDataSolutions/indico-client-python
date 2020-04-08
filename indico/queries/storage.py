@@ -1,6 +1,7 @@
 import json
 from typing import List
 from indico.client.request import HTTPMethod, HTTPRequest
+from indico.errors import IndicoRequestError
 
 
 class RetrieveStorageObject(HTTPRequest):
@@ -20,10 +21,14 @@ class RetrieveStorageObject(HTTPRequest):
 
     def __init__(self, storage_object):
         if type(storage_object) == dict:
-            if "url" not in storage_object.keys():
-                raise KeyError("Unable to retrieve result. Please check the job status error for more details\
-                                and ensure that you are using the correct credentials and specifications for your use case")
-            url = storage_object["url"]
+            try:
+                url = storage_object["url"]
+            except KeyError:
+                raise IndicoRequestError(
+                    code="FAILURE",
+                    error="Unable to retrieve result. Please check the job status error for more details\
+                    and ensure that you are using the correct credentials and specifications for your use case",
+                )
         else:
             url = storage_object
 
