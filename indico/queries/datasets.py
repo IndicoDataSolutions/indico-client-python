@@ -7,7 +7,13 @@ from pathlib import Path
 
 from typing import List
 
-from indico.client.request import GraphQLRequest, RequestChain, HTTPRequest, HTTPMethod
+from indico.client.request import (
+    GraphQLRequest,
+    RequestChain,
+    HTTPRequest,
+    HTTPMethod,
+    Debouncer,
+)
 from indico.types.dataset import Dataset
 from indico.errors import IndicoNotFound, IndicoInputError
 from indico.queries.storage import UploadDocument, URL_PREFIX
@@ -209,18 +215,19 @@ class CreateDataset(RequestChain):
         yield _CreateDataset(metadata=self.previous)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
+        debouncer = Debouncer()
         while not all(
             f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
-            self.wait_request()
-        self.reset_timeout()
+            debouncer.backoff()
         yield _ProcessDataset(id=self.previous.id, name=self.name)
         yield GetDatasetStatus(id=dataset_id)
+        debouncer = Debouncer()
         if self.wait == True:
             while not self.previous in ["COMPLETE", "FAILED"]:
                 yield GetDatasetStatus(id=dataset_id)
-                self.wait_request()
+                debouncer.backoff()
         yield GetDataset(id=dataset_id)
 
 

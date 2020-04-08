@@ -49,17 +49,20 @@ class GraphQLRequest(HTTPRequest):
 
 class RequestChain:
     previous: Any = None
-    
-    def __init__(self):
-        self.timeout = 0
 
     def requests(self):
         pass
 
-    def wait_request(self):
-        self.timeout += 0.5
+
+class Debouncer:
+    def __init__(self):
+        self.timeout = 0
+        self.max_timeout = 20
+
+    def backoff(self):
+        self.increment_timeout()
         time.sleep(self.timeout)
 
-    def reset_timeout(self):
-        self.timeout = 0
-
+    def increment_timeout(self):
+        if self.timeout < self.max_timeout:
+            self.timeout += 1
