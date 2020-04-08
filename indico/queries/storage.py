@@ -20,6 +20,9 @@ class RetrieveStorageObject(HTTPRequest):
 
     def __init__(self, storage_object):
         if type(storage_object) == dict:
+            if "url" not in storage_object.keys():
+                raise KeyError("Unable to retrieve result. Please check the job status error for more details\
+                                and ensure that you are using the correct credentials and specifications for your use case")
             url = storage_object["url"]
         else:
             url = storage_object
