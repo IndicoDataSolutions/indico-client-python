@@ -1,7 +1,9 @@
+import time
 # -*- coding: utf-8 -*-
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.jobs import Job
+
 
 
 class _JobStatus(GraphQLRequest):
@@ -51,7 +53,7 @@ class JobStatus(RequestChain):
     Args:
         id (int): id of the job to query for status.
         wait (bool): Wait for the job to complete? Default is True
-    
+        request_interval: How long to wait between subsequent status checks. Default is 0.2
     Returns:
         Job: With the job result available in a result attribute. Note that the result
         will often be JSON but can also be a dict with the URL of a StorageObject on
@@ -60,9 +62,10 @@ class JobStatus(RequestChain):
 
     previous: Job = None
 
-    def __init__(self, id: str, wait: bool = True):
+    def __init__(self, id: str, wait: bool = True, request_interval=0.2):
         self.id = id
         self.wait = wait
+        self.request_interval = request_interval
 
     def requests(self):
         yield _JobStatus(id=self.id)
@@ -77,5 +80,6 @@ class JobStatus(RequestChain):
                 "IGNORED",
                 "RETRY",
             ]):
+                time.sleep(self.request_interval)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
