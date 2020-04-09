@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from time import sleep
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.jobs import Job
 
@@ -77,5 +77,6 @@ class JobStatus(RequestChain):
                 "IGNORED",
                 "RETRY",
             ]):
+                sleep(1)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
