@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
@@ -172,14 +173,14 @@
             
   <div class="section" id="module-indico.types.jobs">
 <span id="jobs-types"></span><h1>Jobs Types<a class="headerlink" href="#module-indico.types.jobs" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="indico.types.jobs.Job">
-<em class="property">class </em><code class="sig-prename descclassname">indico.types.jobs.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.jobs.Job" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.types.jobs.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.jobs.Job" title="Permalink to this definition">¶</a></dt>
 <dd><p>An Asynchronous Job in the Indico Platform.</p>
 <p>Many operations like DocumentExtraction and ModelGroupPredict are handled in the
 Indico Platform via Jobs. When you make a DocumentExtraction call, you are queuing
 a job in the Platform and a Job object is returned by client.call(..)</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="indico.types.jobs.Job.id">
 <code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.jobs.Job.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>job id</p>
@@ -190,7 +191,7 @@ a job in the Platform and a Job object is returned by client.call(..)</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="indico.types.jobs.Job.status">
 <code class="sig-name descname">status</code><a class="headerlink" href="#indico.types.jobs.Job.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>“SUCCESS”, “FAILURE”, “REJECTED”, “REVOKED”, “IGNORED”, “RETRY”</p>
@@ -201,7 +202,7 @@ a job in the Platform and a Job object is returned by client.call(..)</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="indico.types.jobs.Job.ready">
 <code class="sig-name descname">ready</code><a class="headerlink" href="#indico.types.jobs.Job.ready" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">

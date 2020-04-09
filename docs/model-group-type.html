@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
@@ -172,15 +173,15 @@
             
   <div class="section" id="module-indico.types.model_group">
 <span id="model-group-types"></span><h1>Model Group Types<a class="headerlink" href="#module-indico.types.model_group" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="indico.types.model_group.ModelGroup">
-<em class="property">class </em><code class="sig-prename descclassname">indico.types.model_group.</code><code class="sig-name descname">ModelGroup</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.model_group.ModelGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.types.model_group.</code><code class="sig-name descname">ModelGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.model_group.ModelGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>A Model Group in the Indico Platform.</p>
 <p>Think of Model Groups as a container for individual models that are trained each
 time you click the Retrain button in Review or label more data in Teach. One of these
 models will be the current, “selected” model. It’s usually the latest model but can also
 be the best performing.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="indico.types.model_group.ModelGroup.id">
 <code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.model_group.ModelGroup.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The model group id</p>
@@ -191,7 +192,7 @@ be the best performing.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="indico.types.model_group.ModelGroup.name">
 <code class="sig-name descname">name</code><a class="headerlink" href="#indico.types.model_group.ModelGroup.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of the model group</p>
@@ -202,7 +203,7 @@ be the best performing.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="indico.types.model_group.ModelGroup.status">
 <code class="sig-name descname">status</code><a class="headerlink" href="#indico.types.model_group.ModelGroup.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>“CREATED”, “TRAINING”, “COMPLETE” or “FAILED”</p>
@@ -213,7 +214,7 @@ be the best performing.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt>
 <code class="sig-name descname">selected model</code></dt>
 <dd><p>A Model object representing the selected (active) model.</p>

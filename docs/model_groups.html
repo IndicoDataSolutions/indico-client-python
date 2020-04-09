@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -173,9 +173,9 @@
             
   <div class="section" id="module-indico.queries.model_groups">
 <span id="model-groups"></span><h1>Model Groups<a class="headerlink" href="#module-indico.queries.model_groups" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.model_groups.CreateModelGroup">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">CreateModelGroup</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">dataset_id</em>, <em class="sig-param">source_column_id</em>, <em class="sig-param">labelset_id</em>, <em class="sig-param">wait=False</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.CreateModelGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">CreateModelGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">dataset_id</span></em>, <em class="sig-param"><span class="n">source_column_id</span></em>, <em class="sig-param"><span class="n">labelset_id</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.CreateModelGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new model group and train a model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -194,9 +194,9 @@
 <p>Raises:</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.model_groups.ModelGroupPredict">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">ModelGroupPredict</code><span class="sig-paren">(</span><em class="sig-param">model_id</em>, <em class="sig-param">data</em>, <em class="sig-param">load=True</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.ModelGroupPredict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">ModelGroupPredict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">load</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.ModelGroupPredict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate predictions from a model group on new data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -212,9 +212,9 @@
 <p>Raises:</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.model_groups.GetModelGroup">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">GetModelGroup</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">GetModelGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an object describing a model group</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -227,9 +227,9 @@
 <p>Raises:</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.model_groups.GetModelGroupSelectedModelStatus">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">GetModelGroupSelectedModelStatus</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroupSelectedModelStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">GetModelGroupSelectedModelStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroupSelectedModelStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status string of the selected model for the given model group id</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

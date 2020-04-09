@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -173,9 +173,9 @@
             
   <div class="section" id="module-indico.queries.datasets">
 <span id="datasets"></span><h1>Datasets<a class="headerlink" href="#module-indico.queries.datasets" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.datasets.CreateDataset">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">CreateDataset</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">files</em>, <em class="sig-param">wait=True</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.CreateDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">CreateDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">files</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.CreateDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a dataset and upload the associated files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -192,9 +192,9 @@
 <p>Raises:</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.datasets.GetDataset">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">GetDataset</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">GetDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a dataset description object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -207,9 +207,9 @@
 <p>Raises:</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.datasets.GetDatasetStatus">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">GetDatasetStatus</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">GetDatasetStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status of a dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -225,9 +225,9 @@
 <p>Raises:</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.datasets.GetDatasetFileStatus">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">GetDatasetFileStatus</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetFileStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">GetDatasetFileStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetFileStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status of dataset file upload</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -243,9 +243,9 @@
 <p>Raises:</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="indico.queries.datasets.ListDatasets">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">ListDatasets</code><span class="sig-paren">(</span><em class="sig-param">limit=100</em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.ListDatasets" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">ListDatasets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.ListDatasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all of your datasets</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

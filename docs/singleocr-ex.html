@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -208,13 +208,22 @@
 
     <span class="c1"># Create an Indico API client</span>
     <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
-        <span class="n">host</span><span class="o">=</span><span class="s1">&#39;dev.indico.io&#39;</span><span class="p">,</span>
+        <span class="n">host</span><span class="o">=</span><span class="s1">&#39;app.indico.io&#39;</span><span class="p">,</span>
         <span class="n">api_token_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;indico_api_token.txt&#39;</span>
     <span class="p">)</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
 
+    <span class="n">doc_config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;native_pdf&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;pages&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_num&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;blocks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="s2">&quot;doc_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;page_offset&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+
     <span class="c1"># OCR a single file and wait for it to complete</span>
-    <span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="s1">&#39;{&quot;preset_config&quot;: &quot;simple&quot;}&#39;</span><span class="p">))</span>
+    <span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="n">doc_config</span><span class="p">))</span>
     <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;SUCCESS&#39;</span><span class="p">:</span>
         <span class="n">json_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
