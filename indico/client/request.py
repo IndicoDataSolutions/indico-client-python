@@ -57,7 +57,7 @@ class RequestChain:
 class Debouncer:
     def __init__(self):
         self.timeout = 0
-        self.max_timeout = 20
+        self.max_timeout = 5
 
     def backoff(self):
         self.increment_timeout()
