@@ -42,9 +42,12 @@ class GetModelGroup(GraphQLRequest):
         super().__init__(query=self.query, variables={"id": id})
 
     def process_response(self, response):
-        mg = ModelGroup(
-            **super().process_response(response)["modelGroups"]["modelGroups"][0]
-        )
+        try:
+            mg = ModelGroup(
+                **super().process_response(response)["modelGroups"]["modelGroups"][0]
+            )
+        except IndexError:
+            IndicoNotFound('ModelGroup not found. Please check the ID you are using.')
         return mg
 
 
