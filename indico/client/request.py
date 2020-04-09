@@ -1,6 +1,7 @@
 from typing import Dict, Any
 from enum import Enum
 from indico.errors import IndicoRequestError
+import time
 
 
 class HTTPMethod(Enum):
@@ -51,3 +52,17 @@ class RequestChain:
 
     def requests(self):
         pass
+
+
+class Debouncer:
+    def __init__(self):
+        self.timeout = 0
+        self.max_timeout = 5
+
+    def backoff(self):
+        self.increment_timeout()
+        time.sleep(self.timeout)
+
+    def increment_timeout(self):
+        if self.timeout < self.max_timeout:
+            self.timeout += 1

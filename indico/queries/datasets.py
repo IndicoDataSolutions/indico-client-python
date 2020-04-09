@@ -1,11 +1,23 @@
 # -*- coding: utf-8 -*-
 
 import json
+import tempfile
+import pandas as pd
+from pathlib import Path
+
 from typing import List
 
-from indico.client.request import GraphQLRequest, RequestChain, HTTPRequest, HTTPMethod
+from indico.client.request import (
+    GraphQLRequest,
+    RequestChain,
+    HTTPRequest,
+    HTTPMethod,
+    Debouncer,
+)
 from indico.types.dataset import Dataset
-from indico.errors import IndicoNotFound
+from indico.errors import IndicoNotFound, IndicoInputError
+from indico.queries.storage import UploadDocument, URL_PREFIX
+
 
 class ListDatasets(GraphQLRequest):
     """
@@ -167,26 +179,55 @@ class CreateDataset(RequestChain):
 
     previous = None
 
-    def __init__(self, name: str, files: List[str], wait=True):
+    def __init__(
+        self,
+        name: str,
+        files: List[str],
+        wait: bool = True,
+        from_local_images: bool = False,
+        image_filename_col: str = "filename",
+    ):
         self.files = files
         self.name = name
         self.wait = wait
+        self.from_local_images = from_local_images
+        self.image_filename_col = image_filename_col
         super().__init__()
 
     def requests(self):
-        yield _UploadDatasetFiles(files=self.files)
+        if self.from_local_images:
+            # Assume image filenames are in the same directory as the csv with
+            # image labels and that there is a column representing their name
+            df = pd.read_csv(self.files)
+            img_filenames = df[self.image_filename_col].tolist()
+            img_filepaths = [
+                str(Path(self.files).parent / imgfn) for imgfn in img_filenames
+            ]
+            yield UploadImages(img_filepaths)
+            df["urls"] = self.previous
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                image_csv_path = str(Path(tmpdir) / "image_urls.csv")
+                df.to_csv(image_csv_path)
+                yield _UploadDatasetFiles(files=[image_csv_path])
+        else:
+            yield _UploadDatasetFiles(files=self.files)
         yield _CreateDataset(metadata=self.previous)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
+        debouncer = Debouncer()
         while not all(
             f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
+            debouncer.backoff()
         yield _ProcessDataset(id=self.previous.id, name=self.name)
         yield GetDatasetStatus(id=dataset_id)
+        debouncer = Debouncer()
         if self.wait == True:
             while not self.previous in ["COMPLETE", "FAILED"]:
                 yield GetDatasetStatus(id=dataset_id)
+                debouncer.backoff()
         yield GetDataset(id=dataset_id)
 
 
@@ -195,6 +236,19 @@ class _UploadDatasetFiles(HTTPRequest):
         super().__init__(
             method=HTTPMethod.POST, path="/storage/files/upload", files=files
         )
+
+
+class UploadImages(UploadDocument):
+    """
+    Upload image files stored on a local filepath to the indico platform.
+    """
+
+    def process_response(self, uploaded_files: List[dict]) -> List[str]:
+        errors = [f["error"] for f in uploaded_files if f.get("error")]
+        if errors:
+            return IndicoInputError(error="\n".join(error for error in errors),)
+        urls = [URL_PREFIX + f["path"] for f in uploaded_files]
+        return urls
 
 
 class _CreateDataset(GraphQLRequest):

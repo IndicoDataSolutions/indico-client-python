@@ -57,6 +57,10 @@ def text_deserialization(content, charset="utf-8"):
     return content.decode(charset)
 
 
+def image_serialization(content, charset=None):
+    return content
+
+
 _SERIALIZATINON_FNS = defaultdict(
     lambda: text_deserialization,
     {
@@ -68,5 +72,7 @@ _SERIALIZATINON_FNS = defaultdict(
         "application/json": json_deserialization,
         "json": json_deserialization,
         "application/javascript": json_deserialization,
+        "image/png": image_serialization,
+        "image/jpg": image_serialization,
     },
 )

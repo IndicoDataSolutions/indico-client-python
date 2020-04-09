@@ -5,27 +5,7 @@ from typing import List
 
 from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod, HTTPRequest
 from indico.types.jobs import Job
-
-
-class _UploadDocument(HTTPRequest):
-    def __init__(self, files: List[str]):
-        super().__init__(HTTPMethod.POST, "/storage/files/store", files=files)
-
-    def process_response(self, uploaded_files: List[dict]):
-        files = [
-            {
-                "filename": f["name"],
-                "filemeta": json.dumps(
-                    {
-                        "path": f["path"],
-                        "name": f["name"],
-                        "uploadType": f["upload_type"],
-                    }
-                ),
-            }
-            for f in uploaded_files
-        ]
-        return files
+from indico.queries.storage import UploadDocument
 
 
 class _DocumentExtraction(GraphQLRequest):
@@ -98,5 +78,5 @@ class DocumentExtraction(RequestChain):
         self.json_config = json_config
 
     def requests(self):
-        yield _UploadDocument(files=self.files)
+        yield UploadDocument(files=self.files)
         yield _DocumentExtraction(files=self.previous, json_config=self.json_config)
