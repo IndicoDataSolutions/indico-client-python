@@ -132,9 +132,8 @@ def test_predict(indico, airlines_dataset, airlines_model_group):
 
 def get_storage_urls_from_fnames(client, image_fnames):
     client = IndicoClient()
-    image_filenames = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"]
     base_dir = Path(__file__).parent.parent / "data"
-    image_filepaths = [os.path.join(base_dir, fname) for fname in image_filenames]
+    image_filepaths = [os.path.join(base_dir, fname) for fname in image_fnames]
     response = client.call(UploadDocument(files=image_filepaths))
     storage_urls = [URL_PREFIX + json.loads(r["filemeta"])["path"] for r in response]
     return storage_urls
