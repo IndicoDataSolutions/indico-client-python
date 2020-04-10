@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.jobs import Job
@@ -60,9 +61,10 @@ class JobStatus(RequestChain):
 
     previous: Job = None
 
-    def __init__(self, id: str, wait: bool = True):
+    def __init__(self, id: str, wait: bool = True, request_interval=0.2):
         self.id = id
         self.wait = wait
+        self.request_interval = request_interval
 
     def requests(self):
         yield _JobStatus(id=self.id)
@@ -77,5 +79,6 @@ class JobStatus(RequestChain):
                 "IGNORED",
                 "RETRY",
             ]):
+                time.sleep(self.request_interval)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
