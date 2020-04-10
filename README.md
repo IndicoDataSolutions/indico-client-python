@@ -22,42 +22,53 @@ docker run -it indico-client bash
 
 # Getting Started
 
-First, download an API token from your [user dashboard](https://app.indico.io/auth/user), and save the downloaded file as `indico_api_token.txt` in either your home directory or working directory.
+First, download an API token from your [user dashboard](https://app.indico.io/auth/user), and save the downloaded file `indico_api_token.txt` in either your home directory or specify the path to the token using IndicoConfig.
 
 ## API Examples
-```python3
-import indico
-from indico import IndicoClient
-from indico.queries.model_groups import ListModelGroups, ModelGroupPredict
-from indico.queries.job import JobResult
-from indico.types import JobStatus
 
-indico = IndicoClient()
-mg = indico.call(ListModelGroups(ids=[1234]))[0]
+### Getting Classification/Extraction Results
+```python3
+from indico import IndicoClient, IndicoConfig
+from indico.queries import JobStatus, ModelGroupPredict
+
+config = IndicoConfig(
+    host='app.indico.io', # or your custom app location
+    api_token_path='./indico_api_token.txt'
+    )
+client = IndicoClient(config=config)
 
 data = ["Test example", "Test example 2"]
-job = indico.call(ModelGroupPredict(model_group=mg, data=data))
+job = client.call(ModelGroupPredict(model_id=32777, data=data))
 
-job = indico.call(JobResult(job=job, wait=True))
+prediction = client.call(JobStatus(id=job.id, wait=True))
 
-print(job.result())
+print(prediction.result)
 ```
+
+### Performing OCR / Document Text and Data Extraction
 ``` python3 
-import indico
-from indico import IndicoClient
-from indico.queries.documents import DocumentExtraction
-from indico.queries.job import JobResult
-from indico.types import JobStatus
-from indico.storage import RetrieveStorageObject
+from indico import IndicoClient, IndicoConfig
+from indico.queries import DocumentExtraction, JobStatus, RetrieveStorageObject
 
-indico = IndicoClient()
-job = indico.call(DocumentExtraction(files=[open("test.pdf", 'r'), config={"preset": "legacy"}])
-job = indico.call(JobResult(job=job, wait=True))
+config = IndicoConfig(
+    host='app.indico.io',
+    api_token_path='./indico_api_token.txt'
+    )
 
-so = job.result()
+client = IndicoClient(config=config)
+file_paths = ['./test_data.pdf', './test_data2.pdf']
+job = client.call(
+    DocumentExtraction(
+        files=file_paths, 
+        json_config={"preset_config": "ondocument"} # see full docs for config options
+        )
+    )
+# job is a list object with length equal to # of files, retrieve each extraction by 
+# its index- below, we're retrieving the first extraction in file_paths
 
-json_data = indico.call(RetrieveStorageObject(so))
-print(json_data)
+job_file = client.call(JobStatus(id=job[0].id, wait=True))
+result = client.call(RetrieveStorageObject(job_file.result))
+print(result)
 ```
 
 ### Pure GraphQL example
