@@ -26,8 +26,8 @@ class RetrieveStorageObject(HTTPRequest):
             except KeyError:
                 raise IndicoRequestError(
                     code="FAILURE",
-                    error="Unable to retrieve result. Please check the job status error for more details\
-                    and ensure that you are using the correct credentials and specifications for your use case",
+                    error="Unable to retrieve result. Please check the status of the job object. If the status is \
+                    'FAILURE', check the job object result for more detailed information.",
                 )
         else:
             url = storage_object
