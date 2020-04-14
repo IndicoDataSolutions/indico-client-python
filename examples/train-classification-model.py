@@ -1,55 +1,33 @@
-import os
-import time
-from pathlib import Path
-from typing import List
+from indico import IndicoClient, IndicoConfig
+from indico.queries import CreateDataset, CreateModelGroup, ModelGroupPredict
 
 
-from indico import IndicoClient
-from indico.config import IndicoConfig
-from indico.types import Dataset, ModelGroup
-from indico.queries import (
-    CreateDataset,
-    GetDatasetStatus,
-    CreateModelGroup,
-    ModelGroupPredict,
-    JobStatus)
+# create the dataset
+dataset = client.call(
+    CreateDataset(name="airline_comments", files=["./airline-comments.csv"])
+)
 
-
-def create_dataset(client) -> Dataset:
-    dataset_filepath = "./airline-comments.csv"
-    response = client.call(CreateDataset(name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]))
-    return response
-
-
-def create_model_group(client, dataset) -> ModelGroup:
-    mg: ModelGroup = client.call(CreateModelGroup(
-        name=f"TestCreateModelGroup-{int(time.time())}",
+# train the model w/ the relevant csv columns
+model_group = client.call(
+    CreateModelGroup(
+        name="my_classification_model",
         dataset_id=dataset.id,
-        source_column_id=dataset.datacolumn_by_name("Text").id,
-        labelset_id=dataset.labelset_by_name("Target_1").id,
-        wait=True   # Waits for model group to finish training
-    ))
-    return mg
+        source_column_id=dataset.datacolumn_by_name("text").id,  # csv text column
+        labelset_id=dataset.labelset_by_name(
+            "Target_1"
+        ).id,  # csv target class column
+        wait=True,  # wait for training to finish
+    )
+)
 
 
-def predict(client: IndicoClient, model_group: ModelGroup, data: List[str]):
-    job = client.call(ModelGroupPredict(
+# predict on the model
+job = client.call(
+    ModelGroupPredict(
         model_id=model_group.selected_model.id,
-        data=data
-    ))
+        data=["Sample Text to predict on", "More Sample text to predict on"],
+    )
+)
 
-    return client.call(JobStatus(id=job.id, wait=True)).result
-
-
-if __name__ == "__main__":
-    os.chdir(Path(__file__).parent)
-
-    config = IndicoConfig(host='dev.indico.io')
-    client = IndicoClient(config=config)
-
-    dataset = create_dataset(client)
-    status = client.call(GetDatasetStatus(dataset.id))
-    print(f"Dataset status: {status}")
-
-    mg = create_model_group(client, dataset)
-    predict(client, mg, ["I need wifi"])
+# retrieve your prediction results
+predictions = client.call(JobStatus(id=job.id, wait=True)).result

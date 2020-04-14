@@ -1,43 +1,21 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import os
-import sys
-import json
-from pathlib import Path
-
-from indico import IndicoClient
-from indico.config import IndicoConfig
-from indico.queries.documents import DocumentExtraction
-from indico.queries.jobs import JobStatus
-from indico.queries.storage import RetrieveStorageObject
+from indico import IndicoClient, IndicoConfig
+from indico.queries import DocumentExtraction, JobStatus, RetrieveStorageObject
 
 
-def main(args):
-    if len(args) != 1:
-        print('USAGE: doc-extraction.py pdf_dir')
-        sys.exit(0)
+# Create an Indico API client
+my_config = IndicoConfig(
+    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+)
+client = IndicoClient(config=my_config)
 
-    src_path = Path(args[0])
-    if src_path.exists() is False or src_path.is_file() is False:
-        print(f'Invalid or non-existing file {src_path}')
-        sys.exit(0)
-
-    # Create an Indico API client
-    my_config = IndicoConfig(
-        host='dev.indico.io',
-        api_token_path=Path(__file__).parent / 'indico_api_token.txt'
+# OCR a single file and wait for it to complete
+job = client.call(
+    DocumentExtraction(
+        files=["./path_to_doc.pdf"], json_config=dict(preset_config="ondocument")
     )
-    client = IndicoClient(config=my_config)
+)
+extracted_file = client.call(JobStatus(id=job[0].id, wait=True))
 
-    # OCR a single file and wait for it to complete
-    jobs = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "simple"}'))
-    job = client.call(JobStatus(id=jobs[0].id, wait=True))
-    if job is not None and job.status == 'SUCCESS':
-        json_data = client.call(RetrieveStorageObject(job.result))
-        print(json.dumps(json_data, indent=4))
-
-
-if __name__ == '__main__':
-    os.chdir(Path(__name__).parent)
-    main(sys.argv[1:])
+if extracted_file.status == "SUCCESS":
+    result = client.call(RetrieveStorageObject(extracted_file.result))
+    print(result)
