@@ -8,11 +8,8 @@ generic_alias_cls = type(List)
 def list_subtype(cls):
     if not issubclass(type(cls), generic_alias_cls):
         return None
-    has_list_origin = (
-        (getattr(cls, "__extra__", None) is list) or
-        (getattr(cls, "__origin__", None) is List)
-    )
-    if has_list_origin and cls.__args__:
+    origin = getattr(cls, "__origin__", getattr(cls, "__extra__", None))
+    if issubclass(origin, list) and cls.__args__:
         return cls.__args__[0]
     return None
 
