@@ -1,6 +1,6 @@
 import json
 from time import sleep
-from typing import List
+from typing import List, Dict
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.model_group import ModelGroup
@@ -48,7 +48,9 @@ class GetModelGroup(GraphQLRequest):
                 **super().process_response(response)["modelGroups"]["modelGroups"][0]
             )
         except IndexError:
-            raise IndicoNotFound('ModelGroup not found. Please check the ID you are using.')
+            raise IndicoNotFound(
+                "ModelGroup not found. Please check the ID you are using."
+            )
         return mg
 
 
@@ -268,16 +270,24 @@ class LoadModel(GraphQLRequest):
 
 class _ModelGroupPredict(GraphQLRequest):
     query = """
-        mutation ModelGroupPredict($modelId: Int!, $data: [String]) {
-            modelPredict(modelId: $modelId, data: $data) {
+        mutation ModelGroupPredict($modelId: Int!, $data: [String], $predictOptions: JSONString) {
+            modelPredict(modelId: $modelId, data: $data, predictOptions: $predictOptions) {
                 jobId
             }
         }
         """
 
-    def __init__(self, model_id: int, data: List[str]):
+    def __init__(self, model_id: int, data: List[str], predict_options: Dict = None):
+        if predict_options:
+            predict_options = json.dumps(predict_options)
+
         super().__init__(
-            query=self.query, variables={"modelId": model_id, "data": data}
+            query=self.query,
+            variables={
+                "modelId": model_id,
+                "data": data,
+                "predictOptions": predict_options,
+            },
         )
 
     def process_response(self, response):
@@ -291,6 +301,7 @@ class ModelGroupPredict(RequestChain):
     Args:
         model_id= (int): selected model id use for predictions
         data= (List[str]): list of samples to predict
+        predict_options= (JSONString): arguments for predictions
 
     Returns:
         Job associated with this model group predict task

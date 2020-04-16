@@ -153,7 +153,9 @@ def test_object_detection_predict_storage(
     )
     job = client.call(
         ModelGroupPredict(
-            model_id=cats_dogs_modelgroup.selected_model.id, data=storage_urls
+            model_id=cats_dogs_modelgroup.selected_model.id,
+            data=storage_urls,
+            predict_options={"threshold": 0.25},
         )
     )
 
