@@ -310,10 +310,17 @@ class ModelGroupPredict(RequestChain):
 
     """
 
-    def __init__(self, model_id: int, data: List[str], load: bool = True):
+    def __init__(
+        self,
+        model_id: int,
+        data: List[str],
+        load: bool = True,
+        predict_options: Dict = None,
+    ):
         self.model_id = model_id
         self.data = data
         self.load = load
+        self.predict_options = predict_options
 
     def requests(self):
         retries = 0
@@ -328,4 +335,6 @@ class ModelGroupPredict(RequestChain):
                     f"Model {self.model_id} failed to load status {self.previous}"
                 )
 
-        yield _ModelGroupPredict(model_id=self.model_id, data=self.data)
+        yield _ModelGroupPredict(
+            model_id=self.model_id, data=self.data, predict_options=self.predict_options
+        )
