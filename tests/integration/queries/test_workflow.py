@@ -5,13 +5,11 @@ from indico.queries import RetrieveStorageObject, JobStatus, WorkflowSubmission,
 from indico.types import Job, ModelGroup
 from ..data.datasets import airlines_dataset, airlines_model_group
 
-@pytest.mark.skip(reason="Workflow not yet functional")
 def test_list_workflows(indico, airlines_dataset, airlines_model_group: ModelGroup):
     client = IndicoClient()
     wfs = client.call(ListWorkflowsForDataset(airlines_dataset.id))
     assert len(wfs) > 0    
 
-@pytest.mark.skip(reason="Submission not yet functional")
 def test_workflow_submission(indico, airlines_dataset, airlines_model_group: ModelGroup):
     client = IndicoClient()
     wfs = client.call(ListWorkflowsForDataset(airlines_dataset.id))
@@ -22,14 +20,15 @@ def test_workflow_submission(indico, airlines_dataset, airlines_model_group: Mod
     job = client.call(WorkflowSubmission(workflow_id=wf.id, files=[dataset_filepath]))
 
     assert job.id != None
-    job = client.call(JobStatus(id=job.id, wait=False))
-    # TODO uncheck when submission is ready 
-    # assert job.status == "SUCCESS"
-    # assert job.ready == True
-    # assert type(job.result["url"]) == str
+    job = client.call(JobStatus(id=job.id, wait=True))
+    assert job.status == "SUCCESS"
+    assert job.ready == True
+    assert isinstance(job.result["url"], str)
 
-    # result = client.call(RetrieveStorageObject(
-      #  job.result
-    #))
+    result = client.call(RetrieveStorageObject(
+       job.result
+    ))
 
-    
+    assert isinstance(result, str)
+
+
