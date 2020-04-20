@@ -48,7 +48,7 @@ class GetModelGroup(GraphQLRequest):
                 **super().process_response(response)["modelGroups"]["modelGroups"][0]
             )
         except IndexError:
-            IndicoNotFound('ModelGroup not found. Please check the ID you are using.')
+            raise IndicoNotFound('ModelGroup not found. Please check the ID you are using.')
         return mg
 
 
