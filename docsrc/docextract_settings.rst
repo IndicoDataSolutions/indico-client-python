@@ -467,7 +467,7 @@ Settings included in presets::
         "metadata": ["all"],
         "document": ["text"],
         "pages": ["image", "doc_offset", "text", "dpi", "size", "page_num"],
-        "blocks": ["block_type", "doc_offset", "text", "style", "position", "cells"],
+        "blocks": ["block_type", "doc_offset", "text", "style", "position"],
         "cells": {"text", "page_num", "position", "style", "doc_offset", "page_offset", "block_offset", "row_start", "row_end", "col_start", "col_end"},
         "tokens": ["text", "page_num", "position", "style", "doc_offset", "confidence"],
         "chars": ["text", "position", "confidence", "doc_index", "alternate_ocr"],
