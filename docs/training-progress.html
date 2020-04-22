@@ -181,49 +181,25 @@
             
   <div class="section" id="check-model-training-progress">
 <h1>Check Model Training Progress<a class="headerlink" href="#check-model-training-progress" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GetModelGroup</span><span class="p">,</span> <span class="n">GetTrainingModelWithProgress</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="c1"># The model group ID can be found on the review page of the indico platform</span>
+<span class="n">model_group_id</span> <span class="o">=</span> <span class="mi">4305</span>
 
-<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
-<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries.model_groups</span> <span class="kn">import</span> <span class="n">GetModelGroup</span><span class="p">,</span> <span class="n">GetTrainingModelWithProgress</span>
+<span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;app.indico.io&quot;</span><span class="p">,</span> <span class="n">api_token_path</span><span class="o">=</span><span class="s2">&quot;./path/to/indico_api_token.txt&quot;</span>
+<span class="p">)</span>
 
+<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="c1"># Get the model group and training status</span>
+<span class="n">mg</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetModelGroup</span><span class="p">(</span><span class="n">model_group_id</span><span class="p">))</span>
+<span class="n">training_mg</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetTrainingModelWithProgress</span><span class="p">(</span><span class="n">model_group_id</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;USAGE: get-training-model-progress model_id&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">model_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid model_id </span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># Create an Indico API client</span>
-    <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
-        <span class="n">host</span><span class="o">=</span><span class="s1">&#39;app.indico.io&#39;</span><span class="p">,</span>
-        <span class="n">api_token_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;indico_api_token.txt&#39;</span>
-    <span class="p">)</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
-
-    <span class="c1"># Get the model group and training status</span>
-    <span class="n">mg</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetModelGroup</span><span class="p">(</span><span class="n">model_id</span><span class="p">))</span>
-    <span class="n">training_mg</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetTrainingModelWithProgress</span><span class="p">(</span><span class="n">model_id</span><span class="p">))</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mg</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">training status = </span><span class="si">{</span><span class="n">training_mg</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">percent complete = </span><span class="si">{</span><span class="n">training_mg</span><span class="o">.</span><span class="n">training_progress</span><span class="o">.</span><span class="n">percent_complete</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
-    <span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model Name: </span><span class="si">{</span><span class="n">mg</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training status: </span><span class="si">{</span><span class="n">training_mg</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percent complete: </span><span class="si">{</span><span class="n">training_mg</span><span class="o">.</span><span class="n">training_progress</span><span class="o">.</span><span class="n">percent_complete</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

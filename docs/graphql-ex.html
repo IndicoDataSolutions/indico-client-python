@@ -183,47 +183,32 @@
 <h1>Simple GraphQL Query Example<a class="headerlink" href="#simple-graphql-query-example" title="Permalink to this headline">¶</a></h1>
 <p>A simple example that shows how to create a client and send a GraphQL Query
 that lists all of your datasets.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
-<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.client.request</span> <span class="kn">import</span> <span class="n">GraphQLRequest</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GraphQLRequest</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="c1"># Create a config object to manually set the host and path to</span>
-    <span class="c1"># indico_api_token.txt. By default, IndicoClient will look read</span>
-    <span class="c1"># environment variables to find this information</span>
-    <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
-        <span class="n">host</span><span class="o">=</span><span class="s1">&#39;dev.indico.io&#39;</span><span class="p">,</span>
-        <span class="n">api_token_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;indico_api_token.txt&#39;</span>
-    <span class="p">)</span>
+<span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;app.indico.io&quot;</span><span class="p">,</span> <span class="n">api_token_path</span><span class="o">=</span><span class="s2">&quot;./path/to/indico_api_token.txt&quot;</span>
+<span class="p">)</span>
 
-    <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
 
-    <span class="c1"># GraphQL Query to list my datasets</span>
-    <span class="n">qstr</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;{</span>
-<span class="s1">            datasets {</span>
-<span class="s1">                id</span>
-<span class="s1">                name</span>
-<span class="s1">                status</span>
-<span class="s1">                rowCount</span>
-<span class="s1">                numModelGroups</span>
-<span class="s1">                modelGroups {</span>
-<span class="s1">                    id</span>
-<span class="s1">                }</span>
-<span class="s1">            }</span>
-<span class="s1">        }&#39;&#39;&#39;</span>
+<span class="c1"># GraphQL Query to list my datasets</span>
+<span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{</span>
+<span class="s2">            datasets {</span>
+<span class="s2">                id</span>
+<span class="s2">                name</span>
+<span class="s2">                status</span>
+<span class="s2">                rowCount</span>
+<span class="s2">                numModelGroups</span>
+<span class="s2">                modelGroups {</span>
+<span class="s2">                    id</span>
+<span class="s2">                }</span>
+<span class="s2">            }</span>
+<span class="s2">        }&quot;&quot;&quot;</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GraphQLRequest</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">qstr</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
-    <span class="n">main</span><span class="p">()</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GraphQLRequest</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">qstr</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

@@ -182,61 +182,39 @@
   <div class="section" id="train-a-classifier-and-predict">
 <h1>Train a Classifier and Predict<a class="headerlink" href="#train-a-classifier-and-predict" title="Permalink to this headline">¶</a></h1>
 <p>Train a classifier and get predictions</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span><span class="p">,</span> <span class="n">CreateModelGroup</span><span class="p">,</span> <span class="n">ModelGroupPredict</span>
 
 
-<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
-<span class="kn">from</span> <span class="nn">indico.config</span> <span class="kn">import</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.types</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">ModelGroup</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">CreateDataset</span><span class="p">,</span>
-    <span class="n">GetDatasetStatus</span><span class="p">,</span>
-    <span class="n">CreateModelGroup</span><span class="p">,</span>
-    <span class="n">ModelGroupPredict</span><span class="p">,</span>
-    <span class="n">JobStatus</span><span class="p">)</span>
+<span class="c1"># create the dataset</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">CreateDataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;airline_comments&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./airline-comments.csv&quot;</span><span class="p">])</span>
+<span class="p">)</span>
 
-
-<span class="k">def</span> <span class="nf">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
-    <span class="n">dataset_filepath</span> <span class="o">=</span> <span class="s2">&quot;./airline-comments.csv&quot;</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CreateDataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AirlineComplaints-test-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">dataset_filepath</span><span class="p">]))</span>
-    <span class="k">return</span> <span class="n">response</span>
-
-
-<span class="k">def</span> <span class="nf">create_model_group</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelGroup</span><span class="p">:</span>
-    <span class="n">mg</span><span class="p">:</span> <span class="n">ModelGroup</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">CreateModelGroup</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;TestCreateModelGroup-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="c1"># train the model w/ the relevant csv columns</span>
+<span class="n">model_group</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">CreateModelGroup</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_classification_model&quot;</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">source_column_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">datacolumn_by_name</span><span class="p">(</span><span class="s2">&quot;Text&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span><span class="s2">&quot;Target_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">wait</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Waits for model group to finish training</span>
-    <span class="p">))</span>
-    <span class="k">return</span> <span class="n">mg</span>
+        <span class="n">source_column_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">datacolumn_by_name</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="c1"># csv text column</span>
+        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span>
+            <span class="s2">&quot;Target_1&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="c1"># csv target class column</span>
+        <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># wait for training to finish</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">model_group</span><span class="p">:</span> <span class="n">ModelGroup</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-    <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ModelGroupPredict</span><span class="p">(</span>
+<span class="c1"># predict on the model</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">ModelGroupPredict</span><span class="p">(</span>
         <span class="n">model_id</span><span class="o">=</span><span class="n">model_group</span><span class="o">.</span><span class="n">selected_model</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">data</span>
-    <span class="p">))</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sample Text to predict on&quot;</span><span class="p">,</span> <span class="s2">&quot;More Sample text to predict on&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
-
-    <span class="n">config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;dev.indico.io&#39;</span><span class="p">)</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetDatasetStatus</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset status: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">mg</span> <span class="o">=</span> <span class="n">create_model_group</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
-    <span class="n">predict</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">mg</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;I need wifi&quot;</span><span class="p">])</span>
+<span class="c1"># retrieve your prediction results</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span>
 </pre></div>
 </div>
 </div>
