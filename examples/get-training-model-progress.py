@@ -1,43 +1,19 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from indico import IndicoClient, IndicoConfig
+from indico.queries import GetModelGroup, GetTrainingModelWithProgress
 
-import os
-import sys
-from pathlib import Path
+# The model group ID can be found on the review page of the indico platform
+model_group_id = 4305
 
-from indico import IndicoClient
-from indico.config import IndicoConfig
-from indico.queries.model_groups import GetModelGroup, GetTrainingModelWithProgress
+my_config = IndicoConfig(
+    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+)
 
+client = IndicoClient(config=my_config)
 
-def main(args):
+# Get the model group and training status
+mg = client.call(GetModelGroup(model_group_id))
+training_mg = client.call(GetTrainingModelWithProgress(model_group_id))
 
-    if len(args) != 1:
-        print('USAGE: get-training-model-progress model_id')
-        sys.exit(0)
-
-    try:
-        model_id = int(args[0])
-    except ValueError:
-        print(f'Invalid model_id {args[0]}')
-        sys.exit(0)
-
-    # Create an Indico API client
-    my_config = IndicoConfig(
-        host='dev.indico.io',
-        api_token_path=Path(__file__).parent / 'indico_api_token.txt'
-    )
-    client = IndicoClient(config=my_config)
-
-    # Get the model group and training status
-    mg = client.call(GetModelGroup(model_id))
-    training_mg = client.call(GetTrainingModelWithProgress(model_id))
-
-    print(f'{mg.name}:')
-    print(f'\ttraining status = {training_mg.status}')
-    print(f'\tpercent complete = {training_mg.training_progress.percent_complete:.2f}')
-
-
-if __name__ == '__main__':
-    os.chdir(Path(__name__).parent)
-    main(sys.argv[1:])
+print(f"Model Name: {mg.name}")
+print(f"Training status: {training_mg.status}")
+print(f"Percent complete: {training_mg.training_progress.percent_complete:.2f}")
