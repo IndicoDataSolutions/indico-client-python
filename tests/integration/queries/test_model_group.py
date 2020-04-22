@@ -156,7 +156,7 @@ def test_object_detection_predict_storage(
         ModelGroupPredict(
             model_id=cats_dogs_modelgroup.selected_model.id,
             data=storage_urls,
-            predict_options={"threshold": 0.33},
+            predict_options={"threshold": 0.25},
             load=False,
         )
     )
