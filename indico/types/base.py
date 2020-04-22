@@ -4,13 +4,25 @@ from typing import List, Any
 from indico.types.utils import cc_to_snake
 
 generic_alias_cls = type(List)
-list_origin = List.__origin__
+
 def list_subtype(cls):
     if not issubclass(type(cls), generic_alias_cls):
         return None
-    if getattr(cls, "__extra__", getattr(cls, "__origin__", None)) is list_origin and cls.__args__:
+    origin = getattr(cls, "__origin__", getattr(cls, "__extra__", None))
+    if issubclass(origin, list) and cls.__args__:
         return cls.__args__[0]
     return None
+
+
+def valid_type(v):
+    if v is None:
+        return False
+    
+    return (
+        (inspect.isclass(v) and issubclass(v, BaseType)) 
+        or v in [str, int, float, bool, JSONType] 
+        or valid_type(list_subtype(v))
+    )
 
 class BaseType:
     def _get_attrs(self):
@@ -19,20 +31,17 @@ class BaseType:
         for c in classes:
             if not getattr(c, "__annotations__", None):
                 continue
-            props.update(
-            {
+            
+            props.update({
                 k:v
                 for k, v in c.__annotations__.items()
-                if ((inspect.isclass(v) and issubclass(v, BaseType)) 
-                    or v in [str, int, float, bool, JSONType] 
-                    or list_subtype(v))
+                if valid_type(v)
             })
 
         return props
 
     def __init__(self, **kwargs):
         attrs = self._get_attrs()
-
         for k, v in kwargs.items():
             k = cc_to_snake(k)
             if k in attrs:
