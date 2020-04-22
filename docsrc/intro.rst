@@ -14,7 +14,7 @@ To upgrade the Python Client Library::
 
     pip install --upgrade indico-client
 
-Aftwards proper installation can be verified with the following in a python shell
+Afterwards, proper installation can be verified with the following in a python shell
 
     import indico
     print(indico.__version__)
