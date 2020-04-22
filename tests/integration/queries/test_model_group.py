@@ -151,18 +151,22 @@ def test_object_detection_predict_storage(
     storage_urls = get_storage_urls_from_fnames(
         client, ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"]
     )
+
     job = client.call(
         ModelGroupPredict(
-            model_id=cats_dogs_modelgroup.selected_model.id, data=storage_urls
+            model_id=cats_dogs_modelgroup.selected_model.id,
+            data=storage_urls,
+            predict_options={"threshold": 0.25},
+            load=False,
         )
     )
-
     assert type(job.id) == str
 
     result = client.call(JobStatus(job.id, wait=True))
 
     assert result.status != "FAILURE"
     assert len(result.result) == 5
+    assert result.result[0][0].get("image")["url"].startswith(URL_PREFIX)
 
 
 def test_load_model(indico, airlines_dataset, airlines_model_group):
