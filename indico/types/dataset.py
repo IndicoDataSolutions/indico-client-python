@@ -37,7 +37,7 @@ class Dataset(BaseType):
     Attributes:
         id (int): The Dataset id
         name (str): Dataset name
-        rowCount (int): Number of rows in the dataset
+        row_count (int): Number of rows in the dataset
         permissions (str): Permissions on the dataset
         files (List[Datafile]): Names of the file(s) included in the dataset
         labelsets (List[LabelSet]): LabelSets associated with this dataset
