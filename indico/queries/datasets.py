@@ -214,7 +214,11 @@ class CreateDataset(RequestChain):
                 df.to_csv(image_csv_path)
                 yield _UploadDatasetFiles(files=[image_csv_path])
         else:
-            yield _UploadDatasetFiles(files=self.files)
+            yield UploadBatched(
+                files=self.files,
+                batch_size=self.batch_size,
+                request_cls=_UploadDatasetFiles,
+            )
         yield _CreateDataset(metadata=self.previous)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)

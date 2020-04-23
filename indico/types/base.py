@@ -5,6 +5,7 @@ from indico.types.utils import cc_to_snake
 
 generic_alias_cls = type(List)
 
+
 def list_subtype(cls):
     if not issubclass(type(cls), generic_alias_cls):
         return None
@@ -17,12 +18,13 @@ def list_subtype(cls):
 def valid_type(v):
     if v is None:
         return False
-    
+
     return (
-        (inspect.isclass(v) and issubclass(v, BaseType)) 
-        or v in [str, int, float, bool, JSONType] 
+        (inspect.isclass(v) and issubclass(v, BaseType))
+        or v in [str, int, float, bool, JSONType]
         or valid_type(list_subtype(v))
     )
+
 
 class BaseType:
     def _get_attrs(self):
@@ -31,12 +33,8 @@ class BaseType:
         for c in classes:
             if not getattr(c, "__annotations__", None):
                 continue
-            
-            props.update({
-                k:v
-                for k, v in c.__annotations__.items()
-                if valid_type(v)
-            })
+
+            props.update({k: v for k, v in c.__annotations__.items() if valid_type(v)})
 
         return props
 
@@ -48,14 +46,15 @@ class BaseType:
                 attr_type = attrs[k]
                 if inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
                     v = attrs[k](**v)
-                    
+
                 if attr_type == JSONType:
                     v = json.loads(v)
-                    
+
                 subtype = list_subtype(attr_type)
                 if subtype and issubclass(subtype, BaseType):
                     v = [subtype(**x) for x in v]
                 setattr(self, k, v)
+
 
 class JSONType:
     pass

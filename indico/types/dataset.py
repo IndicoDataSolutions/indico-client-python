@@ -39,14 +39,14 @@ class Dataset(BaseType):
         name (str): Dataset name
         rowCount (int): Number of rows in the dataset
         permissions (str): Permissions on the dataset
-        files (List[str]): Names of the file(s) included in the dataset
+        files (List[Datafile]): Names of the file(s) included in the dataset
         labelsets (List[LabelSet]): LabelSets associated with this dataset
         datacolumns (List[DataColumn]): DataColumn(s) of the dataset
     """
 
     id: int
     name: str
-    rowCount: int
+    row_count: int
     status: str
     permissions: str
     files: List[Datafile]

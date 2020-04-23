@@ -18,9 +18,9 @@ class Datafile(BaseType):
     id: int
     name: str
     deleted: bool
-    fileSize: int
-    rainbowUrl: str
-    fileType: str
-    fileHash: str
+    file_size: int
+    rainbow_url: str
+    file_type: str
+    file_hash: str
     status: str
-    statusMeta: str
+    status_meta: str
