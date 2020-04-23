@@ -186,14 +186,14 @@ class CreateDataset(RequestChain):
         wait: bool = True,
         from_local_images: bool = False,
         image_filename_col: str = "filename",
-        image_upload_batch_size: int = 20,
+        batch_size: int = 20,
     ):
         self.files = files
         self.name = name
         self.wait = wait
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
-        self.image_upload_batch_size = image_upload_batch_size
+        self.batch_size = batch_size
         super().__init__()
 
     def requests(self):
@@ -206,9 +206,7 @@ class CreateDataset(RequestChain):
                 str(Path(self.files).parent / imgfn) for imgfn in img_filenames
             ]
             yield UploadBatched(
-                img_filepaths,
-                batch_size=self.image_upload_batch_size,
-                request_cls=UploadImages,
+                img_filepaths, batch_size=self.batch_size, request_cls=UploadImages,
             )
             df["urls"] = self.previous
             with tempfile.TemporaryDirectory() as tmpdir:

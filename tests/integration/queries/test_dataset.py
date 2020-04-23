@@ -87,7 +87,7 @@ def test_images_batch(indico):
             name=f"image-dataset-test-{int(time.time())}",
             files=dataset_filepath,
             from_local_images=True,
-            image_upload_batch_size=10,
+            batch_size=10,
         )
     )
     assert isinstance(response, Dataset)

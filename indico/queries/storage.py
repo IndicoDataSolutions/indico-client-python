@@ -85,7 +85,12 @@ class UploadBatched(RequestChain):
         files: storage objects for further processing, e.g. Document extraction or dataset creation
     """
 
-    def __init__(self, files: List[str], batch_size=20, request_cls=UploadDocument):
+    def __init__(
+        self,
+        files: List[str],
+        batch_size: int = 20,
+        request_cls: HTTPRequest = UploadDocument,
+    ):
         self.result = None
         self.files = files
         self.batch_size = batch_size
