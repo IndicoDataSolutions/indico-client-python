@@ -32,7 +32,7 @@ def test_get_datasets(indico, airlines_dataset):
     client = IndicoClient()
     dataset = client.call(GetDataset(id=airlines_dataset.id))
 
-    assert isinstance(response, Dataset)
+    assert isinstance(dataset, Dataset)
     assert dataset.id == airlines_dataset.id
 
 
@@ -47,7 +47,7 @@ def test_get_dataset_file_status(indico, airlines_dataset):
     client = IndicoClient()
     dataset = client.call(GetDatasetFileStatus(id=airlines_dataset.id))
 
-    assert isinstance(response, Dataset)
+    assert isinstance(dataset, Dataset)
     assert dataset.id == airlines_dataset.id
     assert len(dataset.files) > 0
     assert dataset.files[0].status != None
