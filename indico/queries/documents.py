@@ -5,7 +5,7 @@ from typing import List
 
 from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod, HTTPRequest
 from indico.types.jobs import Job
-from indico.queries.storage import UploadDocument
+from indico.queries.storage import UploadDocument, UploadBatched
 
 
 class _DocumentExtraction(GraphQLRequest):
@@ -43,6 +43,7 @@ class DocumentExtraction(RequestChain):
     Args:
         files= (List[str]): Pathnames of one or more files to OCR
         json_config (dict or JSON str): Configuration settings for OCR. See Notes below.
+        upload_batch_size (int): size of batches for document upload if uploading many documents
 
     Returns:
         Job object
@@ -73,10 +74,20 @@ class DocumentExtraction(RequestChain):
             extracted_data = client.call(RetrieveStorageObject(job.result))
     """
 
-    def __init__(self, files: List[str], json_config: dict = None):
+    def __init__(
+        self, files: List[str], json_config: dict = None, upload_batch_size: int = None
+    ):
         self.files = files
         self.json_config = json_config
+        self.upload_batch_size = upload_batch_size
 
     def requests(self):
-        yield UploadDocument(files=self.files)
+        if self.upload_batch_size:
+            yield UploadBatched(
+                files=self.files,
+                batch_size=self.upload_batch_size,
+                request_cls=UploadDocument,
+            )
+        else:
+            yield UploadDocument(files=self.files)
         yield _DocumentExtraction(files=self.previous, json_config=self.json_config)

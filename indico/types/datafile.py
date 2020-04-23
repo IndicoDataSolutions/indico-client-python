@@ -11,16 +11,18 @@ class Datafile(BaseType):
         id (int): The Datafile id
         name (str): Datafile name
         deleted (bool): Has the datafile been marked for deletion
-        rainbowUrl (str): URL of the datafile within the Indico Platform
-        fileType (str): Filetype of the datafile
+        rainbow_url (str): URL of the datafile within the Indico Platform
+        file_type (str): Filetype of the datafile
+        file_hash (str): Location of the datafile
+        status (str): Processing status of the datafile
     """
 
     id: int
     name: str
     deleted: bool
-    fileSize: int
-    rainbowUrl: str
-    fileType: str
-    fileHash: str
+    file_size: int
+    rainbow_url: str
+    file_type: str
+    file_hash: str
     status: str
-    statusMeta: str
+    status_meta: str

@@ -16,7 +16,7 @@ from indico.client.request import (
 )
 from indico.types.dataset import Dataset
 from indico.errors import IndicoNotFound, IndicoInputError
-from indico.queries.storage import UploadDocument, URL_PREFIX
+from indico.queries.storage import URL_PREFIX, UploadBatched, UploadImages
 
 
 class ListDatasets(GraphQLRequest):
@@ -186,12 +186,14 @@ class CreateDataset(RequestChain):
         wait: bool = True,
         from_local_images: bool = False,
         image_filename_col: str = "filename",
+        batch_size: int = 20,
     ):
         self.files = files
         self.name = name
         self.wait = wait
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
+        self.batch_size = batch_size
         super().__init__()
 
     def requests(self):
@@ -203,15 +205,20 @@ class CreateDataset(RequestChain):
             img_filepaths = [
                 str(Path(self.files).parent / imgfn) for imgfn in img_filenames
             ]
-            yield UploadImages(img_filepaths)
+            yield UploadBatched(
+                img_filepaths, batch_size=self.batch_size, request_cls=UploadImages,
+            )
             df["urls"] = self.previous
-
             with tempfile.TemporaryDirectory() as tmpdir:
                 image_csv_path = str(Path(tmpdir) / "image_urls.csv")
                 df.to_csv(image_csv_path)
                 yield _UploadDatasetFiles(files=[image_csv_path])
         else:
-            yield _UploadDatasetFiles(files=self.files)
+            yield UploadBatched(
+                files=self.files,
+                batch_size=self.batch_size,
+                request_cls=_UploadDatasetFiles,
+            )
         yield _CreateDataset(metadata=self.previous)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
@@ -236,19 +243,6 @@ class _UploadDatasetFiles(HTTPRequest):
         super().__init__(
             method=HTTPMethod.POST, path="/storage/files/upload", files=files
         )
-
-
-class UploadImages(UploadDocument):
-    """
-    Upload image files stored on a local filepath to the indico platform.
-    """
-
-    def process_response(self, uploaded_files: List[dict]) -> List[str]:
-        errors = [f["error"] for f in uploaded_files if f.get("error")]
-        if errors:
-            return IndicoInputError(error="\n".join(error for error in errors),)
-        urls = [URL_PREFIX + f["path"] for f in uploaded_files]
-        return urls
 
 
 class _CreateDataset(GraphQLRequest):

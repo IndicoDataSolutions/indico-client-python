@@ -32,9 +32,15 @@ class IndicoClient:
     def _handle_request_chain(self, chain: RequestChain):
         response = None
         for request in chain.requests():
-            response = self._http.execute_request(request)
-            chain.previous = response
+            if isinstance(request, HTTPRequest):
+                response = self._http.execute_request(request)
+                chain.previous = response
+            elif isinstance(request, RequestChain):
+                response = self._handle_request_chain(request)
+                chain.previous = response
 
+        if chain.result:
+            return chain.result
         return response
 
     def call(self, request: Union[HTTPRequest, RequestChain]):

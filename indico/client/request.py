@@ -49,6 +49,7 @@ class GraphQLRequest(HTTPRequest):
 
 class RequestChain:
     previous: Any = None
+    result: Any = None
 
     def requests(self):
         pass

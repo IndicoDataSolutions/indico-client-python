@@ -1,7 +1,7 @@
 import json
 from typing import List
-from indico.client.request import HTTPMethod, HTTPRequest
-from indico.errors import IndicoRequestError
+from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
+from indico.errors import IndicoRequestError, IndicoInputError
 
 
 URL_PREFIX = "indico-file:///storage"
@@ -70,3 +70,47 @@ class UploadDocument(HTTPRequest):
             for f in uploaded_files
         ]
         return files
+
+
+class UploadBatched(RequestChain):
+    """
+    Batch uploading of files to the Indico Platform
+
+    Args:
+        filepaths (str): list of filepaths to upload
+        batch_size (int): number of files to load per batch
+        request_cls (HTTPRequest): Type of upload request: UploadDocument or UploadImage
+    
+    Returns:
+        files: storage objects for further processing, e.g. Document extraction or dataset creation
+    """
+
+    def __init__(
+        self,
+        files: List[str],
+        batch_size: int = 20,
+        request_cls: HTTPRequest = UploadDocument,
+    ):
+        self.result = None
+        self.files = files
+        self.batch_size = batch_size
+        self.request_cls = request_cls
+
+    def requests(self):
+        self.result = []
+        for i in range(0, len(self.files), self.batch_size):
+            yield self.request_cls(self.files[i : i + self.batch_size])
+            self.result.extend(self.previous)
+
+
+class UploadImages(UploadDocument):
+    """
+    Upload image files stored on a local filepath to the indico platform.
+    """
+
+    def process_response(self, uploaded_files: List[dict]) -> List[str]:
+        errors = [f["error"] for f in uploaded_files if f.get("error")]
+        if errors:
+            return IndicoInputError(error="\n".join(error for error in errors),)
+        urls = [URL_PREFIX + f["path"] for f in uploaded_files]
+        return urls
