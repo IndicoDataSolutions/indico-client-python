@@ -92,3 +92,27 @@ def test_upload_documents_batched(indico):
     assert len(files) == 3
     for file_name, file in zip(file_names, files):
         assert file["filename"] == file_name
+
+
+def test_document_extraction_batched(indico):
+    client = IndicoClient()
+    file_names = ["mock.pdf", "mock_2.pdf", "mock_3.pdf"]
+    parent_path = str(Path(__file__).parent.parent / "data")
+    dataset_filepaths = [
+        os.path.join(parent_path, file_name) for file_name in file_names
+    ]
+
+    jobs = client.call(
+        DocumentExtraction(
+            files=dataset_filepaths,
+            json_config={"preset_config": "simple"},
+            upload_batch_size=1,
+        )
+    )
+    assert len(jobs) == 3
+    for job in jobs:
+        assert job.id != None
+        job = client.call(JobStatus(id=job.id, wait=True))
+        assert job.status == "SUCCESS"
+        assert job.ready == True
+        assert isinstance(job.result["url"], str)
