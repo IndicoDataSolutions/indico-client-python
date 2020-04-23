@@ -76,3 +76,17 @@ def test_images(indico):
     assert type(response) == Dataset
     assert response.status == "COMPLETE"
     assert type(response.id) == int
+
+
+def test_images_batch(indico):
+    client = IndicoClient()
+
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/dog_vs_cats_small.csv"
+    response = client.call(
+        CreateDataset(
+            name=f"image-dataset-test-{int(time.time())}",
+            files=dataset_filepath,
+            from_local_images=True,
+            image_upload_batch_size=10,
+        )
+    )
