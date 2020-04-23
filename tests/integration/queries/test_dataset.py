@@ -23,16 +23,16 @@ def test_create_dataset(indico):
         )
     )
 
-    assert type(response) == Dataset
+    assert isinstance(response, Dataset)
     assert response.status == "COMPLETE"
-    assert type(response.id) == int
+    assert isinstance(response.id, int)
 
 
 def test_get_datasets(indico, airlines_dataset):
     client = IndicoClient()
     dataset = client.call(GetDataset(id=airlines_dataset.id))
 
-    assert type(dataset) == Dataset
+    assert isinstance(response, Dataset)
     assert dataset.id == airlines_dataset.id
 
 
@@ -47,7 +47,7 @@ def test_get_dataset_file_status(indico, airlines_dataset):
     client = IndicoClient()
     dataset = client.call(GetDatasetFileStatus(id=airlines_dataset.id))
 
-    assert type(dataset) == Dataset
+    assert isinstance(response, Dataset)
     assert dataset.id == airlines_dataset.id
     assert len(dataset.files) > 0
     assert dataset.files[0].status != None
@@ -57,7 +57,7 @@ def test_list_datasets(indico, airlines_dataset):
     client = IndicoClient()
     datasets = client.call(ListDatasets(limit=1))
 
-    assert type(datasets) == list
+    assert isinstance(datasets, list)
     assert len(datasets) == 1
     assert type(datasets[0]) == Dataset
 
@@ -73,9 +73,9 @@ def test_images(indico):
             from_local_images=True,
         )
     )
-    assert type(response) == Dataset
+    assert isinstance(response, Dataset)
     assert response.status == "COMPLETE"
-    assert type(response.id) == int
+    assert isinstance(response.id, int)
 
 
 def test_images_batch(indico):
@@ -90,3 +90,6 @@ def test_images_batch(indico):
             image_upload_batch_size=10,
         )
     )
+    assert isinstance(response, Dataset)
+    assert response.status == "COMPLETE"
+    assert isinstance(response.id, int)
