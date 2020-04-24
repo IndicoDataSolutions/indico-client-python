@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simple GraphQL Query Example &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Intro to OCR with DocumentExtraction &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Train a Classifier and Predict" href="train-predict-ex.html" />
-    <link rel="prev" title="Examples" href="examples.html" /> 
+    <link rel="next" title="DocumentExtraction Settings" href="docextract_settings.html" />
+    <link rel="prev" title="Key Concepts and Terminology" href="concepts.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -88,17 +88,11 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_intro.html">Intro to OCR with DocumentExtraction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Intro to OCR with DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Simple GraphQL Query Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="train-predict-ex.html">Train a Classifier and Predict</a></li>
-<li class="toctree-l2"><a class="reference internal" href="singleocr-ex.html">OCR a Single File with DocumentExtraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="training-progress.html">Check Model Training Progress</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
@@ -159,15 +153,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="examples.html">Examples</a> &raquo;</li>
-        
-      <li>Simple GraphQL Query Example</li>
+      <li>Intro to OCR with DocumentExtraction</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/graphql-ex.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/docextract_intro.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -180,38 +172,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="simple-graphql-query-example">
-<h1>Simple GraphQL Query Example<a class="headerlink" href="#simple-graphql-query-example" title="Permalink to this headline">¶</a></h1>
-<p>A simple example that shows how to create a client and send a GraphQL Query
-that lists all of your datasets.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GraphQLRequest</span>
+  <div class="section" id="intro-to-ocr-with-documentextraction">
+<h1>Intro to OCR with DocumentExtraction<a class="headerlink" href="#intro-to-ocr-with-documentextraction" title="Permalink to this headline">¶</a></h1>
+<p>The Indico Platform includes a sophisticated OCR engine that’s capable of extracting raw
+text from a variety of document formats including PDF and TIF. OCR functionality is provided
+by the <code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> class. Here’s how to OCR one document with DocumentExtraction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
+<span class="kn">from</span> <span class="nn">indico.queries.documents</span> <span class="kn">import</span> <span class="n">DocumentExtraction</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">RetrieveStorageObject</span>
 
-
-<span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;app.indico.io&quot;</span><span class="p">,</span> <span class="n">api_token_path</span><span class="o">=</span><span class="s2">&quot;./path/to/indico_api_token.txt&quot;</span>
-<span class="p">)</span>
-
-<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
-
-<span class="c1"># GraphQL Query to list my datasets</span>
-<span class="n">qstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{</span>
-<span class="s2">            datasets {</span>
-<span class="s2">                id</span>
-<span class="s2">                name</span>
-<span class="s2">                status</span>
-<span class="s2">                rowCount</span>
-<span class="s2">                numModelGroups</span>
-<span class="s2">                modelGroups {</span>
-<span class="s2">                    id</span>
-<span class="s2">                }</span>
-<span class="s2">            }</span>
-<span class="s2">        }&quot;&quot;&quot;</span>
-
-<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GraphQLRequest</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">qstr</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+<span class="c1"># here, IndicoClient assumes you have your api token in your home directory and host set as an env variable</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">()</span>
+<span class="n">files_to_extract</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_document.pdf&#39;</span><span class="p">]))</span>
+<span class="n">extracted_file</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">files_to_extract</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">extracted_file</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
 </pre></div>
 </div>
+<p>In this example, given the path to a document, we called DocumentExtraction with a single file and waited for the result.
+With most use cases, this is all you will need to do. The returned ‘result’ will either be a dictionary (if
+document-level text and/or metadata are requested) or a list of dictionaries (where each dictionary contains
+the text for a unique page/block).</p>
+<p><code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> is highly configurable. You can customize settings at the document, page, block, token or
+character level. You can also choose from a selection of preset configurations. You configure DocumentExtraction
+by passing in a Python dictionary or JSON string.</p>
+<p>Here’s an Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_ocr_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span>
+<span class="p">}</span>
+
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_doc.pdf&#39;</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="n">my_ocr_config</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Visit the <a class="reference internal" href="docextract_settings.html"><span class="doc">DocumentExtraction Settings</span></a> page to read the extensive list of DocumentExtraction settings.</p>
 </div>
 
 
@@ -222,10 +214,10 @@ that lists all of your datasets.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="train-predict-ex.html" class="btn btn-neutral float-right" title="Train a Classifier and Predict" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="docextract_settings.html" class="btn btn-neutral float-right" title="DocumentExtraction Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="concepts.html" class="btn btn-neutral float-left" title="Key Concepts and Terminology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

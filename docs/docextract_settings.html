@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>OCR With DocumentExtraction &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>DocumentExtraction Settings &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Generating Model Predictions" href="model_predictions.html" />
-    <link rel="prev" title="Key Concepts and Terminology" href="concepts.html" /> 
+    <link rel="prev" title="Intro to OCR with DocumentExtraction" href="docextract_intro.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -88,8 +88,8 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">OCR With DocumentExtraction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_intro.html">Intro to OCR with DocumentExtraction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DocumentExtraction Settings</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#global-settings">Global Settings</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#preset-configurations">Preset Configurations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#result-granularity">Result Granularity</a></li>
@@ -205,7 +205,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>OCR With DocumentExtraction</li>
+      <li>DocumentExtraction Settings</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -224,40 +224,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="ocr-with-documentextraction">
-<h1>OCR With DocumentExtraction<a class="headerlink" href="#ocr-with-documentextraction" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>The Indico Platform includes a sophisticated OCR engine that’s capable of extracting raw
-text from a variety of document formats including PDF and TIF. OCR functionality is provided
-by the <code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> class. Here’s how to OCR one document with DocumentExtraction:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span>
-<span class="kn">from</span> <span class="nn">indico.queries.documents</span> <span class="kn">import</span> <span class="n">DocumentExtraction</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">RetrieveStorageObject</span>
-
-<span class="c1"># here, IndicoClient assumes you have your api token in your home directory and host set as an env variable</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">()</span>
-<span class="n">files_to_extract</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_document.pdf&#39;</span><span class="p">]))</span>
-<span class="n">extracted_file</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">files_to_extract</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">extracted_file</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>In this example, given the path to a document, we called DocumentExtraction with a single file and waited for the result.
-With most use cases, this is all you will need to do. The returned ‘result’ will either be a dictionary (if
-document-level text and/or metadata are requested) or a list of dictionaries (where each dictionary contains
-the text for a unique page/block).</p>
-<p><code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code> is highly configurable. You can customize settings at the document, page, block, token or
-character level. You can also choose from a selection of preset configurations. You configure DocumentExtraction
-by passing in a Python dictionary or JSON string.</p>
-<p>Here’s an Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_ocr_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span>
-<span class="p">}</span>
-
-<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_doc.pdf&#39;</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="n">my_ocr_config</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
+  <div class="section" id="documentextraction-settings">
+<h1>DocumentExtraction Settings<a class="headerlink" href="#documentextraction-settings" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="global-settings">
 <h2>Global Settings<a class="headerlink" href="#global-settings" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="preset-configurations">
@@ -681,7 +649,7 @@ operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get a
         <a href="model_predictions.html" class="btn btn-neutral float-right" title="Generating Model Predictions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="concepts.html" class="btn btn-neutral float-left" title="Key Concepts and Terminology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="docextract_intro.html" class="btn btn-neutral float-left" title="Intro to OCR with DocumentExtraction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
