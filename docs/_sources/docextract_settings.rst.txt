@@ -108,7 +108,7 @@ Setting::
 
 Set to ``True`` to have the document parsed top to bottom as a single column of text.
 
-Table Read Order
+Tables
 ----------------
 
 Setting::
@@ -117,6 +117,31 @@ Setting::
     "table_read_order": "column"
 
 You can read tables by either row or column.
+
+By including a ``cells`` argument you can additionally receive a structured table cell output:
+
+Setting:: 
+
+    "cells": {
+        "text", 
+        "page_num", 
+        "position", 
+        "style", 
+        "doc_offset", 
+        "page_offset", 
+        "block_offset", 
+        "row_start", 
+        "row_end", 
+        "col_start", 
+        "col_end"
+    }
+
+All of the above are valid options for the cell key.  This closely mimics the valid options for "blocks" but adds "row_start", "row_end", "col_start", and "col_end" as additional options.  Those fields communicate the range of spreadsheet entries that a detected cell spans. A single cell in the upper-left corner of a table would have those values set to:
+
+    {"row_start": 0, "col_start": 0, "row_end": 0, "col_end": 0}
+
+The end of the row and column ranges are inclusive rather than exclusive.
+
 
 Force Render
 ------------
@@ -247,12 +272,13 @@ Block Level Settings
 Block Type
 ----------
 
-Setting::
+If the "block_type" key is included, "block" objects returned in the result will contain an indicator that 
+records whether they were detected to be vanilla text or tabular information:
+
+Returns::
 
     "block_type": "table"
     "block_type": "text"
-
-Set the block type to tables or text
 
 Block Page Number
 -----------------
@@ -442,6 +468,7 @@ Settings included in presets::
         "document": ["text"],
         "pages": ["image", "doc_offset", "text", "dpi", "size", "page_num"],
         "blocks": ["block_type", "doc_offset", "text", "style", "position"],
+        "cells": {"text", "page_num", "position", "style", "doc_offset", "page_offset", "block_offset", "row_start", "row_end", "col_start", "col_end"},
         "tokens": ["text", "page_num", "position", "style", "doc_offset", "confidence"],
         "chars": ["text", "position", "confidence", "doc_index", "alternate_ocr"],
     }

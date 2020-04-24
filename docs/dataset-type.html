@@ -200,8 +200,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="indico.types.dataset.Dataset.rowCount">
-<code class="sig-name descname">rowCount</code><a class="headerlink" href="#indico.types.dataset.Dataset.rowCount" title="Permalink to this definition">¶</a></dt>
+<dt id="indico.types.dataset.Dataset.row_count">
+<code class="sig-name descname">row_count</code><a class="headerlink" href="#indico.types.dataset.Dataset.row_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of rows in the dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -227,7 +227,7 @@
 <dd><p>Names of the file(s) included in the dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>List[str]</p>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#indico.types.datafile.Datafile" title="indico.types.datafile.Datafile">Datafile</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -351,8 +351,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="indico.types.datafile.Datafile.rainbowUrl">
-<code class="sig-name descname">rainbowUrl</code><a class="headerlink" href="#indico.types.datafile.Datafile.rainbowUrl" title="Permalink to this definition">¶</a></dt>
+<dt id="indico.types.datafile.Datafile.rainbow_url">
+<code class="sig-name descname">rainbow_url</code><a class="headerlink" href="#indico.types.datafile.Datafile.rainbow_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>URL of the datafile within the Indico Platform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -362,9 +362,31 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="indico.types.datafile.Datafile.fileType">
-<code class="sig-name descname">fileType</code><a class="headerlink" href="#indico.types.datafile.Datafile.fileType" title="Permalink to this definition">¶</a></dt>
+<dt id="indico.types.datafile.Datafile.file_type">
+<code class="sig-name descname">file_type</code><a class="headerlink" href="#indico.types.datafile.Datafile.file_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filetype of the datafile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="indico.types.datafile.Datafile.file_hash">
+<code class="sig-name descname">file_hash</code><a class="headerlink" href="#indico.types.datafile.Datafile.file_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location of the datafile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="indico.types.datafile.Datafile.status">
+<code class="sig-name descname">status</code><a class="headerlink" href="#indico.types.datafile.Datafile.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing status of the datafile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
