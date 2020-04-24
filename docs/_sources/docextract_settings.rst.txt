@@ -458,7 +458,7 @@ Settings included in presets::
     ondocument = {
         "top_level": "page",
         "nest": False,
-        "reblocking": ["style", "lists", "inline-header"],
+        "reblocking": ["style", "list", "inline-header"],
         "pages": ["text", "size", "dpi", "doc_offset", "page_num", "image", "thumbnail"],
         "blocks": ["text", "doc_offset", "page_offset", "position", "block_type", "page_num"],
         "tokens": ["text", "doc_offset", "page_offset", "block_offset", "position", "page_num", "style"],

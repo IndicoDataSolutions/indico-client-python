@@ -4,10 +4,20 @@ Getting Started
 Installation
 ============
 
-To install in the Python Client Library::
+Requires python 3.6 or above.
+
+To install the Python Client Library::
 
     pip install indico-client
 
+To upgrade the Python Client Library::
+
+    pip install --upgrade indico-client
+
+Afterwards, proper installation can be verified with the following in a python shell
+
+    import indico
+    print(indico.__version__)
 
 Authentication
 ==============

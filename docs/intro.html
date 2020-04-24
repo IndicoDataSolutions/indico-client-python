@@ -187,10 +187,20 @@
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To install in the Python Client Library:</p>
+<p>Requires python 3.6 or above.</p>
+<p>To install the Python Client Library:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">indico</span><span class="o">-</span><span class="n">client</span>
 </pre></div>
 </div>
+<p>To upgrade the Python Client Library:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">indico</span><span class="o">-</span><span class="n">client</span>
+</pre></div>
+</div>
+<p>Afterwards, proper installation can be verified with the following in a python shell</p>
+<blockquote>
+<div><p>import indico
+print(indico.__version__)</p>
+</div></blockquote>
 </div>
 <div class="section" id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h2>
