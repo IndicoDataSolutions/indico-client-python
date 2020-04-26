@@ -91,3 +91,39 @@ def cats_dogs_modelgroup(indico, cats_dogs_image_dataset: Dataset) -> ModelGroup
         )
     )
     return mg
+
+
+@pytest.fixture(scope="module")
+def org_annotate_dataset(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[0]) + "/org-annotate-labeled.csv"
+
+    response = client.call(
+        CreateDataset(
+            name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]
+        )
+    )
+    assert response.status == "COMPLETE"
+    return response
+
+
+@pytest.fixture(scope="module")
+def org_annotate_model(indico, org_annotate_dataset: Dataset) -> ModelGroup:
+    client = IndicoClient()
+    name = f"TestFinetuneModelGroup-{int(time.time())}"
+    mg: ModelGroup = client.call(
+        CreateModelGroup(
+            name=name,
+            dataset_id=org_annotate_dataset.id,
+            source_column_id=org_annotate_dataset.datacolumn_by_name(
+                "News Headlines w/Company Names"
+            ).id,
+            labelset_id=org_annotate_dataset.labelset_by_name("question_825").id,
+            wait=True,
+        )
+    )
+    return mg
+
+
+def test_org(org_annotate_model):
+    pass
