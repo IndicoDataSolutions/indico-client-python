@@ -5,7 +5,14 @@ import json
 
 class AnnotationModelGroupMetrics(GraphQLRequest):
     """
-    TODO: Write description here.
+    Get metrics for annotation or "sequence" models. Metrics for the
+    most recently succesfully trained model of the model group are returned.
+
+    Args:
+        id (int): model group id to query
+
+    Returns:
+        SequenceMetrics object
     """
 
     query = """
@@ -58,7 +65,14 @@ class AnnotationModelGroupMetrics(GraphQLRequest):
 
 class ObjectDetectionMetrics(GraphQLRequest):
     """
-    TODO: Write description here.
+    Get metrics for a trained object detection model. Metrics for the
+    most recently succesfully trained model of the model group are returned.
+
+    Args:
+        id (int): model group id to query
+    
+    Returns:
+        Dict of object detection metrics
     """
 
     query = """
