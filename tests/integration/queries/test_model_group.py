@@ -11,7 +11,7 @@ from indico.queries.model_groups import (
     GetTrainingModelWithProgress,
     LoadModel,
 )
-from indico.queries.metrics import AnnotationModelGroupMetrics
+from indico.queries.metrics import AnnotationModelGroupMetrics, ObjectDetectionMetrics
 from indico.queries.storage import UploadDocument, URL_PREFIX
 from indico.queries.jobs import JobStatus
 from indico.types.dataset import Dataset
@@ -203,7 +203,9 @@ def test_load_model(indico, airlines_dataset, airlines_model_group):
 
 def test_annotation_metrics(indico, org_annotate_dataset, org_annotate_model_group):
     client = IndicoClient()
-    result = client.call(AnnotationModelGroupMetrics(model_group_id=833))
+    result = client.call(
+        AnnotationModelGroupMetrics(model_group_id=org_annotate_model_group.id)
+    )
     assert result.class_metrics[0].name == "org"
     for attr in [
         "f1_score",
@@ -222,3 +224,12 @@ def test_annotation_metrics(indico, org_annotate_dataset, org_annotate_model_gro
     assert isinstance(result.model_level_metrics[0].micro_f1, float)
     assert isinstance(result.model_level_metrics[0].macro_f1, float)
     assert isinstance(result.model_level_metrics[0].weighted_f1, float)
+
+
+def test_object_detection_metrics(
+    indico, cats_dogs_image_dataset, cats_dogs_modelgroup
+):
+    client = IndicoClient()
+    result = client.call(ObjectDetectionMetrics(cats_dogs_modelgroup.id))
+    for metric_type in ["AP", "AP-Cat", "AP-Dog\n", "AP50", "AP75"]:
+        assert isinstance(result["bbox"][metric_type], float)
