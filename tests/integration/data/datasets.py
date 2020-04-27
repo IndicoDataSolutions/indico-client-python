@@ -108,7 +108,7 @@ def org_annotate_dataset(indico):
 
 
 @pytest.fixture(scope="module")
-def org_annotate_model(indico, org_annotate_dataset: Dataset) -> ModelGroup:
+def org_annotate_model_group(indico, org_annotate_dataset: Dataset) -> ModelGroup:
     client = IndicoClient()
     name = f"TestFinetuneModelGroup-{int(time.time())}"
     mg: ModelGroup = client.call(
@@ -123,7 +123,3 @@ def org_annotate_model(indico, org_annotate_dataset: Dataset) -> ModelGroup:
         )
     )
     return mg
-
-
-def test_org(org_annotate_model):
-    pass
