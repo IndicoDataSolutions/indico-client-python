@@ -3,6 +3,7 @@ import time
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.jobs import Job
+from indico.errors import IndicoTimeoutError
 
 
 class _JobStatus(GraphQLRequest):
@@ -61,12 +62,14 @@ class JobStatus(RequestChain):
 
     previous: Job = None
 
-    def __init__(self, id: str, wait: bool = True, request_interval=0.2):
+    def __init__(self, id: str, wait: bool = True, request_interval=0.2, timeout=None):
         self.id = id
         self.wait = wait
         self.request_interval = request_interval
+        self.timeout = timeout
 
     def requests(self):
+        start = time.time()
         yield _JobStatus(id=self.id)
         if self.wait:
             # Check status of job until done if wait == True
@@ -79,6 +82,11 @@ class JobStatus(RequestChain):
                 "IGNORED",
                 "RETRY",
             ]):
+                
+                if self.timeout is not None:
+                    elapsed = (time.time() - start)
+                    if self.timeout < elapsed:
+                        raise IndicoTimeoutError(elapsed)
                 time.sleep(self.request_interval)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
