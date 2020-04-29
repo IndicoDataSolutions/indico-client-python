@@ -1,6 +1,7 @@
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.model_metrics import SequenceMetrics
 from indico.queries.model_groups import GetModelGroup
+from indico.errors import IndicoRequestError
 import json
 
 
@@ -124,6 +125,10 @@ class GetModelGroupMetrics(RequestChain):
 
     def requests(self):
         yield GetModelGroup(id=self.model_group_id)
+        if self.previous.task_type not in task_type_query_mapping:
+            raise IndicoRequestError(
+                "Metrics queries are only supported for annotation and object detection at this time."
+            )
         metrics_query_fn = task_type_query_mapping.get(self.previous.task_type)
         yield metrics_query_fn(self.model_group_id)
         return self.previous
