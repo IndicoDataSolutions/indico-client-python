@@ -64,7 +64,9 @@ class SequenceMetrics(BaseType):
     
         class_metrics List[AnnotationClassMetrics]: List of AnnotationClassMetrics objects per class
         model_level_metrics List[ModelLevelMetrics]: List of ModelLevelMetrics objects per span type
+        retrain_for_metrics bool: Older annotation models require retraining metrics calculation
     """
 
     class_metrics: List[AnnotationClassMetrics]
     model_level_metrics: List[ModelLevelMetrics]
+    retrain_for_metrics: bool

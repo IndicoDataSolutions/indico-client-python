@@ -45,6 +45,7 @@ class AnnotationModelGroupMetrics(GraphQLRequest):
                                     macroF1
                                     weightedF1
                                 }
+                                retrainForMetrics
                             }
                         }
                     }

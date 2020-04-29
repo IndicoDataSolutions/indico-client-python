@@ -251,3 +251,4 @@ def check_annotation_metrics(result):
     assert isinstance(result.model_level_metrics[0].micro_f1, float)
     assert isinstance(result.model_level_metrics[0].macro_f1, float)
     assert isinstance(result.model_level_metrics[0].weighted_f1, float)
+    assert result.retrain_for_metrics is True
