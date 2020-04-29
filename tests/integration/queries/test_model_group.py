@@ -11,7 +11,11 @@ from indico.queries.model_groups import (
     GetTrainingModelWithProgress,
     LoadModel,
 )
-from indico.queries.metrics import AnnotationModelGroupMetrics, ObjectDetectionMetrics
+from indico.queries.model_groups.metrics import (
+    AnnotationModelGroupMetrics,
+    ObjectDetectionMetrics,
+    GetModelGroupMetrics,
+)
 from indico.queries.storage import UploadDocument, URL_PREFIX
 from indico.queries.jobs import JobStatus
 from indico.types.dataset import Dataset
@@ -233,3 +237,12 @@ def test_object_detection_metrics(
     result = client.call(ObjectDetectionMetrics(cats_dogs_modelgroup.id))
     for metric_type in ["AP", "AP-Cat", "AP-Dog\n", "AP50", "AP75"]:
         assert isinstance(result["bbox"][metric_type], float)
+
+
+def test_model_group_query(indico):
+    client = IndicoClient()
+    result = client.call(GetModelGroupMetrics(model_group_id=830))
+    import ipdb
+
+    ipdb.set_trace()
+    print("pass")

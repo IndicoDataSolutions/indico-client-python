@@ -1,5 +1,6 @@
-from indico.client.request import GraphQLRequest
-from indico.types.metrics import SequenceMetrics
+from indico.client.request import GraphQLRequest, RequestChain
+from indico.types.model_metrics import SequenceMetrics
+from indico.queries.model_groups import GetModelGroup
 import json
 
 
@@ -100,3 +101,29 @@ class ObjectDetectionMetrics(GraphQLRequest):
                 "selectedModel"
             ]["evaluation"]["metrics"]
         )
+
+
+task_type_query_mapping = {
+    "ANNOTATION": AnnotationModelGroupMetrics,
+    "OBJECT_DETECTION": ObjectDetectionMetrics,
+}
+
+
+class GetModelGroupMetrics(RequestChain):
+    """
+    Args:
+        model_group_id (int): ModelGroup id
+    
+    Returns
+        Metrics object depending on task type the model solves
+    """
+
+    def __init__(self, model_group_id: int):
+        self.model_group_id = model_group_id
+        super().__init__()
+
+    def requests(self):
+        yield GetModelGroup(id=self.model_group_id)
+        metrics_query_fn = task_type_query_mapping.get(self.previous.task_type)
+        yield metrics_query_fn(self.model_group_id)
+        return self.previous

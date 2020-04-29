@@ -32,6 +32,7 @@ class GetModelGroup(GraphQLRequest):
                         id
                         name
                         status
+                        taskType
                         selectedModel {
                             id
                             status
