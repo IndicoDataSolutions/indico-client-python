@@ -210,6 +210,29 @@ def test_annotation_metrics(indico, org_annotate_dataset, org_annotate_model_gro
     result = client.call(
         AnnotationModelGroupMetrics(model_group_id=org_annotate_model_group.id)
     )
+    check_annotation_metrics(result)
+
+
+def test_object_detection_metrics(
+    indico, cats_dogs_image_dataset, cats_dogs_modelgroup
+):
+    client = IndicoClient()
+    result = client.call(ObjectDetectionMetrics(cats_dogs_modelgroup.id))
+    for metric_type in ["AP", "AP-Cat", "AP-Dog\n", "AP50", "AP75"]:
+        assert isinstance(result["bbox"][metric_type], float)
+
+
+def test_model_group_metrics_query(
+    indico, org_annotate_dataset, org_annotate_model_group
+):
+    client = IndicoClient()
+    result = client.call(
+        GetModelGroupMetrics(model_group_id=org_annotate_model_group.id)
+    )
+    check_annotation_metrics(result)
+
+
+def check_annotation_metrics(result):
     assert result.class_metrics[0].name == "org"
     for attr in [
         "f1_score",
@@ -228,21 +251,3 @@ def test_annotation_metrics(indico, org_annotate_dataset, org_annotate_model_gro
     assert isinstance(result.model_level_metrics[0].micro_f1, float)
     assert isinstance(result.model_level_metrics[0].macro_f1, float)
     assert isinstance(result.model_level_metrics[0].weighted_f1, float)
-
-
-def test_object_detection_metrics(
-    indico, cats_dogs_image_dataset, cats_dogs_modelgroup
-):
-    client = IndicoClient()
-    result = client.call(ObjectDetectionMetrics(cats_dogs_modelgroup.id))
-    for metric_type in ["AP", "AP-Cat", "AP-Dog\n", "AP50", "AP75"]:
-        assert isinstance(result["bbox"][metric_type], float)
-
-
-def test_model_group_query(indico):
-    client = IndicoClient()
-    result = client.call(GetModelGroupMetrics(model_group_id=830))
-    import ipdb
-
-    ipdb.set_trace()
-    print("pass")
