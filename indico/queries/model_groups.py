@@ -6,6 +6,8 @@ from indico.client.request import GraphQLRequest, RequestChain
 from indico.types.model_group import ModelGroup
 from indico.types.model import Model
 from indico.types.jobs import Job
+from indico.types.utils import cc_to_snake
+
 from indico.errors import IndicoNotFound, IndicoError
 
 
@@ -270,19 +272,39 @@ class LoadModel(GraphQLRequest):
 
 class _ModelGroupPredict(GraphQLRequest):
     query = """
-        mutation ModelGroupPredict($modelId: Int!, $data: [String], $predictOptions: JSONString) {
-            modelPredict(modelId: $modelId, data: $data, predictOptions: $predictOptions) {
+        mutation ModelGroupPredict(<QUERY_ARGS>) {
+            modelPredict(<MODEL_PREDICT_ARGS>) {
                 jobId
             }
         }
         """
 
+    query_args = {
+        "modelId": "Int!",
+        "data": "[String]",
+        "predictOptions": "JSONString"
+    }
+
+    def _args_strings(self, **kwargs):
+        args = [k for k in self.query_args.keys() if kwargs.get(cc_to_snake(k))]
+
+        query_args_string = ",".join(f"${k}: {self.query_args[k]}" for k in args)
+        model_predict_args = ",".join(f"{k}: ${k}" for k in args)
+
+        query = self.query.replace("<QUERY_ARGS>", query_args_string)
+        query = query.replace("<MODEL_PREDICT_ARGS>", model_predict_args)
+
+        print(query)
+        return query
+
     def __init__(self, model_id: int, data: List[str], predict_options: Dict = None):
         if predict_options:
             predict_options = json.dumps(predict_options)
 
+        query = self._args_strings(model_id=model_id, data=data, predict_options=predict_options)
+
         super().__init__(
-            query=self.query,
+            query=query,
             variables={
                 "modelId": model_id,
                 "data": data,
