@@ -294,7 +294,6 @@ class _ModelGroupPredict(GraphQLRequest):
         query = self.query.replace("<QUERY_ARGS>", query_args_string)
         query = query.replace("<MODEL_PREDICT_ARGS>", model_predict_args)
 
-        print(query)
         return query
 
     def __init__(self, model_id: int, data: List[str], predict_options: Dict = None):
