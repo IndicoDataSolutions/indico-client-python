@@ -233,7 +233,7 @@ class CreateModelGroup(RequestChain):
         if self.wait:
             req = GetModelGroupSelectedModelStatus(id=model_group_id)
             yield req
-            while self.previous not in ["FAILED", "COMPLETE"]:
+            while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
                 sleep(1)
                 yield req
 

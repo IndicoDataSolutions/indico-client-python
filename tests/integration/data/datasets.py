@@ -20,6 +20,19 @@ def airlines_dataset(indico):
     assert response.status == "COMPLETE"
     return response
 
+@pytest.fixture(scope="module")
+def too_small_dataset(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[0]) + "/TooSmall.csv"
+
+    response = client.call(
+        CreateDataset(
+            name=f"TooSmall-test-{int(time.time())}", files=[dataset_filepath]
+        )
+    )
+    assert response.status == "COMPLETE"
+    return response
+
 
 @pytest.fixture(scope="module")
 def airlines_model_group(indico, airlines_dataset: Dataset) -> ModelGroup:

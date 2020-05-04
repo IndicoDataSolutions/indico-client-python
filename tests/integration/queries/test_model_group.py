@@ -18,6 +18,7 @@ from indico.types.model_group import ModelGroup
 from indico.types.model import Model, TrainingProgress
 from ..data.datasets import (
     airlines_dataset,
+    too_small_dataset,
     airlines_model_group,
     cats_dogs_image_dataset,
     cats_dogs_modelgroup,
@@ -88,6 +89,24 @@ def test_create_model_group_with_wait(indico, airlines_dataset: Dataset):
 
     assert mg.name == name
     assert mg.selected_model.status == "COMPLETE"
+
+
+def test_create_model_group_with_wait_not_enough_data(indico, too_small_dataset):
+    client = IndicoClient()
+
+    name = f"TestCreateModelGroup-{int(time.time())}"
+    mg: ModelGroup = client.call(
+        CreateModelGroup(
+            name=name,
+            dataset_id=too_small_dataset.id,
+            source_column_id=too_small_dataset.datacolumn_by_name("Text").id,
+            labelset_id=too_small_dataset.labelset_by_name("Target_1").id,
+            wait=True,
+        )
+    )
+
+    assert mg.name == name
+    assert mg.selected_model.status == "NOT_ENOUGH_DATA"
 
 
 def test_model_group_progress(indico, airlines_dataset: Dataset):
