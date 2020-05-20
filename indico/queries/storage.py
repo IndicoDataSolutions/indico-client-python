@@ -111,6 +111,6 @@ class UploadImages(UploadDocument):
     def process_response(self, uploaded_files: List[dict]) -> List[str]:
         errors = [f["error"] for f in uploaded_files if f.get("error")]
         if errors:
-            return IndicoInputError(error="\n".join(error for error in errors),)
+            return IndicoInputError("\n".join(error for error in errors),)
         urls = [URL_PREFIX + f["path"] for f in uploaded_files]
         return urls
