@@ -89,7 +89,7 @@ class HTTPClient:
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
-        # request_kwargs = deepcopy(request_kwargs)
+
         if request_kwargs.get("files"):
             files = request_kwargs["files"]
 
