@@ -120,7 +120,7 @@ def test_upload_pdf_dataset_batch(indico):
         assert datafile.file_type == "pdf"
 
 
-def test_upload_pdf_interrupt(indico, sometimes_fail_upload):
+def test_upload_pdf_interrupt(indico):
     client = IndicoClient()
 
     client._http.request_session.cookies.clear()

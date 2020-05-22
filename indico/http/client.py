@@ -89,7 +89,10 @@ class HTTPClient:
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
-        request_kwargs = deepcopy(request_kwargs)
+        # request_kwargs = deepcopy(request_kwargs)
+        if request_kwargs.get("files"):
+            files = request_kwargs["files"]
+
         with self._handle_files(request_kwargs):
             response = getattr(self.request_session, method)(
                 f"{self.base_url}{path}", headers=headers, stream=True, verify=self.config.verify_ssl, **request_kwargs
@@ -110,6 +113,8 @@ class HTTPClient:
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
             self.get_short_lived_access_token()
+            if request_kwargs.get("files"):
+                request_kwargs["files"] = files
             return self._make_request(method, path, headers, _refreshed=True, **request_kwargs)
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
