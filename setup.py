@@ -17,11 +17,11 @@ setup(
     install_requires=[
         "msgpack==1.0.0",
         "msgpack-numpy==0.4.4.3",
-        "numpy==1.15.4",
+        "numpy>=1.16.0",
         "Pillow>=6.2.0",
         "requests>=2.22.0",
         "setuptools>=41.4.0",
-        "pandas>=0.23.4",
+        "pandas>=1.0.3",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
     ],
 )
