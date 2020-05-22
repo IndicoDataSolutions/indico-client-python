@@ -1,9 +1,15 @@
 from typing import List
-from indico.client.request import RequestChain, GraphQLRequest
+
+from indico.client.request import (
+    GraphQLRequest,
+    HTTPMethod,
+    HTTPRequest,
+    RequestChain,
+)
+from indico.errors import IndicoError
+from indico.queries.storage import UploadDocument
 from indico.types.jobs import Job
 from indico.types.workflow import Workflow
-from indico.queries.storage import UploadDocument
-from indico.errors import IndicoError
 
 
 class ListWorkflowsForDataset(GraphQLRequest):
@@ -43,22 +49,31 @@ class _WorkflowSubmission(GraphQLRequest):
     query = """
         mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!) {
             workflowSubmission(workflowId: $workflowId, files: $files) {
-                jobId
+                jobIds
+                submissionIds
             }
         }
     """
 
-    def __init__(self, workflow_id, files: List[str]):
+    def __init__(self, workflow_id: int, files: List[str], submission: bool):
         self.workflow_id = workflow_id
+        self.record_submission = submission
         super().__init__(
-            query=self.query, variables={"files": files, "workflowId": workflow_id}
+            query=self.query,
+            variables={
+                "files": files,
+                "workflowId": workflow_id,
+                "recordSubmission": submission,
+            },
         )
 
     def process_response(self, response):
-        job_id = super().process_response(response)["workflowSubmission"]["jobId"]
-        if not job_id:
+        response = super().process_response(response)["workflowSubmission"]
+        if self.record_submission:
+            return response["submissionIds"]
+        elif not not response["jobIds"]:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
-        return Job(id=job_id)
+        return [Job(id=job_id) for job_id in response["jobIds"]]
 
 
 class WorkflowSubmission(RequestChain):
@@ -73,10 +88,15 @@ class WorkflowSubmission(RequestChain):
         Job: Job object for the workflow submission
     """
 
-    def __init__(self, files: List[str], workflow_id: int):
+    def __init__(self, files: List[str], workflow_id: int, submission: bool = True):
         self.files = files
         self.workflow_id = workflow_id
+        self.submission = submission
 
     def requests(self):
         yield UploadDocument(files=self.files)
-        yield _WorkflowSubmission(files=self.previous, workflow_id=self.workflow_id)
+        yield _WorkflowSubmission(
+            files=self.previous,
+            workflow_id=self.workflow_id,
+            submission=self.submission,
+        )
