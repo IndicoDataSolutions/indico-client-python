@@ -11,6 +11,7 @@ from indico.http.serialization import deserialize
 from indico.errors import IndicoRequestError, IndicoAuthenticationFailed
 from indico.client.request import HTTPRequest
 from requests import Response
+from copy import deepcopy
 
 logger = logging.getLogger(__file__)
 
@@ -70,16 +71,17 @@ class HTTPClient:
 
     @contextmanager
     def _handle_files(self, req_kwargs):
+        new_kwargs = deepcopy(req_kwargs)
         files = []
         file_arg = {}
-        if "files" in req_kwargs:
-            for filepath in req_kwargs["files"]:
+        if "files" in new_kwargs:
+            for filepath in new_kwargs["files"]:
                 path = Path(filepath)
                 fd = path.open("rb")
                 files.append(fd)
                 file_arg[path.stem] = fd
-            req_kwargs["files"] = file_arg
-        yield
+            new_kwargs["files"] = file_arg
+        yield new_kwargs
 
         if files:
             [f.close() for f in files]
@@ -88,9 +90,10 @@ class HTTPClient:
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
-        with self._handle_files(request_kwargs):
+
+        with self._handle_files(request_kwargs) as new_kwargs:
             response = getattr(self.request_session, method)(
-                f"{self.base_url}{path}", headers=headers, stream=True, verify=self.config.verify_ssl, **request_kwargs
+                f"{self.base_url}{path}", headers=headers, stream=True, verify=self.config.verify_ssl, **new_kwargs
             )
 
         # code, api_response =

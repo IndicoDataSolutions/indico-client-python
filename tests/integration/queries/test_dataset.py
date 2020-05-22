@@ -118,3 +118,22 @@ def test_upload_pdf_dataset_batch(indico):
     for datafile in response.files:
         assert datafile.status == "PROCESSED"
         assert datafile.file_type == "pdf"
+
+
+def test_upload_pdf_interrupt(indico):
+    client = IndicoClient()
+
+    client._http.request_session.cookies.clear()
+    file_names = ["mock.pdf", "mock_2.pdf", "mock_3.pdf"]
+    parent_path = str(Path(__file__).parent.parent / "data")
+    dataset_filepaths = [
+        os.path.join(parent_path, file_name) for file_name in file_names
+    ]
+
+    dataset = client.call(
+        CreateDataset(
+            name=f"pdf-dataset-test-{int(time.time())}",
+            files=dataset_filepaths,
+            batch_size=1,
+        )
+    )
