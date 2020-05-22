@@ -11,7 +11,6 @@ from indico.http.serialization import deserialize
 from indico.errors import IndicoRequestError, IndicoAuthenticationFailed
 from indico.client.request import HTTPRequest
 from requests import Response
-from copy import deepcopy
 
 logger = logging.getLogger(__file__)
 
