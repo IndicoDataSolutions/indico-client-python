@@ -71,17 +71,17 @@ class HTTPClient:
 
     @contextmanager
     def _handle_files(self, req_kwargs):
-        orig_kwargs = deepcopy(req_kwargs)
+        new_kwargs = deepcopy(req_kwargs)
         files = []
         file_arg = {}
-        if "files" in req_kwargs:
-            for filepath in req_kwargs["files"]:
+        if "files" in new_kwargs:
+            for filepath in new_kwargs["files"]:
                 path = Path(filepath)
                 fd = path.open("rb")
                 files.append(fd)
                 file_arg[path.stem] = fd
-            req_kwargs["files"] = file_arg
-        yield orig_kwargs
+            new_kwargs["files"] = file_arg
+        yield new_kwargs
 
         if files:
             [f.close() for f in files]
@@ -91,9 +91,9 @@ class HTTPClient:
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
 
-        with self._handle_files(request_kwargs) as orig_kwargs:
+        with self._handle_files(request_kwargs) as new_kwargs:
             response = getattr(self.request_session, method)(
-                f"{self.base_url}{path}", headers=headers, stream=True, verify=self.config.verify_ssl, **request_kwargs
+                f"{self.base_url}{path}", headers=headers, stream=True, verify=self.config.verify_ssl, **new_kwargs
             )
 
         # code, api_response =
@@ -111,7 +111,7 @@ class HTTPClient:
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
             self.get_short_lived_access_token()
-            return self._make_request(method, path, headers, _refreshed=True, **orig_kwargs)
+            return self._make_request(method, path, headers, _refreshed=True, **request_kwargs)
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
 
