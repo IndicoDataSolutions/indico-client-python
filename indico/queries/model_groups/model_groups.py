@@ -111,7 +111,8 @@ class _CreateModelGroup(GraphQLRequest):
             $sourceColumnId: Int!,
             $labelsetColumnId: Int,
             $name: String!,
-            $modelTrainingOptions: JSONString
+            $modelTrainingOptions: JSONString,
+            $documentModel: Bool,
         ) {
                 createModelGroup(
                     datasetId: $datasetId,
@@ -119,6 +120,7 @@ class _CreateModelGroup(GraphQLRequest):
                     labelsetColumnId: $labelsetColumnId,
                     modelTrainingOptions: $modelTrainingOptions,
                     name: $name,
+                    documentModel: $documentModel,
                 ) {
                     id
                     status
@@ -134,6 +136,7 @@ class _CreateModelGroup(GraphQLRequest):
         source_column_id: int,
         labelset_id: int,
         model_training_options: dict = None,
+        document_model: bool = False,
     ):
         if model_training_options:
             model_training_options = json.dumps(model_training_options)
@@ -145,6 +148,7 @@ class _CreateModelGroup(GraphQLRequest):
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_id,
                 "modelTrainingOptions": model_training_options,
+                "documentModel": document_model,
             },
         )
 
@@ -216,6 +220,7 @@ class CreateModelGroup(RequestChain):
         labelset_id: int,
         wait: bool = False,
         model_training_options: dict = None,
+        document_model: bool = False,
     ):
         self.name = name
         self.dataset_id = dataset_id
@@ -223,6 +228,7 @@ class CreateModelGroup(RequestChain):
         self.labelset_id = labelset_id
         self.wait = wait
         self.model_training_options = model_training_options
+        self.document_model = document_model
 
     def requests(self):
         yield _CreateModelGroup(
@@ -231,6 +237,7 @@ class CreateModelGroup(RequestChain):
             source_column_id=self.source_column_id,
             labelset_id=self.labelset_id,
             model_training_options=self.model_training_options,
+            document_model=self.document_model,
         )
         model_group_id = self.previous.id
         if self.wait:
