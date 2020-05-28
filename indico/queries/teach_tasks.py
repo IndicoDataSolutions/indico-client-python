@@ -11,28 +11,25 @@ from indico.client.request import (
 )
 
 from indico.types.questionnaire import Questionnaire, Example
-from indico.errors import IndicoNotFound
-
-
-class DataFileName(GraphQLRequest):
-    query = """
-    query(
-        $datafileids: [Int]!
-    ) {
-        datafiles(datafileIds: $datafileids) {
-            id
-            name
-        }
-    }
-    """
-
-    def __init__(self, datafile_ids):
-        super().__init__(
-            query=self.query, variables={"datafileids": datafile_ids},
-        )
+from indico.types.dataset import Dataset
+from indico.errors import IndicoNotFound, IndicoInputError
 
 
 class AddLabels(GraphQLRequest):
+    """
+    Add labels to an existing labelset.
+
+    Args:
+        dataset_id (int): The id of the dataset to add labels to.
+        labelset_id (int): The id of the labelset to add labels to.
+        target (List[Any]): A list of labels to add to the labelset.
+        row_index (List[Any]): The row indices corresponding with each item in targets.
+
+    Raises:
+        IndicoInputError if the length of targets and row_index are not equal
+
+    """
+
     query = """
         mutation(
             $labels: [SubmissionLabel]!,
@@ -47,7 +44,12 @@ class AddLabels(GraphQLRequest):
         }
         """
 
-    def __init__(self, target, dataset_id, row_index, labelset_id):
+    def __init__(
+        self, dataset_id: int, labelset_id: int, target: List[Any], row_index: List[int]
+    ):
+        if len(target) != len(row_index):
+            raise IndicoInputError("Mismatch in lengths between target and row_index.")
+
         labels = []
         for t, row_id in zip(target, row_index):
             if t is not None:
@@ -63,6 +65,18 @@ class AddLabels(GraphQLRequest):
 
 
 class GetQuestionaireExamples(GraphQLRequest):
+    """
+    Gets unlabeled examples from a Questionnaire.
+
+    Args:
+        questionaire_id (int): The id of the questionnaire to get examples from.
+        num_examples (int): The number of examples to get from the questionaire.
+
+    Returns:
+        List[Example]
+
+    """
+
     query = """
     query(
         $questionaire_id: Int!,
@@ -106,6 +120,20 @@ class GetQuestionaireExamples(GraphQLRequest):
 
 
 class CreateQuestionaire(GraphQLRequest):
+    """
+    Creates the questionnaire (teach task) for a dataset.
+
+    Args:
+        name (str): The name of the questionnaire.
+        dataset_id (int): The id of the dataset to create the questionnaire from.
+        source_column_id (int): The id of the source column to create a questionnaire from.
+        targets (List[str]): The classes for the dataset.
+
+    Returns:
+        Questionnaire
+
+    """
+
     query = """
         mutation(
             $name: String!,
@@ -127,7 +155,9 @@ class CreateQuestionaire(GraphQLRequest):
         }
     """
 
-    def __init__(self, name: str, dataset_id: int, source_column_id: int, targets: Any):
+    def __init__(
+        self, name: str, dataset_id: int, source_column_id: int, targets: List[str]
+    ):
         questions = [
             {"type": "ANNOTATION", "targets": targets, "keywords": [], "text": name,}
         ]
@@ -151,45 +181,36 @@ class CreateQuestionaire(GraphQLRequest):
         return questionnaire
 
 
-class _GetDatasetInfo(GraphQLRequest):
-    query = """
-        query(
-            $id: Int!
-        ) {
-            dataset(id: $id) {
-                files {
-                    name
-                }
-            }
-        }
+class CreateTeachTask(RequestChain):
+    """
+    Creates a labeled questionaire (teach task) for a dataset.
 
+    Args:
+        name (str): The name of the questionnaire.
+        csv_path (str): Path to a csv with columns containing text and json encoded labels.
+        dataset (Dataset): Dataset to create the questionnaire from.
+        num_examples (int): number of rows in the dataset in total.
+        text_column (str): Optional. The column name in the csv containing the text.
+        label_column (str): Optional. The column name in the csv containing the json encoded labels. 
+        
+    Returns:
+        Dataset object   
     """
 
-    def __init__(self, dataset_id: int):
-        super().__init__(
-            query=self.query, variables={"id": dataset_id},
-        )
-
-
-class GetDatasetInfo(RequestChain):
-    previous = None
-
-    def __init__(self, id: int):
-        self.id = id
-        super().__init__()
-
-    def requests(self):
-        yield _GetDatasetInfo(self.id)
-
-
-class CreateDatasetTeach(RequestChain):
     previous = None
 
     def __init__(
-        self, name: str, files: List[str], csv_path: str, batch_size: int = 20,
+        self,
+        name: str,
+        csv_path: str,
+        dataset: Dataset,
+        num_examples: int,
+        text_column="text",
+        label_column="labels",
     ):
+        self.dataset_id = dataset.id
+        self.dataset = dataset
         csv = pd.read_csv(csv_path)
-        self.files = files
         self.data = {
             fn: json.loads(label) for fn, label in zip(csv["text"], csv["labels"])
         }
@@ -197,31 +218,27 @@ class CreateDatasetTeach(RequestChain):
             set(t["label"] for sample in self.data.values() for t in sample)
         )
         self.name = name
-        self.batch_size = batch_size
+        self.num_examples = num_examples
         super().__init__()
 
     def requests(self):
-        yield CreateDataset(
-            name=self.name, files=self.files, wait=True, batch_size=self.batch_size
-        )
-        dataset_id = self.previous.id
         yield CreateQuestionaire(
             name=self.name,
-            dataset_id=dataset_id,
-            source_column_id=self.previous.datacolumns[0].id,
+            dataset_id=self.dataset_id,
+            source_column_id=self.dataset.datacolumns[0].id,
             targets=self.targets,
         )
         questionaire_id = self.previous.id
-        yield GetDataset(id=dataset_id)
+        yield GetDataset(id=self.dataset_id)
         labelset_id = self.previous.labelsets[0].id
         yield GetQuestionaireExamples(
-            questionaire_id=questionaire_id, num_examples=len(self.files)
+            questionaire_id=questionaire_id, num_examples=self.num_examples
         )
         yield AddLabels(
             target=[self.data.get(f.source) for f in self.previous],
-            dataset_id=dataset_id,
+            dataset_id=self.dataset_id,
             row_index=[d.row_index for d in self.previous],
             labelset_id=labelset_id,
         )
 
-        yield GetDataset(id=dataset_id)
+        yield GetDataset(id=self.dataset_id)
