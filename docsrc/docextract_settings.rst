@@ -70,7 +70,10 @@ confidence level for extracted characters, alternative characters (i.e. second m
 position information, and more. It returns a nested dictionary.   
 
 "ondocument" provides similar information to "detailed" but does not include text/metadata at the 
-document-level. It returns a list of dictionaries where each dictionary is page data. 
+document-level. It returns a list of dictionaries where each dictionary is page data. This preset configuration
+also supports an additional "vdp" attribute, which, if set to True, performs an additional block classification
+and association step. The former adds a "label_type" to every block, and the latter adds an "associations"
+attribute to the result (located on the first page).
 
 The exact settings included in "legacy", "simple", "ondocument", "standard", and "detailed"
 are shown at the bottom of this page.
