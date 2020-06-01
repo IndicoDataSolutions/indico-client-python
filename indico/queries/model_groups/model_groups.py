@@ -112,7 +112,7 @@ class _CreateModelGroup(GraphQLRequest):
             $labelsetColumnId: Int,
             $name: String!,
             $modelTrainingOptions: JSONString,
-            $documentModel: Bool,
+            $documentModel: Boolean,
         ) {
                 createModelGroup(
                     datasetId: $datasetId,
