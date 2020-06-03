@@ -8,11 +8,12 @@ from indico.queries.datasets import CreateDataset, GetDataset
 from indico.client.request import (
     GraphQLRequest,
     RequestChain,
+    Debouncer,
 )
 
 from indico.types.questionnaire import Questionnaire, Example
 from indico.types.dataset import Dataset
-from indico.errors import IndicoNotFound, IndicoInputError
+from indico.errors import IndicoNotFound, IndicoInputError, IndicoError
 
 
 class AddLabels(GraphQLRequest):
@@ -22,8 +23,7 @@ class AddLabels(GraphQLRequest):
     Args:
         dataset_id (int): The id of the dataset to add labels to.
         labelset_id (int): The id of the labelset to add labels to.
-        target (List[Any]): A list of labels to add to the labelset.
-        row_index (List[Any]): The row indices corresponding with each item in targets.
+        labels (List(dict)): A list of dicts containing rowIndex and target fields for the data points to add.
 
     Raises:
         IndicoInputError if the length of targets and row_index are not equal
@@ -45,15 +45,9 @@ class AddLabels(GraphQLRequest):
         """
 
     def __init__(
-        self, dataset_id: int, labelset_id: int, target: List[Any], row_index: List[int]
+        self, dataset_id: int, labelset_id: int, labels: List[dict],
     ):
-        if len(target) != len(row_index):
-            raise IndicoInputError("Mismatch in lengths between target and row_index.")
 
-        labels = []
-        for t, row_id in zip(target, row_index):
-            if t is not None:
-                labels.append({"rowIndex": row_id, "target": json.dumps(t)})
         super().__init__(
             query=self.query,
             variables={
@@ -64,13 +58,13 @@ class AddLabels(GraphQLRequest):
         )
 
 
-class GetQuestionaireExamples(GraphQLRequest):
+class GetQuestionnaireExamples(GraphQLRequest):
     """
     Gets unlabeled examples from a Questionnaire.
 
     Args:
         questionaire_id (int): The id of the questionnaire to get examples from.
-        num_examples (int): The number of examples to get from the questionaire.
+        num_examples (int): The number of examples to get from the questionnaire.
 
     Returns:
         List[Example]
@@ -119,7 +113,45 @@ class GetQuestionaireExamples(GraphQLRequest):
         return examples
 
 
-class CreateQuestionaire(GraphQLRequest):
+class GetQuestionnaire(GraphQLRequest):
+    """
+    Gets a questionnaire from an ID.
+
+    Args:
+        questionaire_id (int): The id of the questionnaire to get examples from.
+
+    Returns
+        Questionnaire
+    """
+
+    query = """
+    query(
+        $questionaire_id: Int!
+    )
+    {
+        questionnaires(questionnaireIds: [$questionaire_id]) {
+            questionnaires {
+                id
+                questionsStatus
+                odl
+                name
+                numTotalExamples
+                numFullyLabeled
+            }
+        }
+    }
+    """
+
+    def __init__(self, questionnaire_id: int):
+        super().__init__(
+            query=self.query, variables={"questionaire_id": questionnaire_id},
+        )
+
+    def process_response(self, response):
+        return Questionnaire(**super().process_response(response)["questionnaires"])
+
+
+class _CreateQuestionaire(GraphQLRequest):
     """
     Creates the questionnaire (teach task) for a dataset.
 
@@ -128,6 +160,8 @@ class CreateQuestionaire(GraphQLRequest):
         dataset_id (int): The id of the dataset to create the questionnaire from.
         source_column_id (int): The id of the source column to create a questionnaire from.
         targets (List[str]): The classes for the dataset.
+        task_type (str): The type of the task to create.
+        data_type (str): The type of the source data.
 
     Returns:
         Questionnaire
@@ -140,10 +174,11 @@ class CreateQuestionaire(GraphQLRequest):
             $dataset_id: Int!,
             $questions: [QuestionInput]!,
             $source_col_id: Int!,
+            $data_type: DataType!,
         ) {
             createQuestionnaire (
                 datasetId: $dataset_id,
-                dataType: TEXT,
+                dataType: $data_type,
                 name: $name,
                 numLabelersRequired: 1,
                 questions: $questions,
@@ -151,15 +186,23 @@ class CreateQuestionaire(GraphQLRequest):
                 instructions: ""
             ) {
                 id
+                questionsStatus
+                numTotalExamples
             }
         }
     """
 
     def __init__(
-        self, name: str, dataset_id: int, source_column_id: int, targets: List[str]
+        self,
+        name: str,
+        dataset_id: int,
+        source_column_id: int,
+        targets: List[str],
+        task_type: str,
+        data_type: str,
     ):
         questions = [
-            {"type": "ANNOTATION", "targets": targets, "keywords": [], "text": name,}
+            {"type": task_type, "targets": targets, "keywords": [], "text": name,}
         ]
         super().__init__(
             query=self.query,
@@ -168,6 +211,7 @@ class CreateQuestionaire(GraphQLRequest):
                 "dataset_id": dataset_id,
                 "questions": questions,
                 "source_col_id": source_column_id,
+                "data_type": data_type,
             },
         )
 
@@ -181,20 +225,20 @@ class CreateQuestionaire(GraphQLRequest):
         return questionnaire
 
 
-class CreateTeachTask(RequestChain):
+class CreateQuestionaire(RequestChain):
     """
     Creates a labeled questionaire (teach task) for a dataset.
 
     Args:
         name (str): The name of the questionnaire.
-        csv_path (str): Path to a csv with columns containing text and json encoded labels.
+        targets (set): A set containing the classes/label options for the task.
         dataset (Dataset): Dataset to create the questionnaire from.
-        num_examples (int): number of rows in the dataset in total.
-        text_column (str): Optional. The column name in the csv containing the text.
-        label_column (str): Optional. The column name in the csv containing the json encoded labels. 
+        target_lookup (dict): An optional dict mapping sample text to labels.
+        task_type (str): The type of the task. Defaults to ANNOTATION.
+        data_type (str): The type of the data. Defaults to TEXT.
         
     Returns:
-        Dataset object   
+        Questionnaire object   
     """
 
     previous = None
@@ -202,43 +246,62 @@ class CreateTeachTask(RequestChain):
     def __init__(
         self,
         name: str,
-        csv_path: str,
+        targets: set,
         dataset: Dataset,
-        num_examples: int,
-        text_column="text",
-        label_column="labels",
+        target_lookup: dict = None,
+        task_type: str = "ANNOTATION",
+        data_type: str = "TEXT",
     ):
         self.dataset_id = dataset.id
         self.dataset = dataset
-        csv = pd.read_csv(csv_path)
-        self.data = {
-            fn: json.loads(label) for fn, label in zip(csv["text"], csv["labels"])
-        }
-        self.targets = list(
-            set(t["label"] for sample in self.data.values() for t in sample)
-        )
+        self.target_lookup = target_lookup
+        self.targets = list(targets)
         self.name = name
-        self.num_examples = num_examples
+        self.task_type = task_type
+        self.data_type = data_type
         super().__init__()
 
     def requests(self):
-        yield CreateQuestionaire(
+        yield _CreateQuestionaire(
             name=self.name,
             dataset_id=self.dataset_id,
             source_column_id=self.dataset.datacolumns[0].id,
             targets=self.targets,
+            task_type=self.task_type,
+            data_type=self.data_type,
         )
         questionaire_id = self.previous.id
-        yield GetDataset(id=self.dataset_id)
-        labelset_id = self.previous.labelsets[0].id
-        yield GetQuestionaireExamples(
-            questionaire_id=questionaire_id, num_examples=self.num_examples
-        )
-        yield AddLabels(
-            target=[self.data.get(f.source) for f in self.previous],
-            dataset_id=self.dataset_id,
-            row_index=[d.row_index for d in self.previous],
-            labelset_id=labelset_id,
-        )
+        status = self.previous.questions_status
+        debouncer = Debouncer()
+        while status == "STARTED":
+            debouncer.backoff()
+            yield GetQuestionnaire(questionaire_id)
+            status = self.previous.questions_status
 
-        yield GetDataset(id=self.dataset_id)
+        if status == "FAILED":
+            raise IndicoError("Creating the questionnaire has failed.")
+        assert status == "COMPLETE"
+
+        if self.target_lookup:
+            num_examples = self.previous.num_total_examples
+            yield GetDataset(id=self.dataset_id)
+            labelset_id = self.previous.labelsets[0].id
+            yield GetQuestionnaireExamples(
+                questionaire_id=questionaire_id, num_examples=num_examples
+            )
+
+            labels = []
+            for f in self.previous:
+                label = self.target_lookup.get(f.source)
+                if label is not None:
+                    labels.append(
+                        {"rowIndex": f.row_index, "target": json.dumps(label)}
+                    )
+
+            if labels:
+                yield AddLabels(
+                    dataset_id=self.dataset_id,
+                    labelset_id=labelset_id,
+                    labels=labels,
+                )
+        yield GetQuestionnaire(questionaire_id)
