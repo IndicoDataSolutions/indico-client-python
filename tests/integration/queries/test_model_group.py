@@ -41,11 +41,13 @@ def test_create_model_group(airlines_dataset: Dataset):
 
     assert mg.name == name
 
+
 def test_get_missing_model_group(indico):
     client = IndicoClient()
 
     with pytest.raises(IndicoNotFound):
         client.call(GetModelGroup(id=500000))
+
 
 def test_object_detection(cats_dogs_image_dataset: Dataset):
     client = IndicoClient()
