@@ -1,5 +1,7 @@
+import pytest
 from indico.client import IndicoClient
 from indico.types.dataset import Dataset
+from indico.errors import IndicoRequestError
 from indico.queries.export import CreateExport, _CreateExport, DownloadExport
 from ..data.datasets import airlines_dataset
 
@@ -24,6 +26,11 @@ def test_create_export_no_wait(airlines_dataset: Dataset):
     assert export.status == "STARTED"
 
 
-def test_download_incomplete():
-    pass
-    # TODO: Raise error indicating the export is not complete
+def test_download_incomplete(airlines_dataset: Dataset):
+    client = IndicoClient()
+    export = client.call(CreateExport(dataset_id=airlines_dataset.id, wait=False))
+    assert export.status == "STARTED"
+
+    with pytest.raises(IndicoRequestError) as e:
+        client.call(DownloadExport(export.id))
+        assert isinstance(e._excinfo, IndicoRequestError)
