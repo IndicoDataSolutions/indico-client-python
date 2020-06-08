@@ -35,7 +35,8 @@ class _CreateExport(GraphQLRequest):
                 downloadUrl,
                 columnIds,
                 labelsetIds,
-                subsetIds
+                subsetIds,
+                anonymous
             }
         }    
 
