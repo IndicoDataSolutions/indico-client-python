@@ -60,6 +60,7 @@ class _CreateExport(GraphQLRequest):
                 "labelsetIds": labelset_ids,
                 "fileInfo": file_info,
                 "combineLabels": combine_labels,
+                "anonymous": anonymoous,
             },
         )
 
