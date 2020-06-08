@@ -11,6 +11,11 @@ from indico.queries.model_groups import (
     GetTrainingModelWithProgress,
     LoadModel,
 )
+from indico.queries.model_groups.metrics import (
+    AnnotationModelGroupMetrics,
+    ObjectDetectionMetrics,
+    GetModelGroupMetrics,
+)
 from indico.queries.storage import UploadDocument, URL_PREFIX
 from indico.queries.jobs import JobStatus
 from indico.types.dataset import Dataset
@@ -22,6 +27,8 @@ from ..data.datasets import (
     airlines_model_group,
     cats_dogs_image_dataset,
     cats_dogs_modelgroup,
+    org_annotate_model_group,
+    org_annotate_dataset,
 )
 from indico.errors import IndicoNotFound
 
@@ -41,11 +48,13 @@ def test_create_model_group(airlines_dataset: Dataset):
 
     assert mg.name == name
 
+
 def test_get_missing_model_group(indico):
     client = IndicoClient()
 
     with pytest.raises(IndicoNotFound):
         client.call(GetModelGroup(id=500000))
+
 
 def test_object_detection(cats_dogs_image_dataset: Dataset):
     client = IndicoClient()
@@ -194,3 +203,52 @@ def test_load_model(indico, airlines_dataset, airlines_model_group):
     status = client.call(LoadModel(model_id=airlines_model_group.selected_model.id,))
 
     assert status == "ready"
+
+
+def test_annotation_metrics(indico, org_annotate_dataset, org_annotate_model_group):
+    client = IndicoClient()
+    result = client.call(
+        AnnotationModelGroupMetrics(model_group_id=org_annotate_model_group.id)
+    )
+    check_annotation_metrics(result)
+
+
+def test_object_detection_metrics(
+    indico, cats_dogs_image_dataset, cats_dogs_modelgroup
+):
+    client = IndicoClient()
+    result = client.call(ObjectDetectionMetrics(cats_dogs_modelgroup.id))
+    for metric_type in ["AP", "AP-Cat", "AP-Dog\n", "AP50", "AP75"]:
+        assert isinstance(result["bbox"][metric_type], float)
+
+
+def test_model_group_metrics_query(
+    indico, org_annotate_dataset, org_annotate_model_group
+):
+    client = IndicoClient()
+    result = client.call(
+        GetModelGroupMetrics(model_group_id=org_annotate_model_group.id)
+    )
+    check_annotation_metrics(result)
+
+
+def check_annotation_metrics(result):
+    assert result.class_metrics[0].name == "org"
+    for attr in [
+        "f1_score",
+        "false_negatives",
+        "false_positives",
+        "precision",
+        "recall",
+        "true_positives",
+    ]:
+        assert isinstance(
+            getattr(result.class_metrics[0].metrics[0], attr), (float, int)
+        )
+    assert isinstance(result.class_metrics[0].metrics[0].span_type, str)
+
+    assert isinstance(result.model_level_metrics[0].span_type, str)
+    assert isinstance(result.model_level_metrics[0].micro_f1, float)
+    assert isinstance(result.model_level_metrics[0].macro_f1, float)
+    assert isinstance(result.model_level_metrics[0].weighted_f1, float)
+    assert result.retrain_for_metrics is False
