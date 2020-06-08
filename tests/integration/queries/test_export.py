@@ -26,7 +26,6 @@ def test_download_incomplete(indico):
     client = IndicoClient()
     export = Export()
     export.status = "FAILED"
-    export.id = 1
     with pytest.raises(IndicoRequestError) as e:
         client.call(DownloadExport(export=export))
         assert isinstance(e._excinfo, IndicoRequestError)
