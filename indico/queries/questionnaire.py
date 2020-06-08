@@ -148,7 +148,9 @@ class GetQuestionnaire(GraphQLRequest):
         )
 
     def process_response(self, response):
-        return Questionnaire(**super().process_response(response)["questionnaires"])
+        return Questionnaire(
+            **super().process_response(response)["questionnaires"]["questionnaires"][0]
+        )
 
 
 class _CreateQuestionaire(GraphQLRequest):
@@ -300,8 +302,6 @@ class CreateQuestionaire(RequestChain):
 
             if labels:
                 yield AddLabels(
-                    dataset_id=self.dataset_id,
-                    labelset_id=labelset_id,
-                    labels=labels,
+                    dataset_id=self.dataset_id, labelset_id=labelset_id, labels=labels,
                 )
         yield GetQuestionnaire(questionaire_id)
