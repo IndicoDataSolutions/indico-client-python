@@ -231,7 +231,7 @@ class CreateDataset(RequestChain):
         yield _ProcessDataset(id=self.previous.id, name=self.name)
         yield GetDatasetStatus(id=dataset_id)
         debouncer = Debouncer()
-        if self.wait == True:
+        if self.wait is True:
             while not self.previous in ["COMPLETE", "FAILED"]:
                 yield GetDatasetStatus(id=dataset_id)
                 debouncer.backoff()
