@@ -109,7 +109,7 @@ class GetExport(GraphQLRequest):
         return Export(**response["exports"]["exports"][0])
 
 
-class RetrieveExport(RetrieveStorageObject):
+class _RetrieveExport(RetrieveStorageObject):
     def process_response(self, response):
         response = super().process_response(response)
         return pd.read_csv(io.StringIO(response))
@@ -146,11 +146,11 @@ class DownloadExport(RequestChain):
 
         if export.status != "COMPLETE":
             raise IndicoRequestError(
-                code="JOB_INCOMPLETE",
+                code="400",
                 error="The export must be complete and not failed before it can be downloaded",
             )
 
-        yield RetrieveExport(export.download_url)
+        yield _RetrieveExport(export.download_url)
 
 
 class CreateExport(RequestChain):
