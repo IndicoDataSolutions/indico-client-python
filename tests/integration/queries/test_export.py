@@ -1,6 +1,8 @@
 import pytest
+from unittest import mock
 from indico.client import IndicoClient
 from indico.types.dataset import Dataset
+from indico.types.export import Export
 from indico.errors import IndicoRequestError
 from indico.queries.export import CreateExport, _CreateExport, DownloadExport
 from ..data.datasets import airlines_dataset
@@ -20,17 +22,17 @@ def test_create_and_download_export(airlines_dataset: Dataset):
     )
 
 
+def test_download_incomplete(indico):
+    client = IndicoClient()
+    export = Export()
+    export.status = "FAILED"
+    export.id = 1
+    with pytest.raises(IndicoRequestError) as e:
+        client.call(DownloadExport(export=export))
+        assert isinstance(e._excinfo, IndicoRequestError)
+
+
 def test_create_export_no_wait(airlines_dataset: Dataset):
     client = IndicoClient()
     export = client.call(CreateExport(dataset_id=airlines_dataset.id, wait=False))
     assert export.status == "STARTED"
-
-
-def test_download_incomplete(airlines_dataset: Dataset):
-    client = IndicoClient()
-    export = client.call(CreateExport(dataset_id=airlines_dataset.id, wait=False))
-    assert export.status == "STARTED"
-
-    with pytest.raises(IndicoRequestError) as e:
-        client.call(DownloadExport(export.id))
-        assert isinstance(e._excinfo, IndicoRequestError)

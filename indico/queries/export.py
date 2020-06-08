@@ -17,6 +17,7 @@ class _CreateExport(GraphQLRequest):
             $labelsetIds: [Int],
             $fileInfo: Boolean,
             $combineLabels: Boolean,
+            $anonymous: Boolean
         ) {
             createExport(
                 datasetId: $datasetId,
@@ -25,6 +26,7 @@ class _CreateExport(GraphQLRequest):
                 fileInfo: $fileInfo,
                 labelsetIds: $labelsetIds,
                 combineLabels: $combineLabels
+                anonymous: $anonymous
             ) {
                 id,
                 datasetId,
@@ -47,6 +49,7 @@ class _CreateExport(GraphQLRequest):
         labelset_ids: List[int] = None,
         file_info: bool = None,
         combine_labels: bool = None,
+        anonymoous: bool = None,
     ):
         super().__init__(
             self.query,
@@ -199,6 +202,7 @@ class CreateExport(RequestChain):
             labelset_ids=self.labelset_ids,
             file_info=self.file_info,
             combine_labels=self.combine_labels,
+            anonymoous=self.anonymous,
         )
         debouncer = Debouncer()
         if self.wait is True:
