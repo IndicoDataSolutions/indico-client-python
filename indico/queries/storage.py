@@ -114,3 +114,7 @@ class UploadImages(UploadDocument):
             return IndicoInputError(error="\n".join(error for error in errors),)
         urls = [URL_PREFIX + f["path"] for f in uploaded_files]
         return urls
+
+
+# Alias -- because the UploadImages class can also be used for PDF upload
+CreateStorageURLs = UploadImages
