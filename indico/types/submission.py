@@ -10,9 +10,10 @@ class Submission(BaseType):
         dataset_id (int): the Dataset id
         workflow_id (int): the Workflow id
         status (str): status of the submission
-        input_file (str): local url to stored input
+        input_file (str): URL of the input datafile within the Indico Platform. 
         input_filename (str): name of the original file
-        result_file (str): local url to the stored output
+        result_file (str): URL of the result datafile within the Indico Platform
+ 
     """
 
     id: int

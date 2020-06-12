@@ -1,7 +1,9 @@
 import json
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from indico.client.request import GraphQLRequest
+from indico.filters import SubmissionFilter
+from indico.queries import JobStatus
 from indico.types import Job, Submission
 
 
@@ -26,15 +28,18 @@ class ListSubmissions(GraphQLRequest):
         self,
         submission_ids: List[int] = None,
         workflow_ids: List[int] = None,
-        filters: Dict[str, Any] = None,
-        limit: int = None,
+        filters: Union[Dict, SubmissionFilter] = None,
+        limit: int = 1000,
     ):
+        if isinstance(filters, dict):
+            filters = SubmissionFilter.from_dict(filters)
+
         super().__init__(
             self.query,
             variables={
                 "submissionIds": submission_ids,
                 "workflowIds": workflow_ids,
-                "filters": json.dumps(filters) if filters else None,
+                "filters": filters,
                 "limit": limit,
             },
         )
@@ -46,7 +51,7 @@ class ListSubmissions(GraphQLRequest):
         ]
 
 
-class SubmissionResult(GraphQLRequest):
+class CreateSubmissionResult(GraphQLRequest):
     query = """
         mutation CreateSubmissionResults($submissionId: Int!) {
             submissionResults(submissionId: $submissionId) {
@@ -56,13 +61,15 @@ class SubmissionResult(GraphQLRequest):
 
     """
 
-    def __init__(
-        self, submission_id: int,
-    ):
+    def __init__(self, submission_id: int, wait: bool = False):
+        self.wait = wait
         super().__init__(
             self.query, variables={"submissionId": submission_id},
         )
 
     def process_response(self, response) -> Job:
         response = super().process_response(response)["submissionResults"]
-        return Job(id=response["jobId"])
+        job = Job(id=response["jobId"])
+        if self.wait:
+            return JobStatus(id=job.id, wait=True).result
+        return job
