@@ -8,6 +8,10 @@ from indico.types import Job, Submission
 
 
 class ListSubmissions(GraphQLRequest):
+    """
+    Query to list Submissions in the Indico Platform, filtered using optional query arguments.
+    """
+
     query = """
         query ListSubmissions($submissionIds: [Int], $workflowIds: [Int], $filters: SubmissionFilter, $limit: Int){
 	        submissions(submissionIds: $submissionIds, workflowIds: $workflowIds, filters: $filters, limit: $limit){
@@ -31,8 +35,12 @@ class ListSubmissions(GraphQLRequest):
         filters: Union[Dict, SubmissionFilter] = None,
         limit: int = 1000,
     ):
+        if not isinstance(filters, (dict, SubmissionFilter)):
+            raise TypeError(
+                f"filters must be a dict or SubmissionFilter, not {type(filters)}"
+            )
         if isinstance(filters, dict):
-            filters = SubmissionFilter.from_dict(filters)
+            filters = SubmissionFilter(filters)
 
         super().__init__(
             self.query,
@@ -52,6 +60,10 @@ class ListSubmissions(GraphQLRequest):
 
 
 class CreateSubmissionResult(GraphQLRequest):
+    """
+    A mutation that creates a downloadable result file for a given Submission.
+    """
+
     query = """
         mutation CreateSubmissionResults($submissionId: Int!) {
             submissionResults(submissionId: $submissionId) {

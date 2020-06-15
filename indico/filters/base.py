@@ -29,7 +29,3 @@ class BaseFilter(dict):
     @property
     def filterable_columns(self):
         return self._filterable_columns
-
-    @classmethod
-    def from_dict(cls, filters: Dict[str, Any]):
-        return cls(filters)
