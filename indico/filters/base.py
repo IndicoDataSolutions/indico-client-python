@@ -3,6 +3,16 @@ from typing import Any, Dict, Iterable
 
 
 class BaseFilter(dict):
+    """
+    Base filter class that allows users to construct filter statements for
+    GraphQL queries. Columns are restricted to a particular set of database columns
+    determined by the specific resource a user queries.
+
+    Note:
+        Class should be extended for specific Indico resources, and the subclasses 
+        instantiated when a query is constructed.
+    """
+
     _filterable_columns = set()
 
     def __init__(self, filters: Dict[str, Any]):

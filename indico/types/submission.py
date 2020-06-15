@@ -3,7 +3,12 @@ from indico.types import BaseType
 
 class Submission(BaseType):
     """
-    A Submission in the Indico Platform
+    A Submission in the Indico Platform.
+
+    Submissions represent a single input which has been sent for processing by a specific workflow. 
+    The input file is generally a PDF, and the processing broadly consists of an input processor, a
+    series of processors and components associated with particular docbots, and finally an output processor
+    to generate the result file.
 
     Attributes:
         id (int): the Submission id
