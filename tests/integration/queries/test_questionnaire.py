@@ -23,7 +23,7 @@ def test_create_questionnaire_no_labels(indico):
     response = client.call(
         CreateQuestionaire(
             name=f"CreateDatasetTeach-test-{int(time.time())}",
-            dataset=dataset,
+            dataset_id=dataset.id,
             targets=["A", "B", "C"],
         )
     )
@@ -50,7 +50,7 @@ def test_create_questionnaire_labeled(indico):
     response = client.call(
         CreateQuestionaire(
             name=f"CreateDatasetTeach-test-{int(time.time())}",
-            dataset=dataset,
+            dataset_id=dataset.id,
             target_lookup=data,
             targets=targets,
         )

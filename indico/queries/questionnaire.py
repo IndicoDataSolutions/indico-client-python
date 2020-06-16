@@ -234,7 +234,7 @@ class CreateQuestionaire(RequestChain):
     Args:
         name (str): The name of the questionnaire.
         targets (set): A set containing the classes/label options for the task.
-        dataset (Dataset): Dataset to create the questionnaire from.
+        dataset_id (int): Id for a dataset to create the questionnaire from.
         target_lookup (dict): An optional dict mapping sample text to labels.
         task_type (str): The type of the task. Defaults to ANNOTATION.
         data_type (str): The type of the data. Defaults to TEXT.
@@ -249,13 +249,12 @@ class CreateQuestionaire(RequestChain):
         self,
         name: str,
         targets: set,
-        dataset: Dataset,
+        dataset_id: Dataset,
         target_lookup: dict = None,
         task_type: str = "ANNOTATION",
         data_type: str = "TEXT",
     ):
-        self.dataset_id = dataset.id
-        self.dataset = dataset
+        self.dataset_id = dataset_id
         self.target_lookup = target_lookup
         self.targets = list(targets)
         self.name = name
@@ -264,10 +263,11 @@ class CreateQuestionaire(RequestChain):
         super().__init__()
 
     def requests(self):
+        yield GetDataset(id=self.dataset_id)
         yield _CreateQuestionaire(
             name=self.name,
             dataset_id=self.dataset_id,
-            source_column_id=self.dataset.datacolumns[0].id,
+            source_column_id=self.previous.datacolumns[0].id,
             targets=self.targets,
             task_type=self.task_type,
             data_type=self.data_type,
