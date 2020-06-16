@@ -8,18 +8,18 @@ from indico.queries.jobs import Job
 class _FormPreprocessing(GraphQLRequest):
 
     query = """
-        mutation($files: [FileInput], $filenames: [String]) {
+        mutation($files: [FileInput]) {
             activeFormFields(
-                files: $files, filenames: $filenames
+                files: $files
             ) {
                 jobIds
             }
         }
     """
 
-    def __init__(self, files, filenames):
+    def __init__(self, files):
         super().__init__(
-            query=self.query, variables={"files": files, "filenames": filenames}
+            query=self.query, variables={"files": files}
         )
 
     def process_response(self, response):
@@ -48,4 +48,4 @@ class FormPreprocessing(RequestChain):
             )
         else:
             yield UploadDocument(files=self.files)
-        yield _FormPreprocessing(files=self.previous, filenames=[Path(f).name for f in self.files])
+        yield _FormPreprocessing(files=self.previous)
