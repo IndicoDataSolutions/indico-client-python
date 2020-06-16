@@ -22,7 +22,7 @@ class BaseFilter(dict):
 
     def __init__(self, mapping: Dict[str, Any], mode: FilterMode = FilterMode.AND):
         self._validate_keys(mapping.keys())
-        filters = [{key, val} for key, val in mapping.items()]
+        filters = [{key: val} for key, val in mapping.items()]
         self.update({mode.name: filters})
 
     def _validate_keys(self, keys):
@@ -31,20 +31,19 @@ class BaseFilter(dict):
                 f"Can only filter on {self._filterable_columns}, not {keys}"
             )
 
-    def _update_key(self, key, value):
+    def _update(self, key: str, value: Any, mode: FilterMode):
         self._validate_keys([key])
-        existing_value = self.pop(key)
-        if isinstance(existing_value, list):
-            values = [*existing_value, value]
-        else:
-            values = [existing_value, value]
-        return [{key: val} for val in values]
+        existing_filters = self.pop(mode.name) if mode.name in self else None
+        filters = (
+            [*existing_filters, {key: value}] if existing_filters else [{key: value}]
+        )
+        self.update({mode.name: filters})
 
     def and_(self, key, value):
-        self.update({"AND": self._update_key(key, value)})
+        return self._update(key, value, FilterMode.AND)
 
     def or_(self, key, value):
-        self.update({"OR": self._update_key(key, value)})
+        return self._update(key, value, FilterMode.OR)
 
     @property
     def filterable_columns(self):
