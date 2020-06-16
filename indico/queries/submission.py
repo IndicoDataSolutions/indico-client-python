@@ -39,8 +39,6 @@ class ListSubmissions(GraphQLRequest):
             raise TypeError(
                 f"filters must be a dict or SubmissionFilter, not {type(filters)}"
             )
-        if isinstance(filters, dict):
-            filters = SubmissionFilter(filters)
 
         super().__init__(
             self.query,
