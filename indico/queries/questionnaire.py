@@ -63,7 +63,7 @@ class GetQuestionnaireExamples(GraphQLRequest):
     Gets unlabeled examples from a Questionnaire.
 
     Args:
-        questionaire_id (int): The id of the questionnaire to get examples from.
+        questionnaire_id (int): The id of the questionnaire to get examples from.
         num_examples (int): The number of examples to get from the questionnaire.
 
     Returns:
@@ -73,11 +73,11 @@ class GetQuestionnaireExamples(GraphQLRequest):
 
     query = """
     query(
-        $questionaire_id: Int!,
+        $questionnaire_id: Int!,
         $num_examples: Int!
     )
     {
-        questionnaires(questionnaireIds: [$questionaire_id]) {
+        questionnaires(questionnaireIds: [$questionnaire_id]) {
             questionnaires {
                 examples(numExamples: $num_examples) {
                     rowIndex
@@ -89,11 +89,11 @@ class GetQuestionnaireExamples(GraphQLRequest):
     }
     """
 
-    def __init__(self, questionaire_id: int, num_examples: int):
+    def __init__(self, questionnaire_id: int, num_examples: int):
         super().__init__(
             query=self.query,
             variables={
-                "questionaire_id": questionaire_id,
+                "questionnaire_id": questionnaire_id,
                 "num_examples": num_examples,
             },
         )
@@ -126,10 +126,10 @@ class GetQuestionnaire(GraphQLRequest):
 
     query = """
     query(
-        $questionaire_id: Int!
+        $questionnaire_id: Int!
     )
     {
-        questionnaires(questionnaireIds: [$questionaire_id]) {
+        questionnaires(questionnaireIds: [$questionnaire_id]) {
             questionnaires {
                 id
                 questionsStatus
@@ -144,12 +144,15 @@ class GetQuestionnaire(GraphQLRequest):
 
     def __init__(self, questionnaire_id: int):
         super().__init__(
-            query=self.query, variables={"questionaire_id": questionnaire_id},
+            query=self.query, variables={"questionnaire_id": questionnaire_id},
         )
 
     def process_response(self, response):
+        questionnaire_list = super().process_response(response)["questionnaires"]["questionnaires"]
+        if not questionnaire_list:
+            raise IndicoError("Cannot find questionnaire")
         return Questionnaire(
-            **super().process_response(response)["questionnaires"]["questionnaires"][0]
+            **questionnaire_list[0]
         )
 
 
@@ -289,7 +292,7 @@ class CreateQuestionaire(RequestChain):
             yield GetDataset(id=self.dataset_id)
             labelset_id = self.previous.labelsets[0].id
             yield GetQuestionnaireExamples(
-                questionaire_id=questionaire_id, num_examples=num_examples
+                questionnaire_id=questionaire_id, num_examples=num_examples
             )
 
             labels = []
