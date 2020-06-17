@@ -4,3 +4,4 @@ from .jobs import *
 from .documents import *
 from .storage import *
 from .workflow import *
+from .forms import *
