@@ -32,6 +32,15 @@ class _FormPreprocessing(GraphQLRequest):
 
 # TODO: move into indico-client
 class FormPreprocessing(RequestChain):
+    """
+    Attempt to auto-detect form fields and labels
+
+    Args:
+        files (str): list of filepaths to upload
+
+    Returns:
+        suggested_fields: list of dictionarys (1 per PDF) containing structured field data 
+    """
 
     def __init__(
         self, files: List[str], json_config: dict = None, upload_batch_size: int = None
