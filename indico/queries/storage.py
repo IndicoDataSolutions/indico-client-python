@@ -103,9 +103,15 @@ class UploadBatched(RequestChain):
             self.result.extend(self.previous)
 
 
-class UploadImages(UploadDocument):
+class CreateStorageURLs(UploadDocument):
     """
-    Upload image files stored on a local filepath to the indico platform.
+    Upload an object stored on the Indico Platform and return only the storage URL to the object
+    
+    Args:
+        files (str): list of filepaths to upload
+    
+    Returns:
+        urls: list of storage urls to be use for further processing requests (e.g. FormExtraction)
     """
 
     def process_response(self, uploaded_files: List[dict]) -> List[str]:
@@ -116,5 +122,5 @@ class UploadImages(UploadDocument):
         return urls
 
 
-# Alias -- because the UploadImages class can also be used for PDF upload
-CreateStorageURLs = UploadImages
+# Alias to ensure backwards compatability
+UploadImages = CreateStorageURLs
