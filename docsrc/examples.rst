@@ -9,3 +9,4 @@ Examples
     train-predict-ex
     singleocr-ex
     training-progress
+    workflow-ex

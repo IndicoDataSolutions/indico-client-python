@@ -31,6 +31,7 @@ Reference
     model_groups
     jobs
     storage
+    workflow
 
 **Types**
 
