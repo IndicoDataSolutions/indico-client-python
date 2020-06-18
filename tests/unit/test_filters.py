@@ -23,8 +23,3 @@ def test_invalid_filter_column():
     with pytest.raises(ValueError):
         filter.and_("name", "thing")
 
-
-if __name__ == "__main__":
-    test_submission_filter_and()
-    test_submission_filter_or()
-    test_invalid_filter_column()

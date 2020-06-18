@@ -38,16 +38,13 @@ class BaseFilter(dict):
             [*existing_filters, {key: value}] if existing_filters else [{key: value}]
         )
         self.update({mode.name: filters})
+        return self
 
     def and_(self, key, value):
         return self._update(key, value, FilterMode.AND)
 
     def or_(self, key, value):
         return self._update(key, value, FilterMode.OR)
-
-    @property
-    def filterable_columns(self):
-        return self._filterable_columns
 
 
 class SubmissionFilter(BaseFilter):
