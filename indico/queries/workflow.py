@@ -1,6 +1,5 @@
-import json
 from typing import List
-from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod, HTTPRequest
+from indico.client.request import RequestChain, GraphQLRequest
 from indico.types.jobs import Job
 from indico.types.workflow import Workflow
 from indico.queries.storage import UploadDocument
@@ -8,6 +7,15 @@ from indico.errors import IndicoError
 
 
 class ListWorkflowsForDataset(GraphQLRequest):
+    """
+    List all of the workflows for a dataset
+
+    Args:
+        dataset_id (int): id of the dataset to list workflows.
+
+    Returns:
+        Workflows: List of Workflow objects for the given dataset_id
+    """
 
     query = """
         query ListWorkflows($datasetId: Int){
@@ -54,6 +62,17 @@ class _WorkflowSubmission(GraphQLRequest):
 
 
 class WorkflowSubmission(RequestChain):
+    """
+    Submit a list of PDF or CSV files to a workflow
+
+    Args:
+        files (str): List of file paths containing content to submit to the workflow
+        workflow_id (int): id of the workflow to run.
+
+    Returns:
+        Job: Job object for the workflow submission
+    """
+
     def __init__(self, files: List[str], workflow_id: int):
         self.files = files
         self.workflow_id = workflow_id
