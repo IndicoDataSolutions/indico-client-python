@@ -277,3 +277,32 @@ class _ProcessDataset(GraphQLRequest):
 
     def process_response(self, response):
         return Dataset(**super().process_response(response)["processDataset"])
+
+
+class DeleteDataset(GraphQLRequest):
+    """
+    Delete a dataset
+
+    Args:
+        id (int): ID of the dataset
+
+    Returns:
+        success (bool): The success of the operation
+
+    Raises:
+
+    """
+
+    query = """
+    mutation deleteDataset($id: Int!) {
+        deleteDataset(id: $id) {
+            success
+        }
+    }
+    """
+
+    def __init__(self, id):
+        super().__init__(self.query, variables={"id": id})
+
+    def process_response(self, response):
+        return super().process_response(response)["deleteDataset"]["success"]
