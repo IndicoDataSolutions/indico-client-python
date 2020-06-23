@@ -156,3 +156,6 @@ def test_delete_dataset(indico):
 
     success = client.call(DeleteDataset(id=dataset.id))
     assert success == True
+
+    with pytest.raises(IndicoRequestError):
+        dataset = client.call(GetDataset(id=dataset.id))
