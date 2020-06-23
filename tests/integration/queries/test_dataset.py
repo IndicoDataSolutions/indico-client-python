@@ -8,6 +8,7 @@ from indico.queries.datasets import (
     GetDatasetFileStatus,
     CreateDataset,
     ListDatasets,
+    DeleteDataset,
 )
 from indico.types.dataset import Dataset
 from indico.errors import IndicoRequestError
@@ -137,3 +138,21 @@ def test_upload_pdf_interrupt(indico):
             batch_size=1,
         )
     )
+
+
+def test_delete_dataset(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
+
+    dataset = client.call(
+        CreateDataset(
+            name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]
+        )
+    )
+
+    assert isinstance(dataset, Dataset)
+    assert dataset.status == "COMPLETE"
+    assert isinstance(dataset.id, int)
+
+    success = client.call(DeleteDataset(id=dataset.id))
+    assert success == True
