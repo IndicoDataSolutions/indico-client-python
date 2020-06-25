@@ -1,36 +1,27 @@
-import os
 from indico import IndicoClient, IndicoConfig
 from indico.queries import ListWorkflowsForDataset, WorkflowSubmission, JobStatus, RetrieveStorageObject
 
-
-host = "app"
-user = "beta"
-domain = "indico.io"
-home = os.environ["HOME"]
-token_path = f"{home}/indico/tokens/{host}-{user}/indico_api_token.txt"
+# Use your dataset's id to call it's associated workflow
 dataset_id = 6826
 
 my_config = IndicoConfig(
-    host=f"{host}.{domain}", api_token_path=token_path
+    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
 )
-
 client = IndicoClient(config=my_config)
 
-# List workflows for this datasets and call the first one
-w = client.call(ListWorkflowsForDataset(dataset_id=dataset_id))
-if len(w) > 0:    
-    print(f"{w[0].id} - {w[0].name}")
+# Return a list of workflows for this dataset id or an empty list if there are none
+workflows = client.call(ListWorkflowsForDataset(dataset_id=dataset_id))
 
-    job = client.call(WorkflowSubmission(
-        files=["./try-it-out-sample1.pdf"],
-        workflow_id=w[0].id
-    ))
-
-    print(f"Workflow Job ID = {job.id}")
-
-    # Retrieve and print your workflow results
+if workflows:
+    # Send a document through the workflow
+    job = client.call(
+        WorkflowSubmission(files=["./path/to/sample.pdf"], workflow_id=workflows[0].id)
+    )
+    
+    # Retrieve and print your result
     status = client.call(JobStatus(id=job.id, wait=True))
-
     wf_result = client.call(RetrieveStorageObject(status.result))
-
     print(wf_result)
+    
+else:
+    print("You don't have any workflows for this dataset")
