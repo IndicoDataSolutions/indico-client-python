@@ -1,7 +1,7 @@
 from typing import List
 from pathlib import Path
 
-from indico.client.request import RequestChain, GraphQLRequest
+from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod
 from indico.queries.storage import UploadBatched, UploadDocument
 from indico.queries.jobs import Job
 
@@ -70,6 +70,7 @@ class ListPrebuiltForms(GraphQLRequest):
         }
     }
     """
+    method = HTTPMethod.GET
 
     def __init__(self):
         super().__init__(query=self.query)
@@ -103,6 +104,7 @@ class GetPrebuiltForm(GraphQLRequest):
         }
     }
     """
+    method = HTTPMethod.GET
 
     def __init__(self, form_id):
         super().__init__(query=self.query, variables={"form_id": form_id})
