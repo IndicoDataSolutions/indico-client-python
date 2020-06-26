@@ -5,6 +5,7 @@ from indico.client.request import RequestChain, GraphQLRequest
 from indico.queries.storage import UploadBatched, UploadDocument
 from indico.queries.jobs import Job
 
+
 class _FormPreprocessing(GraphQLRequest):
 
     query = """
@@ -18,9 +19,7 @@ class _FormPreprocessing(GraphQLRequest):
     """
 
     def __init__(self, files):
-        super().__init__(
-            query=self.query, variables={"files": files}
-        )
+        super().__init__(query=self.query, variables={"files": files})
 
     def process_response(self, response):
         jobs = super().process_response(response)["activeFormFields"]["jobIds"]
@@ -30,7 +29,6 @@ class _FormPreprocessing(GraphQLRequest):
             return []
 
 
-# TODO: move into indico-client
 class FormPreprocessing(RequestChain):
     """
     Attempt to auto-detect form fields and labels
@@ -58,3 +56,56 @@ class FormPreprocessing(RequestChain):
         else:
             yield UploadDocument(files=self.files)
         yield _FormPreprocessing(files=self.previous)
+
+
+class ListPrebuiltForms(GraphQLRequest):
+
+    query = """
+    mutation listPrebuiltFormsMutation {
+        listPrebuiltForms {
+            forms {
+                id
+                name
+            }
+        }
+    }
+    """
+
+    def __init__(self):
+        super().__init__(query=self.query)
+
+    def process_response(self, response):
+        return super().process_response(response)["listPrebuiltForms"]["forms"]
+
+
+class GetPrebuiltForm(GraphQLRequest):
+
+    query = """
+    mutation($form_id: Int!) {
+        getPrebuiltForm(
+            formId: $form_id
+        ) {
+            form {
+                id 
+                name 
+                pages 
+                pdf 
+                images 
+                labels {
+                    label
+                    top
+                    bottom
+                    left
+                    right 
+                    pageNum
+                }
+            }
+        }
+    }
+    """
+
+    def __init__(self, form_id):
+        super().__init__(query=self.query, variables={"form_id": form_id})
+
+    def process_response(self, response):
+        return super().process_response(response)["getPrebuiltForm"]["form"]
