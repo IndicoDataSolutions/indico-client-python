@@ -13,6 +13,7 @@ User Guide
     docextract-intro
     docextract_settings
     model_predictions
+    workflow-intro
     migration
     examples
 

@@ -12,7 +12,8 @@ by the ``DocumentExtraction`` class. Here's how to OCR one document with Documen
     from indico.queries.documents import DocumentExtraction
     from indico.queries import JobStatus, RetrieveStorageObject
 
-    # here, IndicoClient assumes you have your api token in your home directory and host set as an env variable
+    # here, IndicoClient assumes you have your api token in your home directory
+    # and host set as an env variable
     client = IndicoClient()
     files_to_extract = client.call(DocumentExtraction(files=['./path_to_document.pdf']))
     extracted_file = client.call(JobStatus(id=files_to_extract[0].id, wait=True))
@@ -67,13 +68,10 @@ confidence level for extracted characters, alternative characters (i.e. second m
 position information, and more. It returns a nested dictionary.
 
 "ondocument" provides similar information to "detailed" but does not include text/metadata at the
-document-level. It returns a list of dictionaries where each dictionary is page data. This preset configuration
-also supports an additional "vdp" attribute, which, if set to True, performs an additional block classification
-and association step. The former adds a "label_type" to every block, and the latter adds an "associations"
-attribute to the result (located on the first page).
+document-level. It returns a list of dictionaries where each dictionary is page data.
 
 The exact settings included in "legacy", "simple", "ondocument", "standard", and "detailed"
-are shown at the bottom of this page.
+are shown on the :doc:`docextract_settings` page.
 
 There are many, many more settings available in DocumentExtraction to suit your application.
 
