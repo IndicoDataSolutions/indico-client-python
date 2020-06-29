@@ -88,7 +88,6 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -175,7 +174,7 @@
 <span id="jobs-and-job-status"></span><h1>Jobs and Job Status<a class="headerlink" href="#module-indico.queries.jobs" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="indico.queries.jobs.JobStatus">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.jobs.</code><code class="sig-name descname">JobStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">request_interval</span><span class="o">=</span><span class="default_value">0.2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.jobs.JobStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.jobs.</code><code class="sig-name descname">JobStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">request_interval</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.jobs.JobStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Status of a Job in the Indico Platform.</p>
 <p>JobStatus is used to either wait for completion or query the status of an asynchronous
 job in the Indico Platform.</p>

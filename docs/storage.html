@@ -88,7 +88,6 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
@@ -189,6 +188,41 @@ using RetrieveStorageObject.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>contents (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.storage.UploadDocument">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.storage.</code><code class="sig-name descname">UploadDocument</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload an object stored on the Indico Platform</p>
+<p>Used internally for uploading documents to indico platform for later processing</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepaths</strong> (<em>str</em>) – list of filepaths to upload</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>storage objects to be use for further processing requests E.G. Document extraction (implicitly called)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>files</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.storage.CreateStorageURLs">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.storage.</code><code class="sig-name descname">CreateStorageURLs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload an object stored on the Indico Platform and return only the storage URL to the object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>files</strong> (<em>str</em>) – list of filepaths to upload</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of storage urls to be use for further processing requests (e.g. FormExtraction)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>urls</p>
 </dd>
 </dl>
 </dd></dl>
