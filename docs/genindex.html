@@ -87,8 +87,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -100,6 +102,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -185,6 +188,8 @@
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="C">C</h2>
@@ -192,11 +197,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="client.html#indico.client.client.IndicoClient.call">call() (indico.client.client.IndicoClient method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="datasets.html#indico.queries.datasets.CreateDataset">CreateDataset (class in indico.queries.datasets)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model_groups.html#indico.queries.model_groups.CreateModelGroup">CreateModelGroup (class in indico.queries.model_groups)</a>
+</li>
+      <li><a href="storage.html#indico.queries.storage.CreateStorageURLs">CreateStorageURLs (class in indico.queries.storage)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -324,6 +331,13 @@
 </li>
       </ul></li>
       <li>
+    indico.queries.workflow
+
+      <ul>
+        <li><a href="workflow.html#module-indico.queries.workflow">module</a>
+</li>
+      </ul></li>
+      <li>
     indico.types.datafile
 
       <ul>
@@ -382,11 +396,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.dataset.LabelSet">LabelSet (class in indico.types.dataset)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset.labelsets">labelsets (indico.types.dataset.Dataset attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="datasets.html#indico.queries.datasets.ListDatasets">ListDatasets (class in indico.queries.datasets)</a>
+</li>
+      <li><a href="workflow.html#indico.queries.workflow.ListWorkflowsForDataset">ListWorkflowsForDataset (class in indico.queries.workflow)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -417,6 +433,8 @@
         <li><a href="model_groups.html#module-indico.queries.model_groups">indico.queries.model_groups</a>
 </li>
         <li><a href="storage.html#module-indico.queries.storage">indico.queries.storage</a>
+</li>
+        <li><a href="workflow.html#module-indico.queries.workflow">indico.queries.workflow</a>
 </li>
         <li><a href="dataset-type.html#module-indico.types.datafile">indico.types.datafile</a>
 </li>
@@ -497,11 +515,29 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="model-type.html#indico.types.model.Model.training_progress">training_progress (indico.types.model.Model attribute)</a>
+      <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.task_type">task_type (indico.types.model_group.ModelGroup attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="model-type.html#indico.types.model.Model.training_progress">training_progress (indico.types.model.Model attribute)</a>
+</li>
       <li><a href="model-type.html#indico.types.model.TrainingProgress">TrainingProgress (class in indico.types.model)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="storage.html#indico.queries.storage.UploadDocument">UploadDocument (class in indico.queries.storage)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow.html#indico.queries.workflow.WorkflowSubmission">WorkflowSubmission (class in indico.queries.workflow)</a>
 </li>
   </ul></td>
 </tr></table>

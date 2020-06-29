@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>indicoio Python Client Library &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Workflows &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -37,7 +37,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting Started" href="intro.html" /> 
+    <link rel="next" title="Dataset Types" href="dataset-type.html" />
+    <link rel="prev" title="Storage" href="storage.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +52,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home"> Indico Python Client
           
 
           
@@ -94,7 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
@@ -102,7 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Workflows</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -123,7 +124,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">Indico Python Client</a>
+          <a href="index.html">Indico Python Client</a>
         
       </nav>
 
@@ -152,15 +153,15 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>indicoio Python Client Library</li>
+      <li>Workflows</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/workflow.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -173,48 +174,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="indicoio-python-client-library">
-<h1>indicoio Python Client Library<a class="headerlink" href="#indicoio-python-client-library" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="user-guide">
-<h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+  <div class="section" id="module-indico.queries.workflow">
+<span id="workflows"></span><h1>Workflows<a class="headerlink" href="#module-indico.queries.workflow" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="indico.queries.workflow.ListWorkflowsForDataset">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">ListWorkflowsForDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.ListWorkflowsForDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all of the workflows for a dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset_id</strong> (<em>int</em>) – id of the dataset to list workflows.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Workflow objects for the given dataset_id</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Workflows</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.workflow.WorkflowSubmission">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">WorkflowSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em>, <em class="sig-param"><span class="n">workflow_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.WorkflowSubmission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit a list of PDF or CSV files to a workflow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>files</strong> (<em>str</em>) – List of file paths containing content to submit to the workflow</p></li>
+<li><p><strong>workflow_id</strong> (<em>int</em>) – id of the workflow to run.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
-<p><strong>Classes</strong></p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
-<li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
-<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
-</ul>
-</div>
-<p><strong>Types</strong></p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
-</ul>
-</div>
-</div>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Job object for the workflow submission</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="jobs-type.html#indico.types.jobs.Job" title="indico.types.jobs.Job">Job</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -225,8 +223,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="intro.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dataset-type.html" class="btn btn-neutral float-right" title="Dataset Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="storage.html" class="btn btn-neutral float-left" title="Storage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

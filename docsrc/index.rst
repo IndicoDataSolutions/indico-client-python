@@ -10,8 +10,10 @@ User Guide
 
     intro
     concepts
+    docextract-intro
     docextract_settings
     model_predictions
+    workflow-intro
     migration
     examples
 
@@ -30,6 +32,7 @@ Reference
     model_groups
     jobs
     storage
+    workflow
 
 **Types**
 

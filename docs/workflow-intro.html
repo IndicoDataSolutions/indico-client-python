@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>indicoio Python Client Library &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Workflows &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -37,7 +37,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting Started" href="intro.html" /> 
+    <link rel="next" title="Migrating Client Library Scripts" href="migration.html" />
+    <link rel="prev" title="Generating Model Predictions" href="model_predictions.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +52,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home"> Indico Python Client
           
 
           
@@ -84,13 +85,17 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-workflows-via-api">Running Workflows via API</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -123,7 +128,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">Indico Python Client</a>
+          <a href="index.html">Indico Python Client</a>
         
       </nav>
 
@@ -152,15 +157,15 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>indicoio Python Client Library</li>
+      <li>Workflows</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/workflow-intro.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -173,47 +178,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="indicoio-python-client-library">
-<h1>indicoio Python Client Library<a class="headerlink" href="#indicoio-python-client-library" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="user-guide">
-<h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-</ul>
+  <div class="section" id="workflows">
+<h1>Workflows<a class="headerlink" href="#workflows" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The Indico Platform includes the ability to link models and operations together into Workflows. Here’s a
+visual example from one of the Platform’s demo workflows.</p>
+<img alt="_images/sample-workflow.png" src="_images/sample-workflow.png" />
+<p>In this case, we are linking the output of a classifiction model to an extraction model - a very common use case
+for workflows. The input to the workflow is paragraphs from 10K/10Q SEC filings. Each paragraph is passed through
+the classifiction model. If a paragraph is classified as a Material Change then it’s next passed through a
+second model to extract individual fields.</p>
+<p>Know that Workflows can only be created in the Indico Application. However, you can pass samples through a Workflow
+either in the app using “Try it Out” or via API.</p>
 </div>
+<div class="section" id="running-workflows-via-api">
+<h2>Running Workflows via API<a class="headerlink" href="#running-workflows-via-api" title="Permalink to this headline">¶</a></h2>
+<p>The following snippet shows the crux of how to run a sample through a Workflow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Send a document through the workflow</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">WorkflowSubmission</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span> <span class="n">workflow_id</span><span class="o">=</span><span class="n">workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Retrieve and print your result</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">wf_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">wf_result</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
-<p><strong>Classes</strong></p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
-<li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
-<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
-</ul>
-</div>
-<p><strong>Types</strong></p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
-</ul>
-</div>
+<p>In the above snippet, we passed a PDF file through the Workflow but you could also choose
+to pass TIF, PNG or JPG image files.  The returned result is Comma Separated Values (CSV)
+that detail each step of the workflow results.</p>
+<p>See the <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a> section for a full Workflows example.</p>
 </div>
 </div>
 
@@ -225,8 +221,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="intro.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="migration.html" class="btn btn-neutral float-right" title="Migrating Client Library Scripts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="model_predictions.html" class="btn btn-neutral float-left" title="Generating Model Predictions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
