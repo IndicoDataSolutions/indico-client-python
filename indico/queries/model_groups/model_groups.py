@@ -111,7 +111,8 @@ class _CreateModelGroup(GraphQLRequest):
             $sourceColumnId: Int!,
             $labelsetColumnId: Int,
             $name: String!,
-            $modelTrainingOptions: JSONString
+            $modelTrainingOptions: JSONString,
+            $modelType: ModelType,
         ) {
                 createModelGroup(
                     datasetId: $datasetId,
@@ -119,6 +120,7 @@ class _CreateModelGroup(GraphQLRequest):
                     labelsetColumnId: $labelsetColumnId,
                     modelTrainingOptions: $modelTrainingOptions,
                     name: $name,
+                    modelType: $modelType
                 ) {
                     id
                     status
@@ -134,6 +136,7 @@ class _CreateModelGroup(GraphQLRequest):
         source_column_id: int,
         labelset_id: int,
         model_training_options: dict = None,
+        model_type: str = None,
     ):
         if model_training_options:
             model_training_options = json.dumps(model_training_options)
@@ -145,6 +148,7 @@ class _CreateModelGroup(GraphQLRequest):
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_id,
                 "modelTrainingOptions": model_training_options,
+                "modelType": model_type,
             },
         )
 
@@ -200,6 +204,7 @@ class CreateModelGroup(RequestChain):
         source_column_id (int): id of the source column to use in training this model group. Usually the id of source text or images.
         labelset_id (int): id of the labelset (labeled data) to use in training this model group
         wait (bool): Wait for this model group to finish training. Default is False
+        model_type (str): The model type to use, defaults to the default model type for the dataset type.
 
     Returns:
         ModelGroup object
@@ -216,6 +221,7 @@ class CreateModelGroup(RequestChain):
         labelset_id: int,
         wait: bool = False,
         model_training_options: dict = None,
+        model_type: str = None,
     ):
         self.name = name
         self.dataset_id = dataset_id
@@ -223,6 +229,7 @@ class CreateModelGroup(RequestChain):
         self.labelset_id = labelset_id
         self.wait = wait
         self.model_training_options = model_training_options
+        self.model_type = model_type
 
     def requests(self):
         yield _CreateModelGroup(
@@ -231,6 +238,7 @@ class CreateModelGroup(RequestChain):
             source_column_id=self.source_column_id,
             labelset_id=self.labelset_id,
             model_training_options=self.model_training_options,
+            model_type=self.model_type,
         )
         model_group_id = self.previous.id
         if self.wait:
