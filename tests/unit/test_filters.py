@@ -1,25 +1,26 @@
 import pytest
 
-from indico.filters import *
+from indico.errors import IndicoInputError
+from indico.filters import Filter, SubmissionFilter, and_, or_
 
 
-def test_submission_filter_and():
-    filter = SubmissionFilter({"status": "COMPLETE"})
-    filter.and_("status", "TRAINING")
-    assert filter == {"AND": [{"status": "COMPLETE"}, {"status": "TRAINING"}]}
+def test_filter():
+    with pytest.raises(IndicoInputError):
+        Filter()
+    f = Filter(key="value")
+    assert dict(f) == {"key": "value"}
+    f = Filter(key="value", key2="value2")
+    assert dict(f) == {"AND": [{"key": "value", "key2": "value2"}]}
 
+@pytest.mark.parametrize("fn,key", [(and_, "AND"), (or_, "OR")])
+def test_builder(fn, key):
+    f = Filter(key="value")
+    f2 = Filter(key2="value2")
+    assert fn(f) == {key: [f]}
+    assert fn(f, f2) == {key: [f, f2]}
 
-def test_submission_filter_or():
-    filter = SubmissionFilter({"status": "COMPLETE"}, mode=FilterMode.OR)
-    filter.or_("status", "TRAINING")
-    assert filter == {"OR": [{"status": "COMPLETE"}, {"status": "TRAINING"}]}
+def test_submission_filter():
+    f = SubmissionFilter(status="complete")
+    assert dict(f) == {"status": "COMPLETE"}
 
-
-def test_invalid_filter_column():
-    with pytest.raises(ValueError):
-        SubmissionFilter({"name": "test"})
-
-    filter = SubmissionFilter({"status": "COMPLETE"})
-    with pytest.raises(ValueError):
-        filter.and_("name", "thing")
 

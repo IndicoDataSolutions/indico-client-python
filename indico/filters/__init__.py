@@ -43,8 +43,8 @@ class SubmissionFilter(Filter):
     __options__ = ("input_filename", "status")
 
     def __init__(self, input_filename: str = None, status: str = None):
-        args = {
+        kwargs = {
             "input_filename": input_filename,
             "status": status.upper() if status else status,
         }
-        super().__init__(**args)
+        super().__init__(**kwargs)
