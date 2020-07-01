@@ -1,12 +1,9 @@
-from indico import IndicoClient, IndicoConfig
+from indico import IndicoClient
 from indico.queries import DocumentExtraction, JobStatus, RetrieveStorageObject
 
 
 # Create an Indico API client
-my_config = IndicoConfig(
-    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
-)
-client = IndicoClient(config=my_config)
+client = IndicoClient()
 
 # OCR a single file and wait for it to complete
 job = client.call(

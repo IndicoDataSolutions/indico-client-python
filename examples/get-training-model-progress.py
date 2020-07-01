@@ -1,14 +1,10 @@
-from indico import IndicoClient, IndicoConfig
+from indico import IndicoClient
 from indico.queries import GetModelGroup, GetTrainingModelWithProgress
 
 # The model group ID can be found on the review page of the indico platform
 model_group_id = 4305
 
-my_config = IndicoConfig(
-    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
-)
-
-client = IndicoClient(config=my_config)
+client = IndicoClient()
 
 # Get the model group and training status
 mg = client.call(GetModelGroup(model_group_id))

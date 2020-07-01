@@ -1,47 +1,84 @@
 from typing import List
 
-from indico.client.request import (
-    GraphQLRequest,
-    HTTPMethod,
-    HTTPRequest,
-    RequestChain,
-)
+from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoError
 from indico.queries.storage import UploadDocument
-from indico.types.jobs import Job
-from indico.types.workflow import Workflow
+from indico.types import Job, Workflow
 
 
-class ListWorkflowsForDataset(GraphQLRequest):
+class ListAllWorkflows(GraphQLRequest):
     """
-    List all of the workflows for a dataset
+    List all workflows visible to authenticated user
 
     Args:
-        dataset_id (int): id of the dataset to list workflows.
+        dataset_ids (List[int], optional): List of dataset ids to filter by.
+            Defaults to None
+        workflow_ids (List[int], optional): List of workflow ids to filter by
+            Defaults to None
 
     Returns:
-        Workflows: List of Workflow objects for the given dataset_id
+        List[Workflow]: All the found Workflow objects
     """
 
     query = """
-        query ListWorkflows($datasetId: Int){
-	        workflows(datasetIds: [$datasetId]){
+        query ListWorkflows($datasetIds: List[Int], $workflowIds: List[Int]){
+            workflows(datasetIds: $datasetIds, workflowIds: $workflowIds){
                 workflows {
                     id
                     name
+                    reviewEnabled
                 }
             }
         }
     """
 
-    def __init__(self, dataset_id: int):
-        super().__init__(self.query, variables={"datasetId": dataset_id})
+    def __init__(self, dataset_ids: List[int] = None, workflow_ids: List[int] = None):
+        super().__init__(
+            self.query,
+            variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids},
+        )
 
-    def process_response(self, response):
+    def process_response(self, response) -> List[Workflow]:
         return [
             Workflow(**w)
             for w in super().process_response(response)["workflows"]["workflows"]
         ]
+
+
+class ListWorkflowsForDataset(ListAllWorkflows):
+    """
+    List all workflows belonging to a specific dataset
+
+    Args:
+        dataset_id (int): Dataset id to query for
+
+    Returns:
+        List[Workflow]: All the found Workflow objects
+    """
+
+    def __init__(self, dataset_id: int):
+        super().__init__(dataset_ids=[dataset_id])
+
+    def process_response(self, response) -> List[Workflow]:
+        return super().process_response(response)
+
+
+class GetWorkflow(ListAllWorkflows):
+    """
+    Query for Workflow by id
+
+    Args:
+        workflow_id (int): Workflow id to query for
+
+    Returns:
+        Workflow: Found Workflow object
+    """
+
+    def __init__(self, workflow_id: int):
+        super().__init__(workflow_ids=[workflow_id])
+
+    def process_response(self, response) -> Workflow:
+        return super().process_response(response)[0]
 
 
 class _WorkflowSubmission(GraphQLRequest):
@@ -78,14 +115,20 @@ class _WorkflowSubmission(GraphQLRequest):
 
 class WorkflowSubmission(RequestChain):
     """
-    Submit a list of PDF or CSV files to a workflow
+    Submit files to a workflow for processing
 
     Args:
-        files (str): List of file paths containing content to submit to the workflow
-        workflow_id (int): id of the workflow to run.
+        files (List[str]): List of local file paths to submit
+        workflow_id (int): Id of workflow to submit files to
+        submission (bool, optional): Process these files as normal submissions.
+            Defaults to True.
+            If False, files will be processed as AsyncJobs, ignoring any workflow
+            post-processing steps like Review and with no record in the system
 
     Returns:
-        Job: Job object for the workflow submission
+        List[int]: If `submission`, these will be submission ids.
+            Otherwise, they will be AsyncJob ids.
+
     """
 
     def __init__(self, files: List[str], workflow_id: int, submission: bool = True):

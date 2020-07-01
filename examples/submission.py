@@ -1,0 +1,52 @@
+from indico import IndicoClient
+from indico.filters import SubmissionFilter, or_
+from indico.queries import (
+    GenerateSubmissionResult,
+    JobStatus,
+    ListSubmissions,
+    RetrieveStorageObject,
+    SubmissionResult,
+    WorkflowSubmission,
+)
+
+# Create an Indico API client
+client = IndicoClient()
+
+workflow_id = 5
+
+"""
+Example 1
+Create a new submission
+Generate a submission result as soon as the submission is done processing
+"""
+
+submission_ids = client.call(
+    WorkflowSubmission(workflow_id=workflow_id, files=["./path_to_doc.pdf"])
+)
+submission_id = submission_ids[0]
+
+result_url = client.call(SubmissionResult(submission_id=submission_id, wait=True))
+result = client.call(RetrieveStorageObject(result_url.result))
+print(result)
+
+
+"""
+Example 2
+List all submissions that are COMPLETE or FAILED
+Generate submission results for these
+Delay gathering the results until required
+"""
+sub_filter = or_(SubmissionFilter(status="COMPLETE"), SubmissionFilter(status="FAILED"))
+submissions = client.call(ListSubmissions(filters=sub_filter))
+
+result_files = {
+    submission: client.call(GenerateSubmissionResult(submission.id))
+    for submission in submissions
+}
+
+# Do other fun things...
+
+for submission, result_file_job in result_files.items():
+    result_url = client.call(JobStatus(id=result_file_job.id, wait=True))
+    result = client.call(RetrieveStorageObject(result_url.result))
+    print(f"Submission {submission.id} has result:\n{result}")
