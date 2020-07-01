@@ -1,14 +1,13 @@
-from indico import IndicoClient
-from indico.queries import CreateDataset, CreateModelGroup, ModelGroupPredict, JobStatus
+from indico import IndicoClient, IndicoConfig
+from indico.queries import CreateDataset, CreateModelGroup, ModelGroupPredict
 
-client = IndicoClient()
 
-# Create the dataset
+# create the dataset
 dataset = client.call(
     CreateDataset(name="airline_comments", files=["./airline-comments.csv"])
 )
 
-# Train the model w/ the relevant csv columns
+# train the model w/ the relevant csv columns
 model_group = client.call(
     CreateModelGroup(
         name="my_classification_model",
@@ -22,7 +21,7 @@ model_group = client.call(
 )
 
 
-# Predict on the model
+# predict on the model
 job = client.call(
     ModelGroupPredict(
         model_id=model_group.selected_model.id,
@@ -30,5 +29,5 @@ job = client.call(
     )
 )
 
-# Retrieve your prediction results
+# retrieve your prediction results
 predictions = client.call(JobStatus(id=job.id, wait=True)).result

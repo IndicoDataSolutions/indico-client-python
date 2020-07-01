@@ -1,4 +1,4 @@
-from indico import IndicoClient
+from indico import IndicoClient, IndicoConfig
 from indico.queries import (
     JobStatus,
     ListWorkflows,
@@ -9,7 +9,10 @@ from indico.queries import (
 # Use your dataset's id to call it's associated workflow
 dataset_id = 6826
 
-client = IndicoClient()
+my_config = IndicoConfig(
+    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+)
+client = IndicoClient(config=my_config)
 
 # Return a list of workflows for this dataset id or an empty list if there are none
 workflows = client.call(ListWorkflows(dataset_ids=[dataset_id]))

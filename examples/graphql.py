@@ -1,8 +1,12 @@
-from indico import IndicoClient
+from indico import IndicoClient, IndicoConfig
 from indico.queries import GraphQLRequest
 
 
-client = IndicoClient()
+my_config = IndicoConfig(
+    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+)
+
+client = IndicoClient(config=my_config)
 
 # GraphQL Query to list my datasets
 qstr = """{

@@ -1,4 +1,4 @@
-from indico import IndicoClient
+from indico import IndicoClient, IndicoConfig
 from indico.filters import SubmissionFilter, or_
 from indico.queries import (
     GenerateSubmissionResult,
@@ -10,7 +10,10 @@ from indico.queries import (
 )
 
 # Create an Indico API client
-client = IndicoClient()
+my_config = IndicoConfig(
+    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+)
+client = IndicoClient(config=my_config)
 
 workflow_id = 5
 
