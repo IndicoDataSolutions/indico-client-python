@@ -101,3 +101,10 @@ response = client.call(GraphQLRequest(
 
 model_groups = response["model_groups"]["model_groups"]
 ```
+
+# Contributing
+
+This repository adheres (as best as possible) to the following standards:
+ - Python Black Formatter
+    - Line Width=88
+ - [Google Docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)
