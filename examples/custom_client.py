@@ -9,7 +9,6 @@ os.environ["INDICO_HOST"] = "foo.bar.com"
 my_config = IndicoConfig(
     host="indico.my-company.com",  # Overrides environment variable
     api_token_path="../path/to/custom_api_token.txt",
-    verify_ssl=False,
 )
 
 # Will connect to http://indico.my-company.com

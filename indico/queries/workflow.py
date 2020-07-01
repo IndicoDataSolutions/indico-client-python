@@ -6,7 +6,7 @@ from indico.queries.storage import UploadDocument
 from indico.types import Job, Workflow
 
 
-class ListAllWorkflows(GraphQLRequest):
+class ListWorkflows(GraphQLRequest):
     """
     List all workflows visible to authenticated user
 
@@ -45,25 +45,7 @@ class ListAllWorkflows(GraphQLRequest):
         ]
 
 
-class ListWorkflowsForDataset(ListAllWorkflows):
-    """
-    List all workflows belonging to a specific dataset
-
-    Args:
-        dataset_id (int): Dataset id to query for
-
-    Returns:
-        List[Workflow]: All the found Workflow objects
-    """
-
-    def __init__(self, dataset_id: int):
-        super().__init__(dataset_ids=[dataset_id])
-
-    def process_response(self, response) -> List[Workflow]:
-        return super().process_response(response)
-
-
-class GetWorkflow(ListAllWorkflows):
+class GetWorkflow(ListWorkflows):
     """
     Query for Workflow by id
 
