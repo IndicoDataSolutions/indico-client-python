@@ -145,11 +145,7 @@ class SubmissionResult(RequestChain):
             timing out. Ignored if not `wait`. Defaults to 30
 
     Returns:
-        If `wait`:
-            str: URL to result file that can be retrieved with `RetrieveStorageObject`
-
-        If not `wait`:
-            Job: Job that can be watched for results
+        Job: A Job that can be watched for results
 
     Raises:
         if `wait`:
