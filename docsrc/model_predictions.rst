@@ -19,12 +19,22 @@ Call ModelGroupPredict
 With a Selected Model ID (630 in this case), all you need to do is call ModelGroupPredict with
 a list of samples to predict.  Here's an example::
 
+    from indico.queries import JobStatus, ModelGroupPredict
+    from indico import IndicoClient, IndicoConfig
+
+    my_config = IndicoConfig(
+        host='indico.mycompany.com',
+        api_token_path='path/to/indico_api_token.txt'
+    )
+
+    client = IndicoClient(config=my_config)
+    
     job = client.call(ModelGroupPredict(
         model_id=630,
         data=["My flight got canceled", "Did my frequent flyer number expire?"]
     ))
 
-    return client.call(JobStatus(id=job.id, wait=True)).result
+    print(client.call(JobStatus(id=job.id, wait=True)).result)
 
 
 Important Performance Note
