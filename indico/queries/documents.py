@@ -6,6 +6,7 @@ from typing import List
 from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod, HTTPRequest
 from indico.types.jobs import Job
 from indico.queries.storage import UploadDocument, UploadBatched
+from indico.errors import IndicoError
 
 
 class _DocumentExtraction(GraphQLRequest):
@@ -69,7 +70,7 @@ class DocumentExtraction(RequestChain):
 
         Call DocumentExtraction and wait for the result::
 
-            job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
+            job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "standard"}'))
             job = client.call(JobStatus(id=job[0].id, wait=True))
             extracted_data = client.call(RetrieveStorageObject(job.result))
     """
@@ -80,6 +81,11 @@ class DocumentExtraction(RequestChain):
         self.files = files
         self.json_config = json_config
         self.upload_batch_size = upload_batch_size
+        for f in self.files:
+            if f.rsplit(".")[-1].lower() not in ("pdf",):
+                raise IndicoError(
+                    "Only PDF files can be used with DocumentExtraction. You provided: {f}"
+                )
 
     def requests(self):
         if self.upload_batch_size:
