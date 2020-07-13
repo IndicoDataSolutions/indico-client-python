@@ -6,9 +6,9 @@ Find Your Selected Model ID
 
 The Indico Platform keeps multiple copies of your model and holds them all in a **Model Group**. So,
 if you train a classifier to categorize Airline Comments as we show in one of the examples, the
-classifier will be treated as a Model Group. Each new version that you train gets a new selected
-model ID. To find the latest selected model ID of a model you trained in the application, just
-visit the Review page of that model and you'll see the ID in the upper left corner - see below.
+classifier will be treated as a Model Group. Each new version that you train gets a new "Selected
+Model ID". To find the latest Selected Model ID of a model you trained in the application, just
+visit the Review page of that model and you'll see the ID in the upper left corner (below the Model Group ID) - see below.
 
 .. image:: model_id_review_screen.png
 
@@ -16,7 +16,7 @@ visit the Review page of that model and you'll see the ID in the upper left corn
 Call ModelGroupPredict
 ======================
 
-With a Selected Model ID (630 in this case), all you need to do is call ModelGroupPredict with
+With a Selected Model ID (30403 in this case), all you need to do is call ModelGroupPredict with
 a list of samples to predict.  Here's an example::
 
     from indico.queries import JobStatus, ModelGroupPredict
@@ -30,7 +30,7 @@ a list of samples to predict.  Here's an example::
     client = IndicoClient(config=my_config)
     
     job = client.call(ModelGroupPredict(
-        model_id=630,
+        model_id=30403,
         data=["My flight got canceled", "Did my frequent flyer number expire?"]
     ))
 

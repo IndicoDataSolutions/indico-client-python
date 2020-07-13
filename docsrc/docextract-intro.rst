@@ -9,8 +9,7 @@ text from a variety of document formats including PDF and TIF. OCR functionality
 by the ``DocumentExtraction`` class. Here's how to OCR one document with DocumentExtraction::
 
     from indico import IndicoClient
-    from indico.queries.documents import DocumentExtraction
-    from indico.queries import JobStatus, RetrieveStorageObject
+    from indico.queries import JobStatus, RetrieveStorageObject, DocumentExtraction
 
     # here, IndicoClient assumes you have your api token in your home directory
     # and host set as an env variable
