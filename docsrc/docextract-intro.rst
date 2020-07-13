@@ -21,7 +21,10 @@ by the ``DocumentExtraction`` class. Here's how to OCR one document with Documen
 In this example, given the path to a document, we called DocumentExtraction with a single file and waited for the result.
 With most use cases, this is all you will need to do. The returned 'result' will either be a dictionary (if
 document-level text and/or metadata are requested) or a list of dictionaries (where each dictionary contains
-the text for a unique page/block).
+the text for a unique page/block). The following example demonstrates the output for a PDF document using the 
+'standard' configuration. 
+
+.. image:: ocr_output.png
 
 ``DocumentExtraction`` is highly configurable. You can customize settings at the document, page, block, token or
 character level. You can also choose from a selection of preset configurations. You configure DocumentExtraction
