@@ -21,7 +21,7 @@ class ListWorkflows(GraphQLRequest):
     """
 
     query = """
-        query ListWorkflows($datasetIds: List[Int], $workflowIds: List[Int]){
+        query ListWorkflows($datasetIds: [Int], $workflowIds: [Int]){
             workflows(datasetIds: $datasetIds, workflowIds: $workflowIds){
                 workflows {
                     id
