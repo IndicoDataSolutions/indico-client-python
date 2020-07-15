@@ -1,9 +1,10 @@
+import time
 from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import Debouncer, GraphQLRequest, RequestChain
-from indico.errors import IndicoInputError
+from indico.client.request import GraphQLRequest, RequestChain
+from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
 from indico.types import Job, Submission
@@ -119,9 +120,8 @@ class GenerateSubmissionResult(GraphQLRequest):
 
     """
 
-    def __init__(
-        self, submission_id: int
-    ):
+    def __init__(self, submission: Union[int, Submission]):
+        submission_id = submission if isinstance(submission, int) else submission.id
         super().__init__(
             self.query, variables={"submissionId": submission_id},
         )
@@ -136,7 +136,7 @@ class SubmissionResult(RequestChain):
     Generate a result file for a Submission
 
     Args:
-        submission_id (int): Id of the submission
+        submission (int or Submission): Id of the submission or Submission object
         check_status (str, optional): Submission status to check for.
             Defaults to any status other than `PROCESSING`
         wait (bool, optional): Wait until the submission is `check_status`
@@ -159,12 +159,14 @@ class SubmissionResult(RequestChain):
 
     def __init__(
         self,
-        submission_id: int,
+        submission: Union[int, Submission],
         check_status: str = None,
         wait: bool = False,
         timeout: Union[int, float] = 30,
     ):
-        self.submission_id = submission_id
+        self.submission_id = (
+            submission if isinstance(submission, int) else submission.id
+        )
         self.wait = wait
         self.timeout = timeout
         self.status_check = (
@@ -173,18 +175,19 @@ class SubmissionResult(RequestChain):
 
     def requests(self) -> Union[Job, str]:
         yield GetSubmission(self.submission_id)
-        debouncer = Debouncer(max_timeout=self.timeout)
         if self.wait:
-            while not self.status_check(self.previous):
+            curr_time = 0
+            while not self.status_check(self.previous) and curr_time <= self.timeout:
                 yield GetSubmission(self.submission_id)
-                debouncer.backoff()
+                time.sleep(1)
+                curr_time += 1
+            if not self.status_check(self.previous):
+                raise IndicoTimeoutError(curr_time)
         elif not self.status_check(self.previous):
             raise IndicoInputError(
                 f"Submission {self.submission_id} does not meet status requirements"
             )
 
-        yield GenerateSubmissionResult(
-            self.submission_id
-        )
+        yield GenerateSubmissionResult(self.submission_id)
         if self.wait:
             yield JobStatus(id=self.previous.id, wait=True, timeout=self.timeout)

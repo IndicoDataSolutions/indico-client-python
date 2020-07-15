@@ -28,7 +28,7 @@ submission_ids = client.call(
 )
 submission_id = submission_ids[0]
 
-result_url = client.call(SubmissionResult(submission_id=submission_id, wait=True))
+result_url = client.call(SubmissionResult(submission_id, wait=True))
 result = client.call(RetrieveStorageObject(result_url.result))
 print(result)
 
@@ -43,7 +43,7 @@ sub_filter = or_(SubmissionFilter(status="COMPLETE"), SubmissionFilter(status="F
 submissions = client.call(ListSubmissions(filters=sub_filter))
 
 result_files = {
-    submission: client.call(GenerateSubmissionResult(submission.id))
+    submission: client.call(GenerateSubmissionResult(submission))
     for submission in submissions
 }
 
