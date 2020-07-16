@@ -177,11 +177,14 @@ class SubmissionResult(RequestChain):
         yield GetSubmission(self.submission_id)
         if self.wait:
             curr_time = 0
-            while not self.status_check(self.previous) and curr_time <= self.timeout:
+            while (
+                not self.status_check(self.previous.status)
+                and curr_time <= self.timeout
+            ):
                 yield GetSubmission(self.submission_id)
                 time.sleep(1)
                 curr_time += 1
-            if not self.status_check(self.previous):
+            if not self.status_check(self.previous.status):
                 raise IndicoTimeoutError(curr_time)
         elif not self.status_check(self.previous):
             raise IndicoInputError(
