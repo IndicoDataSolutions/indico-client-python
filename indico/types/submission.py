@@ -19,6 +19,8 @@ class Submission(BaseType):
         input_file (str): URL of the input datafile within the Indico Platform.
         input_filename (str): name of the original file
         result_file (str): URL of the result datafile within the Indico Platform
+        retrieved (bool): Whether the submission has been retrieved by a user
+            This flag is set manually by users.
 
     """
 
@@ -29,3 +31,4 @@ class Submission(BaseType):
     input_file: str
     input_filename: str
     result_file: str
+    retrieved: bool

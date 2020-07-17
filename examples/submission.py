@@ -6,6 +6,7 @@ from indico.queries import (
     ListSubmissions,
     RetrieveStorageObject,
     SubmissionResult,
+    UpdateSubmission,
     WorkflowSubmission,
 )
 
@@ -21,6 +22,7 @@ workflow_id = 5
 Example 1
 Create a new submission
 Generate a submission result as soon as the submission is done processing
+Then mark the submission has having been retrieved
 """
 
 submission_ids = client.call(
@@ -32,6 +34,7 @@ result_url = client.call(SubmissionResult(submission_id, wait=True))
 result = client.call(RetrieveStorageObject(result_url.result))
 print(result)
 
+client.call(UpdateSubmission(submission_id, retrieved=True))
 
 """
 Example 2

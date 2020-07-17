@@ -95,6 +95,7 @@ class GetSubmission(GraphQLRequest):
                 inputFile
                 inputFilename
                 resultFile
+                retrieved
             }
         }
     """
@@ -108,6 +109,42 @@ class GetSubmission(GraphQLRequest):
 
     def process_response(self, response) -> Submission:
         return Submission(**(super().process_response(response)["submission"]))
+
+
+class UpdateSubmission(GraphQLRequest):
+    query = """
+        mutation UpdateSubmission($submissionId: Int!, $retrieved: Boolean) {
+            updateSubmission(submissionId: $submissionId, retrieved: $retrieved) {
+                id
+                datasetId
+                workflowId
+                status
+                inputFile
+                inputFilename
+                resultFile
+                retrieved
+            }
+        }
+    """
+
+    def __init__(self, submission_id: int, retrieved: bool):
+        """
+        Update properties of the Submission object
+
+        Args:
+            submission_id (int): Id of the submission to update
+            retrieved (bool): Mark the submission as having been retrieved
+
+        Returns:
+            Submission: The updated Submission object
+        """
+        super().__init__(
+            self.query,
+            variables={"submissionId": submission_id, "retrieved": retrieved},
+        )
+
+    def process_response(self, response) -> Submission:
+        return Submission(**(super().process_response(response)["updateSubmission"]))
 
 
 class GenerateSubmissionResult(GraphQLRequest):
