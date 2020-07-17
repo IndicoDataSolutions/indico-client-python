@@ -5,7 +5,6 @@ from indico import IndicoClient, IndicoConfig
 client = IndicoClient()
 
 # Environment variables override defaults
-os.environ["INDICO_PROTOCOL"] = "https"
 os.environ["INDICO_HOST"] = "foo.bar.com"
 
 # Will connect to https://foo.bar.com
