@@ -5,10 +5,10 @@ from indico import IndicoClient, IndicoConfig
 client = IndicoClient()
 
 # Environment variables override defaults
-os.environ["INDICO_PROTOCOL"] = "http"
+os.environ["INDICO_PROTOCOL"] = "https"
 os.environ["INDICO_HOST"] = "foo.bar.com"
 
-# Will connect to http://foo.bar.com
+# Will connect to https://foo.bar.com
 client = IndicoClient()
 
 # IndicoConfig will override environment variables and defaults
@@ -17,5 +17,5 @@ my_config = IndicoConfig(
     api_token_path="../path/to/custom_api_token.txt",
 )
 
-# Will connect to http://indico.my-company.com
+# Will connect to https://indico.my-company.com
 client = IndicoClient(config=my_config)
