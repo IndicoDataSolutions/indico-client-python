@@ -19,9 +19,11 @@ workflows = client.call(ListWorkflows(dataset_ids=[dataset_id]))
 
 if workflows:
     # Send a document through the workflow
-    job = client.call(
-        WorkflowSubmission(files=["./path/to/sample.pdf"], workflow_id=workflows[0].id)
+    # Get back one Job per file
+    jobs = client.call(
+        WorkflowSubmission(workflow_id=workflows[0].id, files=["./path/to/sample.pdf"], submission=False)
     )
+    job = jobs[0]
 
     # Retrieve and print your result
     status = client.call(JobStatus(id=job.id, wait=True))

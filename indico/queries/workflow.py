@@ -100,8 +100,8 @@ class WorkflowSubmission(RequestChain):
     Submit files to a workflow for processing
 
     Args:
-        files (List[str]): List of local file paths to submit
         workflow_id (int): Id of workflow to submit files to
+        files (List[str]): List of local file paths to submit
         submission (bool, optional): Process these files as normal submissions.
             Defaults to True.
             If False, files will be processed as AsyncJobs, ignoring any workflow
@@ -113,9 +113,9 @@ class WorkflowSubmission(RequestChain):
 
     """
 
-    def __init__(self, files: List[str], workflow_id: int, submission: bool = True):
-        self.files = files
+    def __init__(self, workflow_id: int, files: List[str], submission: bool = True):
         self.workflow_id = workflow_id
+        self.files = files
         self.submission = submission
 
     def requests(self):
