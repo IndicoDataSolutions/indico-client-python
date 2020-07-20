@@ -45,19 +45,25 @@ class _JobStatusWithResult(GraphQLRequest):
 
 class JobStatus(RequestChain):
     """
-    Status of a Job in the Indico Platform. 
+    Status of a Job in the Indico Platform.
 
-    JobStatus is used to either wait for completion or query the status of an asynchronous
-    job in the Indico Platform.
-    
+    JobStatus is used to either wait for completion or
+    query the status of an asynchronous job in the Indico Platform.
+
     Args:
         id (int): id of the job to query for status.
-        wait (bool): Wait for the job to complete? Default is True
-    
+        wait (bool, optional): Wait for the job to complete? Default is True
+        timeout (float or int, optional): Timeout after this many seconds.
+            Ignored if not `wait`. Defaults to None
+
     Returns:
         Job: With the job result available in a result attribute. Note that the result
         will often be JSON but can also be a dict with the URL of a StorageObject on
-        the Indico Platform. 
+        the Indico Platform.
+
+    Raises:
+        IndicoTimeoutError: If `wait` is True, this error is raised if job has not
+            completed after `timeout` seconds
     """
 
     previous: Job = None
@@ -74,7 +80,7 @@ class JobStatus(RequestChain):
         if self.wait:
             # Check status of job until done if wait == True
             while not ((
-                self.previous.status in ["SUCCESS"] and self.previous.ready == True
+                self.previous.status in ["SUCCESS"] and self.previous.ready
             ) or self.previous.status in [
                 "FAILURE",
                 "REJECTED",
@@ -82,7 +88,7 @@ class JobStatus(RequestChain):
                 "IGNORED",
                 "RETRY",
             ]):
-                
+
                 if self.timeout is not None:
                     elapsed = (time.time() - start)
                     if self.timeout < elapsed:
