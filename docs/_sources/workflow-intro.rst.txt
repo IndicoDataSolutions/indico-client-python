@@ -9,13 +9,13 @@ visual example from one of the Platform's demo workflows.
 
 .. image:: sample-workflow.png
 
-In this case, we are linking the output of a classifiction model to an extraction model - a very common use case
-for workflows. The input to the workflow is paragraphs from 10K/10Q SEC filings. Each paragraph is passed through
-the classifiction model. If a paragraph is classified as a Material Change then it's next passed through a
-second model to extract individual fields.
+In this case, we are linking document OCR to a classification model and the output of the classifiction model 
+to an extraction model - a very common use case for workflows. The input to the workflow is paragraphs from 10K/10Q 
+SEC filings. Each paragraph is passed through the classifiction model. If a paragraph is classified as a 
+Material Change then it's next passed through a second model to extract individual fields.
 
 Know that Workflows can only be created in the Indico Application. However, you can pass samples through a Workflow
-either in the app using "Try it Out" or via API.
+either in the app using "TEST WORKFLOW" or via API.
 
 
 Running Workflows via API

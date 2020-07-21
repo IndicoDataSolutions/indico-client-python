@@ -33,6 +33,7 @@ Reference
     jobs
     storage
     workflow
+    graphql_queries
 
 **Types**
 
