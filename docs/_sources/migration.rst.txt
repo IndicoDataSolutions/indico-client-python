@@ -21,11 +21,11 @@ Old::
 
 New::
 
-    from indico.client import IndicoClient, IndicoConfig
+    from indico import IndicoClient, IndicoConfig
 
     my_config = IndicoConfig(
         host='indico.mycompany.com',
-        api_token_path='/home/myuser/projects/trades/indico_api_token.txt'
+        api_token_path='path/to/indico_api_token.txt'
     )
 
     client = IndicoClient(config=my_config)
@@ -73,7 +73,7 @@ New::
     
     job = client.call(
         ModelGroupPredict(
-            model_id=921, # derived from ModelGroup.selected_model.id
+            model_id=921, # Selected Model ID
             data=['a text sample'],
             )
         )
@@ -106,10 +106,7 @@ Old::
 
 New::
 
-
-    from indico.types import Dataset, ModelGroup
     from indico.queries import CreateDataset, CreateModelGroup
-
 
     dataset = client.call(
             CreateDataset(name="financial_documents", files=['./financial_docs.csv'])

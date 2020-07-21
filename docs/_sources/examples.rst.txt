@@ -10,3 +10,4 @@ Examples
     singleocr-ex
     training-progress
     workflow-ex
+    ocr-object-parse-ex

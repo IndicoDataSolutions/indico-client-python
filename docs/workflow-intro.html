@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -31,10 +36,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Migrating Client Library Scripts" href="migration.html" />
@@ -52,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -108,6 +110,7 @@
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -119,6 +122,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -157,7 +161,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Workflows</li>
     
@@ -185,12 +189,12 @@
 <p>The Indico Platform includes the ability to link models and operations together into Workflows. Here’s a
 visual example from one of the Platform’s demo workflows.</p>
 <img alt="_images/sample-workflow.png" src="_images/sample-workflow.png" />
-<p>In this case, we are linking the output of a classifiction model to an extraction model - a very common use case
-for workflows. The input to the workflow is paragraphs from 10K/10Q SEC filings. Each paragraph is passed through
-the classifiction model. If a paragraph is classified as a Material Change then it’s next passed through a
-second model to extract individual fields.</p>
+<p>In this case, we are linking document OCR to a classification model and the output of the classifiction model
+to an extraction model - a very common use case for workflows. The input to the workflow is paragraphs from 10K/10Q
+SEC filings. Each paragraph is passed through the classifiction model. If a paragraph is classified as a
+Material Change then it’s next passed through a second model to extract individual fields.</p>
 <p>Know that Workflows can only be created in the Indico Application. However, you can pass samples through a Workflow
-either in the app using “Try it Out” or via API.</p>
+either in the app using “TEST WORKFLOW” or via API.</p>
 </div>
 <div class="section" id="running-workflows-via-api">
 <h2>Running Workflows via API<a class="headerlink" href="#running-workflows-via-api" title="Permalink to this headline">¶</a></h2>
@@ -233,11 +237,19 @@ that detail each step of the workflow results.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Indico
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -248,7 +260,6 @@ that detail each step of the workflow results.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

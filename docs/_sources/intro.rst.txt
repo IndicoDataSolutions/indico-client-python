@@ -14,7 +14,7 @@ To upgrade the Python Client Library::
 
     pip install --upgrade indico-client
 
-Afterwards, proper installation can be verified with the following in a python shell
+Afterwards, proper installation can be verified with the following in a python shell::
 
     import indico
     print(indico.__version__)
@@ -47,12 +47,11 @@ IndicoConfig Class
 The IndicoConfig class gives you the maximum control over Python Client Library configuration. Here's how you
 might instantiate an IndicoConfig object and set the host and token path::
 
-    from indico import IndicoClient
-    from indico.config import IndicoConfig
+    from indico import IndicoClient, IndicoConfig
 
     my_config = IndicoConfig(
         host='app.mycompany.com',
-        api_token_path='/home/myuser/projects/trades/indico_api_token.txt'
+        api_token_path='path/to/indico_api_token.txt'
     )
 
 

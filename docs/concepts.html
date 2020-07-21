@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -31,13 +36,9 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Intro to OCR with DocumentExtraction" href="docextract_intro.html" />
+    <link rel="next" title="OCR With DocumentExtraction" href="docextract-intro.html" />
     <link rel="prev" title="Getting Started" href="intro.html" /> 
 </head>
 
@@ -52,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -94,9 +96,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#label-sets">Label Sets</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_intro.html">Intro to OCR with DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -108,6 +111,8 @@
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -119,6 +124,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -157,7 +163,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Key Concepts and Terminology</li>
     
@@ -192,21 +198,17 @@
 </div>
 <div class="section" id="model-groups">
 <h2>Model Groups<a class="headerlink" href="#model-groups" title="Permalink to this headline">¶</a></h2>
-<p>Model Groups are a container for multiple models. When you create a new classification
+<p>Model Groups are a container for multiple models associated with a particular teach task. When you create a new classification
 or extraction model on a dataset, you are actually creating a Model Group. The Indico Platform
 keeps every model you train. For instance, if you click Retrain on a model group’s Review page, the
 platform creates an additional model within the Model Group. All of your old models are saved.
 While your new model is training, the prior version remains available for predictions. If the new
 model fails to train for some reason then the prior model continues to be available.</p>
-<p>Several Client Library functions ask for a model group id. You can find the correct ID with either
-the UI or the Client Library. In the UI, the model group id is shown in the URL of a model group’s
-Review page. After you visit a model group’s Review page, you should see a URL like this in your
-browser:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">app</span><span class="o">.</span><span class="n">my_company</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">review</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="mi">6308</span><span class="o">/</span><span class="n">models</span><span class="o">/</span><span class="mi">4243</span><span class="o">/</span><span class="n">performance</span>
-</pre></div>
-</div>
-<p>The model group id is shown after “models” in the URL - <strong>4243</strong> in this case.  In this Client Library,
-you can find model group ids by calling <code class="docutils literal notranslate"><span class="pre">ListDatasets</span></code>.</p>
+<p>Several Client Library functions ask for either a “Selected Model ID” or “Model Group ID”. You can find the
+correct ID with either the UI or the Client Library. In the UI, navigate to your model’s “EXPLAIN” page
+(i.e. where you see performance metrics) and you will find both IDs. See image below.</p>
+<img alt="_images/model_id_review_screen.png" src="_images/model_id_review_screen.png" />
+<p>In the Client Library, you can find model group ids by calling <code class="docutils literal notranslate"><span class="pre">ListDatasets</span></code>.</p>
 </div>
 <div class="section" id="selected-model">
 <h2>Selected Model<a class="headerlink" href="#selected-model" title="Permalink to this headline">¶</a></h2>
@@ -228,7 +230,7 @@ you are also making a new Label Set.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="docextract_intro.html" class="btn btn-neutral float-right" title="Intro to OCR with DocumentExtraction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="docextract-intro.html" class="btn btn-neutral float-right" title="OCR With DocumentExtraction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="intro.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -240,11 +242,19 @@ you are also making a new Label Set.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Indico
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -255,7 +265,6 @@ you are also making a new Label Set.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
