@@ -90,7 +90,7 @@ class _WorkflowSubmission(GraphQLRequest):
         response = super().process_response(response)["workflowSubmission"]
         if self.record_submission:
             return response["submissionIds"]
-        elif not not response["jobIds"]:
+        elif not response["jobIds"]:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
         return [Job(id=job_id) for job_id in response["jobIds"]]
 
