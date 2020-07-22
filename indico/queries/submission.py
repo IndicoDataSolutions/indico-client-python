@@ -8,6 +8,7 @@ from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
 from indico.types import Job, Submission
+from indico.types.submission import VALID_SUBMISSION_STATUSES
 
 
 class ListSubmissions(GraphQLRequest):
@@ -206,8 +207,15 @@ class SubmissionResult(RequestChain):
         )
         self.wait = wait
         self.timeout = timeout
+        if check_status and check_status.upper() not in VALID_SUBMISSION_STATUSES:
+            raise IndicoInputError(
+                f"{check_status} is not one of valid submission statuses: "
+                f"{VALID_SUBMISSION_STATUSES}"
+            )
         self.status_check = (
-            partial(eq, check_status) if check_status else partial(ne, "PROCESSING")
+            partial(eq, check_status.upper())
+            if check_status
+            else partial(ne, "PROCESSING")
         )
 
     def requests(self) -> Union[Job, str]:
@@ -223,7 +231,7 @@ class SubmissionResult(RequestChain):
                 curr_time += 1
             if not self.status_check(self.previous.status):
                 raise IndicoTimeoutError(curr_time)
-        elif not self.status_check(self.previous):
+        elif not self.status_check(self.previous.status):
             raise IndicoInputError(
                 f"Submission {self.submission_id} does not meet status requirements"
             )
