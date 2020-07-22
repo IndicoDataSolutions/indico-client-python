@@ -61,53 +61,47 @@ class FormPreprocessing(RequestChain):
 class ListPrebuiltForms(GraphQLRequest):
 
     query = """
-    mutation listPrebuiltFormsMutation {
-        listPrebuiltForms {
-            forms {
-                id
-                name
-            }
+    query {
+        formPreviews {
+            id
+            name
         }
     }
     """
-    method = HTTPMethod.GET
 
     def __init__(self):
         super().__init__(query=self.query)
 
     def process_response(self, response):
-        return super().process_response(response)["listPrebuiltForms"]["forms"]
+        return super().process_response(response)["formPreviews"]
 
 
-class GetPrebuiltForm(GraphQLRequest):
+class GetPrebuiltForms(GraphQLRequest):
 
     query = """
-    mutation($form_id: Int!) {
-        getPrebuiltForm(
-            formId: $form_id
+	query($formIds: [Int]!) {
+        forms(
+            formIds: $formIds
         ) {
-            form {
-                id 
-                name 
-                pages 
-                pdf 
-                images 
-                labels {
-                    label
-                    top
-                    bottom
-                    left
-                    right 
-                    pageNum
-                }
+            id 
+            name 
+            pages 
+            pdf 
+            images 
+            labels {
+                label
+                top
+                bottom
+                left
+                right 
+                pageNum
             }
         }
     }
     """
-    method = HTTPMethod.GET
 
-    def __init__(self, form_id):
-        super().__init__(query=self.query, variables={"form_id": form_id})
+    def __init__(self, form_ids):
+        super().__init__(query=self.query, variables={"formIds": form_ids})
 
     def process_response(self, response):
-        return super().process_response(response)["getPrebuiltForm"]["form"]
+        return super().process_response(response)["forms"]
