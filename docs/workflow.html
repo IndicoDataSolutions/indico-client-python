@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -31,13 +36,9 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Dataset Types" href="dataset-type.html" />
+    <link rel="next" title="Common GraphQL Queries" href="graphql_queries.html" />
     <link rel="prev" title="Storage" href="storage.html" /> 
 </head>
 
@@ -52,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -104,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -115,6 +118,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -153,7 +157,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Workflows</li>
     
@@ -177,38 +181,51 @@
   <div class="section" id="module-indico.queries.workflow">
 <span id="workflows"></span><h1>Workflows<a class="headerlink" href="#module-indico.queries.workflow" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="indico.queries.workflow.ListWorkflowsForDataset">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">ListWorkflowsForDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.ListWorkflowsForDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>List all of the workflows for a dataset</p>
+<dt id="indico.queries.workflow.ListWorkflows">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">ListWorkflows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">workflow_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.ListWorkflows" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all workflows visible to authenticated user</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dataset_id</strong> (<em>int</em>) – id of the dataset to list workflows.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – List of dataset ids to filter by.
+Defaults to None</p></li>
+<li><p><strong>workflow_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – List of workflow ids to filter by
+Defaults to None</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of Workflow objects for the given dataset_id</p>
+<dd class="field-even"><p>All the found Workflow objects</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Workflows</p>
+<dd class="field-odd"><p>List[Workflow]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
 <dt id="indico.queries.workflow.WorkflowSubmission">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">WorkflowSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em>, <em class="sig-param"><span class="n">workflow_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.WorkflowSubmission" title="Permalink to this definition">¶</a></dt>
-<dd><p>Submit a list of PDF or CSV files to a workflow</p>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">WorkflowSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">workflow_id</span></em>, <em class="sig-param"><span class="n">files</span></em>, <em class="sig-param"><span class="n">submission</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.WorkflowSubmission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit files to a workflow for processing</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>files</strong> (<em>str</em>) – List of file paths containing content to submit to the workflow</p></li>
-<li><p><strong>workflow_id</strong> (<em>int</em>) – id of the workflow to run.</p></li>
+<li><p><strong>workflow_id</strong> (<em>int</em>) – Id of workflow to submit files to</p></li>
+<li><p><strong>files</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of local file paths to submit</p></li>
+<li><p><strong>submission</strong> (<em>bool</em><em>, </em><em>optional</em>) – Process these files as normal submissions.
+Defaults to True.
+If False, files will be processed as AsyncJobs, ignoring any workflow
+post-processing steps like Review and with no record in the system</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Job object for the workflow submission</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>If <cite>submission</cite>, these will be submission ids.</dt><dd><p>Otherwise, they will be AsyncJob ids.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="jobs-type.html#indico.types.jobs.Job" title="indico.types.jobs.Job">Job</a></p>
+<dd class="field-odd"><p>List[int]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -223,7 +240,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dataset-type.html" class="btn btn-neutral float-right" title="Dataset Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="graphql_queries.html" class="btn btn-neutral float-right" title="Common GraphQL Queries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="storage.html" class="btn btn-neutral float-left" title="Storage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -235,11 +252,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Indico
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -250,7 +275,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
