@@ -66,8 +66,8 @@ class GetWorkflow(ListWorkflows):
 class _WorkflowSubmission(GraphQLRequest):
 
     query = """
-        mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!) {
-            workflowSubmission(workflowId: $workflowId, files: $files) {
+        mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!, $recordSubmission: Boolean) {
+            workflowSubmission(workflowId: $workflowId, files: $files, recordSubmission: $recordSubmission) {
                 jobIds
                 submissionIds
             }

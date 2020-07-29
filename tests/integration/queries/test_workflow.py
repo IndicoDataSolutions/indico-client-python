@@ -49,7 +49,7 @@ def test_workflow_job(
 
     result = client.call(RetrieveStorageObject(job.result))
 
-    assert isinstance(result, str)
+    assert isinstance(result, dict)
 
 
 def test_workflow_submission(indico, airlines_dataset, airlines_model_group: ModelGroup):
