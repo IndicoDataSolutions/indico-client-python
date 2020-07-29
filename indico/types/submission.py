@@ -1,8 +1,16 @@
 from indico.types import BaseType
 
+VALID_SUBMISSION_STATUSES = [
+    "COMPLETE",
+    "FAILED",
+    "PENDING_REVIEW",
+    "PROCESSING",
+    "PENDING_ADMIN_REVIEW",
+]
+
 
 class Submission(BaseType):
-    """
+    f"""
     A Submission in the Indico Platform.
 
     Submissions represent a single input which has been sent for processing by a specific workflow.
@@ -15,7 +23,7 @@ class Submission(BaseType):
         dataset_id (int): the Dataset id
         workflow_id (int): the Workflow id
         status (str): status of the submission. One of
-            [PROCESSING, PENDING_REVIEW, PENDING_ADMIN_REVIEW, COMPLETE, FAILED]
+            {VALID_SUBMISSION_STATUSES}
         input_file (str): URL of the input datafile within the Indico Platform.
         input_filename (str): name of the original file
         result_file (str): URL of the result datafile within the Indico Platform

@@ -100,7 +100,7 @@ def org_annotate_dataset(indico):
 
     response = client.call(
         CreateDataset(
-            name=f"AirlineComplaints-test-{int(time.time())}", files=[dataset_filepath]
+            name=f"OrgAnnotate-test-{int(time.time())}", files=[dataset_filepath]
         )
     )
     assert response.status == "COMPLETE"
