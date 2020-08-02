@@ -394,10 +394,6 @@ class AddFiles(RequestChain):
 
 
 class _ProcessFiles(GraphQLRequest):
-    """
-    TODO: WRITE DOCSTRING
-    """
-
     query = """
     mutation ($datasetId: Int!, $datafileIds: [Int], $datacolumnId: Int, $datacolumnName: String) {
         addDataFiles(datasetId: $datasetId, datafileIds: $datafileIds, datacolumnId: $datacolumnId, datacolumnName: $datacolumnName) {
@@ -442,6 +438,10 @@ class _ProcessCSV(GraphQLRequest):
 
 
 class ProcessFiles(RequestChain):
+    """
+    TODO: DOCSTRING
+    """
+
     def __init__(
         self, dataset_id, datafile_ids, datacolumn_id, datacolumn_name, wait=True
     ):
@@ -465,6 +465,10 @@ class ProcessFiles(RequestChain):
 
 
 class ProcessCSV(RequestChain):
+    """
+    TODO: DOCSTRING
+    """
+
     def __init__(self, dataset_id, datafile_ids):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
