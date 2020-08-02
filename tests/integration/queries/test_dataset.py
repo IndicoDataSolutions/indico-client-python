@@ -9,6 +9,7 @@ from indico.queries.datasets import (
     CreateDataset,
     ListDatasets,
     DeleteDataset,
+    CreateDataset_v2,
 )
 from indico.types.dataset import Dataset
 from indico.errors import IndicoRequestError
@@ -159,3 +160,14 @@ def test_delete_dataset(indico):
 
     with pytest.raises(IndicoRequestError):
         dataset = client.call(GetDataset(id=dataset.id))
+
+
+#########################
+## Dataset Pipeline v2 ##
+#########################
+def test_create_dataset_v2(indico):
+    client = IndicoClient()
+
+    dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
+
+    pass

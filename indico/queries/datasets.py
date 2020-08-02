@@ -318,9 +318,9 @@ class CreateDataset_v2(GraphQLRequest):
     }  
     """
 
-    def __init__(self, name, dataset_type):
-        if dataset_type not in ["TEXT", "IMAGE"]:
-            raise IndicoInputError("Dataset Type must be TEXT or IMAGE")
+    def __init__(self, name, dataset_type=None):
+        if not dataset_type:
+            dataset_type = "TEXT"
 
         super().__init__(
             self.query, variables={"name": name, "datasetType": dataset_type}
