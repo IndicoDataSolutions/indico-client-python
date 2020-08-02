@@ -395,8 +395,20 @@ class AddFiles(RequestChain):
 
 class _ProcessFiles(GraphQLRequest):
     query = """
-    mutation ($datasetId: Int!, $datafileIds: [Int], $datacolumnId: Int, $datacolumnName: String) {
-        addDataFiles(datasetId: $datasetId, datafileIds: $datafileIds, datacolumnId: $datacolumnId, datacolumnName: $datacolumnName) {
+    mutation (
+        $datasetId: Int!, 
+        $datafileIds: [Int], 
+        $datacolumnId: Int, 
+        $datacolumnName: String) {
+        addDataFiles(
+            datasetId: 
+            $datasetId, 
+            datafileIds: 
+            $datafileIds, 
+            datacolumnId: 
+            $datacolumnId, 
+            datacolumnName: 
+            $datacolumnName) {
             id
             name
         }
