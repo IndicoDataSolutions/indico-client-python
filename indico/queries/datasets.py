@@ -306,3 +306,176 @@ class DeleteDataset(GraphQLRequest):
 
     def process_response(self, response):
         return super().process_response(response)["deleteDataset"]["success"]
+
+
+class CreateDataset_v2(GraphQLRequest):
+    query = """
+    mutation($name: String!, $datasetType: DatasetType) {
+        createDataset(name: $name, datasetType: $datasetType) {
+            id
+            name
+        }
+    }  
+    """
+
+    def __init__(self, name, dataset_type):
+        if dataset_type not in ["TEXT", "IMAGE"]:
+            raise IndicoInputError("Dataset Type must be TEXT or IMAGE")
+
+        super().__init__(
+            self.query, variables={"name": name, "datasetType": dataset_type}
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["createDataset"])
+
+
+#########################
+## Dataset Pipeline v2 ##
+#########################
+
+
+class AddFiles(RequestChain):
+    """
+    TODO: WRITE DOCSTRING
+    """
+
+    previous = None
+
+    def __init__(
+        self,
+        name: str,
+        files: List[str],
+        wait: bool = True,
+        from_local_images: bool = False,
+        image_filename_col: str = "filename",
+        batch_size: int = 20,
+    ):
+        self.files = files
+        self.name = name
+        self.wait = wait
+        self.from_local_images = from_local_images
+        self.image_filename_col = image_filename_col
+        self.batch_size = batch_size
+        super().__init__()
+
+    def requests(self):
+        if self.from_local_images:
+            # Assume image filenames are in the same directory as the csv with
+            # image labels and that there is a column representing their name
+            df = pd.read_csv(self.files)
+            img_filenames = df[self.image_filename_col].tolist()
+            img_filepaths = [
+                str(Path(self.files).parent / imgfn) for imgfn in img_filenames
+            ]
+            yield UploadBatched(
+                img_filepaths, batch_size=self.batch_size, request_cls=UploadImages,
+            )
+            df["urls"] = self.previous
+            with tempfile.TemporaryDirectory() as tmpdir:
+                image_csv_path = str(Path(tmpdir) / "image_urls.csv")
+                df.to_csv(image_csv_path)
+                yield _UploadDatasetFiles(files=[image_csv_path])
+        else:
+            yield UploadBatched(
+                files=self.files,
+                batch_size=self.batch_size,
+                request_cls=_UploadDatasetFiles,
+            )
+        yield _CreateDataset(metadata=self.previous)
+        dataset_id = self.previous.id
+        yield GetDatasetFileStatus(id=dataset_id)
+        debouncer = Debouncer()
+        while not all(
+            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
+        ):
+            yield GetDatasetFileStatus(id=self.previous.id)
+            debouncer.backoff()
+
+
+class _ProcessFiles(GraphQLRequest):
+    """
+    TODO: WRITE DOCSTRING
+    """
+
+    query = """
+    mutation ($datasetId: Int!, $datafileIds: [Int], $datacolumnId: Int, $datacolumnName: String) {
+        addDataFiles(datasetId: $datasetId, datafileIds: $datafileIds, datacolumnId: $datacolumnId, datacolumnName: $datacolumnName) {
+            id
+            name
+        }
+    }
+    """
+
+    def __init__(self, dataset_id, datafile_ids, datacolumn_id, datacolumn_name):
+        super().__init__(
+            self.query,
+            variables={
+                "datasetId": dataset_id,
+                "datafileIds": datafile_ids,
+                "datacolumnId": datacolumn_id,
+                "datacolumnName": datacolumn_name,
+            },
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["addDataFiles"])
+
+
+class _ProcessCSV(GraphQLRequest):
+    query = """
+    mutation ($datasetId: Int!, $datafileIds: [Int]) {
+        addDataCsv(datasetId: $datasetId, datafileIds: $datafileIds) {
+            id
+            name
+        }
+    }
+    """
+
+    def __init__(self, dataset_id, datafile_ids):
+        super().__init__(
+            self.query, variables={"datasetId": dataset_id, "datafileIds": datafile_ids}
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["addDataCsv"])
+
+
+class ProcessFiles(RequestChain):
+    def __init__(
+        self, dataset_id, datafile_ids, datacolumn_id, datacolumn_name, wait=True
+    ):
+        self.dataset_id = dataset_id
+        self.datafile_ids = datafile_ids
+        self.datacolumn_id = datacolumn_id
+        self.datacolumn_name = datacolumn_name
+        self.wait = wait
+
+    def requests(self):
+        yield _ProcessFiles(
+            self.dataset_id, self.datafile_ids, self.datacolumn_id, self.datacolumn_name
+        )
+        debouncer = Debouncer()
+        yield GetDatasetFileStatus(id=self.dataset_id)
+        while not all(
+            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
+        ):
+            yield GetDatasetFileStatus(id=self.dataset_id)
+            debouncer.backoff()
+
+
+class ProcessCSV(RequestChain):
+    def __init__(self, dataset_id, datafile_ids):
+        self.dataset_id = dataset_id
+        self.datafile_ids = datafile_ids
+
+    def requests(self):
+        yield _ProcessCSV(self.dataset_id, self.datafile_ids)
+        debouncer = Debouncer()
+        yield GetDatasetFileStatus(id=self.dataset_id)
+        while not all(
+            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
+        ):
+            yield GetDatasetFileStatus(id=self.dataset_id)
+            debouncer.backoff()
+
