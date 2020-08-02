@@ -401,14 +401,10 @@ class _ProcessFiles(GraphQLRequest):
         $datacolumnId: Int, 
         $datacolumnName: String) {
         addDataFiles(
-            datasetId: 
-            $datasetId, 
-            datafileIds: 
-            $datafileIds, 
-            datacolumnId: 
-            $datacolumnId, 
-            datacolumnName: 
-            $datacolumnName) {
+          datasetId: $datasetId, 
+          datafileIds: $datafileIds, 
+          datacolumnId: $datacolumnId, 
+          datacolumnName: $datacolumnName) {
             id
             name
         }
