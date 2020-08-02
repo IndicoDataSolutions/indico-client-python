@@ -262,6 +262,27 @@ class _CreateDataset(GraphQLRequest):
         return Dataset(**super().process_response(response)["newDataset"])
 
 
+class _AddFiles(GraphQLRequest):
+    query = """
+    mutation AddFiles($datasetId: Int!, $metadata: JSONString!){
+        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata) {
+            id
+            status
+        }
+    }
+    """
+
+    def __init__(self, dataset_id: int, metadata: str):
+        print("DATASET ID :", dataset_id)
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["addDatasetFiles"])
+
+
 class _ProcessDataset(GraphQLRequest):
     query = """
         mutation ProcessDataset($id: Int!, $name: String) {
@@ -344,15 +365,15 @@ class AddFiles(RequestChain):
 
     def __init__(
         self,
-        name: str,
+        dataset_id: int,
         files: List[str],
         wait: bool = True,
         from_local_images: bool = False,
         image_filename_col: str = "filename",
         batch_size: int = 20,
     ):
+        self.dataset_id = dataset_id
         self.files = files
-        self.name = name
         self.wait = wait
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
@@ -382,9 +403,8 @@ class AddFiles(RequestChain):
                 batch_size=self.batch_size,
                 request_cls=_UploadDatasetFiles,
             )
-        yield _CreateDataset(metadata=self.previous)
-        dataset_id = self.previous.id
-        yield GetDatasetFileStatus(id=dataset_id)
+        yield _AddFiles(dataset_id=self.dataset_id, metadata=self.previous)
+        yield GetDatasetFileStatus(id=self.dataset_id)
         debouncer = Debouncer()
         while not all(
             f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
@@ -451,7 +471,12 @@ class ProcessFiles(RequestChain):
     """
 
     def __init__(
-        self, dataset_id, datafile_ids, datacolumn_id, datacolumn_name, wait=True
+        self,
+        dataset_id,
+        datafile_ids,
+        datacolumn_id=None,
+        datacolumn_name=None,
+        wait=True,
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
@@ -465,9 +490,7 @@ class ProcessFiles(RequestChain):
         )
         debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
-        while not all(
-            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
-        ):
+        while not all(f.status in ["PROCESSED", "FAILED"] for f in self.previous.files):
             yield GetDatasetFileStatus(id=self.dataset_id)
             debouncer.backoff()
 

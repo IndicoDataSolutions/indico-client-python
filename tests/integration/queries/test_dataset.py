@@ -10,6 +10,8 @@ from indico.queries.datasets import (
     ListDatasets,
     DeleteDataset,
     CreateDataset_v2,
+    AddFiles,
+    ProcessFiles,
 )
 from indico.types.dataset import Dataset
 from indico.errors import IndicoRequestError
@@ -170,4 +172,19 @@ def test_create_dataset_v2(indico):
 
     dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
 
-    pass
+    file_names = ["mock.pdf", "mock_2.pdf", "mock_3.pdf"]
+    parent_path = str(Path(__file__).parent.parent / "data")
+    dataset_filepaths = [
+        os.path.join(parent_path, file_name) for file_name in file_names
+    ]
+
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=dataset_filepaths))
+
+    for f in dataset.files:
+        assert f.status == "DOWNLOADED"
+
+    datafile_ids = [f.id for f in dataset.files]
+
+    dataset = client.call(
+        ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
