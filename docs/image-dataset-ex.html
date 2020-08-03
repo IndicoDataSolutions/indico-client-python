@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Train a Classifier and Predict &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Created a Dataset from Local Images &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="OCR a Single File with DocumentExtraction" href="singleocr-ex.html" />
-    <link rel="prev" title="Simple GraphQL Query Example" href="graphql-ex.html" /> 
+    <link rel="next" title="Get Predictions from Image Model" href="image-predictions-ex.html" />
+    <link rel="prev" title="Parsing the OCR result at the document, page, and block levels" href="ocr-object-parse-ex.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -97,12 +97,12 @@
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="graphql-ex.html">Simple GraphQL Query Example</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Train a Classifier and Predict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="train-predict-ex.html">Train a Classifier and Predict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="singleocr-ex.html">OCR a Single File with DocumentExtraction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="training-progress.html">Check Model Training Progress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workflow-ex.html">Run Files Through a Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocr-object-parse-ex.html">Parsing the OCR result at the document, page, and block levels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="image-dataset-ex.html">Created a Dataset from Local Images</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Created a Dataset from Local Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="image-predictions-ex.html">Get Predictions from Image Model</a></li>
 </ul>
 </li>
@@ -171,13 +171,13 @@
         
           <li><a href="examples.html">Examples</a> &raquo;</li>
         
-      <li>Train a Classifier and Predict</li>
+      <li>Created a Dataset from Local Images</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/train-predict-ex.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/image-dataset-ex.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -190,11 +190,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="train-a-classifier-and-predict">
-<h1>Train a Classifier and Predict<a class="headerlink" href="#train-a-classifier-and-predict" title="Permalink to this headline">¶</a></h1>
-<p>Train a classifier and get predictions</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span><span class="p">,</span> <span class="n">CreateModelGroup</span><span class="p">,</span> <span class="n">ModelGroupPredict</span>
+  <div class="section" id="created-a-dataset-from-local-images">
+<h1>Created a Dataset from Local Images<a class="headerlink" href="#created-a-dataset-from-local-images" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Creating an Image Dataset from Local PNGs/JPGs</span>
+
+<span class="sd">There are two ways two create a data of PNGs/JPGs depending on whether the images are</span>
+<span class="sd">stored locally on your computer or at a publicly accessible URL. The code snippet </span>
+<span class="sd">below shows you what to do if the images are on your computer.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="c1"># Create an Indico API client</span>
 <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
@@ -202,35 +210,25 @@
 <span class="p">)</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
 
-<span class="c1"># create the dataset</span>
+
+<span class="c1"># With local images you should create a CSV formatted (here for demonstration) like below</span>
+<span class="c1"># Where one column contains the paths from the csv to where the images are stored on your computer</span>
+<span class="n">image_dataset</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="n">image_dataset</span><span class="p">[</span><span class="s2">&quot;image_files&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;./path/from/csv/to/image.png&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;./path/from/csv/to/image2.png&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">image_dataset</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;./image_dataset.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Use the CSV you created (like above) to create the dataset</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-    <span class="n">CreateDataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;airline_comments&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./airline-comments.csv&quot;</span><span class="p">])</span>
-<span class="p">)</span>
-
-<span class="c1"># train the model w/ the relevant csv columns</span>
-<span class="n">model_group</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-    <span class="n">CreateModelGroup</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_classification_model&quot;</span><span class="p">,</span>
-        <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">source_column_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">datacolumn_by_name</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="c1"># csv text column</span>
-        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span>
-            <span class="s2">&quot;Target_1&quot;</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="c1"># csv target class column</span>
-        <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># wait for training to finish</span>
+    <span class="n">CreateDataset</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Image Dataset&quot;</span><span class="p">,</span>
+        <span class="n">files</span><span class="o">=</span><span class="s2">&quot;./image_dataset.csv&quot;</span><span class="p">,</span>
+        <span class="n">from_local_images</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">image_filename_col</span><span class="o">=</span><span class="s2">&quot;image_files&quot;</span><span class="p">,</span>  <span class="c1"># specify the columns containing the images</span>
     <span class="p">)</span>
 <span class="p">)</span>
-
-
-<span class="c1"># predict on the model</span>
-<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-    <span class="n">ModelGroupPredict</span><span class="p">(</span>
-        <span class="n">model_id</span><span class="o">=</span><span class="n">model_group</span><span class="o">.</span><span class="n">selected_model</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sample Text to predict on&quot;</span><span class="p">,</span> <span class="s2">&quot;More Sample text to predict on&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-
-<span class="c1"># retrieve your prediction results</span>
-<span class="n">predictions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span>
 </pre></div>
 </div>
 </div>
@@ -243,10 +241,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="singleocr-ex.html" class="btn btn-neutral float-right" title="OCR a Single File with DocumentExtraction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="image-predictions-ex.html" class="btn btn-neutral float-right" title="Get Predictions from Image Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="graphql-ex.html" class="btn btn-neutral float-left" title="Simple GraphQL Query Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="ocr-object-parse-ex.html" class="btn btn-neutral float-left" title="Parsing the OCR result at the document, page, and block levels" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

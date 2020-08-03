@@ -198,8 +198,8 @@ visit the Review page of that model and you’ll see the ID in the upper left co
 <h2>Call ModelGroupPredict<a class="headerlink" href="#call-modelgrouppredict" title="Permalink to this headline">¶</a></h2>
 <p>With a Selected Model ID (30403 in this case), all you need to do is call ModelGroupPredict with
 a list of samples to predict.  Here’s an example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="k">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ModelGroupPredict</span>
-<span class="kn">from</span> <span class="nn">indico</span> <span class="k">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ModelGroupPredict</span>
+<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
 
 <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
     <span class="n">host</span><span class="o">=</span><span class="s1">&#39;indico.mycompany.com&#39;</span><span class="p">,</span>

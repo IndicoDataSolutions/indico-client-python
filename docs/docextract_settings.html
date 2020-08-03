@@ -262,7 +262,13 @@ position information, and more. It returns a nested dictionary.</p>
 document-level. It returns a list of dictionaries where each dictionary is page data. This preset configuration
 also supports an additional “vdp” attribute, which, if set to True, performs an additional block classification
 and association step. The former adds a “label_type” to every block, and the latter adds an “associations”
-attribute to the result (located on the first page).</p>
+attribute to the result (located on the first page). The possible block classifications are the following:
+- content
+- table
+- header
+- page_header
+- page_footer
+- document_title</p>
 <p>The exact settings included in “legacy”, “simple”, “ondocument”, “standard”, and “detailed”
 are shown at the bottom of this page.</p>
 </div>

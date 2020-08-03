@@ -102,6 +102,8 @@
 <li class="toctree-l2"><a class="reference internal" href="training-progress.html">Check Model Training Progress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workflow-ex.html">Run Files Through a Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocr-object-parse-ex.html">Parsing the OCR result at the document, page, and block levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-dataset-ex.html">Created a Dataset from Local Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-predictions-ex.html">Get Predictions from Image Model</a></li>
 </ul>
 </li>
 </ul>
@@ -192,8 +194,8 @@
 <h1>Simple GraphQL Query Example<a class="headerlink" href="#simple-graphql-query-example" title="Permalink to this headline">¶</a></h1>
 <p>A simple example that shows how to create a client and send a GraphQL Query
 that lists all of your datasets.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="k">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="k">import</span> <span class="n">GraphQLRequest</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GraphQLRequest</span>
 
 
 <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>

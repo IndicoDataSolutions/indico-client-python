@@ -11,3 +11,5 @@ Examples
     training-progress
     workflow-ex
     ocr-object-parse-ex
+    image-dataset-ex
+    image-predictions-ex
