@@ -490,9 +490,12 @@ class ProcessFiles(RequestChain):
         )
         debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
-        while not all(f.status in ["PROCESSED", "FAILED"] for f in self.previous.files):
-            yield GetDatasetFileStatus(id=self.dataset_id)
-            debouncer.backoff()
+        if self.wait:
+            while not all(
+                f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
+            ):
+                yield GetDatasetFileStatus(id=self.dataset_id)
+                debouncer.backoff()
 
 
 class ProcessCSV(RequestChain):
@@ -500,17 +503,19 @@ class ProcessCSV(RequestChain):
     TODO: DOCSTRING
     """
 
-    def __init__(self, dataset_id, datafile_ids):
+    def __init__(self, dataset_id, datafile_ids, wait=True):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
+        self.wait = wait
 
     def requests(self):
         yield _ProcessCSV(self.dataset_id, self.datafile_ids)
         debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
-        while not all(
-            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
-        ):
-            yield GetDatasetFileStatus(id=self.dataset_id)
-            debouncer.backoff()
+        if self.wait:
+            while not all(
+                f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
+            ):
+                yield GetDatasetFileStatus(id=self.dataset_id)
+                debouncer.backoff()
 
