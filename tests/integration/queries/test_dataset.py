@@ -168,12 +168,38 @@ def test_delete_dataset(indico):
 #########################
 ## Dataset Pipeline v2 ##
 #########################
-def test_create_dataset_v2_from_files(indico):
+def test_create_dataset_v2_from_files_pdf(indico):
     client = IndicoClient()
 
     dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
 
+    # TODO: Also include TIFF for this
     file_names = ["mock.pdf", "mock_2.pdf", "mock_3.pdf"]
+    parent_path = str(Path(__file__).parent.parent / "data")
+    dataset_filepaths = [
+        os.path.join(parent_path, file_name) for file_name in file_names
+    ]
+
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=dataset_filepaths))
+
+    for f in dataset.files:
+        assert f.status == "DOWNLOADED"
+
+    datafile_ids = [f.id for f in dataset.files]
+
+    dataset = client.call(
+        ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
+
+
+def test_create_dataset_v2_from_files_image(indico):
+    client = IndicoClient()
+
+    dataset = client.call(
+        CreateDataset_v2(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
+    )
+
+    file_names = ["1.jpg", "2.jpg", "3.jpg"]
     parent_path = str(Path(__file__).parent.parent / "data")
     dataset_filepaths = [
         os.path.join(parent_path, file_name) for file_name in file_names
@@ -225,7 +251,7 @@ def test_create_dataset_v2_from_csv_fails(indico):
     assert dataset.files[0].status == "FAILED"
 
 
-def test_create_dataset_v2_image_local_images(indico):
+def test_create_dataset_v2_local_image_csv(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/dog_vs_cats_small.csv"
     dataset = client.call(
@@ -245,5 +271,23 @@ def test_create_dataset_v2_image_local_images(indico):
     )
 
 
-def test_create_dataset_v2_image_links(indico):
-    pass
+def test_create_dataset_v2_csv_image_links(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/dog_vs_cats_small.csv"
+    dataset = client.call(
+        CreateDataset_v2(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
+    )
+    dataset = client.call(
+        AddFiles(
+            dataset_id=dataset.id, files=[dataset_filepath], from_local_images=True
+        )
+    )
+
+    for f in dataset.files:
+        assert f.status == "DOWNLOADED"
+
+    datafile_ids = [f.id for f in dataset.files]
+
+    dataset = client.call(
+        ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
