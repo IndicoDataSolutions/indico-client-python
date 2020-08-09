@@ -168,13 +168,12 @@ def test_delete_dataset(indico):
 #########################
 ## Dataset Pipeline v2 ##
 #########################
-def test_create_dataset_v2_from_files_pdf(indico):
+def test_create_dataset_v2_from_files_document(indico):
     client = IndicoClient()
 
     dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
 
-    # TODO: Also include TIFF for this
-    file_names = ["mock.pdf", "mock_2.pdf", "mock_3.pdf"]
+    file_names = ["us_doi.tiff"]
     parent_path = str(Path(__file__).parent.parent / "data")
     dataset_filepaths = [
         os.path.join(parent_path, file_name) for file_name in file_names
