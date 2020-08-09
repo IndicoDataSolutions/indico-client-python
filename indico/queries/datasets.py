@@ -126,6 +126,7 @@ class GetDatasetFileStatus(GetDataset):
                     fileHash
                     status
                     statusMeta
+                    failureType
                 }
             }
         }
