@@ -407,7 +407,8 @@ class AddFiles(RequestChain):
         yield GetDatasetFileStatus(id=self.dataset_id)
         debouncer = Debouncer()
         while not all(
-            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
+            f.status in ["DOWNLOADED", "FAILED", "PROCESSED"]
+            for f in self.previous.files
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
             debouncer.backoff()
