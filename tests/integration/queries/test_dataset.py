@@ -264,11 +264,10 @@ def test_create_dataset_v2_from_csv_fails(indico):
 
     datafile_ids = [f.id for f in dataset.files]
 
+    # Should raise invalid request
     dataset = client.call(
         ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
-    # Need to use ProcessCSV
-    assert dataset.files[0].status == "FAILED"
 
 
 def test_create_dataset_v2_local_image_csv(indico):
@@ -309,6 +308,26 @@ def test_create_dataset_v2_csv_image_links(indico):
     )
 
 
+def test_create_dataset_v2_csv_image_links_with_broken(indico):
+    client = IndicoClient()
+    dataset_filepath = (
+        str(Path(__file__).parents[1]) + "/data/image_link_small_with_broken.csv"
+    )
+    dataset = client.call(
+        CreateDataset_v2(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
+    )
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
+
+    for f in dataset.files:
+        assert f.status == "DOWNLOADED"
+
+    datafile_ids = [f.id for f in dataset.files]
+
+    dataset = client.call(
+        ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
+
+
 def test_create_dataset_v2_csv_pdf_links(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
@@ -319,6 +338,35 @@ def test_create_dataset_v2_csv_pdf_links(indico):
         assert f.status == "DOWNLOADED"
 
     datafile_ids = [f.id for f in dataset.files]
+
+    dataset = client.call(
+        ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
+
+
+def test_csv_incompatible_columns(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
+    dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
+
+    for f in dataset.files:
+        assert f.status == "DOWNLOADED"
+
+    datafile_ids = [f.id for f in dataset.files]
+
+    dataset = client.call(
+        ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
+
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
+
+    datafile_ids = [
+        df.id
+        for df in dataset.files
+        if df.status == "DOWNLOADED" and df.file_type == "csv"
+    ]
 
     dataset = client.call(
         ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
