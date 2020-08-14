@@ -359,7 +359,19 @@ class CreateDataset_v2(GraphQLRequest):
 
 class AddFiles(RequestChain):
     """
-    TODO: WRITE DOCSTRING
+    Add files to a dataset
+
+    Args:
+        dataset_id (int): ID of the dataset
+        files (List[str]): List of pathnames to the dataset files
+        wait (bool): Block while polling for status of files
+        batch_size (int): Batch size for uploading files
+
+    Returns:
+        Dataset
+
+    Raises: 
+
     """
 
     previous = None
@@ -369,41 +381,20 @@ class AddFiles(RequestChain):
         dataset_id: int,
         files: List[str],
         wait: bool = True,
-        from_local_images: bool = False,
-        image_filename_col: str = "filename",
         batch_size: int = 20,
     ):
         self.dataset_id = dataset_id
         self.files = files
         self.wait = wait
-        self.from_local_images = from_local_images
-        self.image_filename_col = image_filename_col
         self.batch_size = batch_size
         super().__init__()
 
     def requests(self):
-        if self.from_local_images:
-            # Assume image filenames are in the same directory as the csv with
-            # image labels and that there is a column representing their name
-            df = pd.read_csv(self.files)
-            img_filenames = df[self.image_filename_col].tolist()
-            img_filepaths = [
-                str(Path(self.files).parent / imgfn) for imgfn in img_filenames
-            ]
-            yield UploadBatched(
-                img_filepaths, batch_size=self.batch_size, request_cls=UploadImages,
-            )
-            df["urls"] = self.previous
-            with tempfile.TemporaryDirectory() as tmpdir:
-                image_csv_path = str(Path(tmpdir) / "image_urls.csv")
-                df.to_csv(image_csv_path)
-                yield _UploadDatasetFiles(files=[image_csv_path])
-        else:
-            yield UploadBatched(
-                files=self.files,
-                batch_size=self.batch_size,
-                request_cls=_UploadDatasetFiles,
-            )
+        yield UploadBatched(
+            files=self.files,
+            batch_size=self.batch_size,
+            request_cls=_UploadDatasetFiles,
+        )
         yield _AddFiles(dataset_id=self.dataset_id, metadata=self.previous)
         yield GetDatasetFileStatus(id=self.dataset_id)
         debouncer = Debouncer()
@@ -469,7 +460,21 @@ class _ProcessCSV(GraphQLRequest):
 
 class ProcessFiles(RequestChain):
     """
-    TODO: DOCSTRING
+    Process files associated with a dataset and add corresponding data to the dataset
+
+    Args:
+        dataset_id (int): ID of the dataset
+        datafile_ids (List[str]): IDs of the datafiles to process
+        datacolumn_id (int): ID of the datacolumn to add files to
+        datacolumn_name (String): Name of the datacolumn to add files to or name of the datacolumn to create
+        wait (bool): Block while polling for status of files
+        
+
+    Returns:
+        Dataset
+
+    Raises:
+
     """
 
     def __init__(
@@ -502,7 +507,18 @@ class ProcessFiles(RequestChain):
 
 class ProcessCSV(RequestChain):
     """
-    TODO: DOCSTRING
+    Process CSV associated with a dataset and add corresponding data to the dataset
+
+    Args:
+        dataset_id (int): ID of the dataset
+        datafile_ids (List[str]): IDs of the CSV datafiles to process
+        wait (bool): Block while polling for status of files
+
+    Returns:
+        Dataset
+
+    Raises:
+
     """
 
     def __init__(self, dataset_id, datafile_ids, wait=True):
