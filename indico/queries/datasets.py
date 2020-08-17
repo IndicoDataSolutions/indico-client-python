@@ -330,6 +330,11 @@ class DeleteDataset(GraphQLRequest):
         return super().process_response(response)["deleteDataset"]["success"]
 
 
+#########################
+## Dataset Pipeline v2 ##
+#########################
+
+
 class CreateDataset_v2(GraphQLRequest):
     query = """
     mutation($name: String!, $datasetType: DatasetType) {
@@ -350,11 +355,6 @@ class CreateDataset_v2(GraphQLRequest):
 
     def process_response(self, response):
         return Dataset(**super().process_response(response)["createDataset"])
-
-
-#########################
-## Dataset Pipeline v2 ##
-#########################
 
 
 class AddFiles(RequestChain):
