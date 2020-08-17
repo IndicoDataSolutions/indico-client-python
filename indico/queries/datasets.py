@@ -410,29 +410,21 @@ class _ProcessFiles(GraphQLRequest):
     query = """
     mutation (
         $datasetId: Int!, 
-        $datafileIds: [Int], 
-        $datacolumnId: Int, 
-        $datacolumnName: String) {
+        $datafileIds: [Int]) {
         addDataFiles(
           datasetId: $datasetId, 
           datafileIds: $datafileIds, 
-          datacolumnId: $datacolumnId, 
-          datacolumnName: $datacolumnName) {
+          datacolumnId: $datacolumnId) {
             id
             name
         }
     }
     """
 
-    def __init__(self, dataset_id, datafile_ids, datacolumn_id, datacolumn_name):
+    def __init__(self, dataset_id, datafile_ids):
         super().__init__(
             self.query,
-            variables={
-                "datasetId": dataset_id,
-                "datafileIds": datafile_ids,
-                "datacolumnId": datacolumn_id,
-                "datacolumnName": datacolumn_name,
-            },
+            variables={"datasetId": dataset_id, "datafileIds": datafile_ids,},
         )
 
     def process_response(self, response):
@@ -465,8 +457,6 @@ class ProcessFiles(RequestChain):
     Args:
         dataset_id (int): ID of the dataset
         datafile_ids (List[str]): IDs of the datafiles to process
-        datacolumn_id (int): ID of the datacolumn to add files to
-        datacolumn_name (String): Name of the datacolumn to add files to or name of the datacolumn to create
         wait (bool): Block while polling for status of files
         
 
@@ -487,14 +477,10 @@ class ProcessFiles(RequestChain):
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
-        self.datacolumn_id = datacolumn_id
-        self.datacolumn_name = datacolumn_name
         self.wait = wait
 
     def requests(self):
-        yield _ProcessFiles(
-            self.dataset_id, self.datafile_ids, self.datacolumn_id, self.datacolumn_name
-        )
+        yield _ProcessFiles(self.dataset_id, self.datafile_ids)
         debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
