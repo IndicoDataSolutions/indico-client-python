@@ -413,8 +413,7 @@ class _ProcessFiles(GraphQLRequest):
         $datafileIds: [Int]) {
         addDataFiles(
           datasetId: $datasetId, 
-          datafileIds: $datafileIds, 
-          datacolumnId: $datacolumnId) {
+          datafileIds: $datafileIds) {
             id
             name
         }
@@ -468,12 +467,7 @@ class ProcessFiles(RequestChain):
     """
 
     def __init__(
-        self,
-        dataset_id,
-        datafile_ids,
-        datacolumn_id=None,
-        datacolumn_name=None,
-        wait=True,
+        self, dataset_id, datafile_ids, wait=True,
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids

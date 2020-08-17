@@ -1,5 +1,6 @@
 import os
 import time
+import pandas as pd
 import pytest
 from pathlib import Path
 
@@ -11,20 +12,26 @@ from indico.queries.datasets import (
     ProcessFiles,
     ProcessCSV,
 )
+from indico.queries.export import CreateExport, DownloadExport
 
 
-def test_create_dataset_v2_from_files_document(indico):
+def _dataset_complete(dataset):
+    for df in dataset.files:
+        assert df.status == "PROCESSED"
+
+    assert dataset.status == "COMPLETE"
+
+
+def test_create_from_files_document(indico):
     client = IndicoClient()
-
     dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
-
-    file_names = ["us_doi.tiff"]
+    file_names = ["us_doi.tiff", "mock.pdf"]
     parent_path = str(Path(__file__).parent.parent / "data")
     dataset_filepaths = [
         os.path.join(parent_path, file_name) for file_name in file_names
     ]
 
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=dataset_filepaths))
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[0]]))
 
     for f in dataset.files:
         assert f.status == "DOWNLOADED"
@@ -35,14 +42,22 @@ def test_create_dataset_v2_from_files_document(indico):
         ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
 
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]]))
 
-def test_create_dataset_v2_from_files_image(indico):
+    datafile_ids = [f.id for f in dataset.files if f.status == "DOWNLOADED"]
+
+    dataset = client.call(
+        ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
+
+    _dataset_complete(dataset)
+
+
+def test_create_from_files_image(indico):
     client = IndicoClient()
-
     dataset = client.call(
         CreateDataset_v2(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
     )
-
     file_names = ["1.jpg", "2.jpg", "3.jpg"]
     parent_path = str(Path(__file__).parent.parent / "data")
     dataset_filepaths = [
@@ -73,8 +88,10 @@ def test_create_dataset_v2_from_files_image(indico):
         ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
 
+    _dataset_complete(dataset)
 
-def test_create_dataset_v2_from_csv(indico):
+
+def test_create_from_csv(indico):
     client = IndicoClient()
     dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
@@ -97,25 +114,26 @@ def test_create_dataset_v2_from_csv(indico):
         ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
 
+    _dataset_complete(dataset)
 
-def test_create_dataset_v2_from_csv_fails(indico):
-    client = IndicoClient()
-    dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
-    dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
+    export = client.call(CreateExport(dataset_id=dataset.id, wait=True))
 
-    for f in dataset.files:
-        assert f.status == "DOWNLOADED"
+    exported_data = client.call(DownloadExport(export.id))
 
-    datafile_ids = [f.id for f in dataset.files]
+    baseline_data = pd.read_csv(dataset_filepath)
 
-    # Should raise invalid request
-    dataset = client.call(
-        ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
-    )
+    for col in baseline_data.columns:
+        assert all(
+            baseline_data[col].apply(str).str.strip().values
+            == exported_data[: len(baseline_data)][col].apply(str).values
+        )
+        assert all(
+            baseline_data[col].apply(str).str.strip().values
+            == exported_data[len(baseline_data) :][col].apply(str).values
+        )
 
 
-def test_create_dataset_v2_csv_image_links(indico):
+def test_create_from_csv_image_urls(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/image_link_small.csv"
     dataset = client.call(
@@ -132,8 +150,10 @@ def test_create_dataset_v2_csv_image_links(indico):
         ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
 
+    _dataset_complete(dataset)
 
-def test_create_dataset_v2_csv_image_links_with_broken(indico):
+
+def test_create_from_csv_image_urls_with_broken(indico):
     client = IndicoClient()
     dataset_filepath = (
         str(Path(__file__).parents[1]) + "/data/image_link_small_with_broken.csv"
@@ -152,8 +172,17 @@ def test_create_dataset_v2_csv_image_links_with_broken(indico):
         ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
 
+    failed = 0
+    for df in dataset.files:
+        if df.status == "FAILED":
+            assert df.failure_type == "DOWNLOAD"
+            failed += 1
+        else:
+            assert df.status == "PROCESSED"
+    assert failed == 1
 
-def test_create_dataset_v2_csv_pdf_links(indico):
+
+def test_create_from_csv_doc_urls(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
     dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
@@ -168,8 +197,10 @@ def test_create_dataset_v2_csv_pdf_links(indico):
         ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
 
+    _dataset_complete(dataset)
 
-def test_csv_incompatible_columns(indico):
+
+def test_csv_incompat_columns(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
     dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
@@ -196,3 +227,14 @@ def test_csv_incompatible_columns(indico):
     dataset = client.call(
         ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
+
+    failed = 0
+    for df in dataset.files:
+        if df.status == "FAILED":
+            assert df.failure_type == "INCOMPATIBLE_CSV_COLUMNS"
+            failed += 1
+        else:
+            assert df.status == "PROCESSED"
+
+    assert dataset.status == "COMPLETE"
+

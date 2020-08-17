@@ -4,7 +4,7 @@ from indico.client import IndicoClient
 from indico.types.dataset import Dataset
 from indico.types.export import Export
 from indico.errors import IndicoRequestError
-from indico.queries.export import CreateExport, _CreateExport, DownloadExport
+from indico.queries.export import CreateExport, DownloadExport
 from ..data.datasets import airlines_dataset
 
 
