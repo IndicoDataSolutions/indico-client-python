@@ -263,27 +263,6 @@ class _CreateDataset(GraphQLRequest):
         return Dataset(**super().process_response(response)["newDataset"])
 
 
-class _AddFiles(GraphQLRequest):
-    query = """
-    mutation AddFiles($datasetId: Int!, $metadata: JSONString!){
-        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata) {
-            id
-            status
-        }
-    }
-    """
-
-    def __init__(self, dataset_id: int, metadata: str):
-        print("DATASET ID :", dataset_id)
-        super().__init__(
-            self.query,
-            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
-        )
-
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["addDatasetFiles"])
-
-
 class _ProcessDataset(GraphQLRequest):
     query = """
         mutation ProcessDataset($id: Int!, $name: String) {
@@ -355,6 +334,26 @@ class CreateDataset_v2(GraphQLRequest):
 
     def process_response(self, response):
         return Dataset(**super().process_response(response)["createDataset"])
+
+
+class _AddFiles(GraphQLRequest):
+    query = """
+    mutation AddFiles($datasetId: Int!, $metadata: JSONString!){
+        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata) {
+            id
+            status
+        }
+    }
+    """
+
+    def __init__(self, dataset_id: int, metadata: str):
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["addDatasetFiles"])
 
 
 class AddFiles(RequestChain):
