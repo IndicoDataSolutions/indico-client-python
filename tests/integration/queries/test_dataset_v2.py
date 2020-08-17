@@ -7,7 +7,7 @@ from pathlib import Path
 from indico.client import IndicoClient
 from indico.queries.datasets import (
     GetDatasetFileStatus,
-    CreateDataset_v2,
+    CreateEmptyDataset,
     AddFiles,
     ProcessFiles,
     ProcessCSV,
@@ -24,7 +24,7 @@ def _dataset_complete(dataset):
 
 def test_create_from_files_document(indico):
     client = IndicoClient()
-    dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
+    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
     file_names = ["us_doi.tiff", "mock.pdf"]
     parent_path = str(Path(__file__).parent.parent / "data")
     dataset_filepaths = [
@@ -56,7 +56,7 @@ def test_create_from_files_document(indico):
 def test_create_from_files_image(indico):
     client = IndicoClient()
     dataset = client.call(
-        CreateDataset_v2(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
+        CreateEmptyDataset(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
     )
     file_names = ["1.jpg", "2.jpg", "3.jpg"]
     parent_path = str(Path(__file__).parent.parent / "data")
@@ -93,7 +93,7 @@ def test_create_from_files_image(indico):
 
 def test_create_from_csv(indico):
     client = IndicoClient()
-    dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
+    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
     dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
 
@@ -137,7 +137,7 @@ def test_create_from_csv_image_urls(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/image_link_small.csv"
     dataset = client.call(
-        CreateDataset_v2(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
+        CreateEmptyDataset(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
     )
     dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
 
@@ -159,7 +159,7 @@ def test_create_from_csv_image_urls_with_broken(indico):
         str(Path(__file__).parents[1]) + "/data/image_link_small_with_broken.csv"
     )
     dataset = client.call(
-        CreateDataset_v2(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
+        CreateEmptyDataset(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
     )
     dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
 
@@ -185,7 +185,7 @@ def test_create_from_csv_image_urls_with_broken(indico):
 def test_create_from_csv_doc_urls(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
-    dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
+    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
     dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
 
     for f in dataset.files:
@@ -203,7 +203,7 @@ def test_create_from_csv_doc_urls(indico):
 def test_csv_incompat_columns(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
-    dataset = client.call(CreateDataset_v2(name=f"dataset-{int(time.time())}"))
+    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
     dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath]))
 
     for f in dataset.files:
