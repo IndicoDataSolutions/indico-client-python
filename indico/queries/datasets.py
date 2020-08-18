@@ -435,7 +435,7 @@ class ProcessFiles(RequestChain):
     """
 
     def __init__(
-        self, dataset_id: int, datafile_ids: List[int], wait=True,
+        self, dataset_id: int, datafile_ids: List[int], wait: bool = True,
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
@@ -469,7 +469,7 @@ class ProcessCSV(RequestChain):
 
     """
 
-    def __init__(self, dataset_id: int, datafile_ids: List[int], wait=True):
+    def __init__(self, dataset_id: int, datafile_ids: List[int], wait: bool = True):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
         self.wait = wait
