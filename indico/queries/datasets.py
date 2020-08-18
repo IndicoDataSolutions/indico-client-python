@@ -388,7 +388,7 @@ class _ProcessFiles(GraphQLRequest):
     }
     """
 
-    def __init__(self, dataset_id, datafile_ids):
+    def __init__(self, dataset_id: int, datafile_ids: List[int]):
         super().__init__(
             self.query,
             variables={"datasetId": dataset_id, "datafileIds": datafile_ids,},
@@ -408,7 +408,7 @@ class _ProcessCSV(GraphQLRequest):
     }
     """
 
-    def __init__(self, dataset_id, datafile_ids):
+    def __init__(self, dataset_id: int, datafile_ids: List[int]):
         super().__init__(
             self.query, variables={"datasetId": dataset_id, "datafileIds": datafile_ids}
         )
