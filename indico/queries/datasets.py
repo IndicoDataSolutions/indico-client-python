@@ -126,6 +126,7 @@ class GetDatasetFileStatus(GetDataset):
                     fileHash
                     status
                     statusMeta
+                    failureType
                 }
             }
         }
@@ -164,17 +165,14 @@ class GetDatasetStatus(GraphQLRequest):
 class CreateDataset(RequestChain):
     """
     Create a dataset and upload the associated files.
-
     Args:
         name (str): Name of the dataset
         files (List[str]): List of pathnames to the dataset files
+        dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
         wait (bool): Wait for the dataset to upload and finish
-
     Returns:
         Dataset object
-
     Raises:
-
     """
 
     previous = None
@@ -184,6 +182,7 @@ class CreateDataset(RequestChain):
         name: str,
         files: List[str],
         wait: bool = True,
+        dataset_type: str = "TEXT",
         from_local_images: bool = False,
         image_filename_col: str = "filename",
         batch_size: int = 20,
@@ -191,6 +190,7 @@ class CreateDataset(RequestChain):
         self.files = files
         self.name = name
         self.wait = wait
+        self.dataset_type = dataset_type
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
         self.batch_size = batch_size
@@ -198,6 +198,7 @@ class CreateDataset(RequestChain):
 
     def requests(self):
         if self.from_local_images:
+            self.dataset_type = "IMAGE"
             # Assume image filenames are in the same directory as the csv with
             # image labels and that there is a column representing their name
             df = pd.read_csv(self.files)
@@ -219,7 +220,9 @@ class CreateDataset(RequestChain):
                 batch_size=self.batch_size,
                 request_cls=_UploadDatasetFiles,
             )
-        yield _CreateDataset(metadata=self.previous)
+        file_metadata = self.previous
+        yield CreateEmptyDataset(name=self.name, dataset_type=self.dataset_type)
+        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
@@ -228,7 +231,13 @@ class CreateDataset(RequestChain):
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
             debouncer.backoff()
-        yield _ProcessDataset(id=self.previous.id, name=self.name)
+        csv_files = [f.id for f in self.previous.files if f.file_type == "CSV"]
+        non_csv_files = [f.id for f in self.previous.files if f.file_type != "CSV"]
+
+        if csv_files:
+            yield _ProcessCSV(dataset_id=dataset_id, datafile_ids=csv_files)
+        elif non_csv_files:
+            yield _ProcessFiles(dataset_id=dataset_id, datafile_ids=non_csv_files)
         yield GetDatasetStatus(id=dataset_id)
         debouncer = Debouncer()
         if self.wait is True:
@@ -243,40 +252,6 @@ class _UploadDatasetFiles(HTTPRequest):
         super().__init__(
             method=HTTPMethod.POST, path="/storage/files/upload", files=files
         )
-
-
-class _CreateDataset(GraphQLRequest):
-    query = """
-        mutation CreateDataset($metadata: JSONString!) {
-            newDataset(metadataList: $metadata) {
-                id    
-                status
-            }
-        }
-    """
-
-    def __init__(self, metadata: str):
-        super().__init__(self.query, variables={"metadata": json.dumps(metadata)})
-
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["newDataset"])
-
-
-class _ProcessDataset(GraphQLRequest):
-    query = """
-        mutation ProcessDataset($id: Int!, $name: String) {
-            processDataset(datasetId: $id, name: $name) {
-                    id
-                    status
-            }
-        }
-    """
-
-    def __init__(self, id, name):
-        super().__init__(self.query, variables={"id": id, "name": name})
-
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["processDataset"])
 
 
 class DeleteDataset(GraphQLRequest):
@@ -306,3 +281,207 @@ class DeleteDataset(GraphQLRequest):
 
     def process_response(self, response):
         return super().process_response(response)["deleteDataset"]["success"]
+
+
+class CreateEmptyDataset(GraphQLRequest):
+    query = """
+    mutation($name: String!, $datasetType: DatasetType) {
+        createDataset(name: $name, datasetType: $datasetType) {
+            id
+            name
+        }
+    }  
+    """
+
+    def __init__(self, name: str, dataset_type: str = None):
+        if not dataset_type:
+            dataset_type = "TEXT"
+
+        super().__init__(
+            self.query, variables={"name": name, "datasetType": dataset_type}
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["createDataset"])
+
+
+class _AddFiles(GraphQLRequest):
+    query = """
+    mutation AddFiles($datasetId: Int!, $metadata: JSONString!){
+        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata) {
+            id
+            status
+        }
+    }
+    """
+
+    def __init__(self, dataset_id: int, metadata: List[str]):
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["addDatasetFiles"])
+
+
+class AddFiles(RequestChain):
+    """
+    Add files to a dataset
+
+    Args:
+        dataset_id (int): ID of the dataset
+        files (List[str]): List of pathnames to the dataset files
+        wait (bool): Block while polling for status of files
+        batch_size (int): Batch size for uploading files
+
+    Returns:
+        Dataset
+
+    Raises: 
+
+    """
+
+    previous = None
+
+    def __init__(
+        self,
+        dataset_id: int,
+        files: List[str],
+        wait: bool = True,
+        batch_size: int = 20,
+    ):
+        self.dataset_id = dataset_id
+        self.files = files
+        self.wait = wait
+        self.batch_size = batch_size
+        super().__init__()
+
+    def requests(self):
+        yield UploadBatched(
+            files=self.files,
+            batch_size=self.batch_size,
+            request_cls=_UploadDatasetFiles,
+        )
+        yield _AddFiles(dataset_id=self.dataset_id, metadata=self.previous)
+        yield GetDatasetFileStatus(id=self.dataset_id)
+        debouncer = Debouncer()
+        while not all(
+            f.status in ["DOWNLOADED", "FAILED", "PROCESSED"]
+            for f in self.previous.files
+        ):
+            yield GetDatasetFileStatus(id=self.previous.id)
+            debouncer.backoff()
+
+
+class _ProcessFiles(GraphQLRequest):
+    query = """
+    mutation (
+        $datasetId: Int!, 
+        $datafileIds: [Int]) {
+        addDataFiles(
+          datasetId: $datasetId, 
+          datafileIds: $datafileIds) {
+            id
+            name
+        }
+    }
+    """
+
+    def __init__(self, dataset_id: int, datafile_ids: List[int]):
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id, "datafileIds": datafile_ids,},
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["addDataFiles"])
+
+
+class _ProcessCSV(GraphQLRequest):
+    query = """
+    mutation ($datasetId: Int!, $datafileIds: [Int]) {
+        addDataCsv(datasetId: $datasetId, datafileIds: $datafileIds) {
+            id
+            name
+        }
+    }
+    """
+
+    def __init__(self, dataset_id: int, datafile_ids: List[int]):
+        super().__init__(
+            self.query, variables={"datasetId": dataset_id, "datafileIds": datafile_ids}
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["addDataCsv"])
+
+
+class ProcessFiles(RequestChain):
+    """
+    Process files associated with a dataset and add corresponding data to the dataset
+
+    Args:
+        dataset_id (int): ID of the dataset
+        datafile_ids (List[str]): IDs of the datafiles to process
+        wait (bool): Block while polling for status of files
+        
+
+    Returns:
+        Dataset
+
+    Raises:
+
+    """
+
+    def __init__(
+        self, dataset_id: int, datafile_ids: List[int], wait: bool = True,
+    ):
+        self.dataset_id = dataset_id
+        self.datafile_ids = datafile_ids
+        self.wait = wait
+
+    def requests(self):
+        yield _ProcessFiles(self.dataset_id, self.datafile_ids)
+        debouncer = Debouncer()
+        yield GetDatasetFileStatus(id=self.dataset_id)
+        if self.wait:
+            while not all(
+                f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
+            ):
+                yield GetDatasetFileStatus(id=self.dataset_id)
+                debouncer.backoff()
+
+
+class ProcessCSV(RequestChain):
+    """
+    Process CSV associated with a dataset and add corresponding data to the dataset
+
+    Args:
+        dataset_id (int): ID of the dataset
+        datafile_ids (List[str]): IDs of the CSV datafiles to process
+        wait (bool): Block while polling for status of files
+
+    Returns:
+        Dataset
+
+    Raises:
+
+    """
+
+    def __init__(self, dataset_id: int, datafile_ids: List[int], wait: bool = True):
+        self.dataset_id = dataset_id
+        self.datafile_ids = datafile_ids
+        self.wait = wait
+
+    def requests(self):
+        yield _ProcessCSV(self.dataset_id, self.datafile_ids)
+        debouncer = Debouncer()
+        yield GetDatasetFileStatus(id=self.dataset_id)
+        if self.wait:
+            while not all(
+                f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
+            ):
+                yield GetDatasetFileStatus(id=self.dataset_id)
+                debouncer.backoff()
+

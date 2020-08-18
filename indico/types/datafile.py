@@ -26,3 +26,4 @@ class Datafile(BaseType):
     file_hash: str
     status: str
     status_meta: str
+    failure_type: str
