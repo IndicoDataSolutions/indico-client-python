@@ -20,6 +20,7 @@ def airlines_dataset(indico):
     assert response.status == "COMPLETE"
     return response
 
+
 @pytest.fixture(scope="module")
 def too_small_dataset(indico):
     client = IndicoClient()

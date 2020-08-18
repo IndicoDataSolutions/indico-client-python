@@ -113,7 +113,6 @@ class HTTPClient:
                 verify=self.config.verify_ssl,
                 **new_kwargs,
             )
-            print(response.text)
 
         # code, api_response =
         url_parts = path.split(".")

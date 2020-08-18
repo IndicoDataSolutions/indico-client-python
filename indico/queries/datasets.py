@@ -168,6 +168,7 @@ class CreateDataset(RequestChain):
     Args:
         name (str): Name of the dataset
         files (List[str]): List of pathnames to the dataset files
+        dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
         wait (bool): Wait for the dataset to upload and finish
     Returns:
         Dataset object
@@ -181,13 +182,15 @@ class CreateDataset(RequestChain):
         name: str,
         files: List[str],
         wait: bool = True,
+        dataset_type: str = "TEXT",
         from_local_images: bool = False,
         image_filename_col: str = "filename",
         batch_size: int = 20,
-):
+    ):
         self.files = files
         self.name = name
         self.wait = wait
+        self.dataset_type = dataset_type
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
         self.batch_size = batch_size
@@ -195,6 +198,7 @@ class CreateDataset(RequestChain):
 
     def requests(self):
         if self.from_local_images:
+            self.dataset_type = "IMAGE"
             # Assume image filenames are in the same directory as the csv with
             # image labels and that there is a column representing their name
             df = pd.read_csv(self.files)
@@ -216,7 +220,9 @@ class CreateDataset(RequestChain):
                 batch_size=self.batch_size,
                 request_cls=_UploadDatasetFiles,
             )
-        yield _CreateDataset(metadata=self.previous)
+        file_metadata = self.previous
+        yield CreateEmptyDataset(name=self.name, dataset_type=self.dataset_type)
+        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
@@ -225,7 +231,13 @@ class CreateDataset(RequestChain):
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
             debouncer.backoff()
-        yield _ProcessDataset(id=self.previous.id, name=self.name)
+        csv_files = [f.id for f in self.previous.files if f.file_type == "CSV"]
+        non_csv_files = [f.id for f in self.previous.files if f.file_type != "CSV"]
+
+        if csv_files:
+            yield _ProcessCSV(dataset_id=dataset_id, datafile_ids=csv_files)
+        elif non_csv_files:
+            yield _ProcessFiles(dataset_id=dataset_id, datafile_ids=non_csv_files)
         yield GetDatasetStatus(id=dataset_id)
         debouncer = Debouncer()
         if self.wait is True:
@@ -281,7 +293,7 @@ class CreateEmptyDataset(GraphQLRequest):
     }  
     """
 
-    def __init__(self, name: str, dataset_type=None):
+    def __init__(self, name: str, dataset_type: str = None):
         if not dataset_type:
             dataset_type = "TEXT"
 
@@ -303,7 +315,7 @@ class _AddFiles(GraphQLRequest):
     }
     """
 
-    def __init__(self, dataset_id: int, metadata: str):
+    def __init__(self, dataset_id: int, metadata: List[str]):
         super().__init__(
             self.query,
             variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
