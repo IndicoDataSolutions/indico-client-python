@@ -32,6 +32,6 @@ dataset = client.call(
         name="My Image Dataset",
         files="./image_dataset.csv",
         from_local_images=True,
-        image_filename_col="image_files",  # specify the columns containing the images
+        image_filename_col="image_files",  # specify the column containing the images
     )
 )
