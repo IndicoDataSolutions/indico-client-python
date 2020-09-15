@@ -14,6 +14,7 @@ User Guide
     docextract_settings
     model_predictions
     workflow-intro
+    review-intro
     migration
     examples
 
