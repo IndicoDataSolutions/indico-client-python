@@ -1,6 +1,11 @@
 from indico import IndicoClient, IndicoConfig
 from indico.queries import CreateDataset, CreateModelGroup, ModelGroupPredict
 
+# Create an Indico API client
+my_config = IndicoConfig(
+    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+)
+client = IndicoClient(config=my_config)
 
 # create the dataset
 dataset = client.call(

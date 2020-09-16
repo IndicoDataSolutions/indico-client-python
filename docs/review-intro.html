@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Review &mdash; Indico Python Client 3.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Migrating Client Library Scripts" href="migration.html" />
+    <link rel="prev" title="Workflows" href="workflow-intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
+          
+
+          
+            
+            <img src="_static/logo-white.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Review</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#review-via-the-api">Review via the API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Indico Python Client</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Review</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/review-intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="review">
+<h1>Review<a class="headerlink" href="#review" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Review provides the option for users to manually check and approve, fix, or reject predictions in the app.
+While the action of reviewing and approving documents must take place in the Application, the API is critical
+in the submission of documents for review and for retrieving the results once they’ve been approved.</p>
+<p>Below you can see a sample of what the Review page looks like in the app. The user can reject, edit, or
+approve the model’s predictions while viewing the source document.</p>
+<img alt="_images/review_screenshot.png" src="_images/review_screenshot.png" />
+</div>
+<div class="section" id="review-via-the-api">
+<h2>Review via the API<a class="headerlink" href="#review-via-the-api" title="Permalink to this headline">¶</a></h2>
+<p>Submitting documents to Review requires that you have your workflow ID and have clicked “enable review” for
+that workflow. You can “enable review” by clicking on workflows from your dataset (see image below).</p>
+<img alt="_images/enable_review.png" src="_images/enable_review.png" />
+<p>Send a Document for Review:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">WorkflowSubmission</span>
+
+<span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">WorkflowSubmission</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span> <span class="n">workflow_id</span><span class="o">=</span><span class="mi">52</span><span class="p">,</span> <span class="n">submission</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>WorkflowSubmissions will return a list of Submission objects, each with a unique identifier and job id.
+In the background, the documents are OCR’d (when applicable) and been passed to workflow’s models. Once
+it has been passed through the applicable models, it will be ready for manual review on the Review page
+in the app.</p>
+<p>The call below finds documents that have finished being reviewed, gets the results,
+and marks the result as having been retrieved:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GenerateSubmissionResult</span><span class="p">,</span> <span class="n">ListSubmissions</span>
+<span class="kn">from</span> <span class="nn">indico.filters</span> <span class="kn">import</span> <span class="n">SubmissionFilter</span>
+
+<span class="c1"># creates a list of type Submission objects, with attributes like ‘input_file’ and ‘workflow_id’</span>
+<span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ListSubmissions</span><span class="p">(</span><span class="n">workflow_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">52</span><span class="p">],</span> <span class="n">filters</span><span class="o">=</span><span class="n">SubmissionFilter</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s2">&quot;COMPLETE&quot;</span><span class="p">)))</span>
+<span class="c1"># Generate the result for the first completed submission</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GenerateSubmissionResult</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+<span class="n">result_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">result_url</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
+<span class="c1"># Finally, mark the submission as retrieved</span>
+<span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">UpdateSubmission</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This is what a sample of what the “result” object in the snippet above might look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Rejected document</span>
+<span class="p">{</span><span class="s1">&#39;submission_id&#39;</span><span class="p">:</span> <span class="mi">155</span><span class="p">,</span>
+<span class="s1">&#39;etl_output&#39;</span><span class="p">:</span> <span class="s1">&#39;indico-file:///storage/submission/28/155/155_etl_output.json&#39;</span><span class="p">,</span>
+<span class="s1">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;document&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;results&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;My Model name&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;pre_review&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+                        <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;John Smith&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;confidence&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;Name&#39;</span><span class="p">:</span> <span class="mf">0.99</span><span class="p">,</span>
+                        <span class="s1">&#39;Address&#39;</span><span class="p">:</span> <span class="mf">0.0001</span><span class="p">}}],</span>
+            <span class="s1">&#39;final&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+                        <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;James Smith&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;confidence&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s1">&#39;Name&#39;</span><span class="p">:</span> <span class="mf">0.99</span><span class="p">,</span>
+                        <span class="s1">&#39;Address&#39;</span><span class="p">:</span> <span class="mf">0.0001</span><span class="p">}}],</span>
+    <span class="p">}}}},</span>
+<span class="s1">&#39;review_id&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+<span class="s1">&#39;reviewer_id&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+<span class="s1">&#39;review_notes&#39;</span><span class="p">:</span> <span class="s1">&#39;Made one change and approved&#39;</span><span class="p">,</span>
+<span class="s1">&#39;review_rejected&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="s1">&#39;admin_review&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This example has been approved with a fix by the manual user in the ‘final’ results, notice that
+the ‘text’ field has changed from ‘John Smith’ to ‘James Smith’. If the document is rejected in Review,
+“review_rejected” will equal True and ‘final’ will equal None.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="migration.html" class="btn btn-neutral float-right" title="Migrating Client Library Scripts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="workflow-intro.html" class="btn btn-neutral float-left" title="Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Indico
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -102,6 +102,8 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Check Model Training Progress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workflow-ex.html">Run Files Through a Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocr-object-parse-ex.html">Parsing the OCR result at the document, page, and block levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-dataset-ex.html">Created a Dataset from Local Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-predictions-ex.html">Get Predictions from Image Model</a></li>
 </ul>
 </li>
 </ul>
@@ -190,8 +192,8 @@
             
   <div class="section" id="check-model-training-progress">
 <h1>Check Model Training Progress<a class="headerlink" href="#check-model-training-progress" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="k">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="k">import</span> <span class="n">GetModelGroup</span><span class="p">,</span> <span class="n">GetTrainingModelWithProgress</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GetModelGroup</span><span class="p">,</span> <span class="n">GetTrainingModelWithProgress</span>
 
 <span class="c1"># The model group ID can be found on the review page of the indico platform</span>
 <span class="n">model_group_id</span> <span class="o">=</span> <span class="mi">4305</span>
@@ -206,9 +208,9 @@
 <span class="n">mg</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetModelGroup</span><span class="p">(</span><span class="n">model_group_id</span><span class="p">))</span>
 <span class="n">training_mg</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetTrainingModelWithProgress</span><span class="p">(</span><span class="n">model_group_id</span><span class="p">))</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Model Name: </span><span class="si">{mg.name}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Training status: </span><span class="si">{training_mg.status}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Percent complete: </span><span class="si">{training_mg.training_progress.percent_complete:.2f}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model Name: </span><span class="si">{</span><span class="n">mg</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training status: </span><span class="si">{</span><span class="n">training_mg</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percent complete: </span><span class="si">{</span><span class="n">training_mg</span><span class="o">.</span><span class="n">training_progress</span><span class="o">.</span><span class="n">percent_complete</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

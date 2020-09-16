@@ -200,7 +200,7 @@ few more lines of code.</p>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="k">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
 
 <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
     <span class="n">host</span><span class="o">=</span><span class="s1">&#39;indico.mycompany.com&#39;</span><span class="p">,</span>
@@ -226,7 +226,7 @@ few more lines of code.</p>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="k">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">RetrieveStorageObject</span><span class="p">,</span> <span class="n">DocumentExtraction</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">RetrieveStorageObject</span><span class="p">,</span> <span class="n">DocumentExtraction</span>
 
 <span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./path_to_file.pdf&#39;</span><span class="p">]))</span>
 <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -245,7 +245,7 @@ few more lines of code.</p>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="k">import</span> <span class="n">ModelGroupPredict</span><span class="p">,</span> <span class="n">JobStatus</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">ModelGroupPredict</span><span class="p">,</span> <span class="n">JobStatus</span>
 
 <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
     <span class="n">ModelGroupPredict</span><span class="p">(</span>
@@ -269,7 +269,7 @@ this for you automatically.</p>
 <h2>Training Models<a class="headerlink" href="#training-models" title="Permalink to this headline">¶</a></h2>
 <p>Old:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">indicoio</span>
-<span class="kn">from</span> <span class="nn">indicoio.custom</span> <span class="k">import</span> <span class="n">Collection</span>
+<span class="kn">from</span> <span class="nn">indicoio.custom</span> <span class="kn">import</span> <span class="n">Collection</span>
 
 <span class="n">collection</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="s1">&#39;financial_statements&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
 <span class="n">collection</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">labeled_samples</span><span class="p">)</span>
@@ -278,7 +278,7 @@ this for you automatically.</p>
 </pre></div>
 </div>
 <p>New:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="k">import</span> <span class="n">CreateDataset</span><span class="p">,</span> <span class="n">CreateModelGroup</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span><span class="p">,</span> <span class="n">CreateModelGroup</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
         <span class="n">CreateDataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;financial_documents&quot;</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./financial_docs.csv&#39;</span><span class="p">])</span>

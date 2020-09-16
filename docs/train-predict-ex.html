@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="graphql-ex.html">Simple GraphQL Query Example</a></li>
@@ -102,6 +103,8 @@
 <li class="toctree-l2"><a class="reference internal" href="training-progress.html">Check Model Training Progress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workflow-ex.html">Run Files Through a Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocr-object-parse-ex.html">Parsing the OCR result at the document, page, and block levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-dataset-ex.html">Created a Dataset from Local Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="image-predictions-ex.html">Get Predictions from Image Model</a></li>
 </ul>
 </li>
 </ul>
@@ -191,9 +194,14 @@
   <div class="section" id="train-a-classifier-and-predict">
 <h1>Train a Classifier and Predict<a class="headerlink" href="#train-a-classifier-and-predict" title="Permalink to this headline">¶</a></h1>
 <p>Train a classifier and get predictions</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="k">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="k">import</span> <span class="n">CreateDataset</span><span class="p">,</span> <span class="n">CreateModelGroup</span><span class="p">,</span> <span class="n">ModelGroupPredict</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span><span class="p">,</span> <span class="n">CreateModelGroup</span><span class="p">,</span> <span class="n">ModelGroupPredict</span>
 
+<span class="c1"># Create an Indico API client</span>
+<span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;app.indico.io&quot;</span><span class="p">,</span> <span class="n">api_token_path</span><span class="o">=</span><span class="s2">&quot;./path/to/indico_api_token.txt&quot;</span>
+<span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
 
 <span class="c1"># create the dataset</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
