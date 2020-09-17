@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Run Files Through a Workflow &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Sending New Samples to a Workflow (aka Workflow Submission) &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -36,9 +36,7 @@
   <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Parsing the OCR result at the document, page, and block levels" href="ocr-object-parse-ex.html" />
-    <link rel="prev" title="Check Model Training Progress" href="training-progress.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,7 +83,7 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
@@ -94,17 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="graphql-ex.html">Simple GraphQL Query Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="train-predict-ex.html">Train a Classifier and Predict</a></li>
-<li class="toctree-l2"><a class="reference internal" href="singleocr-ex.html">OCR a Single File with DocumentExtraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="training-progress.html">Check Model Training Progress</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Run Files Through a Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ocr-object-parse-ex.html">Parsing the OCR result at the document, page, and block levels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="image-dataset-ex.html">Created a Dataset from Local Images</a></li>
-<li class="toctree-l2"><a class="reference internal" href="image-predictions-ex.html">Get Predictions from Image Model</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
@@ -167,15 +155,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="examples.html">Examples</a> &raquo;</li>
-        
-      <li>Run Files Through a Workflow</li>
+      <li>Sending New Samples to a Workflow (aka Workflow Submission)</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/workflow-ex.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/submission-ex.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -188,42 +174,67 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="run-files-through-a-workflow">
-<h1>Run Files Through a Workflow<a class="headerlink" href="#run-files-through-a-workflow" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="sending-new-samples-to-a-workflow-aka-workflow-submission">
+<h1>Sending New Samples to a Workflow (aka Workflow Submission)<a class="headerlink" href="#sending-new-samples-to-a-workflow-aka-workflow-submission" title="Permalink to this headline">¶</a></h1>
+<p>An example that illustrates how to submit new samples to a workflow.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+<span class="kn">from</span> <span class="nn">indico.filters</span> <span class="kn">import</span> <span class="n">SubmissionFilter</span><span class="p">,</span> <span class="n">or_</span>
 <span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GenerateSubmissionResult</span><span class="p">,</span>
     <span class="n">JobStatus</span><span class="p">,</span>
-    <span class="n">ListWorkflows</span><span class="p">,</span>
+    <span class="n">ListSubmissions</span><span class="p">,</span>
     <span class="n">RetrieveStorageObject</span><span class="p">,</span>
+    <span class="n">SubmissionResult</span><span class="p">,</span>
+    <span class="n">UpdateSubmission</span><span class="p">,</span>
     <span class="n">WorkflowSubmission</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Use your dataset&#39;s id to call it&#39;s associated workflow</span>
-<span class="n">dataset_id</span> <span class="o">=</span> <span class="mi">6826</span>
-
+<span class="c1"># Create an Indico API client</span>
 <span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
     <span class="n">host</span><span class="o">=</span><span class="s2">&quot;app.indico.io&quot;</span><span class="p">,</span> <span class="n">api_token_path</span><span class="o">=</span><span class="s2">&quot;./path/to/indico_api_token.txt&quot;</span>
 <span class="p">)</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
 
-<span class="c1"># Return a list of workflows for this dataset id or an empty list if there are none</span>
-<span class="n">workflows</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ListWorkflows</span><span class="p">(</span><span class="n">dataset_ids</span><span class="o">=</span><span class="p">[</span><span class="n">dataset_id</span><span class="p">]))</span>
+<span class="n">workflow_id</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="k">if</span> <span class="n">workflows</span><span class="p">:</span>
-    <span class="c1"># Send a document through the workflow</span>
-    <span class="c1"># Get back one Job per file</span>
-    <span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-        <span class="n">WorkflowSubmission</span><span class="p">(</span><span class="n">workflow_id</span><span class="o">=</span><span class="n">workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span> <span class="n">submission</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">job</span> <span class="o">=</span> <span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example 1</span>
+<span class="sd">Create a new submission</span>
+<span class="sd">Generate a submission result as soon as the submission is done processing</span>
+<span class="sd">Then mark the submission has having been retrieved</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-    <span class="c1"># Retrieve and print your result</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-    <span class="n">wf_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">wf_result</span><span class="p">)</span>
+<span class="n">submission_ids</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">WorkflowSubmission</span><span class="p">(</span><span class="n">workflow_id</span><span class="o">=</span><span class="n">workflow_id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path_to_doc.pdf&quot;</span><span class="p">])</span>
+<span class="p">)</span>
+<span class="n">submission_id</span> <span class="o">=</span> <span class="n">submission_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have any workflows for this dataset&quot;</span><span class="p">)</span>
+<span class="n">result_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmissionResult</span><span class="p">(</span><span class="n">submission_id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">result_url</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">UpdateSubmission</span><span class="p">(</span><span class="n">submission_id</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example 2</span>
+<span class="sd">List all submissions that are COMPLETE or FAILED</span>
+<span class="sd">Generate submission results for these</span>
+<span class="sd">Delay gathering the results until required</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">sub_filter</span> <span class="o">=</span> <span class="n">or_</span><span class="p">(</span><span class="n">SubmissionFilter</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s2">&quot;COMPLETE&quot;</span><span class="p">),</span> <span class="n">SubmissionFilter</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s2">&quot;FAILED&quot;</span><span class="p">))</span>
+<span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ListSubmissions</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">sub_filter</span><span class="p">))</span>
+
+<span class="n">result_files</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">submission</span><span class="p">:</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GenerateSubmissionResult</span><span class="p">(</span><span class="n">submission</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">submissions</span>
+<span class="p">}</span>
+
+<span class="c1"># Do other fun things...</span>
+
+<span class="k">for</span> <span class="n">submission</span><span class="p">,</span> <span class="n">result_file_job</span> <span class="ow">in</span> <span class="n">result_files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">result_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">result_file_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">result_url</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submission </span><span class="si">{</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has result:</span><span class="se">\n</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -233,15 +244,6 @@
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="ocr-object-parse-ex.html" class="btn btn-neutral float-right" title="Parsing the OCR result at the document, page, and block levels" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="training-progress.html" class="btn btn-neutral float-left" title="Check Model Training Progress" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
