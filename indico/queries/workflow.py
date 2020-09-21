@@ -74,7 +74,7 @@ class _WorkflowSubmission(GraphQLRequest):
         }
     """
 
-    full_query = """
+    detailed_query = """
         mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!, $recordSubmission: Boolean) {
             workflowSubmission(workflowId: $workflowId, files: $files, recordSubmission: $recordSubmission) {
                 submissionIds
@@ -98,12 +98,12 @@ class _WorkflowSubmission(GraphQLRequest):
         workflow_id: int,
         files: List[str],
         submission: bool,
-        full_response: bool = False,
+        detailed_response: bool = False,
     ):
         self.workflow_id = workflow_id
         self.record_submission = submission
         super().__init__(
-            query=self.full_query if full_response else self.query,
+            query=self.detailed_query if detailed_response else self.query,
             variables={
                 "files": files,
                 "workflowId": workflow_id,
@@ -154,7 +154,7 @@ class WorkflowSubmission(RequestChain):
         )
 
 
-class WorkflowSubmissionFull(RequestChain):
+class WorkflowSubmissionDetailed(RequestChain):
     """
     Submit files to a workflow for processing as normal submissions
 
@@ -177,5 +177,5 @@ class WorkflowSubmissionFull(RequestChain):
             files=self.previous,
             workflow_id=self.workflow_id,
             submission=True,
-            full_response=True,
+            detailed_response=True,
         )
