@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from typing import Union
+import urllib3
 
 from indico.config import IndicoConfig
 from indico.http.client import HTTPClient
 from indico.client.request import HTTPRequest, RequestChain
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class IndicoClient:
