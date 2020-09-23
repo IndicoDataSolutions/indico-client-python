@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from typing import Union
+import urllib3
 
 from indico.config import IndicoConfig
 from indico.http.client import HTTPClient
@@ -26,6 +27,8 @@ class IndicoClient:
     def __init__(self, config: IndicoConfig = None):
         if not config:
             config = IndicoConfig()
+        if not config.verify_ssl:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.config = config
         self._http = HTTPClient(config)
 
