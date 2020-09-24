@@ -1,5 +1,3 @@
-# WARNING: This repository has been archived and replaced by the new [Indico python client](https://github.com/IndicoDataSolutions/indico-client-python).  Please use that repository instead.
-
 # Indico IPA platform Client
 ### A python client library for the [Indico IPA Platform](https://app.indico.io/).
 
