@@ -61,6 +61,10 @@ def image_serialization(content, charset=None):
     return content
 
 
+def zip_serialization(content, charset=None):
+    return content
+
+
 _SERIALIZATINON_FNS = defaultdict(
     lambda: text_deserialization,
     {
@@ -74,5 +78,6 @@ _SERIALIZATINON_FNS = defaultdict(
         "application/javascript": json_deserialization,
         "image/png": image_serialization,
         "image/jpg": image_serialization,
+        "application/zip": zip_serialization,
     },
 )
