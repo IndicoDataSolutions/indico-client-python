@@ -61,7 +61,7 @@ def image_serialization(content, charset=None):
     return content
 
 
-def zip_serialization(content):
+def zip_serialization(content, charset=None):
     return content
 
 
