@@ -22,6 +22,7 @@ setup(
         "requests>=2.22.0",
         "setuptools>=41.4.0",
         "pandas>=1.0.3",
+        "simplejson>=3.13.2",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
     ],
 )
