@@ -3,7 +3,7 @@ from typing import List
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoError
 from indico.queries.storage import UploadDocument
-from indico.types import Job, Workflow
+from indico.types import Job, Submission, Workflow
 
 
 class ListWorkflows(GraphQLRequest):
@@ -74,11 +74,36 @@ class _WorkflowSubmission(GraphQLRequest):
         }
     """
 
-    def __init__(self, workflow_id: int, files: List[str], submission: bool):
+    detailed_query = """
+        mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!, $recordSubmission: Boolean) {
+            workflowSubmission(workflowId: $workflowId, files: $files, recordSubmission: $recordSubmission) {
+                submissionIds
+                submissions {
+                    id
+                    datasetId
+                    workflowId
+                    status
+                    inputFile
+                    inputFilename
+                    resultFile
+                    retrieved
+                    errors
+                }
+            }
+        }
+    """
+
+    def __init__(
+        self,
+        workflow_id: int,
+        files: List[str],
+        submission: bool,
+        detailed_response: bool = False,
+    ):
         self.workflow_id = workflow_id
         self.record_submission = submission
         super().__init__(
-            query=self.query,
+            query=self.detailed_query if detailed_response else self.query,
             variables={
                 "files": files,
                 "workflowId": workflow_id,
@@ -88,7 +113,9 @@ class _WorkflowSubmission(GraphQLRequest):
 
     def process_response(self, response):
         response = super().process_response(response)["workflowSubmission"]
-        if self.record_submission:
+        if "submissions" in response:
+            return [Submission(**s) for s in response["submissions"]]
+        elif self.record_submission:
             return response["submissionIds"]
         elif not response["jobIds"]:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
@@ -124,4 +151,31 @@ class WorkflowSubmission(RequestChain):
             files=self.previous,
             workflow_id=self.workflow_id,
             submission=self.submission,
+        )
+
+
+class WorkflowSubmissionDetailed(RequestChain):
+    """
+    Submit files to a workflow for processing as normal submissions
+
+    Args:
+        workflow_id (int): Id of workflow to submit files to
+        files (List[str]): List of local file paths to submit
+
+    Returns:
+        List[Submission]: Submission objects created
+
+    """
+
+    def __init__(self, workflow_id: int, files: List[str]):
+        self.workflow_id = workflow_id
+        self.files = files
+
+    def requests(self):
+        yield UploadDocument(files=self.files)
+        yield _WorkflowSubmission(
+            files=self.previous,
+            workflow_id=self.workflow_id,
+            submission=True,
+            detailed_response=True,
         )

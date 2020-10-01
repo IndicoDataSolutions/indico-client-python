@@ -1,7 +1,6 @@
 import pytest
 from pathlib import Path
 
-from ..data.datasets import airlines_dataset, airlines_model_group
 from indico.client import IndicoClient
 from indico.errors import IndicoError, IndicoInputError
 from indico.queries import (
@@ -9,6 +8,7 @@ from indico.queries import (
     ListWorkflows,
     RetrieveStorageObject,
     WorkflowSubmission,
+    WorkflowSubmissionDetailed,
 )
 from indico.queries.submission import (
     GetSubmission,
@@ -17,6 +17,8 @@ from indico.queries.submission import (
 )
 from indico.types import ModelGroup
 from indico.types.submission import Submission
+
+from ..data.datasets import airlines_dataset, airlines_model_group
 
 
 def test_list_workflows(indico, airlines_dataset, airlines_model_group: ModelGroup):
@@ -81,6 +83,22 @@ def test_workflow_submission(indico, airlines_dataset, airlines_model_group: Mod
     sub = client.call(GetSubmission(submission_id))
     assert isinstance(sub, Submission)
     assert sub.retrieved is True
+
+
+def test_workflow_submission_detailed(indico, airlines_dataset):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
+
+    submissions = client.call(
+        WorkflowSubmissionDetailed(
+            workflow_id=wf.id, files=[dataset_filepath]
+        )
+    )
+    assert isinstance(submissions[0], Submission)
+    assert submissions[0].input_filename == "mock.pdf"
 
 
 def test_workflow_submission_error(indico,):

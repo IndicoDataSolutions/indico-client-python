@@ -46,6 +46,7 @@ class ListSubmissions(GraphQLRequest):
                     inputFile
                     inputFilename
                     resultFile
+                    errors
                 }
             }
         }
@@ -97,6 +98,7 @@ class GetSubmission(GraphQLRequest):
                 inputFilename
                 resultFile
                 retrieved
+                errors
             }
         }
     """
@@ -124,6 +126,7 @@ class UpdateSubmission(GraphQLRequest):
                 inputFilename
                 resultFile
                 retrieved
+                errors
             }
         }
     """
