@@ -40,11 +40,16 @@ class SubmissionFilter(Filter):
     Returns:
         dict containing query filter parameters
     """
-    __options__ = ("input_filename", "status")
+    __options__ = ("input_filename", "status", "retrieved")
 
-    def __init__(self, input_filename: str = None, status: str = None):
+    def __init__(self, input_filename: str = None, status: str = None, retrieved: bool = None):
         kwargs = {
             "input_filename": input_filename,
             "status": status.upper() if status else status,
         }
+
+
+        if retrieved != None:
+            kwargs["retrieved"] = retrieved
+        
         super().__init__(**kwargs)

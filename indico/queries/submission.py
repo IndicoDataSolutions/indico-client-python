@@ -46,6 +46,7 @@ class ListSubmissions(GraphQLRequest):
                     inputFile
                     inputFilename
                     resultFile
+                    retrieved
                     errors
                 }
             }
