@@ -13,14 +13,15 @@ from indico.types.submission import VALID_SUBMISSION_STATUSES
 
 class ListSubmissions(GraphQLRequest):
     """
-    List all Submissions visible to the authenticated user
+    List all Submissions visible to the authenticated user by most recent. 
 
     Args:
         submission_ids (List[int], optional): Submission ids to filter by
         workflow_ids (List[int], optional): Workflow ids to filter by
         filters (SubmissionFilter or Dict, optional): Submission attributes to filter by
         limit (int, optional): Maximum number of Submissions to return. Defaults to 1000
-
+        orderBy (str, optional): Order by field. Defaults to id
+        desc: (bool, optional): Order direction. Defaults to descending order to get most recent submissions
     Returns:
         List[Submission]: All the found Submission objects
     """
@@ -59,6 +60,8 @@ class ListSubmissions(GraphQLRequest):
         workflow_ids: List[int] = None,
         filters: Union[Dict, SubmissionFilter] = None,
         limit: int = 1000,
+        orderBy: str = "ID",
+        desc: bool = True
     ):
         super().__init__(
             self.query,
@@ -67,6 +70,8 @@ class ListSubmissions(GraphQLRequest):
                 "workflowIds": workflow_ids,
                 "filters": filters,
                 "limit": limit,
+                "orderBy": orderBy,
+                "desc": desc
             },
         )
 
