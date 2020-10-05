@@ -13,7 +13,8 @@ from indico.queries import (
     WorkflowSubmissionDetailed,
 )
 from indico.queries.submission import (
-    GetSubmission, ListSubmissions,
+    GetSubmission,
+    ListSubmissions,
     SubmissionResult,
     UpdateSubmission,
 )
