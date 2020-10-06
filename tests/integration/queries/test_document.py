@@ -8,7 +8,6 @@ from indico.queries import (
     UploadBatched,
     UploadDocument,
 )
-from indico.types.jobs import Job
 
 
 def test_document_extraction(indico):
@@ -19,10 +18,10 @@ def test_document_extraction(indico):
 
     assert len(jobs) == 1
     job = jobs[0]
-    assert job.id != None
+    assert job.id is not None
     job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "SUCCESS"
-    assert job.ready == True
+    assert job.ready is True
     assert type(job.result["url"]) == str
 
     extract = client.call(RetrieveStorageObject(job.result))
@@ -43,10 +42,10 @@ def test_document_extraction_with_config(indico):
 
     assert len(jobs) == 1
     job = jobs[0]
-    assert job.id != None
+    assert job.id is not None
     job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "SUCCESS"
-    assert job.ready == True
+    assert job.ready is True
     assert type(job.result["url"]) == str
 
     extract = client.call(RetrieveStorageObject(job.result))
@@ -67,10 +66,10 @@ def test_document_extraction_with_string_config(indico):
 
     assert len(jobs) == 1
     job = jobs[0]
-    assert job.id != None
+    assert job.id is not None
     job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "SUCCESS"
-    assert job.ready == True
+    assert job.ready is True
     assert type(job.result["url"]) == str
 
     extract = client.call(RetrieveStorageObject(job.result))
@@ -111,10 +110,10 @@ def test_document_extraction_batched(indico):
     )
     assert len(jobs) == 3
     for job in jobs:
-        assert job.id != None
+        assert job.id is not None
         job = client.call(JobStatus(id=job.id, wait=True))
         assert job.status == "SUCCESS"
-        assert job.ready == True
+        assert job.ready is True
         assert isinstance(job.result["url"], str)
 
 def test_document_extraction_thumbnails(indico):
@@ -125,10 +124,10 @@ def test_document_extraction_thumbnails(indico):
 
     assert len(jobs) == 1
     job = jobs[0]
-    assert job.id != None
+    assert job.id is not None
     job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "SUCCESS"
-    assert job.ready == True
+    assert job.ready is True
     assert type(job.result["url"]) == str
 
     extract = client.call(RetrieveStorageObject(job.result))
@@ -140,3 +139,16 @@ def test_document_extraction_thumbnails(indico):
     image = client.call(RetrieveStorageObject(image))
 
     assert image
+
+def test_upload_duplicate_documents(indico):
+    client = IndicoClient()
+    file_names = ["mock.pdf", "mock.pdf", "mock_2.pdf"]
+    parent_path = str(Path(__file__).parent.parent / "data")
+    filepaths = [
+        os.path.join(parent_path, file_name) for file_name in file_names
+    ]
+    uploaded_files = client.call(
+        UploadDocument(files=filepaths)
+    )
+    assert len(uploaded_files) == 3
+    assert [f["filename"] for f in uploaded_files] == file_names

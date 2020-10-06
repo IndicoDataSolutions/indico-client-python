@@ -81,12 +81,20 @@ class HTTPClient:
         new_kwargs = deepcopy(req_kwargs)
         files = []
         file_arg = {}
+        dup_counts = {}
         if "files" in new_kwargs:
             for filepath in new_kwargs["files"]:
                 path = Path(filepath)
                 fd = path.open("rb")
                 files.append(fd)
-                file_arg[path.stem] = fd
+                # follow the convention of adding (n) after a duplicate filename
+                if path.stem in dup_counts:
+                    file_arg[path.stem+f"({dup_counts[path.stem]})"] = fd
+                    dup_counts[path.stem] += 1
+                else:
+                    file_arg[path.stem] = fd
+                    dup_counts[path.stem] = 1
+
             new_kwargs["files"] = file_arg
         yield new_kwargs
 
