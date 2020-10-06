@@ -151,3 +151,4 @@ def test_upload_duplicate_documents(indico):
         UploadDocument(files=filepaths)
     )
     assert len(uploaded_files) == 3
+    assert [f["filename"] for f in uploaded_files] == file_names
