@@ -15,6 +15,7 @@ class IndicoConfig:
         api_token_path= (str, optional): Path to the Indico API token file indico_api_token.txt
         api_token= (str, optional): The actual text of the API Token
         verify_ssl= (bool, optional): Verify the host's SSL certificate? Default=True
+        requests_params= (dict, optional): Dictionary of requests.Session parameters to set
 
     Returns:
         IndicoConfig object
@@ -29,7 +30,10 @@ class IndicoConfig:
         indico_api_token.txt file in the user's home directory.
 
         If your Indico Platform host is configured to use http instead of https or if the
-        host has an invalid SSL certificate then be sure to set verify_ssl=True
+        host has an invalid SSL certificate then be sure to set verify_ssl=False
+
+        The requests_params dictionary should have keys that are valid attributes of the Session
+        object from the requests library. 
     """
 
     host: str
@@ -38,6 +42,7 @@ class IndicoConfig:
     api_token_path: str
     api_token: str = None
     verify_ssl: bool = True
+    requests_params: dict = None
     _disable_cookie_domain: bool = False
 
     def __init__(self, **kwargs):
