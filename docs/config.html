@@ -94,6 +94,8 @@
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -191,6 +193,7 @@
 <li><p><strong>api_token_path=</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the Indico API token file indico_api_token.txt</p></li>
 <li><p><strong>api_token=</strong> (<em>str</em><em>, </em><em>optional</em>) – The actual text of the API Token</p></li>
 <li><p><strong>verify_ssl=</strong> (<em>bool</em><em>, </em><em>optional</em>) – Verify the host’s SSL certificate? Default=True</p></li>
+<li><p><strong>requests_params=</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary of requests.Session parameters to set</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -206,7 +209,9 @@ INDICO_HOST and INDICO_API_TOKEN_PATH environment variables. If these variable a
 not set then it will use <code class="docutils literal notranslate"><span class="pre">app.indico.io</span></code> as the host and will look for the
 indico_api_token.txt file in the user’s home directory.</p>
 <p>If your Indico Platform host is configured to use http instead of https or if the
-host has an invalid SSL certificate then be sure to set verify_ssl=True</p>
+host has an invalid SSL certificate then be sure to set verify_ssl=False</p>
+<p>The requests_params dictionary should have keys that are valid attributes of the Session
+object from the requests library.</p>
 </dd></dl>
 
 </div>
