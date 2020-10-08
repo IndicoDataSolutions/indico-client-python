@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -183,18 +184,23 @@
 <span id="datasets"></span><h1>Datasets<a class="headerlink" href="#module-indico.queries.datasets" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="indico.queries.datasets.CreateDataset">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">CreateDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">files</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">from_local_images</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">image_filename_col</span><span class="o">=</span><span class="default_value">'filename'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">20</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.CreateDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a dataset and upload the associated files.</p>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">CreateDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">files</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dataset_type</span><span class="o">=</span><span class="default_value">'TEXT'</span></em>, <em class="sig-param"><span class="n">from_local_images</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">image_filename_col</span><span class="o">=</span><span class="default_value">'filename'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">20</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.CreateDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dataset and upload the associated files.
+:type name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param name: Name of the dataset
+:type name: str
+:type files: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:param files: List of pathnames to the dataset files
+:type files: List[str]
+:type dataset_type: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param dataset_type: Type of dataset to create [TEXT, DOCUMENT, IMAGE]
+:type dataset_type: str
+:type wait: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param wait: Wait for the dataset to upload and finish
+:type wait: bool</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the dataset</p></li>
-<li><p><strong>files</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of pathnames to the dataset files</p></li>
-<li><p><strong>wait</strong> (<em>bool</em>) – Wait for the dataset to upload and finish</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Dataset object</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dataset object</p>
 </dd>
 </dl>
 <p>Raises:</p>
