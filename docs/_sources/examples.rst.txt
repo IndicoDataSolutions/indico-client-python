@@ -13,3 +13,4 @@ Examples
     ocr-object-parse-ex
     image-dataset-ex
     image-predictions-ex
+    submission-ex

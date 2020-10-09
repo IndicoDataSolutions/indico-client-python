@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,10 +12,6 @@
   
 
   
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
@@ -22,9 +19,7 @@
   
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -36,6 +31,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Migrating Client Library Scripts" href="migration.html" />
@@ -53,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
+            <a href="index.html" class="icon icon-home"> Indico Python Client
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -123,7 +121,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -162,7 +159,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
       <li>Review</li>
     
@@ -187,8 +184,8 @@
 <h1>Review<a class="headerlink" href="#review" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>Review provides the option for users to manually check and approve, fix, or reject predictions in the app.
-While the action of reviewing and approving documents must take place in the Application, the API is critical
+<p>Review provides the option for users to manually approve, fix, or reject model predictions in the app.
+While the action of reviewing and approving documents must take place in the application, the API is critical
 in the submission of documents for review and for retrieving the results once they’ve been approved.</p>
 <p>Below you can see a sample of what the Review page looks like in the app. The user can reject, edit, or
 approve the model’s predictions while viewing the source document.</p>
@@ -197,9 +194,9 @@ approve the model’s predictions while viewing the source document.</p>
 <div class="section" id="review-via-the-api">
 <h2>Review via the API<a class="headerlink" href="#review-via-the-api" title="Permalink to this headline">¶</a></h2>
 <p>Submitting documents to Review requires that you have your workflow ID and have clicked “enable review” for
-that workflow. You can “enable review” by clicking on workflows from your dataset (see image below).</p>
+that workflow. You can find “enable review” by clicking on workflows from your dataset (see image below).</p>
 <img alt="_images/enable_review.png" src="_images/enable_review.png" />
-<p>Send a Document for Review:</p>
+<p>The snippet below demonstrates how to send a document to Review:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">WorkflowSubmission</span>
 
 <span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
@@ -209,8 +206,8 @@ that workflow. You can “enable review” by clicking on workflows from your da
 </pre></div>
 </div>
 <p>WorkflowSubmissions will return a list of Submission objects, each with a unique identifier and job id.
-In the background, the documents are OCR’d (when applicable) and been passed to workflow’s models. Once
-it has been passed through the applicable models, it will be ready for manual review on the Review page
+In the background, the documents are OCR’d (when applicable) and passed to the workflow’s models. Once
+the document has passed through the applicable models, it will be ready for manual review on the Review page
 in the app.</p>
 <p>The call below finds documents that have finished being reviewed, gets the results,
 and marks the result as having been retrieved:</p>
@@ -227,7 +224,7 @@ and marks the result as having been retrieved:</p>
 <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">UpdateSubmission</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>This is what a sample of what the “result” object in the snippet above might look like:</p>
+<p>This is what a sample of the “result” object in the snippet above might look like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Rejected document</span>
 <span class="p">{</span><span class="s1">&#39;submission_id&#39;</span><span class="p">:</span> <span class="mi">155</span><span class="p">,</span>
 <span class="s1">&#39;etl_output&#39;</span><span class="p">:</span> <span class="s1">&#39;indico-file:///storage/submission/28/155/155_etl_output.json&#39;</span><span class="p">,</span>
@@ -257,8 +254,8 @@ and marks the result as having been retrieved:</p>
 <span class="s1">&#39;admin_review&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>This example has been approved with a fix by the manual user in the ‘final’ results, notice that
-the ‘text’ field has changed from ‘John Smith’ to ‘James Smith’. If the document is rejected in Review,
+<p>This example has been approved with a fix by the manual user in the ‘final’ results; notice that
+the ‘text’ field has changed from ‘John Smith’ to ‘James Smith’. Note that if the document is rejected in Review,
 “review_rejected” will equal True and ‘final’ will equal None.</p>
 </div>
 </div>
@@ -283,19 +280,11 @@ the ‘text’ field has changed from ‘John Smith’ to ‘James Smith’. If 
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020, Indico
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -306,6 +295,7 @@ the ‘text’ field has changed from ‘John Smith’ to ‘James Smith’. If 
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {
