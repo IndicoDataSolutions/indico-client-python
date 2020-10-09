@@ -88,7 +88,7 @@ def test_workflow_submission(indico, airlines_dataset, airlines_model_group: Mod
     assert sub.retrieved is True
 
 
-def test_workflow_submission_detailed(indico, airlines_dataset):
+def test_workflow_submission_detailed(indico, airlines_dataset, airlines_model_group: ModelGroup):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     wf = max(wfs, key=lambda w: w.id)

@@ -48,5 +48,5 @@ class SubmissionFilter(Filter):
             "status": status.upper() if status else status,
             "retrieved": retrieved
         }
-        
+
         super().__init__(**kwargs)
