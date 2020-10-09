@@ -36,7 +36,7 @@ class SubmissionFilter(Filter):
         input_filename (str): submissions with input file names containing this string
         status (str): submissions in this status. Options:
             [PROCESSING, PENDING_REVIEW, PENDING_ADMIN_REVIEW, COMPLETE, FAILED]
-
+        retrieved(bool): Filter submissions on the retrieved flag
     Returns:
         dict containing query filter parameters
     """
@@ -46,10 +46,7 @@ class SubmissionFilter(Filter):
         kwargs = {
             "input_filename": input_filename,
             "status": status.upper() if status else status,
+            "retrieved": retrieved
         }
-
-
-        if retrieved != None:
-            kwargs["retrieved"] = retrieved
         
         super().__init__(**kwargs)

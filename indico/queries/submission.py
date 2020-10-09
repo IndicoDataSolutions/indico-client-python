@@ -31,13 +31,17 @@ class ListSubmissions(GraphQLRequest):
             $submissionIds: [Int],
             $workflowIds: [Int],
             $filters: SubmissionFilter,
-            $limit: Int
+            $limit: Int,
+            $orderBy: SUBMISSION_COLUMN_ENUM,
+            $desc: Boolean
         ){
             submissions(
                 submissionIds: $submissionIds,
                 workflowIds: $workflowIds,
                 filters: $filters,
                 limit: $limit
+                orderBy: $orderBy,
+                desc: $desc
             ){
                 submissions {
                     id
@@ -60,7 +64,7 @@ class ListSubmissions(GraphQLRequest):
         workflow_ids: List[int] = None,
         filters: Union[Dict, SubmissionFilter] = None,
         limit: int = 1000,
-        orderBy: str = "ID",
+        order_by: str = "ID",
         desc: bool = True
     ):
         super().__init__(
@@ -70,7 +74,7 @@ class ListSubmissions(GraphQLRequest):
                 "workflowIds": workflow_ids,
                 "filters": filters,
                 "limit": limit,
-                "orderBy": orderBy,
+                "orderBy": order_by,
                 "desc": desc
             },
         )
