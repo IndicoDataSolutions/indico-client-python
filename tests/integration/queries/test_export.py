@@ -6,7 +6,7 @@ from indico.types.export import Export
 from indico.errors import IndicoRequestError
 from indico.queries.export import CreateExport, DownloadExport
 from ..data.datasets import airlines_dataset
-
+import re
 
 def test_create_and_download_export(airlines_dataset: Dataset):
     client = IndicoClient()
@@ -15,7 +15,8 @@ def test_create_and_download_export(airlines_dataset: Dataset):
 
     csv = client.call(DownloadExport(export.id))
 
-    assert csv.columns.to_list() == ["row_index", "ID", "Target_1", "Text"]
+    assert all(c in csv.columns.to_list() for c in ["ID", "Target_1", "Text"])
+    assert any(re.match("row_index_[0-9]+", c) for c in csv.columns.to_list())
     assert csv["Text"][0] == "Your service is so bad."
     assert (
         csv["Target_1"][0] == "You are threatening to never to use this airline again"

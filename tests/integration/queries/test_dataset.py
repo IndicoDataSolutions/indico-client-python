@@ -1,5 +1,6 @@
 import time
 import pytest
+import unittest
 import pandas as pd
 from pathlib import Path
 import os
@@ -352,6 +353,7 @@ def test_create_from_csv_doc_urls(indico):
     _dataset_complete(dataset)
 
 
+@unittest.skip
 def test_csv_incompat_columns(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
