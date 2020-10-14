@@ -6,6 +6,7 @@ from indico.client import IndicoClient
 from indico.queries import CreateDataset, CreateModelGroup
 from indico.types import ModelGroup, Dataset
 
+PUBLIC_URL = "https://github.com/IndicoDataSolutions/indico-client-python/raw/master/tests/integration/data/"
 
 @pytest.fixture(scope="module")
 def airlines_dataset(indico):
