@@ -1,3 +1,5 @@
+from os import stat
+from indico.filters import SubmissionFilter
 import pytest
 from pathlib import Path
 
@@ -12,6 +14,7 @@ from indico.queries import (
 )
 from indico.queries.submission import (
     GetSubmission,
+    ListSubmissions,
     SubmissionResult,
     UpdateSubmission,
 )
@@ -85,7 +88,7 @@ def test_workflow_submission(indico, airlines_dataset, airlines_model_group: Mod
     assert sub.retrieved is True
 
 
-def test_workflow_submission_detailed(indico, airlines_dataset):
+def test_workflow_submission_detailed(indico, airlines_dataset, airlines_model_group: ModelGroup):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     wf = max(wfs, key=lambda w: w.id)
@@ -99,6 +102,34 @@ def test_workflow_submission_detailed(indico, airlines_dataset):
     )
     assert isinstance(submissions[0], Submission)
     assert submissions[0].input_filename == "mock.pdf"
+
+
+def test_list_workflow_submission_retrieved(indico, airlines_dataset, airlines_model_group: ModelGroup):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
+
+    submission_ids = client.call(
+        WorkflowSubmission(
+            workflow_id=wf.id, files=[dataset_filepath]
+        )
+    )
+    submission_id = submission_ids[0]
+    assert submission_id is not None
+        
+    result_url = client.call(SubmissionResult(submission_id, "COMPLETE", wait=True))
+    client.call(UpdateSubmission(submission_id, retrieved=True))
+
+    submissions = client.call(ListSubmissions(filters=SubmissionFilter(retrieved=True, status="COMPLETE")))
+    assert all([s.retrieved for s in submissions])
+    assert submission_id in [s.id for s in submissions]
+
+    submissions = client.call(ListSubmissions(filters=SubmissionFilter(retrieved=False)))
+    assert all([not s.retrieved for s in submissions])
+    assert submission_id not in [s.id for s in submissions]
+
 
 
 def test_workflow_submission_error(indico,):
