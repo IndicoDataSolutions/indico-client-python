@@ -66,28 +66,19 @@ class GetWorkflow(ListWorkflows):
 class _WorkflowSubmission(GraphQLRequest):
 
     query = """
-        mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!, $recordSubmission: Boolean) {
-            workflowSubmission(workflowId: $workflowId, files: $files, recordSubmission: $recordSubmission) {
+        mutation workflowSubmissionMutation($workflowId: Int!, $input_: {type_}, $recordSubmission: Boolean) {{
+            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission) {{
                 jobIds
                 submissionIds
-            }
-        }
-    """
-
-    url_query = """
-        mutation workflowUrlSubmissionMutation($workflowId: Int!, $urls: [String]!, $recordSubmission: Boolean) {
-            workflowUrlSubmission(workflowId: $workflowId, urls: $urls, recordSubmission: $recordSubmission) {
-                jobIds
-                submissionIds
-            }
-        }
+            }}
+        }}
     """
 
     detailed_query = """
-        mutation workflowSubmissionMutation($workflowId: Int!, $files: [FileInput]!, $recordSubmission: Boolean) {
-            workflowSubmission(workflowId: $workflowId, files: $files, recordSubmission: $recordSubmission) {
+        mutation workflowSubmissionMutation($workflowId: Int!, ${arg_}: {type_}, $recordSubmission: Boolean) {{
+            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission) {{
                 submissionIds
-                submissions {
+                submissions {{
                     id
                     datasetId
                     workflowId
@@ -97,29 +88,13 @@ class _WorkflowSubmission(GraphQLRequest):
                     resultFile
                     retrieved
                     errors
-                }
-            }
-        }
+                }}
+            }}
+        }}
     """
 
-    detailed_url_query = """
-        mutation workflowUrlSubmissionMutation($workflowId: Int!, $urls: [String]!, $recordSubmission: Boolean) {
-            workflowUrlSubmission(workflowId: $workflowId, urls: $urls, recordSubmission: $recordSubmission) {
-                submissionIds
-                submissions {
-                    id
-                    datasetId
-                    workflowId
-                    status
-                    inputFile
-                    inputFilename
-                    resultFile
-                    retrieved
-                    errors
-                }
-            }
-        }
-    """
+    query_format = {"arg_": "files", "type_": "[FileInput]!"}
+    mutation_name = "workflowSubmission"
 
     def __init__(
         self,
@@ -132,18 +107,10 @@ class _WorkflowSubmission(GraphQLRequest):
         self.workflow_id = workflow_id
         self.record_submission = submission
 
-        q = self.query
-        self.response_key = "workflowUrlSubmission" if urls else "workflowSubmission"
-
-        if detailed_response and urls:
-            q = self.detailed_url_query
-        elif detailed_response:
-            q = self.detailed_query
-        elif urls:
-            q = self.url_query
+        q = self.detailed_query if detailed_response else self.query
 
         super().__init__(
-            query=q,
+            query=q.format(mutation_name=self.mutation_name, **self.query_format),
             variables={
                 "files": files,
                 "urls": urls,
@@ -153,7 +120,7 @@ class _WorkflowSubmission(GraphQLRequest):
         )
 
     def process_response(self, response):
-        response = super().process_response(response)[self.response_key]
+        response = super().process_response(response)[self.mutation_name]
         if "submissions" in response:
             return [Submission(**s) for s in response["submissions"]]
         elif self.record_submission:
@@ -161,6 +128,12 @@ class _WorkflowSubmission(GraphQLRequest):
         elif not response["jobIds"]:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
         return [Job(id=job_id) for job_id in response["jobIds"]]
+
+
+class _WorkflowUrlSubmission(_WorkflowSubmission):
+    query_format = {"arg_": "urls", "type_": "[String]!"}
+    mutation_name = "workflowUrlSubmission"
+
 
 
 class WorkflowSubmission(RequestChain):
@@ -210,7 +183,7 @@ class WorkflowSubmission(RequestChain):
                 detailed_response=self.detailed_response,
             )
         elif self.urls:
-            yield _WorkflowSubmission(
+            yield _WorkflowUrlSubmission(
                 workflow_id=self.workflow_id,
                 urls=self.urls,
                 submission=self.submission,
