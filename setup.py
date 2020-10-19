@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="indico-client",
-    version="4.3.1",
+    version="4.3.2",
     packages=find_packages(),
     description="""A Python Wrapper for indico app API.""",
     license="MIT License (See LICENSE)",
