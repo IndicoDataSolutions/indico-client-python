@@ -100,6 +100,48 @@ def test_create_model_group_with_wait(indico, airlines_dataset: Dataset):
     assert mg.selected_model.status == "COMPLETE"
 
 
+def test_create_extraction_model_with_options(indico, org_annotate_dataset: Dataset):
+    client = IndicoClient()
+
+    model_training_options = {"n_epochs": 0}
+
+    name = f"TestCreateModelGroup-{int(time.time())}"
+    mg: ModelGroup = client.call(
+        CreateModelGroup(
+            name=name,
+            dataset_id=org_annotate_dataset.id,
+            source_column_id=org_annotate_dataset.datacolumn_by_name(
+                "News Headlines w/Company Names"
+            ).id,
+            labelset_id=org_annotate_dataset.labelset_by_name("question_825").id,
+            model_training_options=model_training_options,
+            wait=True,
+        )
+    )
+
+    assert mg.name == name
+    assert mg.selected_model.status == "FAILED"
+
+    model_training_options = {"n_epochs": 2}
+
+    name = f"TestCreateModelGroup-{int(time.time())}"
+    mg: ModelGroup = client.call(
+        CreateModelGroup(
+            name=name,
+            dataset_id=org_annotate_dataset.id,
+            source_column_id=org_annotate_dataset.datacolumn_by_name(
+                "News Headlines w/Company Names"
+            ).id,
+            labelset_id=org_annotate_dataset.labelset_by_name("question_825").id,
+            model_training_options=model_training_options,
+            wait=True,
+        )
+    )
+
+    assert mg.name == name
+    assert mg.selected_model.status == "COMPLETE"
+
+
 def test_create_model_group_with_wait_not_enough_data(indico, too_small_dataset):
     client = IndicoClient()
 
