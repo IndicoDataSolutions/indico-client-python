@@ -375,7 +375,7 @@ def test_csv_incompat_columns(indico):
     datafile_ids = [
         df.id
         for df in dataset.files
-        if df.status == "DOWNLOADED" and df.file_type == "csv"
+        if df.status == "DOWNLOADED" and df.file_type == "CSV"
     ]
 
     dataset = client.call(
