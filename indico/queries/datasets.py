@@ -239,11 +239,13 @@ class CreateDataset(RequestChain):
             yield _ProcessCSV(dataset_id=dataset_id, datafile_ids=csv_files)
         elif non_csv_files:
             yield _ProcessFiles(dataset_id=dataset_id, datafile_ids=non_csv_files)
-        yield GetDatasetStatus(id=dataset_id)
+        yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
         if self.wait is True:
-            while self.previous not in ["COMPLETE", "FAILED"]:
-                yield GetDatasetStatus(id=dataset_id)
+            while not all(
+                [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
+            ):
+                yield GetDatasetFileStatus(id=dataset_id)
                 debouncer.backoff()
         yield GetDataset(id=dataset_id)
 

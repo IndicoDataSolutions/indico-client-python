@@ -392,3 +392,16 @@ def test_csv_incompat_columns(indico):
 
     assert dataset.status == "COMPLETE"
 
+
+def test_bad_csv_create_dataset(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/classification.csv"
+    dataset = client.call(
+        CreateDataset(
+            name=f"dataset-{int(time.time())}", files=[dataset_filepath], wait=True
+        ),
+    )
+
+    assert dataset.status == "CREATING"
+    dataset = client.call(GetDatasetFileStatus(id=dataset.id))
+    assert all([f.status == "FAILED" for f in dataset.files])
