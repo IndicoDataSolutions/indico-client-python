@@ -8,6 +8,7 @@ from indico.queries import (
     SubmissionResult,
     UpdateSubmission,
     WorkflowSubmission,
+    WorkflowSubmissionDetailed,
 )
 
 # Create an Indico API client
@@ -56,3 +57,21 @@ for submission, result_file_job in result_files.items():
     result_url = client.call(JobStatus(id=result_file_job.id, wait=True))
     result = client.call(RetrieveStorageObject(result_url.result))
     print(f"Submission {submission.id} has result:\n{result}")
+
+
+"""
+Example 3
+Submit urls to a workflow
+"""
+submissions = client.call(
+    WorkflowSubmissionDetailed(
+        workflow_id=workflow_id, urls=["https://my_url.com/img.png"]
+    )
+)
+submission = submission[0]
+
+result_url = client.call(SubmissionResult(submission.id, wait=True))
+result = client.call(RetrieveStorageObject(result_url.result))
+print(result)
+
+client.call(UpdateSubmission(submission.id, retrieved=True))

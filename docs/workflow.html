@@ -206,13 +206,15 @@ Defaults to None</p></li>
 
 <dl class="py class">
 <dt id="indico.queries.workflow.WorkflowSubmission">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">WorkflowSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">workflow_id</span></em>, <em class="sig-param"><span class="n">files</span></em>, <em class="sig-param"><span class="n">submission</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.WorkflowSubmission" title="Permalink to this definition">¶</a></dt>
-<dd><p>Submit files to a workflow for processing</p>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">WorkflowSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">workflow_id</span></em>, <em class="sig-param"><span class="n">files</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">urls</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">submission</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.WorkflowSubmission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit files to a workflow for processing.
+One of <cite>files</cite> or <cite>urls</cite> is required.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>workflow_id</strong> (<em>int</em>) – Id of workflow to submit files to</p></li>
-<li><p><strong>files</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of local file paths to submit</p></li>
+<li><p><strong>files</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of local file paths to submit</p></li>
+<li><p><strong>urls</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of urls to submit</p></li>
 <li><p><strong>submission</strong> (<em>bool</em><em>, </em><em>optional</em>) – Process these files as normal submissions.
 Defaults to True.
 If False, files will be processed as AsyncJobs, ignoring any workflow

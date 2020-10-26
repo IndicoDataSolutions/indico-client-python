@@ -35,6 +35,9 @@ class HTTPClient:
         self.base_url = f"{self.config.protocol}://{self.config.host}"
 
         self.request_session = requests.Session()
+        if config and isinstance(config.requests_params, dict):
+            for param in config.requests_params.keys():
+                setattr(self.request_session, param, config.requests_params[param])
         self.request_session.cookies.set_policy(CookiePolicyOverride())
         self.get_short_lived_access_token()
 
@@ -89,7 +92,7 @@ class HTTPClient:
                 files.append(fd)
                 # follow the convention of adding (n) after a duplicate filename
                 if path.stem in dup_counts:
-                    file_arg[path.stem+f"({dup_counts[path.stem]})"] = fd
+                    file_arg[path.stem + f"({dup_counts[path.stem]})"] = fd
                     dup_counts[path.stem] += 1
                 else:
                     file_arg[path.stem] = fd
