@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -31,14 +36,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Examples" href="examples.html" />
-    <link rel="prev" title="Review" href="review-intro.html" /> 
+    <link rel="prev" title="Object Detection" href="object-detection.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -52,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -93,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Migrating Client Library Scripts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#authentication-initialization">Authentication &amp; Initialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#optical-character-recognition-ocr">Optical Character Recognition (OCR)</a></li>
@@ -123,6 +126,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -161,7 +165,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Migrating Client Library Scripts</li>
     
@@ -307,7 +311,7 @@ this for you automatically.</p>
         <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="review-intro.html" class="btn btn-neutral float-left" title="Review" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="object-detection.html" class="btn btn-neutral float-left" title="Object Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -316,11 +320,19 @@ this for you automatically.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Indico
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -331,7 +343,6 @@ this for you automatically.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
