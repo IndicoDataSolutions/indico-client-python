@@ -15,6 +15,7 @@ User Guide
     model_predictions
     workflow-intro
     review-intro
+    object-detection
     migration
     examples
 
