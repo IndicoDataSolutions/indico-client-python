@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Storage &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Filters &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Workflows" href="workflow.html" />
-    <link rel="prev" title="Review Submissions" href="review-submissions.html" /> 
+    <link rel="next" title="Common GraphQL Queries" href="graphql_queries.html" />
+    <link rel="prev" title="Workflows" href="workflow.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -106,9 +106,9 @@
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-submissions.html">Review Submissions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
@@ -162,13 +162,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Storage</li>
+      <li>Filters</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/storage.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/filters.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,59 +181,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-indico.queries.storage">
-<span id="storage"></span><h1>Storage<a class="headerlink" href="#module-indico.queries.storage" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-indico.filters.__init__">
+<span id="filters"></span><h1>Filters<a class="headerlink" href="#module-indico.filters.__init__" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="indico.queries.storage.RetrieveStorageObject">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.storage.</code><code class="sig-name descname">RetrieveStorageObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">storage_object</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.RetrieveStorageObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve an object stored on the Indico Platform</p>
-<p>Results of some operations, notably DocumentExtraction can be quite large
-and are stored on disk in the Indico Platform. You need to retrieve them
-using RetrieveStorageObject.</p>
+<dt id="indico.filters.__init__.SubmissionFilter">
+<em class="property">class </em><code class="sig-prename descclassname">indico.filters.__init__.</code><code class="sig-name descname">SubmissionFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">status</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">retrieved</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.filters.__init__.SubmissionFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Filter when querying for WorkflowSubmissions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>storage_object</strong> (<em>str</em><em> or </em><em>dict</em>) – either a string or dict with a url of the storage object to be retrieved. If a dict then “url” should be used as the key for the storage object url.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_filename</strong> (<em>str</em>) – submissions with input file names containing this string</p></li>
+<li><p><strong>status</strong> (<em>str</em>) – submissions in this status. Options:
+[PROCESSING, PENDING_REVIEW, PENDING_ADMIN_REVIEW, COMPLETE, FAILED]</p></li>
+<li><p><strong>retrieved</strong> (<em>bool</em>) – Filter submissions on the retrieved flag</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Contents of the storage object, most often JSON</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>contents (dict)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt id="indico.queries.storage.UploadDocument">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.storage.</code><code class="sig-name descname">UploadDocument</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload an object stored on the Indico Platform</p>
-<p>Used internally for uploading documents to indico platform for later processing</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filepaths</strong> (<em>str</em>) – list of filepaths to upload</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>storage objects to be use for further processing requests E.G. Document extraction (implicitly called)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>files</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt id="indico.queries.storage.CreateStorageURLs">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.storage.</code><code class="sig-name descname">CreateStorageURLs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload an object stored on the Indico Platform and return only the storage URL to the object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>files</strong> (<em>str</em>) – list of filepaths to upload</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of storage urls to be use for further processing requests (e.g. FormExtraction)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>urls</p>
+<dd class="field-even"><p>dict containing query filter parameters</p>
 </dd>
 </dl>
 </dd></dl>
@@ -248,10 +212,10 @@ using RetrieveStorageObject.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="workflow.html" class="btn btn-neutral float-right" title="Workflows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="graphql_queries.html" class="btn btn-neutral float-right" title="Common GraphQL Queries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="review-submissions.html" class="btn btn-neutral float-left" title="Review Submissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="workflow.html" class="btn btn-neutral float-left" title="Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

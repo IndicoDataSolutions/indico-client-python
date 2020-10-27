@@ -32,8 +32,11 @@ Reference
     datasets
     model_groups
     jobs
+    review-submissions
     storage
     workflow
+    exports
+    filters
     graphql_queries
 
 **Types**

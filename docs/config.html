@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,6 +11,10 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
@@ -19,7 +22,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -31,14 +36,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="IndicoClient" href="client.html" />
-    <link rel="prev" title="Check Model Training Progress" href="training-progress.html" /> 
+    <link rel="prev" title="Sending New Samples to a Workflow (aka Workflow Submission)" href="submission-ex.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -52,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
           
 
           
@@ -78,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -88,9 +90,11 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_intro.html">Intro to OCR with DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -101,7 +105,11 @@
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="review-submissions.html">Review Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -113,6 +121,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -151,7 +160,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>IndicoConfig</li>
     
@@ -185,6 +194,7 @@
 <li><p><strong>api_token_path=</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the Indico API token file indico_api_token.txt</p></li>
 <li><p><strong>api_token=</strong> (<em>str</em><em>, </em><em>optional</em>) – The actual text of the API Token</p></li>
 <li><p><strong>verify_ssl=</strong> (<em>bool</em><em>, </em><em>optional</em>) – Verify the host’s SSL certificate? Default=True</p></li>
+<li><p><strong>requests_params=</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary of requests.Session parameters to set</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -200,7 +210,9 @@ INDICO_HOST and INDICO_API_TOKEN_PATH environment variables. If these variable a
 not set then it will use <code class="docutils literal notranslate"><span class="pre">app.indico.io</span></code> as the host and will look for the
 indico_api_token.txt file in the user’s home directory.</p>
 <p>If your Indico Platform host is configured to use http instead of https or if the
-host has an invalid SSL certificate then be sure to set verify_ssl=True</p>
+host has an invalid SSL certificate then be sure to set verify_ssl=False</p>
+<p>The requests_params dictionary should have keys that are valid attributes of the Session
+object from the requests library.</p>
 </dd></dl>
 
 </div>
@@ -216,7 +228,7 @@ host has an invalid SSL certificate then be sure to set verify_ssl=True</p>
         <a href="client.html" class="btn btn-neutral float-right" title="IndicoClient" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="training-progress.html" class="btn btn-neutral float-left" title="Check Model Training Progress" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="submission-ex.html" class="btn btn-neutral float-left" title="Sending New Samples to a Workflow (aka Workflow Submission)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -225,11 +237,19 @@ host has an invalid SSL certificate then be sure to set verify_ssl=True</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Indico
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -240,7 +260,6 @@ host has an invalid SSL certificate then be sure to set verify_ssl=True</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
