@@ -1,5 +1,5 @@
 Datasets
-************
+********
 
 .. automodule:: indico.queries.datasets
 .. autoclass:: indico.queries.datasets.CreateDataset
@@ -7,3 +7,4 @@ Datasets
 .. autoclass:: indico.queries.datasets.GetDatasetStatus
 .. autoclass:: indico.queries.datasets.GetDatasetFileStatus
 .. autoclass:: indico.queries.datasets.ListDatasets
+.. autoclass:: indico.queries.datasets.DeleteDataset

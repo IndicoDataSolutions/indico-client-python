@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Common GraphQL Queries" href="graphql_queries.html" />
+    <link rel="next" title="Exports" href="exports.html" />
     <link rel="prev" title="Storage" href="storage.html" /> 
 </head>
 
@@ -106,8 +106,11 @@
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
@@ -234,6 +237,23 @@ post-processing steps like Review and with no record in the system</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt id="indico.queries.workflow.GetWorkflow">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">GetWorkflow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">workflow_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.GetWorkflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for Workflow by id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>workflow_id</strong> (<em>int</em>) – Workflow id to query for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Found Workflow object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Workflow</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -244,7 +264,7 @@ post-processing steps like Review and with no record in the system</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="graphql_queries.html" class="btn btn-neutral float-right" title="Common GraphQL Queries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="exports.html" class="btn btn-neutral float-right" title="Exports" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="storage.html" class="btn btn-neutral float-left" title="Storage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

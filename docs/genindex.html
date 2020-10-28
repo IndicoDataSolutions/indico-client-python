@@ -104,8 +104,11 @@
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
@@ -206,6 +209,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="exports.html#indico.queries.export.CreateExport">CreateExport (class in indico.queries.export)</a>
+</li>
       <li><a href="model_groups.html#indico.queries.model_groups.CreateModelGroup">CreateModelGroup (class in indico.queries.model_groups)</a>
 </li>
       <li><a href="storage.html#indico.queries.storage.CreateStorageURLs">CreateStorageURLs (class in indico.queries.storage)</a>
@@ -222,13 +227,17 @@
 </li>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile">Datafile (class in indico.types.datafile)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset">Dataset (class in indico.types.dataset)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.deleted">deleted (indico.types.datafile.Datafile attribute)</a>
 </li>
+      <li><a href="datasets.html#indico.queries.datasets.DeleteDataset">DeleteDataset (class in indico.queries.datasets)</a>
+</li>
       <li><a href="docextract.html#indico.queries.documents.DocumentExtraction">DocumentExtraction (class in indico.queries.documents)</a>
+</li>
+      <li><a href="exports.html#indico.queries.export.DownloadExport">DownloadExport (class in indico.queries.export)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -254,13 +263,19 @@
 </li>
       <li><a href="datasets.html#indico.queries.datasets.GetDatasetFileStatus">GetDatasetFileStatus (class in indico.queries.datasets)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="datasets.html#indico.queries.datasets.GetDatasetStatus">GetDatasetStatus (class in indico.queries.datasets)</a>
 </li>
+      <li><a href="exports.html#indico.queries.export.GetExport">GetExport (class in indico.queries.export)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model_groups.html#indico.queries.model_groups.GetModelGroup">GetModelGroup (class in indico.queries.model_groups)</a>
 </li>
       <li><a href="model_groups.html#indico.queries.model_groups.GetModelGroupSelectedModelStatus">GetModelGroupSelectedModelStatus (class in indico.queries.model_groups)</a>
+</li>
+      <li><a href="submissions.html#indico.queries.submission.GetSubmission">GetSubmission (class in indico.queries.submission)</a>
+</li>
+      <li><a href="workflow.html#indico.queries.workflow.GetWorkflow">GetWorkflow (class in indico.queries.workflow)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -299,6 +314,13 @@
 </li>
       </ul></li>
       <li>
+    indico.filters.__init__
+
+      <ul>
+        <li><a href="filters.html#module-indico.filters.__init__">module</a>
+</li>
+      </ul></li>
+      <li>
     indico.queries.datasets
 
       <ul>
@@ -310,6 +332,13 @@
 
       <ul>
         <li><a href="docextract.html#module-indico.queries.documents">module</a>
+</li>
+      </ul></li>
+      <li>
+    indico.queries.export
+
+      <ul>
+        <li><a href="exports.html#module-indico.queries.export">module</a>
 </li>
       </ul></li>
       <li>
@@ -333,6 +362,13 @@
 
       <ul>
         <li><a href="storage.html#module-indico.queries.storage">module</a>
+</li>
+      </ul></li>
+      <li>
+    indico.queries.submission
+
+      <ul>
+        <li><a href="submissions.html#module-indico.queries.submission">module</a>
 </li>
       </ul></li>
       <li>
@@ -407,6 +443,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="datasets.html#indico.queries.datasets.ListDatasets">ListDatasets (class in indico.queries.datasets)</a>
 </li>
+      <li><a href="submissions.html#indico.queries.submission.ListSubmissions">ListSubmissions (class in indico.queries.submission)</a>
+</li>
       <li><a href="workflow.html#indico.queries.workflow.ListWorkflows">ListWorkflows (class in indico.queries.workflow)</a>
 </li>
   </ul></td>
@@ -429,15 +467,21 @@
 </li>
         <li><a href="config.html#module-indico.config.config">indico.config.config</a>
 </li>
+        <li><a href="filters.html#module-indico.filters.__init__">indico.filters.__init__</a>
+</li>
         <li><a href="datasets.html#module-indico.queries.datasets">indico.queries.datasets</a>
 </li>
         <li><a href="docextract.html#module-indico.queries.documents">indico.queries.documents</a>
+</li>
+        <li><a href="exports.html#module-indico.queries.export">indico.queries.export</a>
 </li>
         <li><a href="jobs.html#module-indico.queries.jobs">indico.queries.jobs</a>
 </li>
         <li><a href="model_groups.html#module-indico.queries.model_groups">indico.queries.model_groups</a>
 </li>
         <li><a href="storage.html#module-indico.queries.storage">indico.queries.storage</a>
+</li>
+        <li><a href="submissions.html#module-indico.queries.submission">indico.queries.submission</a>
 </li>
         <li><a href="workflow.html#module-indico.queries.workflow">indico.queries.workflow</a>
 </li>
@@ -515,6 +559,12 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="filters.html#indico.filters.__init__.SubmissionFilter">SubmissionFilter (class in indico.filters.__init__)</a>
+</li>
+      <li><a href="submissions.html#indico.queries.submission.SubmissionResult">SubmissionResult (class in indico.queries.submission)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
@@ -533,6 +583,10 @@
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="submissions.html#indico.queries.submission.UpdateSubmission">UpdateSubmission (class in indico.queries.submission)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="storage.html#indico.queries.storage.UploadDocument">UploadDocument (class in indico.queries.storage)</a>
 </li>

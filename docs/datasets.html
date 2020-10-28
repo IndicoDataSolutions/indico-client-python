@@ -106,8 +106,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 </ul>
 <ul>
@@ -267,6 +270,24 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>List[Dataset]</p>
+</dd>
+</dl>
+<p>Raises:</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.datasets.DeleteDataset">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">DeleteDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.DeleteDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>int</em>) – ID of the dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The success of the operation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>success (bool)</p>
 </dd>
 </dl>
 <p>Raises:</p>

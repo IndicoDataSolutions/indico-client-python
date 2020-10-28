@@ -125,6 +125,16 @@ class GetSubmission(GraphQLRequest):
 
 
 class UpdateSubmission(GraphQLRequest):
+    """
+    Update the retrieval status of a Submission by id
+
+    Args:
+        submission_id (int): Submission id
+        retrieved (bool): Bool to indicate if you have retrieved prediction results
+
+    Returns:
+        Submission: Found Submission object
+    """
     query = """
         mutation UpdateSubmission($submissionId: Int!, $retrieved: Boolean) {
             updateSubmission(submissionId: $submissionId, retrieved: $retrieved) {
