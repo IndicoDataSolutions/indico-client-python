@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Submissions &mdash; Indico Python Client 3.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Storage" href="storage.html" />
+    <link rel="prev" title="Jobs and Job Status" href="jobs.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
+          
+
+          
+            
+            <img src="_static/logo-white.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Indico Python Client</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Submissions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/submissions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-indico.queries.submission">
+<span id="submissions"></span><h1>Submissions<a class="headerlink" href="#module-indico.queries.submission" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="indico.queries.submission.ListSubmissions">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.submission.</code><code class="sig-name descname">ListSubmissions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">submission_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">workflow_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">order_by</span><span class="o">=</span><span class="default_value">'ID'</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.ListSubmissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all Submissions visible to the authenticated user by most recent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>submission_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Submission ids to filter by</p></li>
+<li><p><strong>workflow_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Workflow ids to filter by</p></li>
+<li><p><strong>filters</strong> (<a class="reference internal" href="filters.html#indico.filters.__init__.SubmissionFilter" title="indico.filters.__init__.SubmissionFilter"><em>SubmissionFilter</em></a><em> or </em><em>Dict</em><em>, </em><em>optional</em>) – Submission attributes to filter by</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of Submissions to return. Defaults to 1000</p></li>
+<li><p><strong>orderBy</strong> (<em>str</em><em>, </em><em>optional</em>) – Order by field. Defaults to id</p></li>
+<li><p><strong>desc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool, optional): Order direction. Defaults to descending order to get most recent submissions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>All the found Submission objects</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Submission]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.submission.GetSubmission">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.submission.</code><code class="sig-name descname">GetSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">submission_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.GetSubmission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a Submission by id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>submission_id</strong> (<em>int</em>) – Submission id</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Found Submission object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Submission</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.submission.UpdateSubmission">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.submission.</code><code class="sig-name descname">UpdateSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">submission_id</span></em>, <em class="sig-param"><span class="n">retrieved</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.UpdateSubmission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the retrieval status of a Submission by id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>submission_id</strong> (<em>int</em>) – Submission id</p></li>
+<li><p><strong>retrieved</strong> (<em>bool</em>) – Bool to indicate if you have retrieved prediction results</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Found Submission object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Submission</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.submission.SubmissionResult">
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.submission.</code><code class="sig-name descname">SubmissionResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">submission</span></em>, <em class="sig-param"><span class="n">check_status</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.SubmissionResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a result file for a Submission</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>submission</strong> (<em>int</em><em> or </em><em>Submission</em>) – Id of the submission or Submission object</p></li>
+<li><p><strong>check_status</strong> (<em>str</em><em>, </em><em>optional</em>) – Submission status to check for.
+Defaults to any status other than <cite>PROCESSING</cite></p></li>
+<li><p><strong>wait</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wait until the submission is <cite>check_status</cite>
+and wait for the result file to be generated. Defaults to False</p></li>
+<li><p><strong>timeout</strong> (<em>int</em><em> or </em><em>float</em><em>, </em><em>optional</em>) – Maximum number of seconds to wait before
+timing out. Ignored if not <cite>wait</cite>. Defaults to 30</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Job that can be watched for results</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="jobs-type.html#indico.types.jobs.Job" title="indico.types.jobs.Job">Job</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>if wait</strong> – IndicoTimeoutError: Submission was not <cite>check_status</cite>
+       <cite>or result file Job did not complete within `timeout</cite> seconds.</p></li>
+<li><p><strong>If not wait</strong> – IndicoInputError: The requested Submission is not <cite>check_status</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="storage.html" class="btn btn-neutral float-right" title="Storage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="jobs.html" class="btn btn-neutral float-left" title="Jobs and Job Status" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Indico
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

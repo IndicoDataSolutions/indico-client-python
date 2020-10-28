@@ -33,7 +33,7 @@ Reference
     datasets
     model_groups
     jobs
-    review-submissions
+    submissions
     storage
     workflow
     exports

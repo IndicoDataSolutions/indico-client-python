@@ -1,5 +1,5 @@
-Review Submissions
-******************
+Submissions
+***********
 
 .. automodule:: indico.queries.submission
 .. autoclass:: indico.queries.submission.ListSubmissions
