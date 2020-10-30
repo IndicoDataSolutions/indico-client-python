@@ -6,7 +6,9 @@ from indico.queries import (
     ListSubmissions,
     RetrieveStorageObject,
     SubmissionResult,
+    SubmitReview,
     UpdateSubmission,
+    WaitForSubmissions,
     WorkflowSubmission,
     WorkflowSubmissionDetailed,
 )
@@ -75,3 +77,33 @@ result = client.call(RetrieveStorageObject(result_url.result))
 print(result)
 
 client.call(UpdateSubmission(submission.id, retrieved=True))
+
+
+"""
+Example 4
+Submit "auto-review" for a submission
+Requires auto-review is enabled for workflow
+"""
+submission_ids = client.call(
+    WorkflowSubmission(
+        workflow_id=workflow_id, files=["my_file.pdf"]
+    )
+)
+submissions = client.call(WaitForSubmissions(submission_ids))
+submission = submissions[0]
+raw_result = client.call(RetrieveStorageObject(submission.result_file))
+raw_result = client.call(RetrieveStorageObject(submission.result_file))
+changes = raw_result["results"]["document"]["results"]
+rejected = False
+for model, preds in changes.items():
+    if isinstance(preds, dict):
+        preds["accepted"] = True
+    elif isinstance(preds, list):
+        for pred in preds:
+            pred["accepted"] = True
+    else:
+        rejected = True
+print(f"Submitting review for {submission.id}: {changes}")
+job = client.call(SubmitReview(submission.id, changes=changes, rejected=rejected))
+job = client.call(JobStatus(job.id))
+print("Review", job.id, "has result", job.result)
