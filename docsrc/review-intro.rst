@@ -57,15 +57,18 @@ PENDING_REVIEW - predictions are made and the document/image is awaiting a human
 
 PENDING_ADMIN_REVIEW - the initial reviewer rejected the document/image and awaiting admin reivew
 
+PENDING_AUTO_REVIEW - if review and auto review are enabled for a workflow, then submissions 
+will go to this state first, which can be programatically "reviewed" based on custom script before going to PENDING_REVIEW state for a human reviewer.
+
 COMPLETE - the review process is complete and final predictions are ready
 
 FAILED - the document was rejected in admin review
 
-The 'retrieved' attribute of the submission object lets you know whether or not the submission results 
+The 'retrieved' attribute of the submission object lets you know whether or not the submission result 
 has already been processed (you manage this with the UpdateSubmission call, see below).
 
-After a submission has finished "PROCESSING", you are able to retrieve the prediction results
-(even if it hasn't been human reviewed).
+After a submission has been processed and is in COMPLETE, PENDING_REVIEW or PENDING_ADMIN_REVIEW status, 
+you are able to retrieve the prediction results (even if it hasn't been human reviewed).
 
 In addition to checking on specific submissions, you can also retrieve all submissions to a given 
 workflow with ListSubmissions and filter those submissions with the SubmissionFilter.

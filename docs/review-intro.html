@@ -232,12 +232,14 @@ in the app.</p>
 <p>PROCESSING - document/image is passing through the models</p>
 <p>PENDING_REVIEW - predictions are made and the document/image is awaiting a human review</p>
 <p>PENDING_ADMIN_REVIEW - the initial reviewer rejected the document/image and awaiting admin reivew</p>
+<p>PENDING_AUTO_REVIEW - if review and auto review are enabled for a workflow, then submissions
+will go to this state first, which can be programatically “reviewed” based on custom script before going to PENDING_REVIEW state for a human reviewer.</p>
 <p>COMPLETE - the review process is complete and final predictions are ready</p>
 <p>FAILED - the document was rejected in admin review</p>
-<p>The ‘retrieved’ attribute of the submission object lets you know whether or not the submission results
+<p>The ‘retrieved’ attribute of the submission object lets you know whether or not the submission result
 has already been processed (you manage this with the UpdateSubmission call, see below).</p>
-<p>After a submission has finished “PROCESSING”, you are able to retrieve the prediction results
-(even if it hasn’t been human reviewed).</p>
+<p>After a submission has been processed and is in COMPLETE, PENDING_REVIEW or PENDING_ADMIN_REVIEW status,
+you are able to retrieve the prediction results (even if it hasn’t been human reviewed).</p>
 <p>In addition to checking on specific submissions, you can also retrieve all submissions to a given
 workflow with ListSubmissions and filter those submissions with the SubmissionFilter.</p>
 <p>The call below finds documents that have finished being reviewed, gets the results,
