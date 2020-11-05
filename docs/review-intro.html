@@ -212,20 +212,50 @@ that workflow. You can find “enable review” by clicking on workflows from yo
 <span class="nb">print</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>WorkflowSubmissions will return a list of Submission objects, each with a unique identifier and job id.
-In the background, the documents are OCR’d (when applicable) and passed to the workflow’s models. Once
+<p>WorkflowSubmissions will return a list of Submission objects, one for each submission, each with a unique
+identifier and submission id. The submission ids are persistent, meaning that you can always use that id to
+check the status and retrieve the prediction results of that submission.</p>
+<p>After submitting, the documents are OCR’d (except for image use cases) and passed to the workflow’s models. Once
 the document has passed through the applicable models, it will be ready for manual review on the Review page
 in the app.</p>
+<p>You can check the status of a submission given its id with the following call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GetSubmission</span>
+
+<span class="n">submission</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetSubmission</span><span class="p">(</span><span class="mi">731</span><span class="p">))</span>  <span class="c1"># 731 = a submission id</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">input_filename</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">retrieved</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">result_file</span><span class="p">)</span> <span class="c1"># url for predicions if it&#39;s finished processing</span>
+</pre></div>
+</div>
+<p>The possible statuses of a submission are:</p>
+<p>PROCESSING - document/image is passing through the models</p>
+<p>PENDING_REVIEW - predictions are made and the document/image is awaiting a human review</p>
+<p>PENDING_ADMIN_REVIEW - the initial reviewer rejected the document/image and awaiting admin reivew</p>
+<p>PENDING_AUTO_REVIEW - if review and auto review are enabled for a workflow, then submissions
+will go to this state first, which can be programatically “reviewed” based on custom script before going to PENDING_REVIEW state for a human reviewer.</p>
+<p>COMPLETE - the review process is complete and final predictions are ready</p>
+<p>FAILED - the document was rejected in admin review</p>
+<p>The ‘retrieved’ attribute of the submission object lets you know whether or not the submission result
+has already been processed (you manage this with the UpdateSubmission call, see below).</p>
+<p>After a submission has been processed and is in COMPLETE, PENDING_REVIEW or PENDING_ADMIN_REVIEW status,
+you are able to retrieve the prediction results (even if it hasn’t been human reviewed).</p>
+<p>In addition to checking on specific submissions, you can also retrieve all submissions to a given
+workflow with ListSubmissions and filter those submissions with the SubmissionFilter.</p>
 <p>The call below finds documents that have finished being reviewed, gets the results,
 and marks the result as having been retrieved:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">GenerateSubmissionResult</span><span class="p">,</span> <span class="n">ListSubmissions</span>
 <span class="kn">from</span> <span class="nn">indico.filters</span> <span class="kn">import</span> <span class="n">SubmissionFilter</span>
 
-<span class="c1"># creates a list of type Submission objects, with attributes like ‘input_file’ and ‘workflow_id’</span>
-<span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ListSubmissions</span><span class="p">(</span><span class="n">workflow_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">52</span><span class="p">],</span> <span class="n">filters</span><span class="o">=</span><span class="n">SubmissionFilter</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s2">&quot;COMPLETE&quot;</span><span class="p">)))</span>
+<span class="c1"># creates a list of Submission objects</span>
+<span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">ListSubmissions</span><span class="p">(</span>
+        <span class="n">workflow_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">52</span><span class="p">],</span>
+        <span class="n">filters</span><span class="o">=</span><span class="n">SubmissionFilter</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s2">&quot;COMPLETE&quot;</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 <span class="c1"># Generate the result for the first completed submission</span>
-<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GenerateSubmissionResult</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-<span class="n">result_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">result_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmissionResult</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">result_url</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
 <span class="c1"># Finally, mark the submission as retrieved</span>
 <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">UpdateSubmission</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -263,7 +293,8 @@ and marks the result as having been retrieved:</p>
 </div>
 <p>This example has been approved with a fix by the manual user in the ‘final’ results; notice that
 the ‘text’ field has changed from ‘John Smith’ to ‘James Smith’. Note that if the document is rejected in Review,
-“review_rejected” will equal True and ‘final’ will equal None.</p>
+“review_rejected” will equal to True and ‘final’ will equal None. A submission result that hasn’t been reviewed
+will have ‘review_id’ equal to None.</p>
 </div>
 </div>
 
