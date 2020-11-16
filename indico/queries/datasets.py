@@ -2,29 +2,28 @@
 
 import json
 import tempfile
-import pandas as pd
 from pathlib import Path
-
 from typing import List
 
+import pandas as pd
 from indico.client.request import (
-    GraphQLRequest,
-    RequestChain,
-    HTTPRequest,
-    HTTPMethod,
     Debouncer,
+    GraphQLRequest,
+    HTTPMethod,
+    HTTPRequest,
+    RequestChain,
 )
+from indico.errors import IndicoNotFound
+from indico.queries.storage import UploadBatched, UploadImages
 from indico.types.dataset import Dataset
-from indico.errors import IndicoNotFound, IndicoInputError
-from indico.queries.storage import URL_PREFIX, UploadBatched, UploadImages
 
 
 class ListDatasets(GraphQLRequest):
     """
     List all of your datasets
 
-    Args:
-        limit (int): Max number of datasets to retrieve. Default is 100
+    Options:
+        limit (int, default=100): Max number of datasets to retrieve
 
     Returns:
         List[Dataset]
@@ -45,7 +44,7 @@ class ListDatasets(GraphQLRequest):
         }
     """
 
-    def __init__(self, limit: int = 100):
+    def __init__(self, *, limit: int = 100):
         super().__init__(self.query, variables={"limit": limit})
 
     def process_response(self, response) -> Dataset:
@@ -55,7 +54,7 @@ class ListDatasets(GraphQLRequest):
 
 class GetDataset(GraphQLRequest):
     """
-    Retrieve a dataset description object 
+    Retrieve a dataset description object
 
     Args:
         id (int): id of the dataset to query
@@ -92,7 +91,7 @@ class GetDataset(GraphQLRequest):
 
     def process_response(self, response) -> Dataset:
         response = super().process_response(response)
-        if not "dataset" in response or not isinstance(response["dataset"], dict):
+        if "dataset" not in response or not isinstance(response["dataset"], dict):
             raise IndicoNotFound("Failed to find dataset")
         return Dataset(**response["dataset"])
 
@@ -103,12 +102,12 @@ class GetDatasetFileStatus(GetDataset):
 
     Args:
         id (int): id of the dataset to query
-    
+
     Returns:
         status (str): DOWNLOADED or FAILED
-    
+
     Raises:
-        
+
     """
 
     query = """
@@ -135,7 +134,7 @@ class GetDatasetFileStatus(GetDataset):
 
 class GetDatasetStatus(GraphQLRequest):
     """
-    Get the status of a dataset 
+    Get the status of a dataset
 
     Args:
         id (int): id of the dataset to query
@@ -168,8 +167,10 @@ class CreateDataset(RequestChain):
     Args:
         name (str): Name of the dataset
         files (List[str]): List of pathnames to the dataset files
+
+    Options:
         dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
-        wait (bool): Wait for the dataset to upload and finish
+        wait (bool, default=True): Wait for the dataset to upload and finish
     Returns:
         Dataset object
     Raises:
@@ -241,7 +242,7 @@ class CreateDataset(RequestChain):
         yield GetDatasetStatus(id=dataset_id)
         debouncer = Debouncer()
         if self.wait is True:
-            while not self.previous in ["COMPLETE", "FAILED"]:
+            while self.previous not in ["COMPLETE", "FAILED"]:
                 yield GetDatasetStatus(id=dataset_id)
                 debouncer.backoff()
         yield GetDataset(id=dataset_id)
@@ -290,7 +291,7 @@ class CreateEmptyDataset(GraphQLRequest):
             id
             name
         }
-    }  
+    }
     """
 
     def __init__(self, name: str, dataset_type: str = None):
@@ -332,13 +333,15 @@ class AddFiles(RequestChain):
     Args:
         dataset_id (int): ID of the dataset
         files (List[str]): List of pathnames to the dataset files
-        wait (bool): Block while polling for status of files
-        batch_size (int): Batch size for uploading files
+
+    Options:
+        wait (bool, default=True): Block while polling for status of files
+        batch_size (int, default=20): Batch size for uploading files
 
     Returns:
         Dataset
 
-    Raises: 
+    Raises:
 
     """
 
@@ -377,10 +380,10 @@ class AddFiles(RequestChain):
 class _ProcessFiles(GraphQLRequest):
     query = """
     mutation (
-        $datasetId: Int!, 
+        $datasetId: Int!,
         $datafileIds: [Int]) {
         addDataFiles(
-          datasetId: $datasetId, 
+          datasetId: $datasetId,
           datafileIds: $datafileIds) {
             id
             name
@@ -391,7 +394,7 @@ class _ProcessFiles(GraphQLRequest):
     def __init__(self, dataset_id: int, datafile_ids: List[int]):
         super().__init__(
             self.query,
-            variables={"datasetId": dataset_id, "datafileIds": datafile_ids,},
+            variables={"datasetId": dataset_id, "datafileIds": datafile_ids},
         )
 
     def process_response(self, response):
@@ -425,7 +428,7 @@ class ProcessFiles(RequestChain):
         dataset_id (int): ID of the dataset
         datafile_ids (List[str]): IDs of the datafiles to process
         wait (bool): Block while polling for status of files
-        
+
 
     Returns:
         Dataset
@@ -460,7 +463,8 @@ class ProcessCSV(RequestChain):
     Args:
         dataset_id (int): ID of the dataset
         datafile_ids (List[str]): IDs of the CSV datafiles to process
-        wait (bool): Block while polling for status of files
+    Options:
+        wait (bool, default=True): Block while polling for status of files
 
     Returns:
         Dataset
@@ -484,4 +488,3 @@ class ProcessCSV(RequestChain):
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
                 debouncer.backoff()
-

@@ -10,11 +10,9 @@ class ListWorkflows(GraphQLRequest):
     """
     List all workflows visible to authenticated user
 
-    Args:
-        dataset_ids (List[int], optional): List of dataset ids to filter by.
-            Defaults to None
-        workflow_ids (List[int], optional): List of workflow ids to filter by
-            Defaults to None
+    Options:
+        dataset_ids (List[int]): List of dataset ids to filter by
+        workflow_ids (List[int]): List of workflow ids to filter by
 
     Returns:
         List[Workflow]: All the found Workflow objects
@@ -32,7 +30,9 @@ class ListWorkflows(GraphQLRequest):
         }
     """
 
-    def __init__(self, dataset_ids: List[int] = None, workflow_ids: List[int] = None):
+    def __init__(
+        self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None
+    ):
         super().__init__(
             self.query,
             variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids},
@@ -135,7 +135,6 @@ class _WorkflowUrlSubmission(_WorkflowSubmission):
     mutation_name = "workflowUrlSubmission"
 
 
-
 class WorkflowSubmission(RequestChain):
     """
     Submit files to a workflow for processing.
@@ -155,6 +154,7 @@ class WorkflowSubmission(RequestChain):
             Otherwise, they will be AsyncJob ids.
 
     """
+
     detailed_response = False
 
     def __init__(
@@ -206,6 +206,7 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
         List[Submission]: Submission objects created
 
     """
+
     detailed_response = True
 
     def __init__(
