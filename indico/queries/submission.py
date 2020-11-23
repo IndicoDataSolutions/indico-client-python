@@ -1,3 +1,4 @@
+import json
 import time
 from functools import partial
 from operator import eq, ne
@@ -125,6 +126,58 @@ class GetSubmission(GraphQLRequest):
         return Submission(**(super().process_response(response)["submission"]))
 
 
+class WaitForSubmissions(RequestChain):
+    """
+    Given submission_ids, wait for all to finish processing
+    """
+
+    query = """
+        query ListSubmissions(
+            $submissionIds: [Int],
+        ){
+            submissions(
+                submissionIds: $submissionIds,
+            ){
+                submissions {
+                    id
+                    datasetId
+                    workflowId
+                    status
+                    inputFile
+                    inputFilename
+                    resultFile
+                    retrieved
+                    errors
+                }
+            }
+        }
+    """
+
+    def __init__(
+        self, submission_ids: List[int], timeout: Union[int, float] = 60,
+    ):
+        if not submission_ids:
+            raise IndicoInputError("Please provide submission ids")
+
+        self.submission_ids = submission_ids
+        self.timeout = timeout
+        self.status_check = partial(ne, "PROCESSING")
+        self.status_getter = partial(ListSubmissions, self.submission_ids, limit=None)
+
+    def requests(self) -> List[Submission]:
+        yield self.status_getter()
+        curr_time = 0
+        while (
+            not all(self.status_check(s.status) for s in self.previous)
+            and curr_time <= self.timeout
+        ):
+            yield self.status_getter()
+            time.sleep(1)
+            curr_time += 1
+        if not all(self.status_check(s.status) for s in self.previous):
+            raise IndicoTimeoutError(curr_time)
+
+
 class UpdateSubmission(GraphQLRequest):
     """
     Update the retrieval status of a Submission by id
@@ -136,6 +189,7 @@ class UpdateSubmission(GraphQLRequest):
     Returns:
         Submission: Found Submission object
     """
+
     query = """
         mutation UpdateSubmission($submissionId: Int!, $retrieved: Boolean) {
             updateSubmission(submissionId: $submissionId, retrieved: $retrieved) {
@@ -263,3 +317,53 @@ class SubmissionResult(RequestChain):
         yield GenerateSubmissionResult(self.submission_id)
         if self.wait:
             yield JobStatus(id=self.previous.id, wait=True, timeout=self.timeout)
+
+
+class SubmitReview(GraphQLRequest):
+    """
+    Submit an "Auto" Review for a submission. Requires that the submission be in PENDING_AUTO_REVIEW status.
+
+    Args:
+        submission_id (int): Id of submission to submit reviewEnabled for
+
+    Options:
+        changes (dict or JSONString): changes to make to raw predictions
+        rejected (boolean): reject the predictions and place the submission
+            in the review queue. Must be True if $changes not provided
+
+    Returns:
+        Job: A Job that can be watched for status of review
+    """
+
+    query = """
+        mutation SubmitReview($submissionId: Int!, $changes: JSONString, $rejected: Boolean) {
+            submitAutoReview(submissionId: $submissionId, changes: $changes, rejected: $rejected) {
+                jobId
+            }
+        }
+
+    """
+
+    def __init__(
+        self,
+        submission: Union[int, Submission],
+        changes: Dict = None,
+        rejected: bool = False,
+    ):
+        submission_id = submission if isinstance(submission, int) else submission.id
+        if not changes and not rejected:
+            raise IndicoInputError("Must provide changes or reject=True")
+        elif changes and isinstance(changes, dict):
+            changes = json.dumps(changes)
+        super().__init__(
+            self.query,
+            variables={
+                "submissionId": submission_id,
+                "changes": changes,
+                "rejected": rejected,
+            },
+        )
+
+    def process_response(self, response) -> Job:
+        response = super().process_response(response)["submitAutoReview"]
+        return Job(id=response["jobId"])
