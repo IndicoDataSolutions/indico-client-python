@@ -330,16 +330,31 @@ class SubmitReview(GraphQLRequest):
 
     Options:
         changes (dict or JSONString): changes to make to raw predictions
+
         rejected (boolean): reject the predictions and place the submission
             in the review queue. Must be True if $changes not provided
+
+        force_complete (boolean): have this submission bypass the Review queue
+            (or exceptions queue if <rejected> is True) and mark as Complete.
+            NOT RECOMMENDED
 
     Returns:
         Job: A Job that can be watched for status of review
     """
 
     query = """
-        mutation SubmitReview($submissionId: Int!, $changes: JSONString, $rejected: Boolean) {
-            submitAutoReview(submissionId: $submissionId, changes: $changes, rejected: $rejected) {
+        mutation SubmitReview(
+            $submissionId: Int!,
+            $changes: JSONString,
+            $rejected: Boolean,
+            $forceComplete: Boolean
+        ) {
+            submitAutoReview(
+                submissionId: $submissionId,
+                changes: $changes,
+                rejected: $rejected,
+                forceComplete: $forceComplete
+            ) {
                 jobId
             }
         }
@@ -351,6 +366,7 @@ class SubmitReview(GraphQLRequest):
         submission: Union[int, Submission],
         changes: Dict = None,
         rejected: bool = False,
+        force_complete: bool = False,
     ):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
@@ -363,6 +379,7 @@ class SubmitReview(GraphQLRequest):
                 "submissionId": submission_id,
                 "changes": changes,
                 "rejected": rejected,
+                "forceComplete": force_complete,
             },
         )
 
