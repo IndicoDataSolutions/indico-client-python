@@ -226,7 +226,7 @@ def test_object_detection_metrics_bad_id(indico):
     from indico import IndicoConfig
     client = IndicoClient()
     with pytest.raises(IndicoRequestError):
-        _ = client.call(ObjectDetectionMetrics(-1))
+        client.call(ObjectDetectionMetrics(-1))
 
 
 def test_model_group_metrics_query(
