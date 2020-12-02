@@ -30,7 +30,7 @@ from ..data.datasets import (
     org_annotate_model_group,
     org_annotate_dataset,
 )
-from indico.errors import IndicoNotFound
+from indico.errors import IndicoNotFound, IndicoRequestError
 
 
 def test_create_model_group(airlines_dataset: Dataset):
@@ -220,6 +220,13 @@ def test_object_detection_metrics(
     result = client.call(ObjectDetectionMetrics(cats_dogs_modelgroup.id))
     for metric_type in ["AP", "AP-Cat", "AP-Dog\n", "AP50", "AP75"]:
         assert isinstance(result["bbox"][metric_type], float)
+
+
+def test_object_detection_metrics_bad_id(indico):
+    from indico import IndicoConfig
+    client = IndicoClient()
+    with pytest.raises(IndicoRequestError):
+        _ = client.call(ObjectDetectionMetrics(-1))
 
 
 def test_model_group_metrics_query(

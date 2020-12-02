@@ -98,11 +98,20 @@ class ObjectDetectionMetrics(GraphQLRequest):
         super().__init__(self.query, variables={"modelGroupId": model_group_id})
 
     def process_response(self, response):
-        return json.loads(
-            super().process_response(response)["modelGroups"]["modelGroups"][0][
-                "selectedModel"
-            ]["evaluation"]["metrics"]
-        )
+        try:
+            return json.loads(
+                super().process_response(response)["modelGroups"]["modelGroups"][0][
+                    "selectedModel"
+                ]["evaluation"]["metrics"]
+            )
+        except IndexError:
+            raise IndicoRequestError(
+                (
+                    "No results found. Please check that you have used the correct Model Group ID "
+                    "(*not* the selected model ID) and have permission to access that model."
+                ),
+                code=400,
+            )
 
 
 task_type_query_mapping = {
