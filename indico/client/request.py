@@ -47,6 +47,40 @@ class GraphQLRequest(HTTPRequest):
         return response["data"]
 
 
+class PagedRequest(GraphQLRequest):
+    """
+    To enable pagination, query must include $after as an argument
+    and request pageInfo
+        query Name(
+            ...
+            $after: Int
+        ){
+            items(
+                ...
+                after: $after
+            ){
+                items {...}
+                pageInfo {
+                    endCursor
+                    hasNextPage
+                }
+            }
+        }
+    """
+
+    def __init__(self, query: str, variables: Dict[str, Any] = None):
+        variables["after"] = None
+        self.has_next_page = True
+        super().__init__(query, variables=variables)
+
+    def process_response(self, response):
+        response = super().process_response(response)
+        _pg = next(iter(response.values()))["pageInfo"]
+        self.has_next_page = _pg["hasNextPage"]
+        self.variables["after"] = _pg["endCursor"] if self.has_next_page else None
+        return response
+
+
 class RequestChain:
     previous: Any = None
     result: Any = None
