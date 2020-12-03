@@ -5,7 +5,7 @@ import urllib3
 
 from indico.config import IndicoConfig
 from indico.http.client import HTTPClient
-from indico.client.request import HTTPRequest, RequestChain
+from indico.client.request import HTTPRequest, RequestChain, PagedRequest
 
 
 class IndicoClient:
@@ -64,3 +64,16 @@ class IndicoClient:
             return self._handle_request_chain(request)
         elif request and isinstance(request, HTTPRequest):
             return self._http.execute_request(request)
+
+    def paginate(self, request: PagedRequest):
+        """
+        Provide a generator that continues paging through responses
+        Available with List<> Requests that offer pagination
+
+        Example:
+            for s in client.paginate(ListSubmissions()):
+                print("Submission", s)
+        """
+        while request.has_next_page:
+            for r in self._http.execute_request(request):
+                yield r

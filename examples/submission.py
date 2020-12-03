@@ -107,3 +107,13 @@ print(f"Submitting review for {submission.id}: {changes}")
 job = client.call(SubmitReview(submission.id, changes=changes, rejected=rejected))
 job = client.call(JobStatus(job.id))
 print("Review", job.id, "has result", job.result)
+
+"""
+Example 5
+Use the client paginator to retrieve all PROCESSING submissions
+Without the paginator, the hard limit is 1000
+"""
+sub_filter = SubmissionFilter(status="PROCESSING")
+for submission in client.paginate(ListSubmissions(filters=sub_filter)):
+    print(f"Submission {submission.id}")
+    # do other cool things
