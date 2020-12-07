@@ -162,7 +162,9 @@ class WaitForSubmissions(RequestChain):
         self.submission_ids = submission_ids
         self.timeout = timeout
         self.status_check = partial(ne, "PROCESSING")
-        self.status_getter = partial(ListSubmissions, self.submission_ids, limit=None)
+        self.status_getter = partial(
+            ListSubmissions, submission_ids=self.submission_ids, limit=None
+        )
 
     def requests(self) -> List[Submission]:
         yield self.status_getter()

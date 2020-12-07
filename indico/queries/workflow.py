@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoError, IndicoInputError
@@ -61,6 +61,72 @@ class GetWorkflow(ListWorkflows):
 
     def process_response(self, response) -> Workflow:
         return super().process_response(response)[0]
+
+class _ToggleReview(GraphQLRequest):
+    toggle = "enableReview"
+    query_name = "toggleWorkflowReview"
+    query = """
+        mutation ToggleReview($workflowId: Int!, $reviewState: Boolean!){
+            <QUERY NAME>(workflowId: $workflowId, <TOGGLE>: $reviewState){
+                id
+                name
+                reviewEnabled
+                autoReviewEnabled
+            }
+        }
+    """
+
+    def __init__(self, workflow_id: int, enable_review: bool):
+        query = self.query.replace("<QUERY NAME>", self.query_name)
+        query = query.replace("<TOGGLE>", self.toggle)
+        super().__init__(
+            query,
+            variables={"workflowId": workflow_id, "reviewState": enable_review},
+        )
+
+    def process_response(self, response) -> Workflow:
+        return Workflow(**super().process_response(response)[self.query_name])
+
+class _ToggleAutoReview(_ToggleReview):
+    toggle = "enableAutoReview"
+    query_name = "toggleWorkflowAutoReview"
+
+
+class UpdateWorkflowSettings(RequestChain):
+    """
+    Mutation to toggle review and auto-review on a workflow
+
+    Args:
+        workflow (int|Workflow): Workflow or workflow id to update
+
+    Options:
+        enable_review (bool): Enable review
+        enable_auto_review (bool): Enable auto_review
+
+    Returns:
+        Workflow: Updated Workflow object
+    """
+
+    def __init__(
+        self,
+        workflow: Union[Workflow, int],
+        enable_review: bool = None,
+        enable_auto_review: bool = None,
+    ):
+        self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
+        if enable_review is None and enable_auto_review is None:
+            raise IndicoInputError("Must provide at least one review option")
+
+        self.enable_review = enable_review
+        self.enable_auto_review = enable_auto_review
+
+
+    def requests(self):
+        if self.enable_review is not None:
+            yield _ToggleReview(self.workflow_id, self.enable_review)
+        if self.enable_auto_review is not None:
+            yield _ToggleAutoReview(self.workflow_id, self.enable_auto_review)
+
 
 
 class _WorkflowSubmission(GraphQLRequest):
