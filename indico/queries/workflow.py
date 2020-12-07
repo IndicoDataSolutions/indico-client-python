@@ -92,7 +92,7 @@ class _ToggleAutoReview(_ToggleReview):
     query_name = "toggleWorkflowAutoReview"
 
 
-class ToggleWorkflowReview(RequestChain):
+class UpdateWorkflowSettings(RequestChain):
     """
     Mutation to toggle review and auto-review on a workflow
 

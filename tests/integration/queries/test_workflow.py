@@ -12,8 +12,8 @@ from indico.queries import (
     RetrieveStorageObject,
     SubmissionResult,
     SubmitReview,
-    ToggleWorkflowReview,
     UpdateSubmission,
+    UpdateWorkflowSettings,
     WaitForSubmissions,
     WorkflowSubmission,
     WorkflowSubmissionDetailed,
@@ -166,7 +166,7 @@ def test_workflow_submission_auto_review(
     wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
     wf = max(wfs, key=lambda w: w.id)
     wf = client.call(
-        ToggleWorkflowReview(wf, enable_review=True, enable_auto_review=True)
+        UpdateWorkflowSettings(wf, enable_review=True, enable_auto_review=True)
     )
     assert wf.review_enabled and wf.auto_review_enabled
 
