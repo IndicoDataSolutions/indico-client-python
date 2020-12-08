@@ -330,41 +330,63 @@ class SubmitReview(GraphQLRequest):
 
     Options:
         changes (dict or JSONString): changes to make to raw predictions
+
         rejected (boolean): reject the predictions and place the submission
             in the review queue. Must be True if $changes not provided
+
+        force_complete (boolean): have this submission bypass the Review queue
+            (or exceptions queue if <rejected> is True) and mark as Complete.
+            NOT RECOMMENDED
 
     Returns:
         Job: A Job that can be watched for status of review
     """
 
     query = """
-        mutation SubmitReview($submissionId: Int!, $changes: JSONString, $rejected: Boolean) {
-            submitAutoReview(submissionId: $submissionId, changes: $changes, rejected: $rejected) {
+        mutation SubmitReview(<QUERY ARGS>) {
+            submitAutoReview(<AUTO REVIEW ARGS>) {
                 jobId
             }
         }
 
     """
+    query_args = {
+        "submissionId": "Int!",
+        "changes": "JSONString",
+        "rejected": "Boolean",
+    }
 
     def __init__(
         self,
         submission: Union[int, Submission],
         changes: Dict = None,
         rejected: bool = False,
+        force_complete: bool = None,
     ):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
             raise IndicoInputError("Must provide changes or reject=True")
         elif changes and isinstance(changes, dict):
             changes = json.dumps(changes)
-        super().__init__(
-            self.query,
-            variables={
-                "submissionId": submission_id,
-                "changes": changes,
-                "rejected": rejected,
-            },
+        _vars = {
+            "submissionId": submission_id,
+            "changes": changes,
+            "rejected": rejected,
+        }
+
+        # Add backwards-incompatible args now
+        if force_complete is not None:
+            _vars["forceComplete"] = force_complete
+            self.query_args["forceComplete"] = "Boolean"
+
+        query = self.query.replace(
+            "<QUERY ARGS>", ",".join(f"${k}: {v}" for k, v in self.query_args.items())
         )
+        query = query.replace(
+            "<AUTO REVIEW ARGS>", ",".join(f"{k}: ${k}" for k in self.query_args)
+        )
+
+        super().__init__(query, variables=_vars)
 
     def process_response(self, response) -> Job:
         response = super().process_response(response)["submitAutoReview"]
