@@ -1,3 +1,4 @@
+from indico.queries.workflow import GetWorkflow
 import pytest
 from pathlib import Path
 
@@ -157,6 +158,24 @@ def test_workflow_submission_mixed_args(indico, airlines_dataset):
 
     with pytest.raises(IndicoInputError):
         client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file], urls=[url]))
+
+
+def test_auto_review_enabled_in_get_workflow_response(
+    indico, org_annotate_dataset, org_annotate_model_group
+):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+    
+    assert not (wf.auto_review_enabled or wf.review_enabled)
+    
+    wf = client.call(
+        UpdateWorkflowSettings(wf, enable_review=True, enable_auto_review=True)
+    )
+    assert wf.review_enabled and wf.auto_review_enabled
+
+    wf = client.call(GetWorkflow(workflow_id=wf.id))
+    assert wf.review_enabled and wf.auto_review_enabled
 
 
 def test_workflow_submission_auto_review(
