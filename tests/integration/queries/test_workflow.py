@@ -159,7 +159,7 @@ def test_workflow_submission_mixed_args(indico, airlines_dataset):
     with pytest.raises(IndicoInputError):
         client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file], urls=[url]))
 
-
+        
 def test_auto_review_enabled_in_get_workflow_response(
     indico, org_annotate_dataset, org_annotate_model_group
 ):
@@ -177,9 +177,10 @@ def test_auto_review_enabled_in_get_workflow_response(
     wf = client.call(GetWorkflow(workflow_id=wf.id))
     assert wf.review_enabled and wf.auto_review_enabled
 
-
+    
+@pytest.mark.parametrize("force_complete", [None, True])
 def test_workflow_submission_auto_review(
-    indico, org_annotate_dataset, org_annotate_model_group
+    indico, force_complete, org_annotate_dataset, org_annotate_model_group
 ):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
@@ -204,8 +205,8 @@ def test_workflow_submission_auto_review(
             for pred in preds:
                 pred["accepted"] = True
     job = client.call(
-        SubmitReview(sub.id, changes=changes)
+        SubmitReview(sub.id, changes=changes, force_complete=force_complete)
     )
     job = client.call(JobStatus(job.id))
     submission = client.call(GetSubmission(sub.id))
-    assert submission.status == "PENDING_REVIEW"
+    assert submission.status == "COMPLETE" if force_complete else "PENDING_REVIEW"
