@@ -25,6 +25,7 @@ class ListWorkflows(GraphQLRequest):
                     id
                     name
                     reviewEnabled
+                    autoReviewEnabled
                 }
             }
         }
