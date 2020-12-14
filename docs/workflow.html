@@ -187,22 +187,19 @@
 <span id="workflows"></span><h1>Workflows<a class="headerlink" href="#module-indico.queries.workflow" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="indico.queries.workflow.ListWorkflows">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">ListWorkflows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">workflow_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.ListWorkflows" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">ListWorkflows</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">dataset_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">workflow_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.ListWorkflows" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all workflows visible to authenticated user</p>
+<dl class="simple">
+<dt>Options:</dt><dd><p>dataset_ids (List[int]): List of dataset ids to filter by
+workflow_ids (List[int]): List of workflow ids to filter by</p>
+</dd>
+</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – List of dataset ids to filter by.
-Defaults to None</p></li>
-<li><p><strong>workflow_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – List of workflow ids to filter by
-Defaults to None</p></li>
-</ul>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>All the found Workflow objects</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>All the found Workflow objects</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[Workflow]</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[Workflow]</p>
 </dd>
 </dl>
 </dd></dl>

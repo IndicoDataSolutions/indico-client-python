@@ -194,13 +194,12 @@
 :type name: str
 :type files: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
 :param files: List of pathnames to the dataset files
-:type files: List[str]
-:type dataset_type: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param dataset_type: Type of dataset to create [TEXT, DOCUMENT, IMAGE]
-:type dataset_type: str
-:type wait: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
-:param wait: Wait for the dataset to upload and finish
-:type wait: bool</p>
+:type files: List[str]</p>
+<dl class="simple">
+<dt>Options:</dt><dd><p>dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
+wait (bool, default=True): Wait for the dataset to upload and finish</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Dataset object</p>
@@ -262,14 +261,15 @@
 
 <dl class="py class">
 <dt id="indico.queries.datasets.ListDatasets">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">ListDatasets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.ListDatasets" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">indico.queries.datasets.</code><code class="sig-name descname">ListDatasets</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.ListDatasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all of your datasets</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>limit</strong> (<em>int</em>) – Max number of datasets to retrieve. Default is 100</p>
+<dl class="simple">
+<dt>Options:</dt><dd><p>limit (int, default=100): Max number of datasets to retrieve</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List[Dataset]</p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List[Dataset]</p>
 </dd>
 </dl>
 <p>Raises:</p>
