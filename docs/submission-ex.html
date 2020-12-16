@@ -207,7 +207,9 @@
     <span class="n">ListSubmissions</span><span class="p">,</span>
     <span class="n">RetrieveStorageObject</span><span class="p">,</span>
     <span class="n">SubmissionResult</span><span class="p">,</span>
+    <span class="n">SubmitReview</span><span class="p">,</span>
     <span class="n">UpdateSubmission</span><span class="p">,</span>
+    <span class="n">WaitForSubmissions</span><span class="p">,</span>
     <span class="n">WorkflowSubmission</span><span class="p">,</span>
     <span class="n">WorkflowSubmissionDetailed</span><span class="p">,</span>
 <span class="p">)</span>
@@ -276,6 +278,36 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
 <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">UpdateSubmission</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example 4</span>
+<span class="sd">Submit &quot;auto-review&quot; for a submission</span>
+<span class="sd">Requires auto-review is enabled for workflow</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">submission_ids</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">WorkflowSubmission</span><span class="p">(</span>
+        <span class="n">workflow_id</span><span class="o">=</span><span class="n">workflow_id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;my_file.pdf&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">WaitForSubmissions</span><span class="p">(</span><span class="n">submission_ids</span><span class="p">))</span>
+<span class="n">submission</span> <span class="o">=</span> <span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">raw_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">result_file</span><span class="p">))</span>
+<span class="n">raw_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">result_file</span><span class="p">))</span>
+<span class="n">changes</span> <span class="o">=</span> <span class="n">raw_result</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;document&quot;</span><span class="p">][</span><span class="s2">&quot;results&quot;</span><span class="p">]</span>
+<span class="n">rejected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">for</span> <span class="n">model</span><span class="p">,</span> <span class="n">preds</span> <span class="ow">in</span> <span class="n">changes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">preds</span><span class="p">[</span><span class="s2">&quot;accepted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">preds</span><span class="p">:</span>
+            <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;accepted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rejected</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submitting review for </span><span class="si">{</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">changes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmitReview</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">,</span> <span class="n">rejected</span><span class="o">=</span><span class="n">rejected</span><span class="p">))</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Review&quot;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;has result&quot;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
