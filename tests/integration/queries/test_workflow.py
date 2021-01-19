@@ -18,7 +18,12 @@ from indico.queries import (
     WaitForSubmissions,
     WorkflowSubmission,
     WorkflowSubmissionDetailed,
+    AddDataToWorkflow,
+    AddFiles,
+    ProcessCSV,
+    CreateDataset,
 )
+from indico.queries.questionnaire import CreateQuestionaire, GetQuestionnaire
 from indico.types import ModelGroup
 from indico.types.submission import Submission
 
@@ -159,16 +164,16 @@ def test_workflow_submission_mixed_args(indico, airlines_dataset):
     with pytest.raises(IndicoInputError):
         client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file], urls=[url]))
 
-        
+
 def test_auto_review_enabled_in_get_workflow_response(
     indico, org_annotate_dataset, org_annotate_model_group
 ):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
     wf = max(wfs, key=lambda w: w.id)
-    
+
     assert not (wf.auto_review_enabled or wf.review_enabled)
-    
+
     wf = client.call(
         UpdateWorkflowSettings(wf, enable_review=True, enable_auto_review=True)
     )
@@ -177,7 +182,7 @@ def test_auto_review_enabled_in_get_workflow_response(
     wf = client.call(GetWorkflow(workflow_id=wf.id))
     assert wf.review_enabled and wf.auto_review_enabled
 
-    
+
 @pytest.mark.parametrize("force_complete", [None, True])
 def test_workflow_submission_auto_review(
     indico, force_complete, org_annotate_dataset, org_annotate_model_group
@@ -210,3 +215,58 @@ def test_workflow_submission_auto_review(
     job = client.call(JobStatus(job.id))
     submission = client.call(GetSubmission(sub.id))
     assert submission.status == "COMPLETE" if force_complete else "PENDING_REVIEW"
+
+
+def _new_dataset_for_updating(client):
+    # new dataset
+    airline_csv = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
+    dataset = client.call(
+        CreateDataset(
+            name=f"AddDataToWorkflow-test-{int(time.time())}", files=[airline_csv]
+        )
+    )
+
+    # new teach task
+    questionnaire = client.call(
+        CreateQuestionaire(
+            name=f"AddDataToWorkflowTeach-test-{int(time.time())}",
+            dataset_id=dataset.id,
+            targets=["positive", "negative"],
+        )
+    )
+
+    assert questionnaire.num_total_examples > 0
+
+    # add data to dataset and process
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[airline_csv]))
+    datafile_ids = [f.id for f in dataset.files]
+    dataset = client.call(
+        ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+    )
+
+    assert dataset.status == "COMPLETE"
+
+    # get workflow
+    wfs = client.call(ListWorkflows(dataset_ids=[dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+    return dataset, wf, questionnaire
+
+
+def test_add_data_to_workflow_wait(indico):
+    client = IndicoClient()
+    dataset, wf, q1 = _new_dataset_for_updating(client)
+
+    wf = client.call(AddDataToWorkflow(wf, wait=True))
+    assert wf.status == "COMPLETE"
+
+    q2 = client.call(GetQuestionnaire(q1.id))
+    # the total num avaliable should double, since we re-add the same data
+    assert q1.num_total_examples * 2 == q2.num_total_examples
+
+
+def test_add_data_to_workflow_nowait(indico):
+    client = IndicoClient()
+    dataset, wf, q1 = _new_dataset_for_updating(client)
+
+    wf = client.call(AddDataToWorkflow(wf))
+    assert wf.status == "ADDING_DATA"
