@@ -254,7 +254,7 @@ def _new_dataset_for_updating(client):
 
 def test_add_data_to_workflow_wait(indico):
     client = IndicoClient()
-    dataset, wf, q1 = _new_dataset_for_updating(client)
+    _, wf, q1 = _new_dataset_for_updating(client)
 
     wf = client.call(AddDataToWorkflow(wf, wait=True))
     assert wf.status == "COMPLETE"
@@ -266,7 +266,7 @@ def test_add_data_to_workflow_wait(indico):
 
 def test_add_data_to_workflow_nowait(indico):
     client = IndicoClient()
-    dataset, wf, q1 = _new_dataset_for_updating(client)
+    _, wf, _ = _new_dataset_for_updating(client)
 
     wf = client.call(AddDataToWorkflow(wf))
     assert wf.status == "ADDING_DATA"
