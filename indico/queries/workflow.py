@@ -287,7 +287,6 @@ class _AddDataToWorkflow(GraphQLRequest):
     query = """
         mutation addDataToWorkflow($workflowId: Int!) {
             addDataToWorkflow(workflowId: $workflowId){
-                subsetId
                 workflow{
                     id
                     name
@@ -315,7 +314,7 @@ class AddDataToWorkflow(RequestChain):
     after new data is added to the dataset.
 
     Args:
-        workflow (int|Workflow): Workflow or workflow id to update
+        workflow_id (int): Workflow id to update
 
     Options:
         wait (bool, default=False): Block while polling for status of update
@@ -324,8 +323,8 @@ class AddDataToWorkflow(RequestChain):
         Workflow: Updated Workflow object
     """
 
-    def __init__(self, workflow: int, wait: bool = False):
-        self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
+    def __init__(self, workflow_id: int, wait: bool = False):
+        self.workflow_id = workflow_id
         self.wait = wait
 
     def requests(self):
