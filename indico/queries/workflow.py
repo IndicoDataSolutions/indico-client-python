@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain
+from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
 from indico.queries.storage import UploadDocument
 from indico.types import Job, Submission, Workflow
@@ -24,6 +24,7 @@ class ListWorkflows(GraphQLRequest):
                 workflows {
                     id
                     name
+                    status
                     reviewEnabled
                     autoReviewEnabled
                 }
@@ -63,6 +64,7 @@ class GetWorkflow(ListWorkflows):
     def process_response(self, response) -> Workflow:
         return super().process_response(response)[0]
 
+
 class _ToggleReview(GraphQLRequest):
     toggle = "enableReview"
     query_name = "toggleWorkflowReview"
@@ -87,6 +89,7 @@ class _ToggleReview(GraphQLRequest):
 
     def process_response(self, response) -> Workflow:
         return Workflow(**super().process_response(response)[self.query_name])
+
 
 class _ToggleAutoReview(_ToggleReview):
     toggle = "enableAutoReview"
@@ -121,13 +124,11 @@ class UpdateWorkflowSettings(RequestChain):
         self.enable_review = enable_review
         self.enable_auto_review = enable_auto_review
 
-
     def requests(self):
         if self.enable_review is not None:
             yield _ToggleReview(self.workflow_id, self.enable_review)
         if self.enable_auto_review is not None:
             yield _ToggleAutoReview(self.workflow_id, self.enable_auto_review)
-
 
 
 class _WorkflowSubmission(GraphQLRequest):
@@ -280,3 +281,58 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
         self, workflow_id: int, files: List[str] = None, urls: List[str] = None
     ):
         super().__init__(workflow_id, files=files, urls=urls, submission=True)
+
+
+class _AddDataToWorkflow(GraphQLRequest):
+    query = """
+        mutation addDataToWorkflow($workflowId: Int!) {
+            addDataToWorkflow(workflowId: $workflowId){
+                workflow{
+                    id
+                    name
+                    status
+                }
+            }
+        }
+    """
+
+    def __init__(self, workflow_id: int):
+        super().__init__(
+            self.query,
+            variables={"workflowId": workflow_id},
+        )
+
+    def process_response(self, response) -> Workflow:
+        return Workflow(
+            **super().process_response(response)["addDataToWorkflow"]["workflow"]
+        )
+
+
+class AddDataToWorkflow(RequestChain):
+    """
+    Mutation to update data in a workflow, pressumably
+    after new data is added to the dataset.
+
+    Args:
+        workflow_id (int): Workflow id to update
+
+    Options:
+        wait (bool, default=False): Block while polling for status of update
+
+    Returns:
+        Workflow: Updated Workflow object
+    """
+
+    def __init__(self, workflow_id: int, wait: bool = False):
+        self.workflow_id = workflow_id
+        self.wait = wait
+
+    def requests(self):
+        yield _AddDataToWorkflow(self.workflow_id)
+
+        if self.wait:
+            debouncer = Debouncer()
+
+            while self.previous.status != "COMPLETE":
+                yield GetWorkflow(workflow_id=self.workflow_id)
+                debouncer.backoff()
