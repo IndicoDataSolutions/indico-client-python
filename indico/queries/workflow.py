@@ -3,7 +3,7 @@ from typing import List, Union
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
 from indico.queries.storage import UploadDocument
-from indico.types import Job, Submission, Workflow
+from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS
 
 
 class ListWorkflows(GraphQLRequest):
@@ -83,8 +83,7 @@ class _ToggleReview(GraphQLRequest):
         query = self.query.replace("<QUERY NAME>", self.query_name)
         query = query.replace("<TOGGLE>", self.toggle)
         super().__init__(
-            query,
-            variables={"workflowId": workflow_id, "reviewState": enable_review},
+            query, variables={"workflowId": workflow_id, "reviewState": enable_review},
         )
 
     def process_response(self, response) -> Workflow:
@@ -134,8 +133,8 @@ class UpdateWorkflowSettings(RequestChain):
 class _WorkflowSubmission(GraphQLRequest):
 
     query = """
-        mutation workflowSubmissionMutation($workflowId: Int!, ${arg_}: {type_}, $recordSubmission: Boolean) {{
-            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission) {{
+        mutation workflowSubmissionMutation($workflowId: Int!, ${arg_}: {type_}, $recordSubmission: Boolean, $bundle: Boolean, $resultVersion: SubmissionResultVersion) {{
+            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission, bundle: $bundle, resultVersion: $resultVersion) {{
                 jobIds
                 submissionIds
             }}
@@ -143,14 +142,18 @@ class _WorkflowSubmission(GraphQLRequest):
     """
 
     detailed_query = """
-        mutation workflowSubmissionMutation($workflowId: Int!, ${arg_}: {type_}, $recordSubmission: Boolean) {{
-            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission) {{
+        mutation workflowSubmissionMutation($workflowId: Int!, ${arg_}: {type_}, $recordSubmission: Boolean, $bundle: Boolean, $resultVersion: SubmissionResultVersion) {{
+            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission, bundle: $bundle, resultVersion: $resultVersion) {{
                 submissionIds
                 submissions {{
                     id
                     datasetId
                     workflowId
                     status
+                    inputFiles {{
+                        filepath
+                        filename
+                    }}
                     inputFile
                     inputFilename
                     resultFile
@@ -171,6 +174,8 @@ class _WorkflowSubmission(GraphQLRequest):
         files: List[str] = None,
         urls: List[str] = None,
         detailed_response: bool = False,
+        bundle: bool = False,
+        result_version: str = None,
     ):
         self.workflow_id = workflow_id
         self.record_submission = submission
@@ -184,6 +189,8 @@ class _WorkflowSubmission(GraphQLRequest):
                 "urls": urls,
                 "workflowId": workflow_id,
                 "recordSubmission": submission,
+                "bundle": bundle,
+                "resultVersion": result_version,
             },
         )
 
@@ -204,7 +211,7 @@ class _WorkflowUrlSubmission(_WorkflowSubmission):
 
 
 class WorkflowSubmission(RequestChain):
-    """
+    f"""
     Submit files to a workflow for processing.
     One of `files` or `urls` is required.
 
@@ -216,6 +223,11 @@ class WorkflowSubmission(RequestChain):
             Defaults to True.
             If False, files will be processed as AsyncJobs, ignoring any workflow
             post-processing steps like Review and with no record in the system
+        bundle (bool, optional): Batch all files under a single submission id
+        result_version (str, optional):
+            The format of the submission result file. One of:
+                {SUBMISSION_RESULT_VERSIONS}
+            If bundle is enabled, this must be version TWO or later.
 
     Returns:
         List[int]: If `submission`, these will be submission ids.
@@ -231,11 +243,16 @@ class WorkflowSubmission(RequestChain):
         files: List[str] = None,
         urls: List[str] = None,
         submission: bool = True,
+        bundle: bool = False,
+        result_version: str = None,
     ):
         self.workflow_id = workflow_id
         self.files = files
         self.urls = urls
         self.submission = submission
+        self.bundle = bundle
+        self.result_version = result_version
+
         if not self.files and not self.urls:
             raise IndicoInputError("One of 'files' or 'urls' must be specified")
         elif self.files and self.urls:
@@ -249,6 +266,8 @@ class WorkflowSubmission(RequestChain):
                 files=self.previous,
                 submission=self.submission,
                 detailed_response=self.detailed_response,
+                bundle=self.bundle,
+                result_version=self.result_version,
             )
         elif self.urls:
             yield _WorkflowUrlSubmission(
@@ -256,11 +275,13 @@ class WorkflowSubmission(RequestChain):
                 urls=self.urls,
                 submission=self.submission,
                 detailed_response=self.detailed_response,
+                bundle=self.bundle,
+                result_version=self.result_version,
             )
 
 
 class WorkflowSubmissionDetailed(WorkflowSubmission):
-    """
+    f"""
     Submit files to a workflow for processing.
     One of `files` or `urls` is required.
     Submission recording is mandatory.
@@ -269,6 +290,11 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
         workflow_id (int): Id of workflow to submit files to
         files (List[str], optional): List of local file paths to submit
         urls (List[str], optional): List of urls to submit
+        bundle (bool, optional): Batch all files under a single submission id
+        result_version (str, optional):
+            The format of the submission result file. One of:
+                {SUBMISSION_RESULT_VERSIONS}
+            If bundle is enabled, this must be version TWO or later.
 
     Returns:
         List[Submission]: Submission objects created
@@ -278,9 +304,21 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
     detailed_response = True
 
     def __init__(
-        self, workflow_id: int, files: List[str] = None, urls: List[str] = None
+        self,
+        workflow_id: int,
+        files: List[str] = None,
+        urls: List[str] = None,
+        bundle: bool = False,
+        result_version: str = None,
     ):
-        super().__init__(workflow_id, files=files, urls=urls, submission=True)
+        super().__init__(
+            workflow_id,
+            files=files,
+            urls=urls,
+            submission=True,
+            bundle=bundle,
+            result_version=result_version,
+        )
 
 
 class _AddDataToWorkflow(GraphQLRequest):
@@ -298,8 +336,7 @@ class _AddDataToWorkflow(GraphQLRequest):
 
     def __init__(self, workflow_id: int):
         super().__init__(
-            self.query,
-            variables={"workflowId": workflow_id},
+            self.query, variables={"workflowId": workflow_id},
         )
 
     def process_response(self, response) -> Workflow:

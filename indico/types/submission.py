@@ -1,4 +1,5 @@
-from indico.types import BaseType
+from indico.types import BaseType, List
+from . import SubmissionFile
 
 VALID_SUBMISSION_STATUSES = [
     "COMPLETE",
@@ -10,13 +11,17 @@ VALID_SUBMISSION_STATUSES = [
 ]
 
 
+SUBMISSION_RESULT_VERSIONS = ["ONE", "TWO", "OLDEST_SUPPORTED", "LATEST"]
+
+
 class Submission(BaseType):
     f"""
     A Submission in the Indico Platform.
 
-    Submissions represent a single input which has been sent for processing by a specific workflow.
-    The input file is generally a PDF, and the processing broadly consists of an input processor, a
-    series of processors and components associated with particular docbots, and finally an output processor
+    Submissions represent a single input which has been sent for processing by a
+    specific workflow. A submission consists of SubmissionFiles, generally a PDF.
+    Processing broadly consists of an input processor, a series of processors and
+    components associated with particular docbots, and finally an output processor
     to generate the result file.
 
     Attributes:
@@ -25,8 +30,9 @@ class Submission(BaseType):
         workflow_id (int): the Workflow id
         status (str): status of the submission. One of
             {VALID_SUBMISSION_STATUSES}
-        input_file (str): URL of the input datafile within the Indico Platform.
-        input_filename (str): name of the original file
+        input_files (list[SubmissionFile]): the SubmissionFiles for the Submission
+        input_file (str): URL of the first input datafile within the Indico Platform.
+        input_filename (str): name of the first original file
         result_file (str): URL of the result datafile within the Indico Platform
         retrieved (bool): Whether the submission has been retrieved by a user
             This flag is set manually by users.
@@ -38,6 +44,7 @@ class Submission(BaseType):
     dataset_id: int
     workflow_id: int
     status: str
+    input_files: List[SubmissionFile]
     input_file: str
     input_filename: str
     result_file: str
