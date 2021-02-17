@@ -4,6 +4,7 @@ from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
 from indico.queries.storage import UploadDocument
 from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS
+from indico.types.utils import cc_to_snake, snake_to_cc
 
 
 class ListWorkflows(GraphQLRequest):
@@ -133,8 +134,8 @@ class UpdateWorkflowSettings(RequestChain):
 class _WorkflowSubmission(GraphQLRequest):
 
     query = """
-        mutation workflowSubmissionMutation($workflowId: Int!, ${arg_}: {type_}, $recordSubmission: Boolean, $bundle: Boolean, $resultVersion: SubmissionResultVersion) {{
-            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission, bundle: $bundle, resultVersion: $resultVersion) {{
+        mutation workflowSubmissionMutation({signature}) {{
+            {mutation_name}({args}) {{
                 jobIds
                 submissionIds
             }}
@@ -142,18 +143,15 @@ class _WorkflowSubmission(GraphQLRequest):
     """
 
     detailed_query = """
-        mutation workflowSubmissionMutation($workflowId: Int!, ${arg_}: {type_}, $recordSubmission: Boolean, $bundle: Boolean, $resultVersion: SubmissionResultVersion) {{
-            {mutation_name}(workflowId: $workflowId, {arg_}: ${arg_}, recordSubmission: $recordSubmission, bundle: $bundle, resultVersion: $resultVersion) {{
+        mutation workflowSubmissionMutation({signature}) {{
+            {mutation_name}({args}) {{
                 submissionIds
                 submissions {{
                     id
                     datasetId
                     workflowId
                     status
-                    inputFiles {{
-                        filepath
-                        filename
-                    }}
+                    <SUBQUERY>
                     inputFile
                     inputFilename
                     resultFile
@@ -163,35 +161,52 @@ class _WorkflowSubmission(GraphQLRequest):
             }}
         }}
     """
+    files_subquery = """
+        inputFiles {{
+            filepath
+            filename
+        }}
+    """.strip()
 
-    query_format = {"arg_": "files", "type_": "[FileInput]!"}
     mutation_name = "workflowSubmission"
+    mutation_args = {
+        "workflowId": "Int!",
+        "files": "[FileInput]!",
+        "recordSubmission": "Boolean",
+        "bundle": "Boolean",
+        "resultVersion": "SubmissionResultVersion",
+    }
 
     def __init__(
-        self,
-        workflow_id: int,
-        submission: bool,
-        files: List[str] = None,
-        urls: List[str] = None,
-        detailed_response: bool = False,
-        bundle: bool = False,
-        result_version: str = None,
+        self, detailed_response: bool, **kwargs,
     ):
-        self.workflow_id = workflow_id
-        self.record_submission = submission
+        self.workflow_id = kwargs["workflow_id"]
+        self.record_submission = kwargs["record_submission"]
 
-        q = self.detailed_query if detailed_response else self.query
+        # construct mutation signature and args based on provided kwargs to ensure
+        # backwards-compatible graphql calls
+        #
+        # inputFiles, bundle, and resultVersion only avaliable on IPA 4.9.0+
+        subq = (
+            self.files_subquery if kwargs["bundle"] or kwargs["result_version"] else ""
+        )
+        q = (
+            self.detailed_query.replace("<SUBQUERY>", subq)
+            if detailed_response
+            else self.query
+        )
+
+        args = [
+            _arg for _arg in self.mutation_args.keys() if kwargs.get(cc_to_snake(_arg))
+        ]
+        signature = ",".join(f"${_arg}: {self.mutation_args[_arg]}" for _arg in args)
+        args = ",".join(f"{_arg}: ${_arg}" for _arg in args)
 
         super().__init__(
-            query=q.format(mutation_name=self.mutation_name, **self.query_format),
-            variables={
-                "files": files,
-                "urls": urls,
-                "workflowId": workflow_id,
-                "recordSubmission": submission,
-                "bundle": bundle,
-                "resultVersion": result_version,
-            },
+            query=q.format(
+                mutation_name=self.mutation_name, signature=signature, args=args
+            ),
+            variables={snake_to_cc(var): val for var, val in kwargs.items()},
         )
 
     def process_response(self, response):
@@ -206,8 +221,9 @@ class _WorkflowSubmission(GraphQLRequest):
 
 
 class _WorkflowUrlSubmission(_WorkflowSubmission):
-    query_format = {"arg_": "urls", "type_": "[String]!"}
     mutation_name = "workflowUrlSubmission"
+    mutation_args = {**_WorkflowSubmission.mutation_args, "urls": "[String]!"}
+    del mutation_args["files"]
 
 
 class WorkflowSubmission(RequestChain):
@@ -262,19 +278,19 @@ class WorkflowSubmission(RequestChain):
         if self.files:
             yield UploadDocument(files=self.files)
             yield _WorkflowSubmission(
+                self.detailed_response,
                 workflow_id=self.workflow_id,
+                record_submission=self.submission,
                 files=self.previous,
-                submission=self.submission,
-                detailed_response=self.detailed_response,
                 bundle=self.bundle,
                 result_version=self.result_version,
             )
         elif self.urls:
             yield _WorkflowUrlSubmission(
+                self.detailed_response,
                 workflow_id=self.workflow_id,
+                record_submission=self.submission,
                 urls=self.urls,
-                submission=self.submission,
-                detailed_response=self.detailed_response,
                 bundle=self.bundle,
                 result_version=self.result_version,
             )
