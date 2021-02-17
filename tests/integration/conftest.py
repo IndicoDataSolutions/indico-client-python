@@ -9,7 +9,7 @@ logging.getLogger("indico").setLevel(logging.DEBUG)
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--host", action="store", default="dev-bundle.indico.io", help="indico ipa host"
+        "--host", action="store", default="dev.indico.io", help="indico ipa host"
     )
 
 
