@@ -188,7 +188,9 @@ class _WorkflowSubmission(GraphQLRequest):
         #
         # inputFiles, bundle, and resultVersion only avaliable on IPA 4.9.0+
         subq = (
-            self.files_subquery if kwargs["bundle"] or kwargs["result_version"] else ""
+            self.files_subquery
+            if kwargs.get("bundle") or kwargs.get("result_version")
+            else ""
         )
         q = (
             self.detailed_query.replace("<SUBQUERY>", subq)
