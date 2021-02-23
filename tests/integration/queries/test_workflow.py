@@ -90,10 +90,75 @@ def test_workflow_submission(
     result = client.call(RetrieveStorageObject(result_url.result))
     assert isinstance(result, dict)
     assert result["submission_id"] == submission_id
+    assert result["file_version"] == 1
     client.call(UpdateSubmission(submission_id, retrieved=True))
     sub = client.call(GetSubmission(submission_id))
     assert isinstance(sub, Submission)
     assert sub.retrieved is True
+
+
+@pytest.mark.parametrize(
+    "_input",
+    [
+        {"urls": [PUBLIC_URL + "mock.pdf"] * 3},
+        {"files": [str(Path(__file__).parents[1]) + "/data/mock.pdf"] * 3},
+    ],
+)
+def test_workflow_submission_versioned(
+    indico, airlines_dataset, airlines_model_group: ModelGroup, _input
+):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+
+    submission_ids = client.call(
+        WorkflowSubmission(workflow_id=wf.id, result_version="LATEST", **_input)
+    )
+
+    assert len(submission_ids) == len(next(iter(_input.values())))
+    submission_id = submission_ids[0]
+    assert submission_id is not None
+
+    submissions = client.call(WaitForSubmissions(submission_id))
+    result = client.call(RetrieveStorageObject(submissions[0].result_file))
+
+    assert isinstance(result, dict)
+    assert result["file_version"] == 2
+    assert len(result["submission_results"]) == 1
+    assert result["submission_results"][0]["input_filename"] == "mock.pdf"
+
+
+@pytest.mark.parametrize(
+    "_input",
+    [
+        {"urls": [PUBLIC_URL + "mock.pdf"] * 3},
+        {"files": [str(Path(__file__).parents[1]) + "/data/mock.pdf"] * 3},
+    ],
+)
+def test_workflow_submission_bundled(
+    indico, airlines_dataset, airlines_model_group: ModelGroup, _input
+):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+
+    submission_ids = client.call(
+        WorkflowSubmission(
+            workflow_id=wf.id, bundle=True, result_version="LATEST", **_input
+        )
+    )
+
+    assert len(submission_ids) == 1
+    submission_id = submission_ids[0]
+    assert submission_id
+
+    submissions = client.call(WaitForSubmissions(submission_id))
+    result = client.call(RetrieveStorageObject(submissions[0].result_file))
+
+    assert isinstance(result, dict)
+    assert result["file_version"] == 2
+    assert len(result["submission_results"]) == len(next(iter(_input.values())))
+    assert result["submission_results"][0]["input_filename"] == "mock.pdf"
 
 
 @pytest.mark.parametrize(
