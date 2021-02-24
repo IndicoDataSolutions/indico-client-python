@@ -1,6 +1,6 @@
-- name: tests
+- name: test
   service: indico-client
-  command: python setup.py install
+  command: pytest -sv tests/
 - name: deploy
   tag: master
   service: indico-client

@@ -1,4 +1,15 @@
 
+
+try:
+    from importlib import metadata
+except ImportError:
+    # If running on pre-3.8
+    import importlib_metadata as metadata
+
+
+def get_version():
+    return metadata.version("indico-client")
+    
 # This file helps to compute a version number in source trees obtained from
 # git-archive tarball (such as those provided by githubs download-from-tag
 # feature). Distribution tarballs (built by setup.py sdist) and build
