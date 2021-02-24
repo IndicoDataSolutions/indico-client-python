@@ -3,3 +3,4 @@ python3:
   encrypted_env_file: codeship.env
   volumes:
     - .:/indico-client
+

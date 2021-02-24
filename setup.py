@@ -1,11 +1,13 @@
 """
 Setup for indico apis
 """
+import versioneer
 from setuptools import setup, find_packages
 
 setup(
     name="indico-client",
-    version="4.5.0",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),
     description="""A Python Wrapper for indico app API.""",
     license="MIT License (See LICENSE)",
