@@ -3,5 +3,5 @@
   command: python setup.py install
 - name: deploy
   tag: master
-  service: twine-deploy
+  service: indico-client
   command: echo "twine steps!"

@@ -1,6 +1,7 @@
-python3:
+indico-client:
+  build:
+    dockerfile: Dockerfile
   container_name: indico-client
-  encrypted_env_file: codeship.env
   volumes:
     - .:/indico-client
 
