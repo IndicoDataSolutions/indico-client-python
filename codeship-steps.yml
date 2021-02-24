@@ -1,8 +1,7 @@
-- type: parallel
-  steps:
-    - name: Python 2 Tests
-      service: python2
-      command: nosetests -sv .
-    - name: Python 3 Tests
-      service: python3
-      command: nosetests -sv .
+- name: tests
+  service: indico-client
+  command: python setup.py install
+- name: deploy
+  tag: master
+  service: twine-deploy
+  command: echo "twine steps!"
