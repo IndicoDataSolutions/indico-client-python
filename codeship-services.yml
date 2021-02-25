@@ -6,6 +6,7 @@ indico-client:
     - TWINE_USERNAME=__token__
     - TWINE_REPOSITORY=testpypi
     - TWINE_NON_INTERACTIVE=true
+    - INDICO_HOST=dev.indico.io
   encrypted_env_file:
     - env.encrypted
   volumes:

@@ -1,8 +1,7 @@
 - name: test
-  tag: master
   service: indico-client
   command: /indico-client/scripts/test.sh
 - name: deploy
-  #
+  tag: master
   service: indico-client
   command: /indico-client/scripts/deploy.sh
