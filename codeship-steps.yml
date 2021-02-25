@@ -1,7 +1,8 @@
 - name: test
-  service: indico-client
-  command: pytest -sv tests/
-- name: deploy
   tag: master
   service: indico-client
-  command: echo "twine steps!"
+  command: /indico-client/scripts/test.sh
+- name: deploy
+  #
+  service: indico-client
+  command: /indico-client/scripts/deploy.sh

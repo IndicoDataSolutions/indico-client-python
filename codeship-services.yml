@@ -2,6 +2,12 @@ indico-client:
   build:
     dockerfile: Dockerfile
   container_name: indico-client
+  environment:
+    - TWINE_USERNAME=__token__
+    - TWINE_REPOSITORY=testpypi
+    - TWINE_NON_INTERACTIVE=true
+  encrypted_env_file:
+    - env.encrypted
   volumes:
     - .:/indico-client
 
