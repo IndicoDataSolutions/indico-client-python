@@ -1,5 +1,5 @@
 import logging
-from indico._version import get_version
+from ._version import get_version
 
 logging.basicConfig()
 Version = version = __version__ = VERSION = get_version()

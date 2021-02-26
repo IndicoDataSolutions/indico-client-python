@@ -1,12 +1,21 @@
-indico-client:
+indico-client-test:
+  build:
+    dockerfile: tox.Dockerfile
+  container_name: indico-client-test
+  environment:
+    - INDICO_HOST=dev.indico.io
+  encrypted_env_file:
+    - env.encrypted
+  volumes:
+    - .:/indico-client
+indico-client-deploy:
   build:
     dockerfile: Dockerfile
-  container_name: indico-client
+  container_name: indico-client-deploy
   environment:
     - TWINE_USERNAME=__token__
     - TWINE_REPOSITORY=testpypi
     - TWINE_NON_INTERACTIVE=true
-    - INDICO_HOST=dev.indico.io
   encrypted_env_file:
     - env.encrypted
   volumes:
