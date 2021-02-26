@@ -4,6 +4,8 @@ indico-client-test:
   container_name: indico-client-test
   environment:
     - INDICO_HOST=dev.indico.io
+    - TOX_PARALLEL_NO_SPINNER=true
+    - TOX_ENV=unit
   encrypted_env_file:
     - env.encrypted
   volumes:
