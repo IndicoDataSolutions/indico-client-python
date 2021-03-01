@@ -29,7 +29,7 @@ The snippet below demonstrates how to send a document to Review::
     submissions = client.call(
         WorkflowSubmission(files=["./path/to/sample.pdf"], workflow_id=52, submission=True)
     ) 
-    print(submissions[0].id)
+
 
 WorkflowSubmissions will return a list of Submission objects, one for each submission, each with a unique 
 identifier and submission id. The submission ids are persistent, meaning that you can always use that id to
