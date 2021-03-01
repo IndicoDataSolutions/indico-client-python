@@ -10,7 +10,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common
 # install legacy python versions
 RUN  DEBIAN_FRONTEND=noninteractive apt-get -yqq install  python3.7 python3.8 python3-pip
 
-RUN pip3 install tox
+RUN pip3 install tox==3.22.0
 
 
 COPY . /indico-client
