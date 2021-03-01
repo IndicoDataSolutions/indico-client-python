@@ -1,8 +1,7 @@
-- type: parallel
-  steps:
-    - name: Python 2 Tests
-      service: python2
-      command: nosetests -sv .
-    - name: Python 3 Tests
-      service: python3
-      command: nosetests -sv .
+- name: test
+  service: indico-client-test
+  command: /indico-client/scripts/test.sh
+- name: deploy
+  tag: ^([0-9]+)\.([0-9]+)\.([0-9]+)?
+  service: indico-client-deploy
+  command: /indico-client/scripts/deploy.sh

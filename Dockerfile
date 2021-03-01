@@ -1,12 +1,6 @@
-FROM indicoio/numpy as numpy-base
-FROM indicoio/alpine:3.7.3
+FROM python:3.8
 
-ENV INDICO_HOST="app.indico.io"
+ENV INDICO_HOST="dev.indico.io"
 
-RUN apk add --no-cache libjpeg jpeg-dev zlib-dev
-COPY README.rst README.rst
-
-COPY . /indicoio
-WORKDIR /indicoio
-
-RUN python3 setup.py test
+COPY . /indico-client
+WORKDIR /indico-client

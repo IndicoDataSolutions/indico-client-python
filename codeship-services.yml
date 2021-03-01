@@ -1,7 +1,24 @@
-python3:
-  container_name: indico-ipa
-  default_cache_branch: "development"
-  cached: true
-  encrypted_env_file: codeship.env
+indico-client-test:
+  build:
+    dockerfile: tox.Dockerfile
+  container_name: indico-client-test
+  environment:
+    - INDICO_HOST=dev.indico.io
+    - TOX_PARALLEL_NO_SPINNER=true
+  encrypted_env_file:
+    - env.encrypted
   volumes:
-    - .:/indico-ipa
+    - .:/indico-client
+indico-client-deploy:
+  build:
+    dockerfile: Dockerfile
+  container_name: indico-client-deploy
+  environment:
+    - TWINE_USERNAME=__token__
+    #- TWINE_REPOSITORY=testpypi #uncomment to test CD against test.pypi.org
+    - TWINE_NON_INTERACTIVE=true
+  encrypted_env_file:
+    - env.encrypted
+  volumes:
+    - .:/indico-client
+
