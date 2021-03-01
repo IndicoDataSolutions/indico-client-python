@@ -31,7 +31,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -188,7 +187,7 @@
 <span id="workflows"></span><h1>Workflows<a class="headerlink" href="#module-indico.queries.workflow" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="indico.queries.workflow.ListWorkflows">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">ListWorkflows</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">dataset_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">workflow_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.ListWorkflows" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.workflow.</span></code><code class="sig-name descname"><span class="pre">ListWorkflows</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.ListWorkflows" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all workflows visible to authenticated user</p>
 <dl class="simple">
 <dt>Options:</dt><dd><p>dataset_ids (List[int]): List of dataset ids to filter by
@@ -207,12 +206,12 @@ workflow_ids (List[int]): List of workflow ids to filter by</p>
 
 <dl class="py class">
 <dt id="indico.queries.workflow.WorkflowSubmission">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">WorkflowSubmission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">workflow_id</span></em>, <em class="sig-param"><span class="n">files</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">urls</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">submission</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">bundle</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">result_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.WorkflowSubmission" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.workflow.</span></code><code class="sig-name descname"><span class="pre">WorkflowSubmission</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.WorkflowSubmission" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
 <dt id="indico.queries.workflow.GetWorkflow">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.workflow.</code><code class="sig-name descname">GetWorkflow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">workflow_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.GetWorkflow" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.workflow.</span></code><code class="sig-name descname"><span class="pre">GetWorkflow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.GetWorkflow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query for Workflow by id</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

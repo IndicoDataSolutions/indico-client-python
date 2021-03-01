@@ -31,7 +31,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -188,7 +187,7 @@
 <span id="model-groups"></span><h1>Model Groups<a class="headerlink" href="#module-indico.queries.model_groups" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="indico.queries.model_groups.CreateModelGroup">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">CreateModelGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">dataset_id</span></em>, <em class="sig-param"><span class="n">source_column_id</span></em>, <em class="sig-param"><span class="n">labelset_id</span></em>, <em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">model_training_options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">model_type</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.CreateModelGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.model_groups.</span></code><code class="sig-name descname"><span class="pre">CreateModelGroup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_column_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_training_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.CreateModelGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new model group and train a model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -210,7 +209,7 @@
 
 <dl class="py class">
 <dt id="indico.queries.model_groups.ModelGroupPredict">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">ModelGroupPredict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_id</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">load</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">predict_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.ModelGroupPredict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.model_groups.</span></code><code class="sig-name descname"><span class="pre">ModelGroupPredict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predict_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.ModelGroupPredict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate predictions from a model group on new data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -229,7 +228,7 @@
 
 <dl class="py class">
 <dt id="indico.queries.model_groups.GetModelGroup">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">GetModelGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.model_groups.</span></code><code class="sig-name descname"><span class="pre">GetModelGroup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get an object describing a model group</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -244,7 +243,7 @@
 
 <dl class="py class">
 <dt id="indico.queries.model_groups.GetModelGroupSelectedModelStatus">
-<em class="property">class </em><code class="sig-prename descclassname">indico.queries.model_groups.</code><code class="sig-name descname">GetModelGroupSelectedModelStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroupSelectedModelStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.model_groups.</span></code><code class="sig-name descname"><span class="pre">GetModelGroupSelectedModelStatus</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.model_groups.GetModelGroupSelectedModelStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status string of the selected model for the given model group id</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

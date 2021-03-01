@@ -31,7 +31,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -188,14 +187,14 @@
 <span id="jobs-types"></span><h1>Jobs Types<a class="headerlink" href="#module-indico.types.jobs" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="indico.types.jobs.Job">
-<em class="property">class </em><code class="sig-prename descclassname">indico.types.jobs.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.jobs.Job" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.types.jobs.</span></code><code class="sig-name descname"><span class="pre">Job</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.jobs.Job" title="Permalink to this definition">¶</a></dt>
 <dd><p>An Asynchronous Job in the Indico Platform.</p>
 <p>Many operations like DocumentExtraction and ModelGroupPredict are handled in the
 Indico Platform via Jobs. When you make a DocumentExtraction call, you are queuing
 a job in the Platform and a Job object is returned by client.call(..)</p>
 <dl class="py attribute">
 <dt id="indico.types.jobs.Job.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#indico.types.jobs.Job.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#indico.types.jobs.Job.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>job id</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -206,7 +205,7 @@ a job in the Platform and a Job object is returned by client.call(..)</p>
 
 <dl class="py attribute">
 <dt id="indico.types.jobs.Job.status">
-<code class="sig-name descname">status</code><a class="headerlink" href="#indico.types.jobs.Job.status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">status</span></code><a class="headerlink" href="#indico.types.jobs.Job.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>“SUCCESS”, “FAILURE”, “REJECTED”, “REVOKED”, “IGNORED”, “RETRY”</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -217,7 +216,7 @@ a job in the Platform and a Job object is returned by client.call(..)</p>
 
 <dl class="py attribute">
 <dt id="indico.types.jobs.Job.ready">
-<code class="sig-name descname">ready</code><a class="headerlink" href="#indico.types.jobs.Job.ready" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ready</span></code><a class="headerlink" href="#indico.types.jobs.Job.ready" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>bool</p>
