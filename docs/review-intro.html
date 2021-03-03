@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Review &mdash; Indico Python Client 3.1.0 documentation</title>
   
@@ -18,10 +18,7 @@
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
-
   
-  
-
   
 
   
@@ -55,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Indico Python Client
           
 
           
@@ -165,8 +162,6 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -178,7 +173,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/review-intro.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -212,14 +207,15 @@ that workflow. You can find “enable review” by clicking on workflows from yo
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">WorkflowSubmission</span>
 
 <span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-    <span class="n">WorkflowSubmission</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span> <span class="n">workflow_id</span><span class="o">=</span><span class="mi">52</span><span class="p">,</span> <span class="n">submission</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">WorkflowSubmission</span><span class="p">(</span>
+        <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;./path/to/sample1.pdf&quot;</span><span class="p">],</span> <span class="n">workflow_id</span><span class="o">=</span><span class="mi">52</span><span class="p">,</span> <span class="n">submission</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>WorkflowSubmissions will return a list of Submission objects, one for each submission, each with a unique
-identifier and submission id. The submission ids are persistent, meaning that you can always use that id to
-check the status and retrieve the prediction results of that submission.</p>
+<p>WorkflowSubmission (when submission=True) will return a list of integers, one for each submission, each a unique
+identifier for the identically indexed document that you passed to files. The submission ids are persistent,
+meaning that you can always use that id to check the status and retrieve the prediction results of that submission.</p>
 <p>After submitting, the documents are OCR’d (except for image use cases) and passed to the workflow’s models. Once
 the document has passed through the applicable models, it will be ready for manual review on the Review page
 in the app.</p>
@@ -308,29 +304,37 @@ will have ‘review_id’ equal to None.</p>
            
           </div>
           <footer>
+  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="auto-review.html" class="btn btn-neutral float-right" title="Auto Review" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="workflow-intro.html" class="btn btn-neutral float-left" title="Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
+        <a href="auto-review.html" class="btn btn-neutral float-right" title="Auto Review" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="workflow-intro.html" class="btn btn-neutral float-left" title="Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Indico.
+        
+        &copy; Copyright 2020, Indico
 
     </p>
   </div>
     
     
     
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
 
