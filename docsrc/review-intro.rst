@@ -27,13 +27,15 @@ The snippet below demonstrates how to send a document to Review::
     from indico.queries import WorkflowSubmission
 
     submissions = client.call(
-        WorkflowSubmission(files=["./path/to/sample.pdf"], workflow_id=52, submission=True)
+        WorkflowSubmission(
+            files=["./path/to/sample.pdf", "./path/to/sample1.pdf"], workflow_id=52, submission=True
+        )
     ) 
-    print(submissions[0].id)
 
-WorkflowSubmissions will return a list of Submission objects, one for each submission, each with a unique 
-identifier and submission id. The submission ids are persistent, meaning that you can always use that id to
-check the status and retrieve the prediction results of that submission. 
+
+WorkflowSubmission (when submission=True) will return a list of integers, one for each submission, each a unique 
+identifier for the identically indexed document that you passed to files. The submission ids are persistent, 
+meaning that you can always use that id to check the status and retrieve the prediction results of that submission. 
 
 After submitting, the documents are OCR'd (except for image use cases) and passed to the workflow's models. Once
 the document has passed through the applicable models, it will be ready for manual review on the Review page 
