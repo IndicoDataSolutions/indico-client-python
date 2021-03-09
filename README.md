@@ -1,8 +1,11 @@
 # Indico IPA platform Client
 ### A python client library for the [Indico IPA Platform](https://app.indico.io/).
+### See the full [Documentation](https://indicodatasolutions.github.io/indico-client-python/).
 
 # Installation
 --------------
+Required: Python 3.6, 3.7, or 3.8
+
 From PyPI:
 ```bash
 pip3 install indico-client
