@@ -20,6 +20,8 @@ def decompress(response):
     value = io.BytesIO(response.raw.data).getvalue()
     return gzip.decompress(value)
 
+def raw_bytes(content, *args, **kwargs):
+    return content
 
 def deserialize(response, gzip=False, force_json=False):
     content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
@@ -37,7 +39,7 @@ def deserialize(response, gzip=False, force_json=False):
         content_type = "application/json"
 
     try:
-        return _SERIALIZATINON_FNS[content_type](content, charset)
+        return _SERIALIZATION_FNS[content_type](content, charset)
     except Exception:
         logger.debug(traceback.format_exc())
         raise IndicoDecodingError(
@@ -65,9 +67,11 @@ def zip_serialization(content, charset=None):
     return content
 
 
-_SERIALIZATINON_FNS = defaultdict(
+_SERIALIZATION_FNS = defaultdict(
     lambda: text_deserialization,
     {
+        "application/octet-stream": raw_bytes,
+        "application/pdf": raw_bytes,
         "text/html": text_deserialization,
         "application/x-msgpack": msgpack_deserialization,
         "application/msgpack": msgpack_deserialization,

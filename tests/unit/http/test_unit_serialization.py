@@ -52,6 +52,20 @@ def test_deserialize_msgpack(mock_loader):
     assert isinstance(content, dict)
 
 
+def test_deserialize_octet(mock_loader):
+    response = mock_loader("application/octet-stream", "")
+    content = deserialize(response)
+    
+    assert isinstance(content, bytes)
+
+
+def test_deserialize_pdf(mock_loader):
+    response = mock_loader("application/pdf", "")
+    content = deserialize(response)
+
+    assert isinstance(content, bytes)
+
+
 def test_deserialize_unknown(mock_loader):
     response = mock_loader("unknown", "")
     try:
