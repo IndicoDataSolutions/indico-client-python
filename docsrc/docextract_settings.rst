@@ -128,6 +128,16 @@ Setting::
 Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.
 
+Languages
+---------
+
+Setting::
+    
+    "language": "ENG" (default)
+     
+By default OCR is configured to be to English only.  You can opt to infer the language of the document by passing the string "ALL".  Alternately you can specify a list of supported languages by passing a list `ISO 639-2 language codes. <https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes>`_ (e.g. ``["ENG", "FRE", "SPA"]``).  For a full list of supported langagues, please see :doc:`language_support`.
+
+
 Native PDF
 ----------
 
