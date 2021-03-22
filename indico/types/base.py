@@ -3,8 +3,7 @@ import json
 from typing import List, Any
 from indico.types.utils import cc_to_snake
 
-generic_alias_cls = type(List)
-
+generic_alias_cls = type(List[Any])
 
 def list_subtype(cls):
     if not issubclass(type(cls), generic_alias_cls):
