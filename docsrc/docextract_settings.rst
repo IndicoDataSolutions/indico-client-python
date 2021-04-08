@@ -123,7 +123,7 @@ Force Render
 Setting::
 
     "force_render": True (default since IPA 4.7.0)
-    "force_render": False
+    "force_render": False (default prior to IPA 4.7.0)
 
 Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.
