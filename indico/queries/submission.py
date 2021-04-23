@@ -4,7 +4,7 @@ from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
+from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
@@ -12,7 +12,7 @@ from indico.types import Job, Submission
 from indico.types.submission import VALID_SUBMISSION_STATUSES
 
 
-class ListSubmissions(PagedRequest):
+class ListSubmissions(GraphQLRequest):
     """
     List all Submissions visible to the authenticated user by most recent.
     Supports pagination, where limit is page size
@@ -37,7 +37,7 @@ class ListSubmissions(PagedRequest):
             $limit: Int,
             $orderBy: SUBMISSION_COLUMN_ENUM,
             $desc: Boolean
-            $after: Int,
+            
         ){
             submissions(
                 submissionIds: $submissionIds,
@@ -46,7 +46,7 @@ class ListSubmissions(PagedRequest):
                 limit: $limit
                 orderBy: $orderBy,
                 desc: $desc
-                after: $after
+                
             ){
                 submissions {
                     id
@@ -58,10 +58,6 @@ class ListSubmissions(PagedRequest):
                     resultFile
                     retrieved
                     errors
-                }
-                pageInfo {
-                    endCursor
-                    hasNextPage
                 }
             }
         }

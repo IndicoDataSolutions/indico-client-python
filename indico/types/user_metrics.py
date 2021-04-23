@@ -34,10 +34,6 @@ class UserSnapshot(BaseType):
     datasets: List[UserDatasets]
 
 
-class UserSnapshots(BaseType):
-    results: List[UserSnapshot]
-
-
 class UserMetricsFilters(BaseType):
     date: str
     user_id: str

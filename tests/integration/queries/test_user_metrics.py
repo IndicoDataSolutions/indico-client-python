@@ -1,28 +1,33 @@
-from pathlib import Path
-
 import pytest
-
 from indico.client import IndicoClient
-from indico.errors import IndicoTimeoutError
-from indico.types.user_metrics import UserSummary, UserSnapshots
+from indico.types.user_metrics import UserSummary
 from indico.queries.usermetrics import GetUserSummary, GetUserSnapshots
 from datetime import datetime
 
 
 def test_fetch_summary(indico):
     client = IndicoClient()
-    userSummary: UserSummary = client.call(GetUserSummary())
-    assert userSummary is not None
-    assert len(userSummary.app_roles) > 0
+    user_summary: UserSummary = client.call(GetUserSummary())
+    assert user_summary is not None
+    assert len(user_summary.app_roles) > 0
+
 
 def test_fetch_snapshots(indico):
     client = IndicoClient()
-    snapshots: UserSnapshots = client.call(GetUserSnapshots(date=datetime.now(), user_id=195))
-    print(snapshots)
+    snapshots = []
+    for snapshot in client.paginate(GetUserSnapshots(date=datetime.now())):
+        snapshots.extend(snapshot)
     assert snapshots is not None
-    assert snapshots.results is not None
-    assert len(snapshots.results) > 0
-    first = snapshots.results.pop()
+    assert snapshots[0] is not None
+    assert len(snapshots) > 0
+    first = snapshots.pop()
     assert first is not None
     assert first.roles is not None
 
+
+def test_fetch_filtered_snapshots(indico):
+    client = IndicoClient()
+    snapshots = []
+    for snapshot in client.paginate(GetUserSnapshots(date=datetime.now(), user_id=1)):
+        snapshots.extend(snapshot)
+    assert len(snapshots) == 1

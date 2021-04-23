@@ -75,5 +75,5 @@ class IndicoClient:
                 print("Submission", s)
         """
         while request.has_next_page:
-            for r in self._http.execute_request(request):
-                yield r
+            r = self._http.execute_request(request)
+            yield r
