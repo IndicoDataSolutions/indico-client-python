@@ -3,8 +3,6 @@ from pathlib import Path
 import pytest
 
 from indico.client import IndicoClient
-from indico.queries import JobStatus, DocumentExtraction
-from indico.types.jobs import Job
 from indico.errors import IndicoTimeoutError
 from indico.types.user_metrics import UserSummary, UserSnapshots
 from indico.queries.usermetrics import GetUserSummary, GetUserSnapshots
@@ -13,7 +11,7 @@ from datetime import datetime
 
 def test_fetch_summary(indico):
     client = IndicoClient()
-    userSummary = client.call(GetUserSummary())
+    userSummary: UserSummary = client.call(GetUserSummary())
     assert userSummary is not None
     assert len(userSummary.app_roles) > 0
 
