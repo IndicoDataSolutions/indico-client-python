@@ -15,7 +15,6 @@ from indico.types.submission import VALID_SUBMISSION_STATUSES
 class ListSubmissions(GraphQLRequest):
     """
     List all Submissions visible to the authenticated user by most recent.
-    Supports pagination, where limit is page size
 
     Options:
         submission_ids (List[int]): Submission ids to filter by
