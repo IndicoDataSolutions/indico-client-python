@@ -1,30 +1,27 @@
 from indico.types.base import BaseType
 from typing import List
-import datetime
-
-
-class UserPermissionsReport(BaseType):
-    date: datetime
-    user: str
-    dataset: str
 
 
 class AppRoles(BaseType):
+    """Info about roles. Name and how many users have this role."""
     role: str
     count: int
 
 
 class UserDatasets(BaseType):
+    """Dataset Id and roles assigned to user in that dataset."""
     dataset_id: int
     role: str
 
 
 class UserSummaryUser(BaseType):
+    """Summary of user counts"""
     enabled: int
     disabled: int
 
 
 class UserSnapshot(BaseType):
+    """Individual information about a user and their dataset access"""
     id: int
     name: str
     email: str
@@ -34,22 +31,7 @@ class UserSnapshot(BaseType):
     datasets: List[UserDatasets]
 
 
-class UserMetricsFilters(BaseType):
-    date: str
-    user_id: str
-    user_email: str
-
-    def __init__(self, **kwargs):
-        self.date = kwargs.get('date', None).strftime('%Y-%m-%d') if kwargs.get('date', None) is not None else ""
-        self.user_id = kwargs.get('user_id', "")
-        self.user_email = kwargs.get('user_email', "")
-
-    def to_json(self):
-        return {'date': self.date,
-                'userId': self.user_id,
-                'userEmail': self.user_email}
-
-
 class UserSummary(BaseType):
+    """Summary data on users and app roles"""
     users: UserSummaryUser
     app_roles: List[AppRoles]

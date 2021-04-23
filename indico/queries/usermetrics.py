@@ -1,27 +1,42 @@
-import json
-import tempfile
-from pathlib import Path
 from typing import List
-import datetime
 
-import pandas as pd
 from indico.client.request import (
-    Debouncer,
     GraphQLRequest,
-    HTTPMethod,
-    HTTPRequest,
-    RequestChain, PagedRequest,
+    PagedRequest,
 )
-from indico.errors import IndicoNotFound
 from indico.types import BaseType
-from indico.types.user_metrics import UserSummary, UserSnapshot, UserMetricsFilters
+from indico.types.user_metrics import UserSummary, UserSnapshot
 
 
 class _PagedUserSnapshots(BaseType):
+    """
+    Class to hold paged snapshot data to make parsing easier.
+    """
     results: List[UserSnapshot]
 
 
+class _UserMetricsFilters(BaseType):
+    """Filters for fetching user metric data."""
+    date: str
+    user_id: str
+    user_email: str
+
+    def __init__(self, **kwargs):
+        self.date = kwargs.get('date', None).strftime('%Y-%m-%d') if kwargs.get('date', None) is not None else ""
+        self.user_id = kwargs.get('user_id', "")
+        self.user_email = kwargs.get('user_email', "")
+
+
 class GetUserSummary(GraphQLRequest):
+    """
+    Requests summary level information per-date of users in the app.
+    Includes enabled/disabled user counts, names of roles,
+    and number of users assigned to that role.
+
+    Args:
+        date (datetime): specific day to summarize.
+
+    """
     query = """
 query GetUserSummary($date: Date){
   userSummary(date: $date){
@@ -49,6 +64,14 @@ query GetUserSummary($date: Date){
 
 
 class GetUserSnapshots(PagedRequest):
+    """
+
+    Requests per-date detailed information about app users.
+    Args:
+        user_email (str): the email of a specific user.
+        user_id (int): the id of a specific user
+        date (datetime): specific day to query
+    """
     query = """
     query GetUserSnapshot($date: Date, $filters: UserReportFilter, $after: Int){
   userSnapshot(date: $date, filters: $filters, after: $after){
@@ -76,8 +99,15 @@ class GetUserSnapshots(PagedRequest):
     """
 
     def __init__(self, **kwargs):
-        filters = UserMetricsFilters(**kwargs)
-        super().__init__(self.query, variables=filters.to_json())
+        filters = _UserMetricsFilters(**kwargs)
+        variables = {
+            'date': filters.date,
+            'filters': {
+                'userId': filters.user_id,
+                'userEmail': filters.user_email
+            }
+        }
+        super().__init__(self.query, variables=variables)
 
     def process_response(self, response) -> List[UserSnapshot]:
         return _PagedUserSnapshots(**super().process_response(response)["userSnapshot"]).results

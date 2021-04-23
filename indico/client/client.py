@@ -67,7 +67,7 @@ class IndicoClient:
 
     def paginate(self, request: PagedRequest):
         """
-        Provide a generator that continues paging through responses
+        Provides a generator that continues paging through responses
         Available with List<> Requests that offer pagination
 
         Example:

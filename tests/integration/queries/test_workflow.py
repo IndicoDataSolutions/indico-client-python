@@ -210,24 +210,6 @@ def test_list_workflow_submission_retrieved(
     assert submission_id not in [s.id for s in submissions]
 
 
-def test_list_workflow_submission_paginate(
-    indico, airlines_dataset, airlines_model_group: ModelGroup
-):
-    client = IndicoClient()
-    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
-    wf = max(wfs, key=lambda w: w.id)
-
-    dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
-
-    submission_ids = client.call(
-        WorkflowSubmission(workflow_id=wf.id, files=[dataset_filepath]*5)
-    )
-    for sub in client.paginate(ListSubmissions(workflow_ids=[wf.id], limit=3)):
-        if not submission_ids:
-            break
-        assert sub.id == submission_ids.pop()  # list is desc by default
-
-
 def test_workflow_submission_missing_workflow(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
