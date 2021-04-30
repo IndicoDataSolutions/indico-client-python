@@ -52,8 +52,7 @@ query GetUserSummary($date: Date){
 }
     """
 
-    def __init__(self, **kwargs):
-        date = kwargs.get('date', None)
+    def __init__(self, date=None):
         if date is not None:
             super().__init__(self.query, variables={"date": date.strftime('%Y-%m-%d')})
         else:
