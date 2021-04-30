@@ -14,7 +14,7 @@ class UserDatasets(BaseType):
     role: str
 
 
-class UserSummaryUser(BaseType):
+class UserSummaryCounts(BaseType):
     """Summary of user counts"""
     enabled: int
     disabled: int
@@ -33,5 +33,5 @@ class UserSnapshot(BaseType):
 
 class UserSummary(BaseType):
     """Summary data on users and app roles"""
-    users: UserSummaryUser
+    users: UserSummaryCounts
     app_roles: List[AppRoles]
