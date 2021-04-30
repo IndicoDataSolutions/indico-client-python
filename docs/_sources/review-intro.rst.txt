@@ -64,7 +64,7 @@ will go to this state first, which can be programatically "reviewed" based on cu
 
 COMPLETE - the review process is complete and final predictions are ready
 
-FAILED - the document was rejected in admin review
+FAILED - the document was rejected in admin review or encountered a failure during processing
 
 The 'retrieved' attribute of the submission object lets you know whether or not the submission result 
 has already been processed (you manage this with the UpdateSubmission call, see below).
