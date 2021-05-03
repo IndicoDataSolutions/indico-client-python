@@ -1,9 +1,11 @@
-from typing import List
+import datetime
+from typing import List, Union, Dict
 
 from indico.client.request import (
     GraphQLRequest,
     PagedRequest,
 )
+from indico.filters import UserSnapshotFilter
 from indico.types import BaseType
 from indico.types.user_metrics import UserSummary, UserSnapshot
 
@@ -97,14 +99,11 @@ class GetUserSnapshots(PagedRequest):
 }
     """
 
-    def __init__(self, **kwargs):
-        filters = _UserMetricsFilters(**kwargs)
+    def __init__(self, *, date: datetime, filters: Union[Dict, UserSnapshotFilter] = None):
+
         variables = {
-            'date': filters.date,
-            'filters': {
-                'userId': filters.user_id,
-                'userEmail': filters.user_email
-            }
+            "date": date.strftime('%Y-%m-%d') if date is not None else None,
+            "filters": filters
         }
         super().__init__(self.query, variables=variables)
 

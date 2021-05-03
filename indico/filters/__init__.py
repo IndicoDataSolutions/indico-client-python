@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, Iterable, Mapping
 
 from indico.errors import IndicoInputError
@@ -47,6 +48,27 @@ class SubmissionFilter(Filter):
             "input_filename": input_filename,
             "status": status.upper() if status else status,
             "retrieved": retrieved
+        }
+
+        super().__init__(**kwargs)
+
+
+class UserSnapshotFilter(Filter):
+    """
+    Create a Filter when querying for UserSnapshots.
+
+    Args:
+        user_id (int): username to filter on
+        user_email (str): email to filter for
+    Returns:
+        dict containing query filter parameters
+    """
+    __options__ = ("user_id", "user_email")
+
+    def __init__(self, user_id: int = None, user_email: str = None):
+        kwargs = {
+            "userId": user_id,
+            "userEmail": user_email
         }
 
         super().__init__(**kwargs)
