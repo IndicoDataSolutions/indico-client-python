@@ -17,18 +17,6 @@ class _PagedUserSnapshots(BaseType):
     results: List[UserSnapshot]
 
 
-class _UserMetricsFilters(BaseType):
-    """Filters for fetching user metric data."""
-    date: str
-    user_id: int
-    user_email: str
-
-    def __init__(self, **kwargs):
-        self.date = kwargs.get('date', None).strftime('%Y-%m-%d') if kwargs.get('date', None) is not None else None
-        self.user_id = kwargs.get('user_id', None)
-        self.user_email = kwargs.get('user_email', None)
-
-
 class GetUserSummary(GraphQLRequest):
     """
     Requests summary level information per-date of users in the app.
@@ -100,7 +88,6 @@ class GetUserSnapshots(PagedRequest):
     """
 
     def __init__(self, *, date: datetime, filters: Union[Dict, UserSnapshotFilter] = None, limit: int = None):
-
         variables = {
             "date": date.strftime('%Y-%m-%d') if date is not None else None,
             "filters": filters,
