@@ -26,6 +26,17 @@ def test_fetch_snapshots(indico):
     assert first.roles is not None
 
 
+def test_fetch_snapshots_with_limit(indico):
+    client = IndicoClient()
+    snapshots = client.call(GetUserSnapshots(date=datetime.now(), limit=10))
+    assert snapshots is not None
+    assert snapshots[0] is not None
+    assert len(snapshots) == 10
+    first = snapshots.pop()
+    assert first is not None
+    assert first.roles is not None
+
+
 def test_fetch_filtered_snapshots(indico):
     client = IndicoClient()
     snapshots = []

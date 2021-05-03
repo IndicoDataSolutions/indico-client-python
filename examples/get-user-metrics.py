@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from indico import IndicoConfig, IndicoClient
+from indico.filters import UserSnapshotFilter, or_
 from indico.queries.usermetrics import GetUserSummary,GetUserSnapshots
 from indico.types.user_metrics import UserSummary
 
@@ -37,7 +38,8 @@ Filter by userid or email.
 
 """
 snapshots = []
-for snapshot in client.paginate(GetUserSnapshots(date=datetime.now(), user_id=1)):
+filter_opts = or_(UserSnapshotFilter(user_id=1))
+for snapshot in client.paginate(GetUserSnapshots(date=datetime.now(), filters=filter_opts)):
     snapshots.extend(snapshot)
 print("Fetched just " + str(len(snapshots)) + " user for analysis")
 

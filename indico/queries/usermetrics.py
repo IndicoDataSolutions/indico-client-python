@@ -69,13 +69,13 @@ class GetUserSnapshots(PagedRequest):
 
     Requests per-date detailed information about app users.
     Args:
-        user_email (str): the email of a specific user.
-        user_id (int): the id of a specific user
-        date (datetime): specific day to query
+        filters (UserSnapshotFilter): filter the query based on UserSnapshotFilter criteria.
+        date (datetime): specific day to query.
+        limit (int): limit how many come back per query or per page.
     """
     query = """
-    query GetUserSnapshot($date: Date, $filters: UserReportFilter, $after: Int){
-  userSnapshot(date: $date, filters: $filters, after: $after){
+    query GetUserSnapshot($date: Date, $filters: UserReportFilter, $after: Int, $limit: Int){
+  userSnapshot(date: $date, filters: $filters, after: $after, limit: $limit){
     results{
       id
       name
@@ -99,11 +99,12 @@ class GetUserSnapshots(PagedRequest):
 }
     """
 
-    def __init__(self, *, date: datetime, filters: Union[Dict, UserSnapshotFilter] = None):
+    def __init__(self, *, date: datetime, filters: Union[Dict, UserSnapshotFilter] = None, limit: int = None):
 
         variables = {
             "date": date.strftime('%Y-%m-%d') if date is not None else None,
-            "filters": filters
+            "filters": filters,
+            "limit": limit
         }
         super().__init__(self.query, variables=variables)
 
