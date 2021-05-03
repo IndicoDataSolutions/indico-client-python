@@ -5,16 +5,16 @@ from indico.types.base import BaseType, JSONType
 
 class Job(BaseType):
     """
-    An Asynchronous Job in the Indico Platform. 
+    An Asynchronous Job in the Indico Platform.
 
     Many operations like DocumentExtraction and ModelGroupPredict are handled in the
     Indico Platform via Jobs. When you make a DocumentExtraction call, you are queuing
     a job in the Platform and a Job object is returned by client.call(..)
-    
+
     Attributes:
         id (int): job id
         status (str): "SUCCESS", "FAILURE", "REJECTED", "REVOKED", "IGNORED", "RETRY"
-        ready (bool): 
+        ready (bool):
     """
 
     id: int

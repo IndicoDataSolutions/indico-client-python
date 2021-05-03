@@ -79,18 +79,20 @@ class JobStatus(RequestChain):
         yield _JobStatus(id=self.id)
         if self.wait:
             # Check status of job until done if wait == True
-            while not ((
-                self.previous.status in ["SUCCESS"] and self.previous.ready
-            ) or self.previous.status in [
-                "FAILURE",
-                "REJECTED",
-                "REVOKED",
-                "IGNORED",
-                "RETRY",
-            ]):
+            while not (
+                (self.previous.status in ["SUCCESS"] and self.previous.ready)
+                or self.previous.status
+                in [
+                    "FAILURE",
+                    "REJECTED",
+                    "REVOKED",
+                    "IGNORED",
+                    "RETRY",
+                ]
+            ):
 
                 if self.timeout is not None:
-                    elapsed = (time.time() - start)
+                    elapsed = time.time() - start
                     if self.timeout < elapsed:
                         raise IndicoTimeoutError(elapsed)
                 time.sleep(self.request_interval)

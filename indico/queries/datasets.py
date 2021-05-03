@@ -208,7 +208,9 @@ class CreateDataset(RequestChain):
                 str(Path(self.files).parent / imgfn) for imgfn in img_filenames
             ]
             yield UploadBatched(
-                img_filepaths, batch_size=self.batch_size, request_cls=UploadImages,
+                img_filepaths,
+                batch_size=self.batch_size,
+                request_cls=UploadImages,
             )
             df["urls"] = self.previous
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -440,7 +442,10 @@ class ProcessFiles(RequestChain):
     """
 
     def __init__(
-        self, dataset_id: int, datafile_ids: List[int], wait: bool = True,
+        self,
+        dataset_id: int,
+        datafile_ids: List[int],
+        wait: bool = True,
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
