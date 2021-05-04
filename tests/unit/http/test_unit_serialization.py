@@ -55,7 +55,7 @@ def test_deserialize_msgpack(mock_loader):
 def test_deserialize_octet(mock_loader):
     response = mock_loader("application/octet-stream", "")
     content = deserialize(response)
-    
+
     assert isinstance(content, bytes)
 
 
