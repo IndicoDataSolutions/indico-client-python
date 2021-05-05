@@ -1,8 +1,9 @@
 import pytest
 from indico.client import IndicoClient
-from indico.filters import or_, UserSnapshotFilter
+from indico.filters import or_, UserMetricsFilter
+from indico.queries import JobStatus, RetrieveStorageObject
 from indico.types.user_metrics import UserSummary
-from indico.queries.usermetrics import GetUserSummary, GetUserSnapshots
+from indico.queries.usermetrics import GetUserSummary, GetUserSnapshots, GetUserChangelog, GenerateChangelogReport
 from datetime import datetime
 
 
@@ -40,7 +41,28 @@ def test_fetch_snapshots_with_limit(indico):
 def test_fetch_filtered_snapshots(indico):
     client = IndicoClient()
     snapshots = []
-    filter_opts = or_(UserSnapshotFilter(user_id=1), UserSnapshotFilter(user_id=2))
+    filter_opts = or_(UserMetricsFilter(user_id=1), UserMetricsFilter(user_id=2))
     for snapshot in client.paginate(GetUserSnapshots(date=datetime.now(), filters=filter_opts)):
         snapshots.extend(snapshot)
     assert len(snapshots) == 2
+
+
+def test_changelog(indico):
+    client = IndicoClient()
+    changelogs = []
+    for log in client.paginate((GetUserChangelog(start_date=datetime.now(), end_date=datetime.now(), limit=100))):
+        changelogs.extend(log)
+    assert len(changelogs) > 0
+
+
+def test_csv_changelog(indico):
+    client = IndicoClient()
+    changelogs = client.call((GenerateChangelogReport(start_date=datetime.now(), end_date=datetime.now())))
+    assert changelogs is not None
+    job = changelogs.job_id
+    assert job is not None
+    job = client.call(JobStatus(id=job, wait=True))
+    assert job.status == "SUCCESS"
+    assert job.ready is True
+    result = client.call(RetrieveStorageObject(job.result))
+    assert result is not None

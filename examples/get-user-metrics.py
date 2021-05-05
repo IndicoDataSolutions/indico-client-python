@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from indico import IndicoConfig, IndicoClient
-from indico.filters import UserSnapshotFilter, or_
-from indico.queries.usermetrics import GetUserSummary,GetUserSnapshots
+from indico.filters import or_, UserMetricsFilter
+from indico.queries import JobStatus, RetrieveStorageObject
+from indico.queries.usermetrics import GetUserSummary, GetUserSnapshots, GenerateChangelogReport, GetUserChangelog
 from indico.types.user_metrics import UserSummary
 
 """
@@ -17,7 +18,6 @@ client = IndicoClient(config=my_config)
 user_summary: UserSummary = client.call(GetUserSummary())
 print("Wow! there's " + str(user_summary.users.enabled) + " users enabled on the app!")
 print("Did you know there are " + str(len(user_summary.app_roles)) + " roles available here?")
-
 
 """
 
@@ -38,8 +38,32 @@ Filter by userid or email.
 
 """
 snapshots = []
-filter_opts = or_(UserSnapshotFilter(user_id=1))
+filter_opts = or_(UserMetricsFilter(user_id=1))
 for snapshot in client.paginate(GetUserSnapshots(date=datetime.now(), filters=filter_opts)):
     snapshots.extend(snapshot)
 print("Fetched just " + str(len(snapshots)) + " user for analysis")
 
+"""
+
+Example 4: Fetching a UserChangeLogs by API
+Pull in a limited set of user change data using the graph QL API
+"""
+# This is useful if you want only a limited selection of the changelogs
+changelogs = []
+for log in client.paginate((GetUserChangelog(start_date=datetime.now(), end_date=datetime.now(), limit=100))):
+    changelogs.extend(log)
+print("Fetched " + str(len(changelogs)) + " changes for the day")
+
+"""
+Example 5: Fetching longer User Change Logs as CSV
+Use the GenerateChangelogReport to get a longer changelog as CSV (or json)
+"""
+# Set the start date and end date
+start_date = datetime.today() - timedelta(days=7)
+changelogs = client.call((GenerateChangelogReport(start_date=start_date, end_date=datetime.now())))
+# This generates a job which can be waited for
+job_id = changelogs.job_id
+job = client.call(JobStatus(id=job_id, wait=True))
+# And the job will contain a storage object file with the full report.
+result = client.call(RetrieveStorageObject(job.result))
+print(result)

@@ -53,7 +53,7 @@ class SubmissionFilter(Filter):
         super().__init__(**kwargs)
 
 
-class UserSnapshotFilter(Filter):
+class UserMetricsFilter(Filter):
     """
     Create a Filter when querying for UserSnapshots.
 
