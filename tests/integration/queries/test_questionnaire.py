@@ -120,7 +120,11 @@ def test_add_labels(indico, unlabeled_questionnaire):
     labelset_id = dataset.labelsets[0].id
 
     client.call(
-        AddLabels(labelset_id=labelset_id, dataset_id=dataset_id, labels=labels,)
+        AddLabels(
+            labelset_id=labelset_id,
+            dataset_id=dataset_id,
+            labels=labels,
+        )
     )
     questionnaire = client.call(
         GetQuestionnaire(unlabeled_questionnaire["questionnaire"].id)

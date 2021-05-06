@@ -45,7 +45,10 @@ class AddLabels(GraphQLRequest):
         """
 
     def __init__(
-        self, dataset_id: int, labelset_id: int, labels: List[dict],
+        self,
+        dataset_id: int,
+        labelset_id: int,
+        labels: List[dict],
     ):
 
         super().__init__(
@@ -144,16 +147,17 @@ class GetQuestionnaire(GraphQLRequest):
 
     def __init__(self, questionnaire_id: int):
         super().__init__(
-            query=self.query, variables={"questionnaire_id": questionnaire_id},
+            query=self.query,
+            variables={"questionnaire_id": questionnaire_id},
         )
 
     def process_response(self, response):
-        questionnaire_list = super().process_response(response)["questionnaires"]["questionnaires"]
+        questionnaire_list = super().process_response(response)["questionnaires"][
+            "questionnaires"
+        ]
         if not questionnaire_list:
             raise IndicoError("Cannot find questionnaire")
-        return Questionnaire(
-            **questionnaire_list[0]
-        )
+        return Questionnaire(**questionnaire_list[0])
 
 
 class _CreateQuestionaire(GraphQLRequest):
@@ -207,7 +211,12 @@ class _CreateQuestionaire(GraphQLRequest):
         data_type: str,
     ):
         questions = [
-            {"type": task_type, "targets": targets, "keywords": [], "text": name,}
+            {
+                "type": task_type,
+                "targets": targets,
+                "keywords": [],
+                "text": name,
+            }
         ]
         super().__init__(
             query=self.query,
@@ -241,9 +250,9 @@ class CreateQuestionaire(RequestChain):
         target_lookup (dict): An optional dict mapping sample text to labels.
         task_type (str): The type of the task. Defaults to ANNOTATION.
         data_type (str): The type of the data. Defaults to TEXT.
-        
+
     Returns:
-        Questionnaire object   
+        Questionnaire object
     """
 
     previous = None
@@ -305,6 +314,8 @@ class CreateQuestionaire(RequestChain):
 
             if labels:
                 yield AddLabels(
-                    dataset_id=self.dataset_id, labelset_id=labelset_id, labels=labels,
+                    dataset_id=self.dataset_id,
+                    labelset_id=labelset_id,
+                    labels=labels,
                 )
         yield GetQuestionnaire(questionaire_id)

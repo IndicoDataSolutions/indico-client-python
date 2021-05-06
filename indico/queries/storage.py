@@ -9,15 +9,15 @@ URL_PREFIX = "indico-file:///storage"
 
 class RetrieveStorageObject(HTTPRequest):
     """
-    Retrieve an object stored on the Indico Platform 
+    Retrieve an object stored on the Indico Platform
 
     Results of some operations, notably DocumentExtraction can be quite large
     and are stored on disk in the Indico Platform. You need to retrieve them
     using RetrieveStorageObject.
-    
+
     Args:
         storage_object (str or dict): either a string or dict with a url of the storage object to be retrieved. If a dict then "url" should be used as the key for the storage object url.
-    
+
     Returns:
         contents (dict): Contents of the storage object, most often JSON
     """
@@ -41,13 +41,13 @@ class RetrieveStorageObject(HTTPRequest):
 
 class UploadDocument(HTTPRequest):
     """
-    Upload an object stored on the Indico Platform 
+    Upload an object stored on the Indico Platform
 
     Used internally for uploading documents to indico platform for later processing
-    
+
     Args:
         filepaths (str): list of filepaths to upload
-    
+
     Returns:
         files: storage objects to be use for further processing requests E.G. Document extraction (implicitly called)
     """
@@ -80,7 +80,7 @@ class UploadBatched(RequestChain):
         filepaths (str): list of filepaths to upload
         batch_size (int): number of files to load per batch
         request_cls (HTTPRequest): Type of upload request: UploadDocument or UploadImage
-    
+
     Returns:
         files: storage objects for further processing, e.g. Document extraction or dataset creation
     """
@@ -106,10 +106,10 @@ class UploadBatched(RequestChain):
 class CreateStorageURLs(UploadDocument):
     """
     Upload an object stored on the Indico Platform and return only the storage URL to the object
-    
+
     Args:
         files (str): list of filepaths to upload
-    
+
     Returns:
         urls: list of storage urls to be use for further processing requests (e.g. FormExtraction)
     """
@@ -117,7 +117,9 @@ class CreateStorageURLs(UploadDocument):
     def process_response(self, uploaded_files: List[dict]) -> List[str]:
         errors = [f["error"] for f in uploaded_files if f.get("error")]
         if errors:
-            raise IndicoInputError("\n".join(error for error in errors),)
+            raise IndicoInputError(
+                "\n".join(error for error in errors),
+            )
         urls = [URL_PREFIX + f["path"] for f in uploaded_files]
         return urls
 

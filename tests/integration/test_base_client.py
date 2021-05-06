@@ -3,9 +3,12 @@ from indico.client import IndicoClient, IndicoConfig
 from indico.client.request import HTTPRequest, HTTPMethod, GraphQLRequest
 from indico.errors import IndicoAuthenticationFailed
 
+
 def test_http_request(indico):
     client = IndicoClient()
-    response = client.call(HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details"))
+    response = client.call(
+        HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details")
+    )
     assert "email" in response
 
 
@@ -20,8 +23,11 @@ def test_disable_cookie_domain(indico):
     cookies = client._http.request_session.cookies
     auth_token = next(c for c in cookies if c.name == "auth_token")
     assert auth_token.domain == ""
-    response = client.call(HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details"))
+    response = client.call(
+        HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details")
+    )
     assert "email" in response
+
 
 def test_cookie_reset(indico):
     client = IndicoClient(IndicoConfig(_disable_cookie_domain=True))
@@ -29,13 +35,17 @@ def test_cookie_reset(indico):
     cookies = client._http.request_session.cookies
     auth_token = next(c for c in cookies if c.name == "auth_token")
     assert auth_token.domain == ""
-    response = client.call(HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details"))
+    response = client.call(
+        HTTPRequest(method=HTTPMethod.GET, path="/auth/users/details")
+    )
     assert "email" in response
 
 
 def test_graphql_request(indico):
     client = IndicoClient()
-    response = client.call(GraphQLRequest(query="""
+    response = client.call(
+        GraphQLRequest(
+            query="""
     query {
 	    modelGroups{
             modelGroups{
@@ -43,13 +53,17 @@ def test_graphql_request(indico):
             }
         }
     }
-    """))
+    """
+        )
+    )
     assert "modelGroups" in response
 
-def test_graphql_with_ids(): 
+
+def test_graphql_with_ids():
     client = IndicoClient()
-    response = client.call(GraphQLRequest(
-        query="""
+    response = client.call(
+        GraphQLRequest(
+            query="""
             query modelGroupQueries($ids: [Int]) {
 	            modelGroups(modelGroupIds: $ids){
                     modelGroups{
@@ -57,8 +71,9 @@ def test_graphql_with_ids():
                     }
                 }
             }
-        """, 
-        variables={"ids": [1]}
-    ))
-    
+        """,
+            variables={"ids": [1]},
+        )
+    )
+
     assert "modelGroups" in response
