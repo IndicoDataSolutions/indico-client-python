@@ -226,6 +226,54 @@ workflow_ids (List[int]): List of workflow ids to filter by</p>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt id="indico.queries.workflow.UpdateWorkflowSettings">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.workflow.</span></code><code class="sig-name descname"><span class="pre">UpdateWorkflowSettings</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_review</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_auto_review</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.UpdateWorkflowSettings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mutation to toggle review and auto-review on a workflow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>workflow</strong> (<em>int|Workflow</em>) – Workflow or workflow id to update</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Options:</dt><dd><p>enable_review (bool): Enable review
+enable_auto_review (bool): Enable auto_review</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Updated Workflow object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Workflow</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.workflow.AddDataToWorkflow">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.workflow.</span></code><code class="sig-name descname"><span class="pre">AddDataToWorkflow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow.AddDataToWorkflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mutation to update data in a workflow, pressumably
+after new data is added to the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>workflow_id</strong> (<em>int</em>) – Workflow id to update</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Options:</dt><dd><p>wait (bool, default=False): Block while polling for status of update</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Updated Workflow object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Workflow</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

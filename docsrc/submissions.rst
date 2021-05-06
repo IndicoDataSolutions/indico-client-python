@@ -6,3 +6,5 @@ Submissions
 .. autoclass:: indico.queries.submission.GetSubmission
 .. autoclass:: indico.queries.submission.UpdateSubmission
 .. autoclass:: indico.queries.submission.SubmissionResult
+.. autoclass:: indico.queries.submission.WaitForSubmissions
+.. autoclass:: indico.queries.submission.SubmitReview
