@@ -202,7 +202,7 @@
 <p>Auto review is currently only available via api call. To use it, the following steps must be performed:</p>
 <ul class="simple">
 <li><p>Submit a document through your workflow</p></li>
-<li><p>Retreive the submission</p></li>
+<li><p>Retrieve the submission</p></li>
 <li><p>Add a flag on each prediction result you wish to Auto Review in the submission to designate if you would like to accept or reject it</p></li>
 <li><p>Submit the changes to Review</p></li>
 </ul>
@@ -219,7 +219,7 @@
         <span class="n">workflow_id</span><span class="o">=</span><span class="n">workflow_id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;my_file.pdf&quot;</span><span class="p">]</span>
     <span class="p">)</span>
 <span class="p">)</span>
-<span class="c1"># Retreive the submission results</span>
+<span class="c1"># Retrieve the submission results</span>
 <span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">WaitForSubmissions</span><span class="p">(</span><span class="n">submission_ids</span><span class="p">))</span>
 <span class="n">submission</span> <span class="o">=</span> <span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">raw_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">result_file</span><span class="p">))</span>
@@ -261,7 +261,7 @@
 </div>
 <div class="section" id="accepting-no-value">
 <h2>Accepting No Value<a class="headerlink" href="#accepting-no-value" title="Permalink to this headline">¶</a></h2>
-<p>Even when all predictions are accepted, a reviewer will still need to manually accept any labels that are empty. However, you can automatically accept empty values for specific lables using the “_no_value” key. Within the model results, set the dictionary key “_no_value” equal to a dictionary containing the name of your model keying to a list of labels. This list of labels should contain all the labels you would like to automatically accept empty values for. Accepted empty labels will appear in review as accepted labels. Please note that you can only auto-accept empty labels that do not contain any predictions. Labels that contain predictions should not be inlcuded in the list of no value labels. In the example below empty labels are only accepted if the specified label is not present in the predictions:</p>
+<p>Even when all predictions are accepted, a reviewer will still need to manually accept any labels that are empty. However, you can automatically accept empty values for specific labels using the “_no_value” key. Within the model results, set the dictionary key “_no_value” equal to a dictionary containing the name of your model keying to a list of labels. This list of labels should contain all the labels you would like to automatically accept empty values for. Accepted empty labels will appear in review as accepted labels. Please note that you can only auto-accept empty labels that do not contain any predictions. Labels that contain predictions should not be inlcuded in the list of no value labels. In the example below empty labels are only accepted if the specified label is not present in the predictions:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">WorkflowSubmission</span><span class="p">,</span>
     <span class="n">WaitForSubmissions</span><span class="p">,</span>
@@ -274,7 +274,7 @@
         <span class="n">workflow_id</span><span class="o">=</span><span class="n">workflow_id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;my_file.pdf&quot;</span><span class="p">]</span>
     <span class="p">)</span>
 <span class="p">)</span>
-<span class="c1"># Retreive the submission results</span>
+<span class="c1"># Retrieve the submission results</span>
 <span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">WaitForSubmissions</span><span class="p">(</span><span class="n">submission_ids</span><span class="p">))</span>
 <span class="n">submission</span> <span class="o">=</span> <span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">raw_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">result_file</span><span class="p">))</span>

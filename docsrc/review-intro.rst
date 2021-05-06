@@ -18,18 +18,17 @@ Review via the API
 ==================
 
 Submitting documents to Review requires that you have your workflow ID and have clicked "enable review" for 
-that workflow. You can find "enable review" by clicking on workflows from your dataset (see image below).
+that workflow. You can find "enable review" by clicking on the workflows tab and finding your workflow/dataset.
 
 .. image:: enable_review.png
 
-The snippet below demonstrates how to send a document to Review::
+The snippet below demonstrates how to send a batch of documents to Review::
     
     from indico.queries import WorkflowSubmission
 
     submissions = client.call(
         WorkflowSubmission(
-            files=["./path/to/sample.pdf", "./path/to/sample1.pdf"], workflow_id=52, submission=True
-        )
+            files=["./path/to/sample.pdf", "./path/to/sample1.pdf"], workflow_id=52
     ) 
 
 
@@ -62,9 +61,9 @@ PENDING_ADMIN_REVIEW - the initial reviewer rejected the document/image and awai
 PENDING_AUTO_REVIEW - if review and auto review are enabled for a workflow, then submissions 
 will go to this state first, which can be programatically "reviewed" based on custom script before going to PENDING_REVIEW state for a human reviewer.
 
-COMPLETE - the review process is complete and final predictions are ready
+COMPLETE - the review process is complete
 
-FAILED - the document was rejected in admin review
+FAILED - there was a problem processing the document/image
 
 The 'retrieved' attribute of the submission object lets you know whether or not the submission result 
 has already been processed (you manage this with the UpdateSubmission call, see below).
@@ -89,10 +88,11 @@ and marks the result as having been retrieved::
             )
         )
     # Generate the result for the first completed submission
-    result_url = client.call(SubmissionResult(submissions[0].id, wait=True))
-    result = client.call(RetrieveStorageObject(result_url.result))
-    # Finally, mark the submission as retrieved
-    client.call(UpdateSubmission(submissions[0].id, retrieved=True))
+    submission = client.call(SubmissionResult(submissions[0].id, wait=True))
+    if submission.status == "SUCCESS":
+        result = client.call(RetrieveStorageObject(submission.result))
+        # Finally, mark the submission as retrieved
+        client.call(UpdateSubmission(submissions[0].id, retrieved=True))
 
 This is what a sample of the "result" object in the snippet above might look like::
 

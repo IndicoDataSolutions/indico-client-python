@@ -13,7 +13,7 @@ Using Auto Review
 Auto review is currently only available via api call. To use it, the following steps must be performed:
 
 - Submit a document through your workflow
-- Retreive the submission
+- Retrieve the submission
 - Add a flag on each prediction result you wish to Auto Review in the submission to designate if you would like to accept or reject it
 - Submit the changes to Review
 
@@ -31,7 +31,7 @@ Example usage of Auto Review::
             workflow_id=workflow_id, files=["my_file.pdf"]
         )
     ) 
-    # Retreive the submission results
+    # Retrieve the submission results
     submissions = client.call(WaitForSubmissions(submission_ids))
     submission = submissions[0]
     raw_result = client.call(RetrieveStorageObject(submission.result_file))
@@ -79,7 +79,7 @@ When submitting changes for a given document using SubmitReview, you can reject 
 
 Accepting No Value
 ==================
-Even when all predictions are accepted, a reviewer will still need to manually accept any labels that are empty. However, you can automatically accept empty values for specific lables using the "_no_value" key. Within the model results, set the dictionary key "_no_value" equal to a dictionary containing the name of your model keying to a list of labels. This list of labels should contain all the labels you would like to automatically accept empty values for. Accepted empty labels will appear in review as accepted labels. Please note that you can only auto-accept empty labels that do not contain any predictions. Labels that contain predictions should not be inlcuded in the list of no value labels. In the example below empty labels are only accepted if the specified label is not present in the predictions::
+Even when all predictions are accepted, a reviewer will still need to manually accept any labels that are empty. However, you can automatically accept empty values for specific labels using the "_no_value" key. Within the model results, set the dictionary key "_no_value" equal to a dictionary containing the name of your model keying to a list of labels. This list of labels should contain all the labels you would like to automatically accept empty values for. Accepted empty labels will appear in review as accepted labels. Please note that you can only auto-accept empty labels that do not contain any predictions. Labels that contain predictions should not be inlcuded in the list of no value labels. In the example below empty labels are only accepted if the specified label is not present in the predictions::
 
     from indico.queries import (
         WorkflowSubmission,
@@ -93,7 +93,7 @@ Even when all predictions are accepted, a reviewer will still need to manually a
             workflow_id=workflow_id, files=["my_file.pdf"]
         )
     ) 
-    # Retreive the submission results
+    # Retrieve the submission results
     submissions = client.call(WaitForSubmissions(submission_ids))
     submission = submissions[0]
     raw_result = client.call(RetrieveStorageObject(submission.result_file))

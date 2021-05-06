@@ -201,15 +201,14 @@ approve the model’s predictions while viewing the source document.</p>
 <div class="section" id="review-via-the-api">
 <h2>Review via the API<a class="headerlink" href="#review-via-the-api" title="Permalink to this headline">¶</a></h2>
 <p>Submitting documents to Review requires that you have your workflow ID and have clicked “enable review” for
-that workflow. You can find “enable review” by clicking on workflows from your dataset (see image below).</p>
+that workflow. You can find “enable review” by clicking on the workflows tab and finding your workflow/dataset.</p>
 <img alt="_images/enable_review.png" src="_images/enable_review.png" />
-<p>The snippet below demonstrates how to send a document to Review:</p>
+<p>The snippet below demonstrates how to send a batch of documents to Review:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">WorkflowSubmission</span>
 
 <span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
     <span class="n">WorkflowSubmission</span><span class="p">(</span>
-        <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;./path/to/sample1.pdf&quot;</span><span class="p">],</span> <span class="n">workflow_id</span><span class="o">=</span><span class="mi">52</span><span class="p">,</span> <span class="n">submission</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+        <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;./path/to/sample1.pdf&quot;</span><span class="p">],</span> <span class="n">workflow_id</span><span class="o">=</span><span class="mi">52</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -235,8 +234,8 @@ in the app.</p>
 <p>PENDING_ADMIN_REVIEW - the initial reviewer rejected the document/image and awaiting admin reivew</p>
 <p>PENDING_AUTO_REVIEW - if review and auto review are enabled for a workflow, then submissions
 will go to this state first, which can be programatically “reviewed” based on custom script before going to PENDING_REVIEW state for a human reviewer.</p>
-<p>COMPLETE - the review process is complete and final predictions are ready</p>
-<p>FAILED - the document was rejected in admin review</p>
+<p>COMPLETE - the review process is complete</p>
+<p>FAILED - there was a problem processing the document/image</p>
 <p>The ‘retrieved’ attribute of the submission object lets you know whether or not the submission result
 has already been processed (you manage this with the UpdateSubmission call, see below).</p>
 <p>After a submission has been processed and is in COMPLETE, PENDING_REVIEW or PENDING_ADMIN_REVIEW status,
@@ -256,10 +255,11 @@ and marks the result as having been retrieved:</p>
         <span class="p">)</span>
     <span class="p">)</span>
 <span class="c1"># Generate the result for the first completed submission</span>
-<span class="n">result_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmissionResult</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">result_url</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-<span class="c1"># Finally, mark the submission as retrieved</span>
-<span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">UpdateSubmission</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">submission</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmissionResult</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">submission</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
+    <span class="c1"># Finally, mark the submission as retrieved</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">UpdateSubmission</span><span class="p">(</span><span class="n">submissions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">retrieved</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>This is what a sample of the “result” object in the snippet above might look like:</p>

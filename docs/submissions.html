@@ -277,6 +277,42 @@ timing out. Ignored if not <cite>wait</cite>. Defaults to 30</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt id="indico.queries.submission.WaitForSubmissions">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.submission.</span></code><code class="sig-name descname"><span class="pre">WaitForSubmissions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.WaitForSubmissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given submission_ids, wait for all to finish processing</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.submission.SubmitReview">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.submission.</span></code><code class="sig-name descname"><span class="pre">SubmitReview</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rejected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_complete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.SubmitReview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit an “Auto” Review for a submission. Requires that the submission be in PENDING_AUTO_REVIEW status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>submission_id</strong> (<em>int</em>) – Id of submission to submit reviewEnabled for</p>
+</dd>
+</dl>
+<dl>
+<dt>Options:</dt><dd><p>changes (dict or JSONString): changes to make to raw predictions</p>
+<dl class="simple">
+<dt>rejected (boolean): reject the predictions and place the submission</dt><dd><p>in the review queue. Must be True if $changes not provided</p>
+</dd>
+<dt>force_complete (boolean): have this submission bypass the Review queue</dt><dd><p>(or exceptions queue if &lt;rejected&gt; is True) and mark as Complete.
+NOT RECOMMENDED</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A Job that can be watched for status of review</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="jobs-type.html#indico.types.jobs.Job" title="indico.types.jobs.Job">Job</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
