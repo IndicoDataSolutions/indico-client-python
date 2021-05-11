@@ -1,6 +1,7 @@
 from indico.queries.workflow import GetWorkflow
 import pytest
 from pathlib import Path
+import time
 
 from indico.client import IndicoClient
 from indico.errors import IndicoError, IndicoInputError
@@ -91,9 +92,12 @@ def test_workflow_submission(
     assert isinstance(result, dict)
     assert result["submission_id"] == submission_id
     assert result["file_version"] == 1
-    client.call(UpdateSubmission(submission_id, retrieved=True))
     sub = client.call(GetSubmission(submission_id))
     assert isinstance(sub, Submission)
+    assert sub.retrieved is False
+    assert sub.deleted is False
+    client.call(UpdateSubmission(submission_id, retrieved=True))
+    sub = client.call(GetSubmission(submission_id))
     assert sub.retrieved is True
 
 

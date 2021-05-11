@@ -52,6 +52,7 @@ class ListSubmissions(GraphQLRequest):
                     inputFile
                     inputFilename
                     resultFile
+                    deleted
                     retrieved
                     errors
                 }
@@ -110,6 +111,7 @@ class GetSubmission(GraphQLRequest):
                 inputFilename
                 resultFile
                 retrieved
+                deleted
                 errors
             }
         }
@@ -149,6 +151,7 @@ class WaitForSubmissions(RequestChain):
                     inputFilename
                     resultFile
                     retrieved
+                    deleted
                     errors
                 }
             }
@@ -207,6 +210,7 @@ class UpdateSubmission(GraphQLRequest):
                 inputFilename
                 resultFile
                 retrieved
+                deleted
                 errors
             }
         }
