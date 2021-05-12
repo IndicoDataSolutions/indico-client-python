@@ -121,12 +121,12 @@ class DownloadExport(RequestChain):
     Download an export from an Indico storage url
 
     Args:
-        export (Export): Export object 
+        export (Export): Export object
         export_id (int): Export id
 
     Returns:
         Pandas csv of the export
-    
+
     Raises:
         IndicoRequestError if the Export job is not complete or failed
     """
@@ -158,7 +158,7 @@ class CreateExport(RequestChain):
     """
     Create an export job for a dataset.
 
-    Args: 
+    Args:
         dataset_id (int): Dataset to create the export for
         subset_ids: (List(int)): Subset ids to export rows sets
         column_ids (List(int)): Data column ids to export

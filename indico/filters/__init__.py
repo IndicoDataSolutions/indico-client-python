@@ -18,15 +18,14 @@ class Filter(dict):
     GraphQL queries. Search keys are constrained by the implementing subclasses
     If multiple arguments are supplied, they are treated as arg1 AND arg2 AND ...
     """
+
     __options__ = None
 
     def __init__(self, **kwargs):
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         if not kwargs:
             raise IndicoInputError(f"One of {self.__options__} must be specified")
-        self.update(
-            and_(kwargs) if len(kwargs) > 1 else kwargs
-        )
+        self.update(and_(kwargs) if len(kwargs) > 1 else kwargs)
 
 
 class SubmissionFilter(Filter):
@@ -41,13 +40,16 @@ class SubmissionFilter(Filter):
     Returns:
         dict containing query filter parameters
     """
+
     __options__ = ("input_filename", "status", "retrieved")
 
-    def __init__(self, input_filename: str = None, status: str = None, retrieved: bool = None):
+    def __init__(
+        self, input_filename: str = None, status: str = None, retrieved: bool = None
+    ):
         kwargs = {
             "input_filename": input_filename,
             "status": status.upper() if status else status,
-            "retrieved": retrieved
+            "retrieved": retrieved,
         }
 
         super().__init__(**kwargs)

@@ -119,10 +119,12 @@ class GetSubmission(GraphQLRequest):
     """
 
     def __init__(
-        self, submission_id: int,
+        self,
+        submission_id: int,
     ):
         super().__init__(
-            self.query, variables={"submissionId": submission_id},
+            self.query,
+            variables={"submissionId": submission_id},
         )
 
     def process_response(self, response) -> Submission:
@@ -157,7 +159,9 @@ class WaitForSubmissions(RequestChain):
     """
 
     def __init__(
-        self, submission_ids: List[int], timeout: Union[int, float] = 60,
+        self,
+        submission_ids: List[int],
+        timeout: Union[int, float] = 60,
     ):
         if not submission_ids:
             raise IndicoInputError("Please provide submission ids")
@@ -244,7 +248,8 @@ class GenerateSubmissionResult(GraphQLRequest):
     def __init__(self, submission: Union[int, Submission]):
         submission_id = submission if isinstance(submission, int) else submission.id
         super().__init__(
-            self.query, variables={"submissionId": submission_id},
+            self.query,
+            variables={"submissionId": submission_id},
         )
 
     def process_response(self, response) -> Job:

@@ -85,9 +85,7 @@ Submit "auto-review" for a submission
 Requires auto-review is enabled for workflow
 """
 submission_ids = client.call(
-    WorkflowSubmission(
-        workflow_id=workflow_id, files=["my_file.pdf"]
-    )
+    WorkflowSubmission(workflow_id=workflow_id, files=["my_file.pdf"])
 )
 submissions = client.call(WaitForSubmissions(submission_ids))
 submission = submissions[0]

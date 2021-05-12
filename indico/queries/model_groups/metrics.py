@@ -73,7 +73,7 @@ class ObjectDetectionMetrics(GraphQLRequest):
 
     Args:
         id (int): model group id to query
-    
+
     Returns:
         Dict of object detection metrics
     """
@@ -115,7 +115,7 @@ class GetModelGroupMetrics(RequestChain):
     """
     Args:
         model_group_id (int): ModelGroup id
-    
+
     Returns
         Metrics object depending on task type the model solves
     """

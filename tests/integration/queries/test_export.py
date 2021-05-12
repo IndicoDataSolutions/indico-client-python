@@ -8,6 +8,7 @@ from indico.queries.export import CreateExport, DownloadExport
 from ..data.datasets import airlines_dataset
 import re
 
+
 def test_create_and_download_export(airlines_dataset: Dataset):
     client = IndicoClient()
     export = client.call(CreateExport(dataset_id=airlines_dataset.id, wait=True))

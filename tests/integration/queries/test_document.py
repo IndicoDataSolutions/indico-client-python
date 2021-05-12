@@ -116,6 +116,7 @@ def test_document_extraction_batched(indico):
         assert job.ready is True
         assert isinstance(job.result["url"], str)
 
+
 def test_document_extraction_thumbnails(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
@@ -140,15 +141,12 @@ def test_document_extraction_thumbnails(indico):
 
     assert image
 
+
 def test_upload_duplicate_documents(indico):
     client = IndicoClient()
     file_names = ["mock.pdf", "mock.pdf", "mock_2.pdf"]
     parent_path = str(Path(__file__).parent.parent / "data")
-    filepaths = [
-        os.path.join(parent_path, file_name) for file_name in file_names
-    ]
-    uploaded_files = client.call(
-        UploadDocument(files=filepaths)
-    )
+    filepaths = [os.path.join(parent_path, file_name) for file_name in file_names]
+    uploaded_files = client.call(UploadDocument(files=filepaths))
     assert len(uploaded_files) == 3
     assert [f["filename"] for f in uploaded_files] == file_names

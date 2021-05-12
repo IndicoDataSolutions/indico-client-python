@@ -12,6 +12,7 @@ def test_filter():
     f = Filter(key="value", key2="value2")
     assert dict(f) == {"AND": [{"key": "value", "key2": "value2"}]}
 
+
 @pytest.mark.parametrize("fn,key", [(and_, "AND"), (or_, "OR")])
 def test_builder(fn, key):
     f = Filter(key="value")
@@ -19,8 +20,7 @@ def test_builder(fn, key):
     assert fn(f) == {key: [f]}
     assert fn(f, f2) == {key: [f, f2]}
 
+
 def test_submission_filter():
     f = SubmissionFilter(status="complete")
     assert dict(f) == {"status": "COMPLETE"}
-
-
