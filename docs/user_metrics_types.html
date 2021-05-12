@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Generating Model Predictions &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>User Metrics Types &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -42,9 +42,7 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Workflows" href="workflow-intro.html" />
-    <link rel="prev" title="DocumentExtraction Settings" href="docextract_settings.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -92,17 +90,12 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Generating Model Predictions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#find-your-selected-model-id">Find Your Selected Model ID</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#call-modelgrouppredict">Call ModelGroupPredict</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#important-performance-note">Important Performance Note</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto-review.html">Auto Review</a></li>
@@ -123,6 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -177,13 +171,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Generating Model Predictions</li>
+      <li>User Metrics Types</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/model_predictions.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/user_metrics_types.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -196,46 +190,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="generating-model-predictions">
-<h1>Generating Model Predictions<a class="headerlink" href="#generating-model-predictions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="find-your-selected-model-id">
-<h2>Find Your Selected Model ID<a class="headerlink" href="#find-your-selected-model-id" title="Permalink to this headline">¶</a></h2>
-<p>The Indico Platform keeps multiple copies of your model and holds them all in a <strong>Model Group</strong>. So,
-if you train a classifier to categorize Airline Comments as we show in one of the examples, the
-classifier will be treated as a Model Group. Each new version that you train gets a new “Selected
-Model ID”. To find the latest Selected Model ID of a model you trained in the application, just
-visit the Review page of that model and you’ll see the ID in the upper left corner (below the Model Group ID) - see below.</p>
-<img alt="_images/model_id_review_screen.png" src="_images/model_id_review_screen.png" />
-</div>
-<div class="section" id="call-modelgrouppredict">
-<h2>Call ModelGroupPredict<a class="headerlink" href="#call-modelgrouppredict" title="Permalink to this headline">¶</a></h2>
-<p>With a Selected Model ID (30403 in this case), all you need to do is call ModelGroupPredict with
-a list of samples to predict.  Here’s an example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">JobStatus</span><span class="p">,</span> <span class="n">ModelGroupPredict</span>
-<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
+  <div class="section" id="user-metrics-types">
+<h1>User Metrics Types<a class="headerlink" href="#user-metrics-types" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-indico.types.user_metrics"></span><dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.AppRoles">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">AppRoles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.AppRoles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Info about roles. Name and how many users have this role.</p>
+</dd></dl>
 
-<span class="n">my_config</span> <span class="o">=</span> <span class="n">IndicoConfig</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;indico.mycompany.com&#39;</span><span class="p">,</span>
-    <span class="n">api_token_path</span><span class="o">=</span><span class="s1">&#39;path/to/indico_api_token.txt&#39;</span>
-<span class="p">)</span>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserDatasets">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserDatasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset Id and roles assigned to user in that dataset.</p>
+</dd></dl>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserSummaryCounts">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserSummaryCounts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserSummaryCounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary of user counts</p>
+</dd></dl>
 
-<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ModelGroupPredict</span><span class="p">(</span>
-    <span class="n">model_id</span><span class="o">=</span><span class="mi">30403</span><span class="p">,</span>
-    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;My flight got canceled&quot;</span><span class="p">,</span> <span class="s2">&quot;Did my frequent flyer number expire?&quot;</span><span class="p">]</span>
-<span class="p">))</span>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserSnapshot">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserSnapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Individual information about a user and their dataset access</p>
+</dd></dl>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="important-performance-note">
-<h2>Important Performance Note<a class="headerlink" href="#important-performance-note" title="Permalink to this headline">¶</a></h2>
-<p>If you want to run predictions on more than one sample then <strong>ALWAYS</strong> pass a list to <code class="docutils literal notranslate"><span class="pre">ModelGroupPredict</span></code>.
-Loading a new model to run predictions is a costly operation. You are far better off to only do this once
-and pass in a list of samples to predict. The list can be just a few or even a few thousand.</p>
-</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserSummary">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserSummary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary data on users and app roles</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.DatasetRole">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">DatasetRole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.DatasetRole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset role information</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserChangelog">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserChangelog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log entry of a change made to a user’s permission</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserChangelogReport">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserChangelogReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserChangelogReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Job id of a request for a changelog report file for download</p>
+</dd></dl>
+
 </div>
 
 
@@ -243,10 +247,6 @@ and pass in a list of samples to predict. The list can be just a few or even a f
            
           </div>
           <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="workflow-intro.html" class="btn btn-neutral float-right" title="Workflows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="docextract_settings.html" class="btn btn-neutral float-left" title="DocumentExtraction Settings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
 
   <hr/>
 

@@ -63,6 +63,7 @@ class GetUserSnapshots(PagedRequest):
     """
 
     Requests per-date detailed information about app users.
+
     Args:
         filters (UserMetricsFilter): filter the query based on UserSnapshotFilter criteria.
         date (datetime): specific day to query.
@@ -110,6 +111,7 @@ class GetUserChangelog(PagedRequest):
     """
 
         Requests per-date detailed information about app users.
+
         Args:
             filters (UserSnapshotFilter): filter the query based on UserMetricsFilter criteria.
             start_date (datetime): specific start date for query.
@@ -151,13 +153,14 @@ class GetUserChangelog(PagedRequest):
         super().__init__(self.query, variables=variables)
 
     def process_response(self, response) -> List[UserSnapshot]:
-        return _PagedUserSnapshots(**super().process_response(response)["userChangelog"]).results
+        return _PagedUserChangelog(**super().process_response(response)["userChangelog"]).results
 
 
 class GenerateChangelogReport(GraphQLRequest):
     """
 
         Requests per-date detailed information about app users.
+        
         Args:
             filters (UserSnapshotFilter): filter the query based on UserMetricsFilter criteria.
             start_date (datetime): specific start date for query.

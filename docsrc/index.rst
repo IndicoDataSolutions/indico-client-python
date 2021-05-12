@@ -40,6 +40,7 @@ Reference
     exports
     filters
     graphql_queries
+    user_metrics
 
 **Types**
 
@@ -50,3 +51,4 @@ Reference
     jobs-type
     model-group-type
     model-type
+    user-metrics-types

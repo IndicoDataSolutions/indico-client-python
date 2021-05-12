@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Exports &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>User Metrics &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -43,8 +43,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Filters" href="filters.html" />
-    <link rel="prev" title="Workflows" href="workflow.html" /> 
+    <link rel="next" title="Dataset Types" href="dataset-type.html" />
+    <link rel="prev" title="Common GraphQL Queries" href="graphql_queries.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -115,15 +115,17 @@
 <li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
 </ul>
 
             
@@ -172,13 +174,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Exports</li>
+      <li>User Metrics</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/exports.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/user_metrics.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,61 +193,64 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-indico.queries.export">
-<span id="exports"></span><h1>Exports<a class="headerlink" href="#module-indico.queries.export" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="user-metrics">
+<h1>User Metrics<a class="headerlink" href="#user-metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.export.GetExport">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.export.</span></span><span class="sig-name descname"><span class="pre">GetExport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">export_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.export.GetExport" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get information on an Export job</p>
+<dt class="sig sig-object py" id="indico.queries.usermetrics.GetUserSnapshots">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GetUserSnapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserSnapshots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests per-date detailed information about app users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>export_id</strong> (<em>int</em>) – Id of an Export</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Export object</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filters</strong> (<em>UserMetricsFilter</em>) – filter the query based on UserSnapshotFilter criteria.</p></li>
+<li><p><strong>date</strong> (<em>datetime</em>) – specific day to query.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – limit how many come back per query or per page.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.export.DownloadExport">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.export.</span></span><span class="sig-name descname"><span class="pre">DownloadExport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">export_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.export.DownloadExport" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download an export from an Indico storage url</p>
+<dt class="sig sig-object py" id="indico.queries.usermetrics.GetUserChangelog">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GetUserChangelog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserChangelog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests per-date detailed information about app users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>export</strong> (<em>Export</em>) – Export object</p></li>
-<li><p><strong>export_id</strong> (<em>int</em>) – Export id</p></li>
+<li><p><strong>filters</strong> (<em>UserSnapshotFilter</em>) – filter the query based on UserMetricsFilter criteria.</p></li>
+<li><p><strong>start_date</strong> (<em>datetime</em>) – specific start date for query.</p></li>
+<li><p><strong>end_date</strong> (<em>datetime</em>) – specific end date for query.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – limit how many come back per query or per page.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Pandas csv of the export</p>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>IndicoRequestError if the Export job is not complete</strong><strong> or </strong><strong>failed</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.export.CreateExport">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.export.</span></span><span class="sig-name descname"><span class="pre">CreateExport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelset_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.export.CreateExport" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an export job for a dataset.</p>
+<dt class="sig sig-object py" id="indico.queries.usermetrics.GetUserSummary">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GetUserSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserSummary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests summary level information per-date of users in the app.
+Includes enabled/disabled user counts, names of roles,
+and number of users assigned to that role.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>date</strong> (<em>datetime</em>) – specific day to summarize.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.usermetrics.GenerateChangelogReport">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GenerateChangelogReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GenerateChangelogReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests per-date detailed information about app users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>int</em>) – Dataset to create the export for</p></li>
-<li><p><strong>subset_ids</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – (List(int)): Subset ids to export rows sets</p></li>
-<li><p><strong>column_ids</strong> (<em>List</em><em>(</em><em>int</em><em>)</em>) – Data column ids to export</p></li>
-<li><p><strong>labelset_ids</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – (List(int)): Labelset column ids to export</p></li>
-<li><p><strong>file_info</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool): Include datafile information</p></li>
-<li><p><strong>combine_labels</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool): One row per example, combine labels from multiple labels into a single row</p></li>
-<li><p><strong>anonymous</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool): Anonymize user information</p></li>
-<li><p><strong>wait</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool): Wait for the export to complete. Default is True</p></li>
+<li><p><strong>filters</strong> (<em>UserSnapshotFilter</em>) – filter the query based on UserMetricsFilter criteria.</p></li>
+<li><p><strong>start_date</strong> (<em>datetime</em>) – specific start date for query.</p></li>
+<li><p><strong>end_date</strong> (<em>datetime</em>) – specific end date for query.</p></li>
+<li><p><strong>report_format</strong> (<em>str</em>) – specific format of the report, JSON or CSV.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Export object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -258,8 +263,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="filters.html" class="btn btn-neutral float-right" title="Filters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="workflow.html" class="btn btn-neutral float-left" title="Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dataset-type.html" class="btn btn-neutral float-right" title="Dataset Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="graphql_queries.html" class="btn btn-neutral float-left" title="Common GraphQL Queries" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
