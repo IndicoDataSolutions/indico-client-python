@@ -33,7 +33,7 @@ class IndicoConfig:
         host has an invalid SSL certificate then be sure to set verify_ssl=False
 
         The requests_params dictionary should have keys that are valid attributes of the Session
-        object from the requests library. 
+        object from the requests library.
     """
 
     host: str

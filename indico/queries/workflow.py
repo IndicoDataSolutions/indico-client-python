@@ -84,7 +84,8 @@ class _ToggleReview(GraphQLRequest):
         query = self.query.replace("<QUERY NAME>", self.query_name)
         query = query.replace("<TOGGLE>", self.toggle)
         super().__init__(
-            query, variables={"workflowId": workflow_id, "reviewState": enable_review},
+            query,
+            variables={"workflowId": workflow_id, "reviewState": enable_review},
         )
 
     def process_response(self, response) -> Workflow:
@@ -178,7 +179,9 @@ class _WorkflowSubmission(GraphQLRequest):
     }
 
     def __init__(
-        self, detailed_response: bool, **kwargs,
+        self,
+        detailed_response: bool,
+        **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
         self.record_submission = kwargs["record_submission"]
@@ -354,7 +357,8 @@ class _AddDataToWorkflow(GraphQLRequest):
 
     def __init__(self, workflow_id: int):
         super().__init__(
-            self.query, variables={"workflowId": workflow_id},
+            self.query,
+            variables={"workflowId": workflow_id},
         )
 
     def process_response(self, response) -> Workflow:

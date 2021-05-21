@@ -10,16 +10,16 @@ from indico.client.request import HTTPRequest, RequestChain
 
 class IndicoClient:
     """
-    The Indico GraphQL Client. 
+    The Indico GraphQL Client.
 
     IndicoClient is the primary way to interact with the Indico Platform.
-    
+
     Args:
         config= (IndicoConfig, optional): IndicoConfig object with environment configuration
-    
+
     Returns:
         IndicoConfig object
-    
+
     Raises:
         RuntimeError: If api_token_path does not exist.
     """
@@ -52,10 +52,10 @@ class IndicoClient:
 
         Args:
             request (GraphQLRequest or RequestChain): GraphQL request to send to the Indico Platform
-        
+
         Returns:
             Response appropriate to the class of the provided request parameter. Often JSON but not always.
-        
+
         Raises:
             IndicoRequestError: With errors in processing the request
         """

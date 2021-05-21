@@ -5,6 +5,7 @@ from indico.client.request import RequestChain, GraphQLRequest
 from indico.queries.storage import UploadBatched, UploadDocument
 from indico.queries.jobs import Job
 
+
 class _FormPreprocessing(GraphQLRequest):
 
     query = """
@@ -18,9 +19,7 @@ class _FormPreprocessing(GraphQLRequest):
     """
 
     def __init__(self, files):
-        super().__init__(
-            query=self.query, variables={"files": files}
-        )
+        super().__init__(query=self.query, variables={"files": files})
 
     def process_response(self, response):
         jobs = super().process_response(response)["activeFormFields"]["jobIds"]
@@ -39,7 +38,7 @@ class FormPreprocessing(RequestChain):
         files (str): list of filepaths to upload
 
     Returns:
-        suggested_fields: list of dictionarys (1 per PDF) containing structured field data 
+        suggested_fields: list of dictionarys (1 per PDF) containing structured field data
     """
 
     def __init__(

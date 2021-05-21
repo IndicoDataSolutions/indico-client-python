@@ -21,7 +21,11 @@ if workflows:
     # Send a document through the workflow
     # Get back one Job per file
     jobs = client.call(
-        WorkflowSubmission(workflow_id=workflows[0].id, files=["./path/to/sample.pdf"], submission=False)
+        WorkflowSubmission(
+            workflow_id=workflows[0].id,
+            files=["./path/to/sample.pdf"],
+            submission=False,
+        )
     )
     job = jobs[0]
 

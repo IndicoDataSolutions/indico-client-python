@@ -288,11 +288,7 @@ class _ModelGroupPredict(GraphQLRequest):
         }
         """
 
-    query_args = {
-        "modelId": "Int!",
-        "data": "[String]",
-        "predictOptions": "JSONString"
-    }
+    query_args = {"modelId": "Int!", "data": "[String]", "predictOptions": "JSONString"}
 
     def _args_strings(self, **kwargs):
         args = [k for k in self.query_args.keys() if kwargs.get(cc_to_snake(k))]
@@ -309,7 +305,9 @@ class _ModelGroupPredict(GraphQLRequest):
         if predict_options:
             predict_options = json.dumps(predict_options)
 
-        query = self._args_strings(model_id=model_id, data=data, predict_options=predict_options)
+        query = self._args_strings(
+            model_id=model_id, data=data, predict_options=predict_options
+        )
 
         super().__init__(
             query=query,

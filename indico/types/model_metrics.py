@@ -7,7 +7,7 @@ class PerClassSeqMetrics(BaseType):
     Metrics per class
 
     Attributes:
-        span_type (str): Type of span the metric is evaluated on: token, superset, overlap, exact 
+        span_type (str): Type of span the metric is evaluated on: token, superset, overlap, exact
         f1_score (float): F1 score per class
         precision (float): precision per class
         recall (float): recall per class
@@ -43,7 +43,7 @@ class ModelLevelMetrics(BaseType):
     Sequence model metrics at the model level
 
     Attributes:
-        span_type (str): Type of span the metric is evaluated on: token, superset, overlap, exact 
+        span_type (str): Type of span the metric is evaluated on: token, superset, overlap, exact
         macro_f1 (float): f1-score calculated by taking simple average of class-specific scores
         micro_f1 (float): f1-score calculated by weighting instances across classes
         weighted_f1 (float): f1-score calculated by taking class-specific f1-scores and weighting by available
@@ -61,7 +61,7 @@ class SequenceMetrics(BaseType):
     Model performance metrics calculated for sequence or "annotation" models.
 
     Attributes:
-    
+
         class_metrics List[AnnotationClassMetrics]: List of AnnotationClassMetrics objects per class
         model_level_metrics List[ModelLevelMetrics]: List of ModelLevelMetrics objects per span type
         retrain_for_metrics bool: Older annotation models require retraining metrics calculation

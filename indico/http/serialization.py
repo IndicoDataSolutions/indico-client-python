@@ -20,8 +20,10 @@ def decompress(response):
     value = io.BytesIO(response.raw.data).getvalue()
     return gzip.decompress(value)
 
+
 def raw_bytes(content, *args, **kwargs):
     return content
+
 
 def deserialize(response, gzip=False, force_json=False):
     content_type, params = cgi.parse_header(response.headers.get("Content-Type"))

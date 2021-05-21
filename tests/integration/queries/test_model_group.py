@@ -200,7 +200,11 @@ def test_object_detection_predict_storage(
 def test_load_model(indico, airlines_dataset, airlines_model_group):
     client = IndicoClient()
 
-    status = client.call(LoadModel(model_id=airlines_model_group.selected_model.id,))
+    status = client.call(
+        LoadModel(
+            model_id=airlines_model_group.selected_model.id,
+        )
+    )
 
     assert status == "ready"
 
