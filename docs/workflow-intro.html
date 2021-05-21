@@ -205,7 +205,7 @@ Disclosure or Invoice document, which is then classified (as one of those two ty
 specific to the document type is retrieved, sent to a Review step where a human will validate the classification and
 extraction model predictions, and finally output as a JSON where it can be processed into your organization’s systems.</p>
 <p>Using the Indico API, your organization has flexibility to customize the processes described above. For example,
-you can set up push notifications to alert you when a document has receieved its predictions and/or when it has been human reviewed.
+you can set up push notifications to alert you when a document has received its predictions and/or when it has been human reviewed.
 You can also apply custom functions to model output prior to human review to standardize fields and/or automatically accept certain predictions
 without a human-in-the-loop review (note: you should be very cautious in the types of predictions you auto-accept).</p>
 <p>A Workflow is automatically created whenever you train a new model. Information about your Workflows can be found through
@@ -215,14 +215,17 @@ into your systems.</p>
 </div>
 <div class="section" id="running-workflows-via-api">
 <h2>Running Workflows via API<a class="headerlink" href="#running-workflows-via-api" title="Permalink to this headline">¶</a></h2>
-<p>To begin using the API with your Workflow, first you will want to find the Workflow ID. From the dataset page,
-click on the associated dataset, click the ‘WORKFLOWS’ tab, and then click the name of your Workflow. In the URL,
-find the number that appears after ‘workflows’. For example, in the URL below the Workflow ID is ‘1000’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">app</span><span class="o">.</span><span class="n">indico</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="mi">7589</span><span class="o">/</span><span class="n">workflows</span><span class="o">/</span><span class="mi">1000</span>
+<p>To begin using the API with your Workflow, first you will want to find the Workflow ID. On the workflows page,
+click on the name of your Workflow. In the URL, find the number that appears after ‘workflows’. For example, in the URL
+below the Workflow ID is ‘1000’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">app</span><span class="o">.</span><span class="n">indico</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">workflows</span><span class="o">/</span><span class="mi">1000</span><span class="o">/</span><span class="n">canvas</span>
 </pre></div>
 </div>
-<p>Alternatively, you can use the ListWorkflows API call along with the dataset ID (7589 in the example above) to identify all of
-the workflows associated with a given dataset.</p>
+<p>Alternatively, you can use the ListWorkflows API call along with the dataset ID (7589 in the URL below) to identify all of
+the workflows associated with a given dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">app</span><span class="o">.</span><span class="n">indico</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="mi">7589</span><span class="o">/</span><span class="n">files</span>
+</pre></div>
+</div>
 <p>The following snippet demonstrates how to submit a document to a Workflow:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">WorkflowSubmission</span>
 

@@ -16,7 +16,7 @@ specific to the document type is retrieved, sent to a Review step where a human 
 extraction model predictions, and finally output as a JSON where it can be processed into your organization's systems. 
 
 Using the Indico API, your organization has flexibility to customize the processes described above. For example, 
-you can set up push notifications to alert you when a document has receieved its predictions and/or when it has been human reviewed.
+you can set up push notifications to alert you when a document has received its predictions and/or when it has been human reviewed.
 You can also apply custom functions to model output prior to human review to standardize fields and/or automatically accept certain predictions 
 without a human-in-the-loop review (note: you should be very cautious in the types of predictions you auto-accept). 
 
@@ -28,14 +28,16 @@ into your systems.
 Running Workflows via API
 =========================
 
-To begin using the API with your Workflow, first you will want to find the Workflow ID. From the dataset page, 
-click on the associated dataset, click the 'WORKFLOWS' tab, and then click the name of your Workflow. In the URL, 
-find the number that appears after 'workflows'. For example, in the URL below the Workflow ID is '1000'::
+To begin using the API with your Workflow, first you will want to find the Workflow ID. On the workflows page,
+click on the name of your Workflow. In the URL, find the number that appears after 'workflows'. For example, in the URL
+below the Workflow ID is '1000'::
 
-    https://app.indico.io/datasets/7589/workflows/1000
+    https://app.indico.io/workflows/1000/canvas
 
-Alternatively, you can use the ListWorkflows API call along with the dataset ID (7589 in the example above) to identify all of 
-the workflows associated with a given dataset.
+Alternatively, you can use the ListWorkflows API call along with the dataset ID (7589 in the URL below) to identify all of
+the workflows associated with a given dataset::
+
+    https://app.indico.io/datasets/7589/files
 
 The following snippet demonstrates how to submit a document to a Workflow::
 
