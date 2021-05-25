@@ -23,6 +23,7 @@ class ListSubmissions(GraphQLRequest):
         limit (int, default=1000): Maximum number of Submissions to return
         orderBy (str, default="ID"): Submission attribute to filter by
         desc: (bool, default=True): List in descending order
+
     Returns:
         List[Submission]: All the found Submission objects
     """
@@ -35,6 +36,7 @@ class ListSubmissions(GraphQLRequest):
             $limit: Int,
             $orderBy: SUBMISSION_COLUMN_ENUM,
             $desc: Boolean
+            
         ){
             submissions(
                 submissionIds: $submissionIds,
@@ -43,6 +45,7 @@ class ListSubmissions(GraphQLRequest):
                 limit: $limit
                 orderBy: $orderBy,
                 desc: $desc
+                
             ){
                 submissions {
                     id
