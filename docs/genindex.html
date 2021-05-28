@@ -113,12 +113,14 @@
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
 </ul>
 
             
@@ -188,8 +190,10 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#C"><strong>C</strong></a>
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
@@ -205,15 +209,33 @@
  | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummary.app_roles">app_roles (indico.types.user_metrics.UserSummary attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.AppRoles">AppRoles (class in indico.types.user_metrics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="client.html#indico.client.client.IndicoClient.call">call() (indico.client.client.IndicoClient method)</a>
 </li>
-      <li><a href="datasets.html#indico.queries.datasets.CreateDataset">CreateDataset (class in indico.queries.datasets)</a>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.changes_made">changes_made (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.AppRoles.count">count (indico.types.user_metrics.AppRoles attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.created_at">created_at (indico.types.user_metrics.UserSnapshot attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#indico.queries.datasets.CreateDataset">CreateDataset (class in indico.queries.datasets)</a>
+</li>
       <li><a href="exports.html#indico.queries.export.CreateExport">CreateExport (class in indico.queries.export)</a>
 </li>
       <li><a href="model_groups.html#indico.queries.model_groups.CreateModelGroup">CreateModelGroup (class in indico.queries.model_groups)</a>
@@ -234,16 +256,50 @@
 </li>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset">Dataset (class in indico.types.dataset)</a>
 </li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.DatasetRole.dataset_id">dataset_id (indico.types.user_metrics.DatasetRole attribute)</a>
+
+      <ul>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserDatasets.dataset_id">(indico.types.user_metrics.UserDatasets attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.DatasetRole">DatasetRole (class in indico.types.user_metrics)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.datasets">datasets (indico.types.user_metrics.UserChangelog attribute)</a>
+
+      <ul>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.datasets">(indico.types.user_metrics.UserSnapshot attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.date">date (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.deleted">deleted (indico.types.datafile.Datafile attribute)</a>
 </li>
       <li><a href="datasets.html#indico.queries.datasets.DeleteDataset">DeleteDataset (class in indico.queries.datasets)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummaryCounts.disabled">disabled (indico.types.user_metrics.UserSummaryCounts attribute)</a>
 </li>
       <li><a href="docextract.html#indico.queries.documents.DocumentExtraction">DocumentExtraction (class in indico.queries.documents)</a>
 </li>
       <li><a href="exports.html#indico.queries.export.DownloadExport">DownloadExport (class in indico.queries.export)</a>
 </li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.email">email (indico.types.user_metrics.UserSnapshot attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.enabled">enabled (indico.types.user_metrics.UserChangelog attribute)</a>
+
+      <ul>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.enabled">(indico.types.user_metrics.UserSnapshot attribute)</a>
+</li>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummaryCounts.enabled">(indico.types.user_metrics.UserSummaryCounts attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -264,6 +320,8 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user_metrics.html#indico.queries.usermetrics.GenerateChangelogReport">GenerateChangelogReport (class in indico.queries.usermetrics)</a>
+</li>
       <li><a href="datasets.html#indico.queries.datasets.GetDataset">GetDataset (class in indico.queries.datasets)</a>
 </li>
       <li><a href="datasets.html#indico.queries.datasets.GetDatasetFileStatus">GetDatasetFileStatus (class in indico.queries.datasets)</a>
@@ -272,13 +330,19 @@
 </li>
       <li><a href="exports.html#indico.queries.export.GetExport">GetExport (class in indico.queries.export)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model_groups.html#indico.queries.model_groups.GetModelGroup">GetModelGroup (class in indico.queries.model_groups)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model_groups.html#indico.queries.model_groups.GetModelGroupSelectedModelStatus">GetModelGroupSelectedModelStatus (class in indico.queries.model_groups)</a>
 </li>
       <li><a href="submissions.html#indico.queries.submission.GetSubmission">GetSubmission (class in indico.queries.submission)</a>
+</li>
+      <li><a href="user_metrics.html#indico.queries.usermetrics.GetUserChangelog">GetUserChangelog (class in indico.queries.usermetrics)</a>
+</li>
+      <li><a href="user_metrics.html#indico.queries.usermetrics.GetUserSnapshots">GetUserSnapshots (class in indico.queries.usermetrics)</a>
+</li>
+      <li><a href="user_metrics.html#indico.queries.usermetrics.GetUserSummary">GetUserSummary (class in indico.queries.usermetrics)</a>
 </li>
       <li><a href="workflow.html#indico.queries.workflow.GetWorkflow">GetWorkflow (class in indico.queries.workflow)</a>
 </li>
@@ -302,6 +366,10 @@
         <li><a href="model-type.html#indico.types.model.Model.id">(indico.types.model.Model attribute)</a>
 </li>
         <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.id">(indico.types.model_group.ModelGroup attribute)</a>
+</li>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.id">(indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.id">(indico.types.user_metrics.UserSnapshot attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -418,6 +486,13 @@
         <li><a href="model-group-type.html#module-indico.types.model_group">module</a>
 </li>
       </ul></li>
+      <li>
+    indico.types.user_metrics
+
+      <ul>
+        <li><a href="user-metrics-types.html#module-indico.types.user_metrics">module</a>
+</li>
+      </ul></li>
       <li><a href="client.html#indico.client.client.IndicoClient">IndicoClient (class in indico.client.client)</a>
 </li>
       <li><a href="config.html#indico.config.config.IndicoConfig">IndicoConfig (class in indico.config.config)</a>
@@ -432,6 +507,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelogReport.job_id">job_id (indico.types.user_metrics.UserChangelogReport attribute)</a>
+</li>
       <li><a href="jobs.html#indico.queries.jobs.JobStatus">JobStatus (class in indico.queries.jobs)</a>
 </li>
   </ul></td>
@@ -500,6 +577,8 @@
 </li>
         <li><a href="model-group-type.html#module-indico.types.model_group">indico.types.model_group</a>
 </li>
+        <li><a href="user-metrics-types.html#module-indico.types.user_metrics">indico.types.user_metrics</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -518,6 +597,8 @@
 </li>
         <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.name">(indico.types.model_group.ModelGroup attribute)</a>
 </li>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.name">(indico.types.user_metrics.UserSnapshot attribute)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -527,9 +608,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model-type.html#indico.types.model.TrainingProgress.percent_complete">percent_complete (indico.types.model.TrainingProgress attribute)</a>
 </li>
+      <li><a href="dataset-type.html#indico.types.dataset.Dataset.permissions">permissions (indico.types.dataset.Dataset attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dataset-type.html#indico.types.dataset.Dataset.permissions">permissions (indico.types.dataset.Dataset attribute)</a>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.previous_datasets">previous_datasets (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.previous_roles">previous_roles (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.previously_enabled">previously_enabled (indico.types.user_metrics.UserChangelog attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -541,10 +628,24 @@
 </li>
       <li><a href="jobs-type.html#indico.types.jobs.Job.ready">ready (indico.types.jobs.Job attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="storage.html#indico.queries.storage.RetrieveStorageObject">RetrieveStorageObject (class in indico.queries.storage)</a>
 </li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.AppRoles.role">role (indico.types.user_metrics.AppRoles attribute)</a>
+
+      <ul>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.DatasetRole.role">(indico.types.user_metrics.DatasetRole attribute)</a>
+</li>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserDatasets.role">(indico.types.user_metrics.UserDatasets attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.roles">roles (indico.types.user_metrics.UserChangelog attribute)</a>
+
+      <ul>
+        <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.roles">(indico.types.user_metrics.UserSnapshot attribute)</a>
+</li>
+      </ul></li>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset.row_count">row_count (indico.types.dataset.Dataset attribute)</a>
 </li>
   </ul></td>
@@ -589,11 +690,33 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.updated_by">updated_by (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.updater_email">updater_email (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
       <li><a href="submissions.html#indico.queries.submission.UpdateSubmission">UpdateSubmission (class in indico.queries.submission)</a>
+</li>
+      <li><a href="storage.html#indico.queries.storage.UploadDocument">UploadDocument (class in indico.queries.storage)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.user_email">user_email (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.user_id">user_id (indico.types.user_metrics.UserChangelog attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="storage.html#indico.queries.storage.UploadDocument">UploadDocument (class in indico.queries.storage)</a>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog">UserChangelog (class in indico.types.user_metrics)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelogReport">UserChangelogReport (class in indico.types.user_metrics)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserDatasets">UserDatasets (class in indico.types.user_metrics)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummary.users">users (indico.types.user_metrics.UserSummary attribute)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot">UserSnapshot (class in indico.types.user_metrics)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummary">UserSummary (class in indico.types.user_metrics)</a>
+</li>
+      <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummaryCounts">UserSummaryCounts (class in indico.types.user_metrics)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Storage &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>User Metrics Types &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
 
   
   
@@ -31,6 +33,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -39,9 +42,7 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Workflows" href="workflow.html" />
-    <link rel="prev" title="Submissions" href="submissions.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -102,7 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
@@ -110,7 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
@@ -122,7 +123,6 @@
 <li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
 </ul>
 
             
@@ -171,13 +171,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Storage</li>
+      <li>User Metrics Types</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/storage.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/user_metrics_types.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -190,61 +190,54 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-indico.queries.storage">
-<span id="storage"></span><h1>Storage<a class="headerlink" href="#module-indico.queries.storage" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="indico.queries.storage.RetrieveStorageObject">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">RetrieveStorageObject</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.RetrieveStorageObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve an object stored on the Indico Platform</p>
-<p>Results of some operations, notably DocumentExtraction can be quite large
-and are stored on disk in the Indico Platform. You need to retrieve them
-using RetrieveStorageObject.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>storage_object</strong> (<em>str</em><em> or </em><em>dict</em>) – either a string or dict with a url of the storage object to be retrieved. If a dict then “url” should be used as the key for the storage object url.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Contents of the storage object, most often JSON</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>contents (dict)</p>
-</dd>
-</dl>
+  <div class="section" id="user-metrics-types">
+<h1>User Metrics Types<a class="headerlink" href="#user-metrics-types" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-indico.types.user_metrics"></span><dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.AppRoles">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">AppRoles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.AppRoles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Info about roles. Name and how many users have this role.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="indico.queries.storage.UploadDocument">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">UploadDocument</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload an object stored on the Indico Platform</p>
-<p>Used internally for uploading documents to indico platform for later processing</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filepaths</strong> (<em>str</em>) – list of filepaths to upload</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>storage objects to be use for further processing requests E.G. Document extraction (implicitly called)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>files</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserDatasets">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserDatasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserDatasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset Id and roles assigned to user in that dataset.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="indico.queries.storage.CreateStorageURLs">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">CreateStorageURLs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload an object stored on the Indico Platform and return only the storage URL to the object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>files</strong> (<em>str</em>) – list of filepaths to upload</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of storage urls to be use for further processing requests (e.g. FormExtraction)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>urls</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserSummaryCounts">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserSummaryCounts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserSummaryCounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary of user counts</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserSnapshot">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserSnapshot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Individual information about a user and their dataset access</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserSummary">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserSummary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summary data on users and app roles</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.DatasetRole">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">DatasetRole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.DatasetRole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset role information</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserChangelog">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserChangelog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log entry of a change made to a user’s permission</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.types.user_metrics.UserChangelogReport">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">UserChangelogReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.UserChangelogReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Job id of a request for a changelog report file for download</p>
 </dd></dl>
 
 </div>
@@ -254,10 +247,6 @@ using RetrieveStorageObject.</p>
            
           </div>
           <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="workflow.html" class="btn btn-neutral float-right" title="Workflows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="submissions.html" class="btn btn-neutral float-left" title="Submissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
 
   <hr/>
 

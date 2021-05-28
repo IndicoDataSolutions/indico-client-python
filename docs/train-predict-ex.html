@@ -110,6 +110,7 @@
 <li class="toctree-l2"><a class="reference internal" href="image-dataset-ex.html">Created a Dataset from Local Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="image-predictions-ex.html">Get Predictions from Image Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="submission-ex.html">Sending New Samples to a Workflow (aka Workflow Submission)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-metrics-ex.html">Fetching User Metrics</a></li>
 </ul>
 </li>
 </ul>
@@ -126,12 +127,14 @@
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
 </ul>
 
             
@@ -224,9 +227,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my_classification_model&quot;</span><span class="p">,</span>
         <span class="n">dataset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
         <span class="n">source_column_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">datacolumn_by_name</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="c1"># csv text column</span>
-        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span>
-            <span class="s2">&quot;Target_1&quot;</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="c1"># csv target class column</span>
+        <span class="n">labelset_id</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">labelset_by_name</span><span class="p">(</span><span class="s2">&quot;Target_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>  <span class="c1"># csv target class column</span>
         <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># wait for training to finish</span>
     <span class="p">)</span>
 <span class="p">)</span>

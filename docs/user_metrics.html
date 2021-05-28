@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Storage &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>User Metrics &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Workflows" href="workflow.html" />
-    <link rel="prev" title="Submissions" href="submissions.html" /> 
+    <link rel="next" title="Dataset Types" href="dataset-type.html" />
+    <link rel="prev" title="Common GraphQL Queries" href="graphql_queries.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,12 +110,12 @@
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -171,13 +171,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Storage</li>
+      <li>User Metrics</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/storage.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/user_metrics.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -190,59 +190,64 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-indico.queries.storage">
-<span id="storage"></span><h1>Storage<a class="headerlink" href="#module-indico.queries.storage" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="user-metrics">
+<h1>User Metrics<a class="headerlink" href="#user-metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="indico.queries.storage.RetrieveStorageObject">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">RetrieveStorageObject</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.RetrieveStorageObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve an object stored on the Indico Platform</p>
-<p>Results of some operations, notably DocumentExtraction can be quite large
-and are stored on disk in the Indico Platform. You need to retrieve them
-using RetrieveStorageObject.</p>
+<dt id="indico.queries.usermetrics.GetUserSnapshots">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></code><code class="sig-name descname"><span class="pre">GetUserSnapshots</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserSnapshots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests per-date detailed information about app users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>storage_object</strong> (<em>str</em><em> or </em><em>dict</em>) – either a string or dict with a url of the storage object to be retrieved. If a dict then “url” should be used as the key for the storage object url.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Contents of the storage object, most often JSON</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>contents (dict)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filters</strong> (<em>UserMetricsFilter</em>) – filter the query based on UserSnapshotFilter criteria.</p></li>
+<li><p><strong>date</strong> (<em>datetime</em>) – specific day to query.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – limit how many come back per query or per page.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
-<dt id="indico.queries.storage.UploadDocument">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">UploadDocument</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload an object stored on the Indico Platform</p>
-<p>Used internally for uploading documents to indico platform for later processing</p>
+<dt id="indico.queries.usermetrics.GetUserChangelog">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></code><code class="sig-name descname"><span class="pre">GetUserChangelog</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserChangelog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests per-date detailed information about app users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filepaths</strong> (<em>str</em>) – list of filepaths to upload</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>storage objects to be use for further processing requests E.G. Document extraction (implicitly called)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>files</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filters</strong> (<em>UserSnapshotFilter</em>) – filter the query based on UserMetricsFilter criteria.</p></li>
+<li><p><strong>start_date</strong> (<em>datetime</em>) – specific start date for query.</p></li>
+<li><p><strong>end_date</strong> (<em>datetime</em>) – specific end date for query.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – limit how many come back per query or per page.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
-<dt id="indico.queries.storage.CreateStorageURLs">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">CreateStorageURLs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload an object stored on the Indico Platform and return only the storage URL to the object</p>
+<dt id="indico.queries.usermetrics.GetUserSummary">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></code><code class="sig-name descname"><span class="pre">GetUserSummary</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserSummary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests summary level information per-date of users in the app.
+Includes enabled/disabled user counts, names of roles,
+and number of users assigned to that role.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>files</strong> (<em>str</em>) – list of filepaths to upload</p>
+<dd class="field-odd"><p><strong>date</strong> (<em>datetime</em>) – specific day to summarize.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of storage urls to be use for further processing requests (e.g. FormExtraction)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>urls</p>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="indico.queries.usermetrics.GenerateChangelogReport">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></code><code class="sig-name descname"><span class="pre">GenerateChangelogReport</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GenerateChangelogReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests per-date detailed information about app users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filters</strong> (<em>UserSnapshotFilter</em>) – filter the query based on UserMetricsFilter criteria.</p></li>
+<li><p><strong>start_date</strong> (<em>datetime</em>) – specific start date for query.</p></li>
+<li><p><strong>end_date</strong> (<em>datetime</em>) – specific end date for query.</p></li>
+<li><p><strong>report_format</strong> (<em>str</em>) – specific format of the report, JSON or CSV.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -255,8 +260,8 @@ using RetrieveStorageObject.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="workflow.html" class="btn btn-neutral float-right" title="Workflows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="submissions.html" class="btn btn-neutral float-left" title="Submissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dataset-type.html" class="btn btn-neutral float-right" title="Dataset Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="graphql_queries.html" class="btn btn-neutral float-left" title="Common GraphQL Queries" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
