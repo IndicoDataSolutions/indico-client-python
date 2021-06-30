@@ -1,84 +1,171 @@
 from datetime import datetime
 from indico.errors import IndicoInputError
 from indico.client.request import GraphQLRequest
-from indico.types import workflow_metrics
-from indico.types.workflow import Workflow
-from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
-from typing import List
 from indico.types import BaseType
+from indico.types.workflow_metrics import WorkflowMetricsOptions, WorkflowMetrics
+from typing import List
+import itertools
+
+
+class _WorkflowMetric(BaseType):
+    metrics: WorkflowMetrics
+
+
+class _TopWorkflowMetric(BaseType):
+    workflows: List[_WorkflowMetric]
 
 
 class GetWorkflowMetrics(GraphQLRequest):
-    __MAP_WORKFLOW_KEYS = {
-        WorkflowMetricsOptions.ITEMS_SUBMITTED : 
-        """   submitted {
-                        date
-                        count
-                    }
-                    submittedAndCompletedInReview {
-                        date
-                        count
-                    }
-                    completed {
-                        date
-                        count
-                    }
-                    completedInReview {
-                        date
-                        count
-                    }""",
-        WorkflowMetricsOptions.ITEMS_THROUGH_REVIEW: 
-        """
+    """
+    Requests detailed workflow metric data.
+    Includes daily and total submission counts,
+    Review queue counts, and Straight through processing details.
+    Query can be configured to include only specific metrics
+    by passing in one of WorkflowOptions for SUBMISSIONS,
+    REVIEW, or STRAIGHT_THROUGH_PROCESSING.
 
-                    completedReviewQueue {
-                        date
-                        count
+    Args:
+        options (List[WorkflowMetricsOptions]): specific metrics to return.
+        start_date (datetime): start date for metrics data.
+        end_date (datetime): end date for metrics data. defaults to today.
+        workflow_ids (List[int]): ids of specific workflows to query.
+
+    """
+    __MAP_WORKFLOW_KEYS = {
+        WorkflowMetricsOptions.SUBMISSIONS: """
+        firstSubmittedDate
+               submissions {               
+                  aggregate {
+                    submitted
+                    completed
+                    completedInReview
+                    completedReviewQueue
+                    completedExceptionQueue
+                    rejectedInReview
+                  }
+                  daily {
+                    date
+                    submitted
+                    completed
+                    completedInReview
+                    completedReviewQueue
+                    completedExceptionQueue
+                    rejectedInReview
+                  }
+               }""",
+        WorkflowMetricsOptions.REVIEW: """ queues {
+                  dailyCumulative {
+                    date
+                    subsOnQueue
+                    hoursOnQueue
+                    avgAgeInQueue # (num_hours / num_subs )
+                  }
+               }
+               timeOnTask {
+                  aggregate { 
+                    avgMinsPerDoc
+                    avgMinsPerDocReview
+                    avgMinsPerDocExceptions
+                  }
+                  daily {
+                    date
+                    avgMinsPerDoc
+                    avgMinsPerDocReview
+                    avgMinsPerDocExceptions
+                  }
+               }
+               """,
+        WorkflowMetricsOptions.STRAIGHT_THROUGH_PROCESSING: """
+              straightThroughProcessing {
+                workflow {
+                  daily {
+                    date
+                    reviewNumerator
+                    autoReviewNumerator
+                    reviewDenom
+                    autoReviewDenom
+                    reviewStpPct
+                    autoReviewStpPct
+                  }
+                }
+                model {
+                  modelGroupId
+                  name
+                  aggregate {
+                    reviewNumerator
+                    autoReviewNumerator
+                    reviewDenom
+                    autoReviewDenom
+                    reviewStpPct
+                    autoReviewStpPct
+                  }
+                  daily {
+                    date
+                    reviewNumerator
+                    autoReviewNumerator
+                    reviewDenom
+                    autoReviewDenom
+                    reviewStpPct
+                    autoReviewStpPct
+                  }
+                  classMetrics {
+                    className
+                    aggregate {
+                      reviewNumerator
+                      autoReviewNumerator
+                      reviewDenom
+                      autoReviewDenom
+                      reviewStpPct
+                      autoReviewStpPct                    
                     }
-                    completedExceptionQueue {
-                        date
-                        count
+                    daily {
+                      date
+                      reviewNumerator
+                      autoReviewNumerator
+                      reviewDenom
+                      autoReviewDenom
+                      reviewStpPct
+                      autoReviewStpPct
                     }
-                    rejectedInReview {
-                        date
-                        count
-                    }
-        """
-        
+                  }
+                }
+            }
+                """
+
     }
     query = """
-    query ($workflowIds: [Int]!, $metricsStartDate: Date) {
-    workflows(workflowIds: $workflowIds, metricsStartDate: $metricsStartDate){
+query ($workflowIds: [Int]!, $startDate: Date, $endDate:Date) {
+    workflows(workflowIds: $workflowIds){
         workflows {
-            id
-            submissionFacts {
-                startDate
-                workflowId
-                total {
-                    submitted
-                }
-                daily {
-                    __QUERY_OTPS__
-                  }
+            metrics(startDate:$startDate, endDate:$endDate){
+               firstSubmittedDate
+               workflowId
+               __QUERY_OPTS__
+              }
             }
         }
-    }
 }
-    """
+"""
 
-    def __init__(self, options:List[WorkflowMetricsOptions], date: datetime, workflow_id: List[int]):
-        opts = self.__map_query_values(options)
-        self.query = self.query.replace("__QUERY_OTPS__", opts)
-        if workflow_id is None or date is None:
+    def __init__(self, options: List[WorkflowMetricsOptions], start_date: datetime, end_date: datetime,
+                 workflow_ids: List[int]):
+        self.query = self.__map_query_values(options)
+        if workflow_ids is None or start_date is None:
             raise IndicoInputError("Must specify date and workflow id")
-        super().__init__(self.query, variables={"date": date.strftime('%Y-%m-%d'), "workflowIds": workflow_id})
-    
-    def process_response(self, response) -> WorkflowMetrics:
-        return WorkflowMetrics(**super().process_response(response)["workflows"])
-        
+        if end_date is None:
+            end_date = datetime.now()
+        super().__init__(self.query, variables={"startDate": start_date.strftime('%Y-%m-%d'),
+                                                "endDate": end_date.strftime('%Y-%m-%d'), "workflowIds": workflow_ids})
+
+    def process_response(self, response) -> List[WorkflowMetrics]:
+        list_of_metrics = _TopWorkflowMetric(**super().process_response(response)["workflows"]).workflows
+        return list(map(lambda x: x.metrics, list_of_metrics))
 
     def __map_query_values(self, options: List[WorkflowMetricsOptions]):
+        daily = ' '
         if len(options) < 1:
-            return ''
-        strs = [self.__MAP_WORKFLOW_KEYS[a] for a in options]
-        opts = ' '.join(strs)
-        return opts
+            daily = ' '.join([self.__MAP_WORKFLOW_KEYS[a] for a in self.__MAP_WORKFLOW_KEYS.keys()])
+        else:
+            daily = ' '.join([self.__MAP_WORKFLOW_KEYS[a] for a in options])
+        query = self.query.replace("__QUERY_OPTS__", daily)
+        return query
