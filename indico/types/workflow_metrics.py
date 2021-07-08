@@ -11,10 +11,12 @@ class WorkflowMetricsOptions(Enum):
         SUBMISSIONS: Generates SubmissionMetrics in the response.
         REIVEW: Generates review Queue metrics in the response.
         STRAIGHT_THROUGH_PROCESSING: Generates StraightThroughProcessing metrics in the response.
+        TIME_ON_TASK: Average time spent by reviewers on documents.
     """
     SUBMISSIONS = 1
     REVIEW = 2
     STRAIGHT_THROUGH_PROCESSING = 3
+    TIME_ON_TASK = 4
 
 
 class TimeOnTaskMetric(BaseType):
@@ -37,7 +39,8 @@ class TimeOnTaskMetric(BaseType):
 class DailyTimeOnTaskMetric(TimeOnTaskMetric):
     """
     Daily time on task metrics.
-        Attributes:
+    
+    Attributes:
         avg_mins_per_doc(float): Average amount of minutes reviewers spend on documents in this workflow
             across review and exceptions queue.
         avg_mins_per_doc_review(float): Average amount of minutes reviewers spend on documents in this workflow
