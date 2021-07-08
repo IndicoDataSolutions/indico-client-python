@@ -182,7 +182,6 @@ from typing import List
 from indico.types import BaseType
 from indico.types.workflow_metrics import WorkflowMetricsOptions, WorkflowMetrics
 from typing import List
-import itertools
 
 
 class _WorkflowMetric(BaseType):
@@ -237,19 +236,6 @@ class GetWorkflowMetrics(GraphQLRequest):
                     subsOnQueue
                     hoursOnQueue
                     avgAgeInQueue # (num_hours / num_subs )
-                  }
-               }
-               timeOnTask {
-                  aggregate { 
-                    avgMinsPerDoc
-                    avgMinsPerDocReview
-                    avgMinsPerDocExceptions
-                  }
-                  daily {
-                    date
-                    avgMinsPerDoc
-                    avgMinsPerDocReview
-                    avgMinsPerDocExceptions
                   }
                }
                """,
@@ -308,7 +294,22 @@ class GetWorkflowMetrics(GraphQLRequest):
                   }
                 }
             }
-                """
+                """,
+        WorkflowMetricsOptions.TIME_ON_TASK: """
+               timeOnTask {
+                  aggregate { 
+                    avgMinsPerDoc
+                    avgMinsPerDocReview
+                    avgMinsPerDocExceptions
+                  }
+                  daily {
+                    date
+                    avgMinsPerDoc
+                    avgMinsPerDocReview
+                    avgMinsPerDocExceptions
+                  }
+               }
+        """
 
     }
     query = """
