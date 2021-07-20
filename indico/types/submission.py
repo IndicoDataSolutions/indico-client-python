@@ -14,6 +14,24 @@ VALID_SUBMISSION_STATUSES = [
 SUBMISSION_RESULT_VERSIONS = ["ONE", "TWO", "OLDEST_SUPPORTED", "LATEST"]
 
 
+class SubmissionRetries(BaseType):
+    """
+    Information about a retried submission.
+
+    Attributes:
+        id (int): The id of the retry attempt.
+        previous_errors (str): Errors from the previous attempt.
+        previous_status (str): The status from the previous attempt.
+        retry_errors (str): Errors encountered on this retry.
+        submission_id (int): The ID of the submission being retried.
+    """
+    id: int
+    previous_errors: str
+    previous_status: str
+    retry_errors: str
+    submission_id: int
+
+
 class Submission(BaseType):
     f"""
     A Submission in the Indico Platform.
@@ -37,6 +55,7 @@ class Submission(BaseType):
         retrieved (bool): Whether the submission has been retrieved by a user
             This flag is set manually by users.
         errors (str): Any errors raised while processing the submission
+        retries (List[SubmissionRetries]): If requested, information about previous retries of this submission.
 
     """
 
@@ -50,3 +69,4 @@ class Submission(BaseType):
     result_file: str
     retrieved: bool
     errors: str
+    retries: List[SubmissionRetries]
