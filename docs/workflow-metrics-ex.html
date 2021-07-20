@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Run Files Through a Workflow &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Fetching Workflow Metrics &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -43,8 +43,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Parsing the OCR result at the document, page, and block levels" href="ocr-object-parse-ex.html" />
-    <link rel="prev" title="Check Model Training Progress" href="training-progress.html" /> 
+    <link rel="next" title="IndicoConfig" href="config.html" />
+    <link rel="prev" title="Fetching User Metrics" href="user-metrics-ex.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -108,12 +108,13 @@
 <li class="toctree-l2"><a class="reference internal" href="train-predict-ex.html">Train a Classifier and Predict</a></li>
 <li class="toctree-l2"><a class="reference internal" href="singleocr-ex.html">OCR a Single File with DocumentExtraction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="training-progress.html">Check Model Training Progress</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Run Files Through a Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow-ex.html">Run Files Through a Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocr-object-parse-ex.html">Parsing the OCR result at the document, page, and block levels</a></li>
 <li class="toctree-l2"><a class="reference internal" href="image-dataset-ex.html">Created a Dataset from Local Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="image-predictions-ex.html">Get Predictions from Image Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="submission-ex.html">Sending New Samples to a Workflow (aka Workflow Submission)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-metrics-ex.html">Fetching User Metrics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Fetching Workflow Metrics</a></li>
 </ul>
 </li>
 </ul>
@@ -131,6 +132,7 @@
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -138,6 +140,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">User Metrics Types</a></li>
 </ul>
 
             
@@ -188,13 +191,13 @@
         
           <li><a href="examples.html">Examples</a> &raquo;</li>
         
-      <li>Run Files Through a Workflow</li>
+      <li>Fetching Workflow Metrics</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/workflow-ex.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/workflow-metrics-ex.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -207,16 +210,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="run-files-through-a-workflow">
-<h1>Run Files Through a Workflow<a class="headerlink" href="#run-files-through-a-workflow" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
-<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">JobStatus</span><span class="p">,</span>
-    <span class="n">ListWorkflows</span><span class="p">,</span>
-    <span class="n">RetrieveStorageObject</span><span class="p">,</span>
-    <span class="n">WorkflowSubmission</span><span class="p">,</span>
-<span class="p">)</span>
+  <div class="section" id="fetching-workflow-metrics">
+<h1>Fetching Workflow Metrics<a class="headerlink" href="#fetching-workflow-metrics" title="Permalink to this headline">¶</a></h1>
+<p>An example that illustrates how to fetch worklow metric data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoConfig</span><span class="p">,</span> <span class="n">IndicoClient</span>
+<span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">ListWorkflows</span>
+<span class="kn">from</span> <span class="nn">indico.queries.workflow_metrics</span> <span class="kn">import</span> <span class="n">GetWorkflowMetrics</span>
+<span class="kn">from</span> <span class="nn">indico.types.workflow_metrics</span> <span class="kn">import</span> <span class="n">WorkflowMetrics</span><span class="p">,</span> <span class="n">WorkflowMetricsOptions</span>
 
+<span class="sd">&quot;&quot;&quot;Example 1: Fetch all metrics for a workflow&quot;&quot;&quot;</span>
 <span class="c1"># Use your dataset&#39;s id to call it&#39;s associated workflow</span>
 <span class="n">dataset_id</span> <span class="o">=</span> <span class="mi">6826</span>
 
@@ -228,25 +233,34 @@
 <span class="c1"># Return a list of workflows for this dataset id or an empty list if there are none</span>
 <span class="n">workflows</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ListWorkflows</span><span class="p">(</span><span class="n">dataset_ids</span><span class="o">=</span><span class="p">[</span><span class="n">dataset_id</span><span class="p">]))</span>
 
+<span class="c1"># Fetch the metrics for an associated workflow.</span>
 <span class="k">if</span> <span class="n">workflows</span><span class="p">:</span>
-    <span class="c1"># Send a document through the workflow</span>
-    <span class="c1"># Get back one Job per file</span>
-    <span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-        <span class="n">WorkflowSubmission</span><span class="p">(</span>
-            <span class="n">workflow_id</span><span class="o">=</span><span class="n">workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span>
-            <span class="n">submission</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">job</span> <span class="o">=</span> <span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">IndicoClient</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">my_config</span><span class="p">)</span>
+    <span class="n">workflow_metric</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">WorkflowMetrics</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetWorkflowMetrics</span><span class="p">(</span><span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span>
+                                       <span class="n">end_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">workflow_ids</span><span class="o">=</span><span class="p">[</span><span class="n">workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">]))</span>
+<span class="n">total_subs</span> <span class="o">=</span> <span class="n">workflow_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">submissions</span><span class="o">.</span><span class="n">aggregate</span>
 
-    <span class="c1"># Retrieve and print your result</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-    <span class="n">wf_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">wf_result</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There have been &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_subs</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; for the workflow &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">workflow_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">workflow_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span><span class="p">)</span>
 
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have any workflows for this dataset&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Example 2: Load selected metrics into a dataframe&quot;&quot;&quot;</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;submitted&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">submitted</span><span class="p">,</span> <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">completed</span><span class="p">,</span>
+                    <span class="s2">&quot;rejected&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">rejected_in_review</span><span class="p">}</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">workflow_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">submissions</span><span class="o">.</span><span class="n">daily</span><span class="p">])</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+
+<span class="n">idx_max</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;submitted&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx_max</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; was the day with the most submissions: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx_max</span><span class="p">[</span><span class="s2">&quot;submitted&quot;</span><span class="p">]))</span>
+
+<span class="sd">&quot;&quot;&quot; Example 3: Retrieve only specific metrics.&quot;&quot;&quot;</span>
+<span class="n">workflow_metric</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">WorkflowMetrics</span><span class="p">]</span> <span class="o">=</span> \
+    <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetWorkflowMetrics</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="n">WorkflowMetricsOptions</span><span class="o">.</span><span class="n">STRAIGHT_THROUGH_PROCESSING</span><span class="p">],</span>
+                                   <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span>
+                                   <span class="n">end_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">workflow_ids</span><span class="o">=</span><span class="p">[</span><span class="n">workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">]))</span>
+<span class="c1"># Checking in the debugger shows that only this has straight_through_processing as an attribute.</span>
+<span class="n">stp</span> <span class="o">=</span> <span class="n">workflow_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">straight_through_processing</span>
 </pre></div>
 </div>
 </div>
@@ -257,8 +271,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="ocr-object-parse-ex.html" class="btn btn-neutral float-right" title="Parsing the OCR result at the document, page, and block levels" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="training-progress.html" class="btn btn-neutral float-left" title="Check Model Training Progress" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="config.html" class="btn btn-neutral float-right" title="IndicoConfig" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user-metrics-ex.html" class="btn btn-neutral float-left" title="Fetching User Metrics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

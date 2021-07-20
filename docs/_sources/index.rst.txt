@@ -41,6 +41,7 @@ Reference
     filters
     graphql_queries
     user_metrics
+    workflow-metrics
 
 **Types**
 
@@ -52,3 +53,4 @@ Reference
     model-group-type
     model-type
     user-metrics-types
+    workflow-metrics-types

@@ -117,6 +117,7 @@
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -124,6 +125,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
 </ul>
 
             
@@ -199,12 +201,14 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -215,12 +219,60 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ClassStpMetrics.aggregate">aggregate (indico.types.workflow_metrics.ClassStpMetrics attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ModelStpMetrics.aggregate">(indico.types.workflow_metrics.ModelStpMetrics attribute)</a>
+</li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.PredictionMetrics.aggregate">(indico.types.workflow_metrics.PredictionMetrics attribute)</a>
+</li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.TimeOnTaskMetrics.aggregate">(indico.types.workflow_metrics.TimeOnTaskMetrics attribute)</a>
+</li>
+      </ul></li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummary.app_roles">app_roles (indico.types.user_metrics.UserSummary attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.AppRoles">AppRoles (class in indico.types.user_metrics)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric.auto_review_denom">auto_review_denom (indico.types.workflow_metrics.DailyStpMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StpMetric.auto_review_denom">(indico.types.workflow_metrics.StpMetric attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric.auto_review_numerator">auto_review_numerator (indico.types.workflow_metrics.DailyStpMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StpMetric.auto_review_numerator">(indico.types.workflow_metrics.StpMetric attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric.auto_review_stp_pct">auto_review_stp_pct (indico.types.workflow_metrics.DailyStpMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StpMetric.auto_review_stp_pct">(indico.types.workflow_metrics.StpMetric attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyQueueMetric.avg_age_in_queue">avg_age_in_queue (indico.types.workflow_metrics.DailyQueueMetric attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyTimeOnTaskMetric.avg_min_per_doc_exceptions">avg_min_per_doc_exceptions (indico.types.workflow_metrics.DailyTimeOnTaskMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.TimeOnTaskMetric.avg_min_per_doc_exceptions">(indico.types.workflow_metrics.TimeOnTaskMetric attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyTimeOnTaskMetric.avg_mins_per_doc">avg_mins_per_doc (indico.types.workflow_metrics.DailyTimeOnTaskMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.TimeOnTaskMetric.avg_mins_per_doc">(indico.types.workflow_metrics.TimeOnTaskMetric attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyTimeOnTaskMetric.avg_mins_per_doc_review">avg_mins_per_doc_review (indico.types.workflow_metrics.DailyTimeOnTaskMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.TimeOnTaskMetric.avg_mins_per_doc_review">(indico.types.workflow_metrics.TimeOnTaskMetric attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -231,12 +283,26 @@
 </li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.changes_made">changes_made (indico.types.user_metrics.UserChangelog attribute)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ModelStpMetrics.class_metrics">class_metrics (indico.types.workflow_metrics.ModelStpMetrics attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ClassStpMetrics.class_name">class_name (indico.types.workflow_metrics.ClassStpMetrics attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ClassStpMetrics">ClassStpMetrics (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.completed">completed (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.completed_exception_queue">completed_exception_queue (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.completed_in_review">completed_in_review (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.completed_review_queue">completed_review_queue (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.AppRoles.count">count (indico.types.user_metrics.AppRoles attribute)</a>
 </li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.created_at">created_at (indico.types.user_metrics.UserSnapshot attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="datasets.html#indico.queries.datasets.CreateDataset">CreateDataset (class in indico.queries.datasets)</a>
 </li>
       <li><a href="exports.html#indico.queries.export.CreateExport">CreateExport (class in indico.queries.export)</a>
@@ -251,6 +317,28 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ClassStpMetrics.daily">daily (indico.types.workflow_metrics.ClassStpMetrics attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ModelStpMetrics.daily">(indico.types.workflow_metrics.ModelStpMetrics attribute)</a>
+</li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.PredictionMetrics.daily">(indico.types.workflow_metrics.PredictionMetrics attribute)</a>
+</li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.TimeOnTaskMetrics.daily">(indico.types.workflow_metrics.TimeOnTaskMetrics attribute)</a>
+</li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowStpMetrics.daily">(indico.types.workflow_metrics.WorkflowStpMetrics attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyPredictionMetric">DailyPredictionMetric (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyQueueMetric">DailyQueueMetric (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric">DailyStpMetric (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric">DailySubmissionMetric (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyTimeOnTaskMetric">DailyTimeOnTaskMetric (class in indico.types.workflow_metrics)</a>
+</li>
       <li><a href="dataset-type.html#indico.types.dataset.DataColumn">DataColumn (class in indico.types.dataset)</a>
 </li>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset.datacolumns">datacolumns (indico.types.dataset.Dataset attribute)</a>
@@ -259,6 +347,8 @@
 </li>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset">Dataset (class in indico.types.dataset)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.DatasetRole.dataset_id">dataset_id (indico.types.user_metrics.DatasetRole attribute)</a>
 
       <ul>
@@ -267,8 +357,6 @@
       </ul></li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.DatasetRole">DatasetRole (class in indico.types.user_metrics)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.datasets">datasets (indico.types.user_metrics.UserChangelog attribute)</a>
 
       <ul>
@@ -276,7 +364,15 @@
 </li>
       </ul></li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.date">date (indico.types.user_metrics.UserChangelog attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric.date">(indico.types.workflow_metrics.DailyStpMetric attribute)</a>
 </li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.date">(indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyTimeOnTaskMetric.date">(indico.types.workflow_metrics.DailyTimeOnTaskMetric attribute)</a>
+</li>
+      </ul></li>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.deleted">deleted (indico.types.datafile.Datafile attribute)</a>
 </li>
       <li><a href="datasets.html#indico.queries.datasets.DeleteDataset">DeleteDataset (class in indico.queries.datasets)</a>
@@ -311,11 +407,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.file_hash">file_hash (indico.types.datafile.Datafile attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.file_type">file_type (indico.types.datafile.Datafile attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset.files">files (indico.types.dataset.Dataset attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.first_submitted_date">first_submitted_date (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -348,6 +446,16 @@
       <li><a href="user_metrics.html#indico.queries.usermetrics.GetUserSummary">GetUserSummary (class in indico.queries.usermetrics)</a>
 </li>
       <li><a href="workflow.html#indico.queries.workflow.GetWorkflow">GetWorkflow (class in indico.queries.workflow)</a>
+</li>
+      <li><a href="workflow-metrics.html#indico.queries.workflow_metrics.GetWorkflowMetrics">GetWorkflowMetrics (class in indico.queries.workflow_metrics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyQueueMetric.hours_on_queue">hours_on_queue (indico.types.workflow_metrics.DailyQueueMetric attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -496,6 +604,13 @@
         <li><a href="user-metrics-types.html#module-indico.types.user_metrics">module</a>
 </li>
       </ul></li>
+      <li>
+    indico.types.workflow_metrics
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#module-indico.types.workflow_metrics">module</a>
+</li>
+      </ul></li>
       <li><a href="client.html#indico.client.client.IndicoClient">IndicoClient (class in indico.client.client)</a>
 </li>
       <li><a href="config.html#indico.config.config.IndicoConfig">IndicoConfig (class in indico.config.config)</a>
@@ -540,9 +655,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model-type.html#indico.types.model.Model">Model (class in indico.types.model)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StraightThroughProcessing.model">model (indico.types.workflow_metrics.StraightThroughProcessing attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ModelStpMetrics.model_group_id">model_group_id (indico.types.workflow_metrics.ModelStpMetrics attribute)</a>
+</li>
       <li><a href="model-group-type.html#indico.types.model_group.ModelGroup">ModelGroup (class in indico.types.model_group)</a>
 </li>
       <li><a href="model_groups.html#indico.queries.model_groups.ModelGroupPredict">ModelGroupPredict (class in indico.queries.model_groups)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ModelStpMetrics">ModelStpMetrics (class in indico.types.workflow_metrics)</a>
 </li>
       <li>
     module
@@ -582,6 +703,8 @@
 </li>
         <li><a href="user-metrics-types.html#module-indico.types.user_metrics">indico.types.user_metrics</a>
 </li>
+        <li><a href="workflow-metrics-types.html#module-indico.types.workflow_metrics">indico.types.workflow_metrics</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -602,7 +725,13 @@
 </li>
         <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSnapshot.name">(indico.types.user_metrics.UserSnapshot attribute)</a>
 </li>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.ModelStpMetrics.name">(indico.types.workflow_metrics.ModelStpMetrics attribute)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyPredictionMetric.num_preds">num_preds (indico.types.workflow_metrics.DailyPredictionMetric attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -613,13 +742,31 @@
 </li>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset.permissions">permissions (indico.types.dataset.Dataset attribute)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.PredictionMetric">PredictionMetric (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.PredictionMetrics">PredictionMetrics (class in indico.types.workflow_metrics)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.predictions">predictions (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
+</li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.previous_datasets">previous_datasets (indico.types.user_metrics.UserChangelog attribute)</a>
 </li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.previous_roles">previous_roles (indico.types.user_metrics.UserChangelog attribute)</a>
 </li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.previously_enabled">previously_enabled (indico.types.user_metrics.UserChangelog attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.QueueMetrics">QueueMetrics (class in indico.types.workflow_metrics)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.queues">queues (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -631,8 +778,32 @@
 </li>
       <li><a href="jobs-type.html#indico.types.jobs.Job.ready">ready (indico.types.jobs.Job attribute)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions.REIVEW">REIVEW (indico.types.workflow_metrics.WorkflowMetricsOptions attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.rejected_in_review">rejected_in_review (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
       <li><a href="storage.html#indico.queries.storage.RetrieveStorageObject">RetrieveStorageObject (class in indico.queries.storage)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric.review_denom">review_denom (indico.types.workflow_metrics.DailyStpMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StpMetric.review_denom">(indico.types.workflow_metrics.StpMetric attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric.review_numerator">review_numerator (indico.types.workflow_metrics.DailyStpMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StpMetric.review_numerator">(indico.types.workflow_metrics.StpMetric attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyStpMetric.review_stp_pct">review_stp_pct (indico.types.workflow_metrics.DailyStpMetric attribute)</a>
+
+      <ul>
+        <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StpMetric.review_stp_pct">(indico.types.workflow_metrics.StpMetric attribute)</a>
+</li>
+      </ul></li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.AppRoles.role">role (indico.types.user_metrics.AppRoles attribute)</a>
 
       <ul>
@@ -641,8 +812,6 @@
         <li><a href="user-metrics-types.html#indico.types.user_metrics.UserDatasets.role">(indico.types.user_metrics.UserDatasets attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.UserChangelog.roles">roles (indico.types.user_metrics.UserChangelog attribute)</a>
 
       <ul>
@@ -667,11 +836,29 @@
         <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.status">(indico.types.model_group.ModelGroup attribute)</a>
 </li>
       </ul></li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StpMetric">StpMetric (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.straight_through_processing">straight_through_processing (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions.STRAIGHT_THROUGH_PROCESSING">STRAIGHT_THROUGH_PROCESSING (indico.types.workflow_metrics.WorkflowMetricsOptions attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StraightThroughProcessing">StraightThroughProcessing (class in indico.types.workflow_metrics)</a>
+</li>
       <li><a href="filters.html#indico.filters.__init__.SubmissionFilter">SubmissionFilter (class in indico.filters.__init__)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.SubmissionMetric">SubmissionMetric (class in indico.types.workflow_metrics)</a>
+</li>
       <li><a href="submissions.html#indico.queries.submission.SubmissionResult">SubmissionResult (class in indico.queries.submission)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.submissions">submissions (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions.SUBMISSIONS">SUBMISSIONS (indico.types.workflow_metrics.WorkflowMetricsOptions attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.submitted">submitted (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailyQueueMetric.subs_on_queue">subs_on_queue (indico.types.workflow_metrics.DailyQueueMetric attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -681,8 +868,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.task_type">task_type (indico.types.model_group.ModelGroup attribute)</a>
 </li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.time_on_task">time_on_task (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions.TIME_ON_TASK">TIME_ON_TASK (indico.types.workflow_metrics.WorkflowMetricsOptions attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.TimeOnTaskMetric">TimeOnTaskMetric (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.TimeOnTaskMetrics">TimeOnTaskMetrics (class in indico.types.workflow_metrics)</a>
+</li>
       <li><a href="model-type.html#indico.types.model.Model.training_progress">training_progress (indico.types.model.Model attribute)</a>
 </li>
       <li><a href="model-type.html#indico.types.model.TrainingProgress">TrainingProgress (class in indico.types.model)</a>
@@ -727,6 +922,18 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StraightThroughProcessing.workflow">workflow (indico.types.workflow_metrics.StraightThroughProcessing attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.workflow_id">workflow_id (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics">WorkflowMetrics (class in indico.types.workflow_metrics)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions">WorkflowMetricsOptions (class in indico.types.workflow_metrics)</a>
+</li>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowStpMetrics">WorkflowStpMetrics (class in indico.types.workflow_metrics)</a>
+</li>
       <li><a href="workflow.html#indico.queries.workflow.WorkflowSubmission">WorkflowSubmission (class in indico.queries.workflow)</a>
 </li>
   </ul></td>

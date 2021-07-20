@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Filters &mdash; Indico Python Client 3.1.0 documentation</title>
+  <title>Workflow Metrics &mdash; Indico Python Client 3.1.0 documentation</title>
   
 
   
@@ -42,9 +42,7 @@
 
     
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Common GraphQL Queries" href="graphql_queries.html" />
-    <link rel="prev" title="Exports" href="exports.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -105,7 +103,7 @@
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
@@ -116,7 +114,7 @@
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 </ul>
@@ -174,13 +172,13 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Filters</li>
+      <li>Workflow Metrics</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/filters.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/workflow-metrics.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -193,23 +191,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-indico.filters.__init__">
-<span id="filters"></span><h1>Filters<a class="headerlink" href="#module-indico.filters.__init__" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="workflow-metrics">
+<h1>Workflow Metrics<a class="headerlink" href="#workflow-metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="indico.filters.__init__.SubmissionFilter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.filters.__init__.</span></span><span class="sig-name descname"><span class="pre">SubmissionFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieved</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.filters.__init__.SubmissionFilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a Filter when querying for WorkflowSubmissions.</p>
+<dt class="sig sig-object py" id="indico.queries.workflow_metrics.GetWorkflowMetrics">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_metrics.</span></span><span class="sig-name descname"><span class="pre">GetWorkflowMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_metrics.GetWorkflowMetrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requests detailed workflow metric data.
+Includes daily and total submission counts,
+Review queue counts, and Straight through processing details.
+Query can be configured to include only specific metrics
+by passing in one of WorkflowOptions for SUBMISSIONS,
+REVIEW, or STRAIGHT_THROUGH_PROCESSING.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_filename</strong> (<em>str</em>) – submissions with input file names containing this string</p></li>
-<li><p><strong>status</strong> (<em>str</em>) – submissions in this status. Options:
-[PROCESSING, PENDING_REVIEW, PENDING_ADMIN_REVIEW, COMPLETE, FAILED]</p></li>
-<li><p><strong>retrieved</strong> (<em>bool</em>) – Filter submissions on the retrieved flag</p></li>
+<li><p><strong>options</strong> (<em>List</em><em>[</em><a class="reference internal" href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions" title="indico.types.workflow_metrics.WorkflowMetricsOptions"><em>WorkflowMetricsOptions</em></a><em>]</em>) – specific metrics to return.</p></li>
+<li><p><strong>start_date</strong> (<em>datetime</em>) – start date for metrics data.</p></li>
+<li><p><strong>end_date</strong> (<em>datetime</em>) – end date for metrics data. defaults to today.</p></li>
+<li><p><strong>workflow_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – ids of specific workflows to query.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dict containing query filter parameters</p>
 </dd>
 </dl>
 </dd></dl>
@@ -221,10 +221,6 @@
            
           </div>
           <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="graphql_queries.html" class="btn btn-neutral float-right" title="Common GraphQL Queries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="exports.html" class="btn btn-neutral float-left" title="Exports" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
 
   <hr/>
 
