@@ -119,6 +119,7 @@
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -126,6 +127,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
 </ul>
 
             
@@ -207,7 +209,8 @@
 <li><p><strong>source_column_id</strong> (<em>int</em>) – id of the source column to use in training this model group. Usually the id of source text or images.</p></li>
 <li><p><strong>labelset_id</strong> (<em>int</em>) – id of the labelset (labeled data) to use in training this model group</p></li>
 <li><p><strong>wait</strong> (<em>bool</em>) – Wait for this model group to finish training. Default is False</p></li>
-<li><p><strong>model_type</strong> (<em>str</em>) – The model type to use, defaults to the default model type for the dataset type.</p></li>
+<li><p><strong>model_training_options</strong> (<em>dict</em>) – Additional options for training. If the model_type is FINETUNE, this can include the base_model, which should be one of “default”, “roberta”, “small”, “multilingual”, “fast”, “textcnn”, or “fasttextcnn”.</p></li>
+<li><p><strong>model_type</strong> (<em>str</em>) – The model type to use, defaults to the default model type for the dataset type. Valid options are “ENSEMBLE”, “TFIDF_LR”, “TFIDF_GBT”, “STANDARD”, “FINETUNE”, “OBJECT_DETECTION”, “RATIONALIZED”, “FORM_EXTRACTION”, and “DOCUMENT”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
