@@ -42,6 +42,7 @@ Reference
     graphql_queries
     user_metrics
     workflow-metrics
+    document_report
 
 **Types**
 
@@ -54,3 +55,4 @@ Reference
     model-type
     user-metrics-types
     workflow-metrics-types
+    document_report_types
