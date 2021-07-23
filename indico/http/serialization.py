@@ -1,15 +1,15 @@
 """
 Handles deserialization / decoding of responses
 """
-from collections import defaultdict
 import cgi
-import json
-import io
 import gzip
+import io
+import json
 import logging
-import msgpack
 import traceback
+from collections import defaultdict
 
+import msgpack
 from indico.errors import IndicoDecodingError
 
 logger = logging.getLogger(__name__)
@@ -85,5 +85,7 @@ _SERIALIZATION_FNS = defaultdict(
         "image/png": image_serialization,
         "image/jpg": image_serialization,
         "application/zip": zip_serialization,
+        "application/x-gzip": raw_bytes,
+        "application/gzip": raw_bytes,
     },
 )
