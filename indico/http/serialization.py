@@ -25,11 +25,10 @@ def raw_bytes(content, *args, **kwargs):
     return content
 
 
-def deserialize(response, gzip=False, force_json=False):
+def deserialize(response, force_json=False):
     content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
 
-    content = None
-    if gzip:
+    if content_type in ["application/x-gzip", "application/gzip"]:
         content = decompress(response)
     else:
         content = response.content

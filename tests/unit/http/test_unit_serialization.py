@@ -25,6 +25,7 @@ def mock_loader():
         with open(path, "rb") as f:
             content = f.read()
         response_mock.content = content
+        response_mock.raw.data = content
         return response_mock
 
     return _mock_loader
