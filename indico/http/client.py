@@ -1,16 +1,17 @@
-import logging
-import requests
 import http.cookiejar
-from pathlib import Path
-from contextlib import contextmanager
+import logging
 from collections import defaultdict
-from typing import Union
-from indico.config import IndicoConfig
-from indico.http.serialization import deserialize
-from indico.errors import IndicoRequestError, IndicoAuthenticationFailed
-from indico.client.request import HTTPRequest
-from requests import Response
+from contextlib import contextmanager
 from copy import deepcopy
+from pathlib import Path
+from typing import Union
+
+import requests
+from indico.client.request import HTTPRequest
+from indico.config import IndicoConfig
+from indico.errors import IndicoAuthenticationFailed, IndicoRequestError
+from indico.http.serialization import deserialize
+from requests import Response
 
 logger = logging.getLogger(__file__)
 
@@ -128,14 +129,10 @@ class HTTPClient:
         # code, api_response =
         url_parts = path.split(".")
         json = False
-        gzip = False
         if len(url_parts) > 1 and (url_parts[-1] == "json" or url_parts[-2] == "json"):
             json = True
 
-        if url_parts[-1] == "gz":
-            gzip = True
-
-        content = deserialize(response, force_json=json, gzip=gzip)
+        content = deserialize(response, force_json=json)
 
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
