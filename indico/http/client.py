@@ -82,11 +82,20 @@ class HTTPClient:
 
     @contextmanager
     def _handle_files(self, req_kwargs):
+
+        streams = None
+        # deepcopying buffers is not supported
+        # so, remove "streams" before the deepcopy.
+        if "streams" in req_kwargs:
+            streams = req_kwargs["streams"].copy()
+            del req_kwargs["streams"]
+
         new_kwargs = deepcopy(req_kwargs)
+
         files = []
         file_arg = {}
         dup_counts = {}
-        if "files" in new_kwargs:
+        if "files" in new_kwargs and new_kwargs["files"] is not None:
             for filepath in new_kwargs["files"]:
                 path = Path(filepath)
                 fd = path.open("rb")
@@ -99,19 +108,32 @@ class HTTPClient:
                     file_arg[path.stem] = fd
                     dup_counts[path.stem] = 1
 
-            new_kwargs["files"] = file_arg
+        if streams is not None and len(streams) > 0:
+            for filename in streams:
+                # similar operation as above.
+                stream = streams[filename]
+                files.append(stream)
+                if filename in dup_counts:
+                    file_arg[filename + f"({dup_counts[filename]})"] = stream
+                    dup_counts[filename] += 1
+                else:
+                    file_arg[filename] = stream
+                    dup_counts[filename] = 1
+
+        new_kwargs["files"] = file_arg
+
         yield new_kwargs
 
         if files:
             [f.close() for f in files]
 
     def _make_request(
-        self,
-        method: str,
-        path: str,
-        headers: dict = None,
-        _refreshed=False,
-        **request_kwargs,
+            self,
+            method: str,
+            path: str,
+            headers: dict = None,
+            _refreshed=False,
+            **request_kwargs,
     ):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
