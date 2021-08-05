@@ -204,7 +204,8 @@ class CreateModelGroup(RequestChain):
         source_column_id (int): id of the source column to use in training this model group. Usually the id of source text or images.
         labelset_id (int): id of the labelset (labeled data) to use in training this model group
         wait (bool): Wait for this model group to finish training. Default is False
-        model_type (str): The model type to use, defaults to the default model type for the dataset type.
+        model_training_options (dict): Additional options for training. If the model_type is FINETUNE, this can include the base_model, which should be one of "default", "roberta", "small", "multilingual", "fast", "textcnn", or "fasttextcnn".
+        model_type (str): The model type to use, defaults to the default model type for the dataset type. Valid options are "ENSEMBLE", "TFIDF_LR", "TFIDF_GBT", "STANDARD", "FINETUNE", "OBJECT_DETECTION", "RATIONALIZED", "FORM_EXTRACTION", and "DOCUMENT".
 
     Returns:
         ModelGroup object
