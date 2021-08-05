@@ -1,16 +1,17 @@
-import logging
-import requests
 import http.cookiejar
-from pathlib import Path
-from contextlib import contextmanager
+import logging
 from collections import defaultdict
-from typing import Union
-from indico.config import IndicoConfig
-from indico.http.serialization import deserialize
-from indico.errors import IndicoRequestError, IndicoAuthenticationFailed
-from indico.client.request import HTTPRequest
-from requests import Response
+from contextlib import contextmanager
 from copy import deepcopy
+from pathlib import Path
+from typing import Union
+
+import requests
+from indico.client.request import HTTPRequest
+from indico.config import IndicoConfig
+from indico.errors import IndicoAuthenticationFailed, IndicoRequestError
+from indico.http.serialization import deserialize
+from requests import Response
 
 logger = logging.getLogger(__file__)
 
@@ -81,11 +82,20 @@ class HTTPClient:
 
     @contextmanager
     def _handle_files(self, req_kwargs):
+
+        streams = None
+        # deepcopying buffers is not supported
+        # so, remove "streams" before the deepcopy.
+        if "streams" in req_kwargs:
+            streams = req_kwargs["streams"].copy()
+            del req_kwargs["streams"]
+
         new_kwargs = deepcopy(req_kwargs)
+
         files = []
         file_arg = {}
         dup_counts = {}
-        if "files" in new_kwargs:
+        if "files" in new_kwargs and new_kwargs["files"] is not None:
             for filepath in new_kwargs["files"]:
                 path = Path(filepath)
                 fd = path.open("rb")
@@ -98,19 +108,32 @@ class HTTPClient:
                     file_arg[path.stem] = fd
                     dup_counts[path.stem] = 1
 
-            new_kwargs["files"] = file_arg
+        if streams is not None and len(streams) > 0:
+            for filename in streams:
+                # similar operation as above.
+                stream = streams[filename]
+                files.append(stream)
+                if filename in dup_counts:
+                    file_arg[filename + f"({dup_counts[filename]})"] = stream
+                    dup_counts[filename] += 1
+                else:
+                    file_arg[filename] = stream
+                    dup_counts[filename] = 1
+
+        new_kwargs["files"] = file_arg
+
         yield new_kwargs
 
         if files:
             [f.close() for f in files]
 
     def _make_request(
-        self,
-        method: str,
-        path: str,
-        headers: dict = None,
-        _refreshed=False,
-        **request_kwargs,
+            self,
+            method: str,
+            path: str,
+            headers: dict = None,
+            _refreshed=False,
+            **request_kwargs,
     ):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
@@ -128,14 +151,10 @@ class HTTPClient:
         # code, api_response =
         url_parts = path.split(".")
         json = False
-        gzip = False
         if len(url_parts) > 1 and (url_parts[-1] == "json" or url_parts[-2] == "json"):
             json = True
 
-        if url_parts[-1] == "gz":
-            gzip = True
-
-        content = deserialize(response, force_json=json, gzip=gzip)
+        content = deserialize(response, force_json=json)
 
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:

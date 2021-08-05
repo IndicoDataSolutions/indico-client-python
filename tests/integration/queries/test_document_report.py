@@ -1,0 +1,30 @@
+from datetime import datetime
+from typing import List
+
+from indico import IndicoClient
+from indico.queries.document_report import GetDocumentReport
+from indico.types.document_report import DocumentReport
+from indico.filters import DocumentReportFilter
+
+def test_fetch_docs(indico):
+    client = IndicoClient()
+
+    document_report: List[DocumentReport] = client.call(GetDocumentReport())
+    assert document_report is not None
+    assert len(document_report) > 0
+
+def test_fetch_docs_limit(indico):
+    client = IndicoClient()
+    filter_opts = DocumentReportFilter(created_at_start_date= datetime(2021,7,1), created_at_end_date = datetime.now())
+    document_report: List[DocumentReport] = client.call(GetDocumentReport(filters=filter_opts, limit=5))
+    assert document_report is not None
+    assert len(document_report) > 0
+    assert len(document_report) <= 5
+
+def test_pagination(indico):
+    client = IndicoClient()
+    document_report: List[DocumentReport] = []
+    for page in client.paginate(GetDocumentReport(limit=10)):
+        document_report.extend(page)
+    assert document_report is not None
+    assert len(document_report) > 0

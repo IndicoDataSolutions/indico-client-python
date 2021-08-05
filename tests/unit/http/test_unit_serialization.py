@@ -1,11 +1,10 @@
-from unittest.mock import MagicMock
-from pathlib import Path
 import logging
+from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
-
-from indico.http.serialization import deserialize
 from indico.errors import IndicoDecodingError
+from indico.http.serialization import deserialize
 
 
 @pytest.fixture(scope="function")
@@ -26,6 +25,7 @@ def mock_loader():
         with open(path, "rb") as f:
             content = f.read()
         response_mock.content = content
+        response_mock.raw.data = content
         return response_mock
 
     return _mock_loader
@@ -61,6 +61,13 @@ def test_deserialize_octet(mock_loader):
 
 def test_deserialize_pdf(mock_loader):
     response = mock_loader("application/pdf", "")
+    content = deserialize(response)
+
+    assert isinstance(content, bytes)
+
+
+def test_deserialize_gzip(mock_loader):
+    response = mock_loader("application/gzip", "")
     content = deserialize(response)
 
     assert isinstance(content, bytes)
