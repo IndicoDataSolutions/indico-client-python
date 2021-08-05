@@ -1,4 +1,5 @@
-from typing import List, Union
+import io
+from typing import List, Union, Dict
 
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
@@ -249,6 +250,9 @@ class WorkflowSubmission(RequestChain):
             The format of the submission result file. One of:
                 {SUBMISSION_RESULT_VERSIONS}
             If bundle is enabled, this must be version TWO or later.
+        streams (Dict[str, io.BufferedIOBase]): List of filename keys mapped to streams
+            for upload. Similar to files but mutually exclusive with files. 
+            Can take for example: io.BufferedReader, io.BinaryIO, or io.BytesIO.
 
     Returns:
         List[int]: If `submission`, these will be submission ids.
@@ -266,6 +270,7 @@ class WorkflowSubmission(RequestChain):
         submission: bool = True,
         bundle: bool = False,
         result_version: str = None,
+        streams: Dict[str, io.BufferedIOBase] = None
     ):
         self.workflow_id = workflow_id
         self.files = files
@@ -273,11 +278,14 @@ class WorkflowSubmission(RequestChain):
         self.submission = submission
         self.bundle = bundle
         self.result_version = result_version
+        self.streams = streams.copy()
 
-        if not self.files and not self.urls:
-            raise IndicoInputError("One of 'files' or 'urls' must be specified")
-        elif self.files and self.urls:
-            raise IndicoInputError("Only one of 'files' or 'urls' must be specified")
+        if not self.files and not self.urls and not len(streams) > 0:
+            raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
+        elif self.files and len(self.streams) > 0:
+            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified.")
+        elif (self.files or len(streams) > 0) and self.urls:
+            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified")
 
     def requests(self):
         if self.files:
@@ -296,6 +304,16 @@ class WorkflowSubmission(RequestChain):
                 workflow_id=self.workflow_id,
                 record_submission=self.submission,
                 urls=self.urls,
+                bundle=self.bundle,
+                result_version=self.result_version,
+            )
+        elif len(self.streams) > 0:
+            yield UploadDocument(streams=self.streams)
+            yield _WorkflowSubmission(
+                self.detailed_response,
+                workflow_id=self.workflow_id,
+                record_submission=self.submission,
+                files=self.previous,
                 bundle=self.bundle,
                 result_version=self.result_version,
             )
