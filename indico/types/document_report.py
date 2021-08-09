@@ -12,7 +12,7 @@ class DocumentReport(BaseType):
     """
     A Document report about the associated InputFiles.
 
-    
+
     """
     dataset_id: int
     workflow_id: int

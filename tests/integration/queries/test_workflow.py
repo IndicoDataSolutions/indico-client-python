@@ -1,3 +1,5 @@
+import io
+
 from indico.queries.workflow import GetWorkflow
 import pytest
 from pathlib import Path
@@ -95,6 +97,39 @@ def test_workflow_submission(
     sub = client.call(GetSubmission(submission_id))
     assert isinstance(sub, Submission)
     assert sub.retrieved is True
+
+def test_workflow_submission_with_streams(
+    indico, airlines_dataset, airlines_model_group: ModelGroup
+):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+
+    path = Path(str(Path(__file__).parents[1]) + "/data/mock.pdf")
+    fd = open(path.absolute(), "rb")
+    files = {
+        "mock.pdf": fd
+    }
+    submission_ids = client.call(WorkflowSubmission(workflow_id=wf.id, streams=files))
+    submission_id = submission_ids[0]
+    assert submission_id is not None
+
+    with pytest.raises(IndicoInputError):
+        client.call(SubmissionResult(submission_id, "FAILED"))
+
+    with pytest.raises(IndicoInputError):
+        client.call(SubmissionResult(submission_id, "INVALID_STATUS"))
+
+    result_url = client.call(SubmissionResult(submission_id, "COMPLETE", wait=True))
+    result = client.call(RetrieveStorageObject(result_url.result))
+    assert isinstance(result, dict)
+    assert result["submission_id"] == submission_id
+    assert result["file_version"] == 1
+    client.call(UpdateSubmission(submission_id, retrieved=True))
+    sub = client.call(GetSubmission(submission_id))
+    assert isinstance(sub, Submission)
+    assert sub.retrieved is True
+
 
 
 @pytest.mark.parametrize(
