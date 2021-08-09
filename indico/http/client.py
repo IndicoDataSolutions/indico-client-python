@@ -87,7 +87,8 @@ class HTTPClient:
         # deepcopying buffers is not supported
         # so, remove "streams" before the deepcopy.
         if "streams" in req_kwargs:
-            streams = req_kwargs["streams"].copy()
+            if req_kwargs["streams"] is not None:
+                streams = req_kwargs["streams"].copy()
             del req_kwargs["streams"]
 
         new_kwargs = deepcopy(req_kwargs)

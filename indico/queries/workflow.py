@@ -35,7 +35,7 @@ class ListWorkflows(GraphQLRequest):
     """
 
     def __init__(
-        self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None
+            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None
     ):
         super().__init__(
             self.query,
@@ -114,10 +114,10 @@ class UpdateWorkflowSettings(RequestChain):
     """
 
     def __init__(
-        self,
-        workflow: Union[Workflow, int],
-        enable_review: bool = None,
-        enable_auto_review: bool = None,
+            self,
+            workflow: Union[Workflow, int],
+            enable_review: bool = None,
+            enable_auto_review: bool = None,
     ):
         self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
         if enable_review is None and enable_auto_review is None:
@@ -134,7 +134,6 @@ class UpdateWorkflowSettings(RequestChain):
 
 
 class _WorkflowSubmission(GraphQLRequest):
-
     query = """
         mutation workflowSubmissionMutation({signature}) {{
             {mutation_name}({args}) {{
@@ -180,9 +179,9 @@ class _WorkflowSubmission(GraphQLRequest):
     }
 
     def __init__(
-        self,
-        detailed_response: bool,
-        **kwargs,
+            self,
+            detailed_response: bool,
+            **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
         self.record_submission = kwargs["record_submission"]
@@ -263,14 +262,14 @@ class WorkflowSubmission(RequestChain):
     detailed_response = False
 
     def __init__(
-        self,
-        workflow_id: int,
-        files: List[str] = None,
-        urls: List[str] = None,
-        submission: bool = True,
-        bundle: bool = False,
-        result_version: str = None,
-        streams: Dict[str, io.BufferedIOBase] = None
+            self,
+            workflow_id: int,
+            files: List[str] = None,
+            urls: List[str] = None,
+            submission: bool = True,
+            bundle: bool = False,
+            result_version: str = None,
+            streams: Dict[str, io.BufferedIOBase] = None
     ):
         self.workflow_id = workflow_id
         self.files = files
@@ -278,13 +277,18 @@ class WorkflowSubmission(RequestChain):
         self.submission = submission
         self.bundle = bundle
         self.result_version = result_version
-        self.streams = streams.copy()
+        self.has_streams = False
+        if streams is not None:
+            self.streams = streams.copy()
+            self.has_streams = True
+        else:
+            self.streams = None
 
-        if not self.files and not self.urls and not len(streams) > 0:
+        if not self.files and not self.urls and not self.has_streams:
             raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
-        elif self.files and len(self.streams) > 0:
+        elif self.files and self.has_streams:
             raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified.")
-        elif (self.files or len(streams) > 0) and self.urls:
+        elif (self.files or self.has_streams) and self.urls:
             raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified")
 
     def requests(self):
@@ -307,7 +311,7 @@ class WorkflowSubmission(RequestChain):
                 bundle=self.bundle,
                 result_version=self.result_version,
             )
-        elif len(self.streams) > 0:
+        elif self.has_streams:
             yield UploadDocument(streams=self.streams)
             yield _WorkflowSubmission(
                 self.detailed_response,
@@ -343,12 +347,12 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
     detailed_response = True
 
     def __init__(
-        self,
-        workflow_id: int,
-        files: List[str] = None,
-        urls: List[str] = None,
-        bundle: bool = False,
-        result_version: str = None,
+            self,
+            workflow_id: int,
+            files: List[str] = None,
+            urls: List[str] = None,
+            bundle: bool = False,
+            result_version: str = None,
     ):
         super().__init__(
             workflow_id,
