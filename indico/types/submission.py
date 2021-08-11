@@ -54,9 +54,9 @@ class Submission(BaseType):
         result_file (str): URL of the result datafile within the Indico Platform
         retrieved (bool): Whether the submission has been retrieved by a user
             This flag is set manually by users.
+        deleted (bool): Whether the submission result has been deleted from the server
         errors (str): Any errors raised while processing the submission
         retries (List[SubmissionRetries]): If requested, information about previous retries of this submission.
-
     """
 
     id: int
@@ -68,5 +68,6 @@ class Submission(BaseType):
     input_filename: str
     result_file: str
     retrieved: bool
+    deleted: bool
     errors: str
     retries: List[SubmissionRetries]
