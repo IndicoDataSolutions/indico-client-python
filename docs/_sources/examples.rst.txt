@@ -14,3 +14,5 @@ Examples
     image-dataset-ex
     image-predictions-ex
     submission-ex
+    user-metrics-ex
+    workflow-metrics-ex

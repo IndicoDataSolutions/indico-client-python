@@ -1,15 +1,15 @@
 """
 Handles deserialization / decoding of responses
 """
-from collections import defaultdict
 import cgi
-import json
-import io
 import gzip
+import io
+import json
 import logging
-import msgpack
 import traceback
+from collections import defaultdict
 
+import msgpack
 from indico.errors import IndicoDecodingError
 
 logger = logging.getLogger(__name__)
@@ -25,11 +25,10 @@ def raw_bytes(content, *args, **kwargs):
     return content
 
 
-def deserialize(response, gzip=False, force_json=False):
+def deserialize(response, force_json=False):
     content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
 
-    content = None
-    if gzip:
+    if content_type in ["application/x-gzip", "application/gzip"]:
         content = decompress(response)
     else:
         content = response.content
@@ -85,5 +84,7 @@ _SERIALIZATION_FNS = defaultdict(
         "image/png": image_serialization,
         "image/jpg": image_serialization,
         "application/zip": zip_serialization,
+        "application/x-gzip": raw_bytes,
+        "application/gzip": raw_bytes,
     },
 )

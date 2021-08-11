@@ -319,6 +319,7 @@ class _AddFiles(GraphQLRequest):
         }
     }
     """
+    
 
     def __init__(self, dataset_id: int, metadata: List[str]):
         super().__init__(

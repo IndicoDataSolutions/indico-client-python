@@ -23,6 +23,7 @@ class ListSubmissions(GraphQLRequest):
         limit (int, default=1000): Maximum number of Submissions to return
         orderBy (str, default="ID"): Submission attribute to filter by
         desc: (bool, default=True): List in descending order
+
     Returns:
         List[Submission]: All the found Submission objects
     """
@@ -35,6 +36,7 @@ class ListSubmissions(GraphQLRequest):
             $limit: Int,
             $orderBy: SUBMISSION_COLUMN_ENUM,
             $desc: Boolean
+            
         ){
             submissions(
                 submissionIds: $submissionIds,
@@ -43,6 +45,7 @@ class ListSubmissions(GraphQLRequest):
                 limit: $limit
                 orderBy: $orderBy,
                 desc: $desc
+                
             ){
                 submissions {
                     id
@@ -61,14 +64,14 @@ class ListSubmissions(GraphQLRequest):
     """
 
     def __init__(
-        self,
-        *,
-        submission_ids: List[int] = None,
-        workflow_ids: List[int] = None,
-        filters: Union[Dict, SubmissionFilter] = None,
-        limit: int = 1000,
-        order_by: str = "ID",
-        desc: bool = True,
+            self,
+            *,
+            submission_ids: List[int] = None,
+            workflow_ids: List[int] = None,
+            filters: Union[Dict, SubmissionFilter] = None,
+            limit: int = 1000,
+            order_by: str = "ID",
+            desc: bool = True,
     ):
         super().__init__(
             self.query,
@@ -118,8 +121,8 @@ class GetSubmission(GraphQLRequest):
     """
 
     def __init__(
-        self,
-        submission_id: int,
+            self,
+            submission_id: int,
     ):
         super().__init__(
             self.query,
@@ -159,9 +162,9 @@ class WaitForSubmissions(RequestChain):
     """
 
     def __init__(
-        self,
-        submission_ids: List[int],
-        timeout: Union[int, float] = 60,
+            self,
+            submission_ids: List[int],
+            timeout: Union[int, float] = 60,
     ):
         if not submission_ids:
             raise IndicoInputError("Please provide submission ids")
@@ -177,8 +180,8 @@ class WaitForSubmissions(RequestChain):
         yield self.status_getter()
         curr_time = 0
         while (
-            not all(self.status_check(s.status) for s in self.previous)
-            and curr_time <= self.timeout
+                not all(self.status_check(s.status) for s in self.previous)
+                and curr_time <= self.timeout
         ):
             yield self.status_getter()
             time.sleep(1)
@@ -285,11 +288,11 @@ class SubmissionResult(RequestChain):
     previous: Submission = None
 
     def __init__(
-        self,
-        submission: Union[int, Submission],
-        check_status: str = None,
-        wait: bool = False,
-        timeout: Union[int, float] = 30,
+            self,
+            submission: Union[int, Submission],
+            check_status: str = None,
+            wait: bool = False,
+            timeout: Union[int, float] = 30,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id
@@ -312,8 +315,8 @@ class SubmissionResult(RequestChain):
         if self.wait:
             curr_time = 0
             while (
-                not self.status_check(self.previous.status)
-                and curr_time <= self.timeout
+                    not self.status_check(self.previous.status)
+                    and curr_time <= self.timeout
             ):
                 yield GetSubmission(self.submission_id)
                 time.sleep(1)
@@ -366,11 +369,11 @@ class SubmitReview(GraphQLRequest):
     }
 
     def __init__(
-        self,
-        submission: Union[int, Submission],
-        changes: Dict = None,
-        rejected: bool = False,
-        force_complete: bool = None,
+            self,
+            submission: Union[int, Submission],
+            changes: Dict = None,
+            rejected: bool = False,
+            force_complete: bool = None,
     ):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
@@ -400,3 +403,43 @@ class SubmitReview(GraphQLRequest):
     def process_response(self, response) -> Job:
         response = super().process_response(response)["submitAutoReview"]
         return Job(id=response["jobId"])
+
+
+class RetrySubmission(GraphQLRequest):
+    """
+    Given a list of submission ids, retry those failed submissions.
+
+    Attributes:
+        submission_ids (List[int]): the given submission ids to retry.
+    """
+    query = """
+    mutation retrySubmission($submissionIds:[Int]!){
+  retrySubmissions(submissionIds: $submissionIds){
+    status
+    id
+    errors
+    retries{
+      id
+      previousErrors
+      previousStatus
+      retryErrors
+      submissionId
+    }
+  }
+}
+    """
+
+    def __init__(self, submission_ids: List[int]):
+        if submission_ids is None or len(submission_ids) < 1:
+            raise IndicoInputError("You must specify submission ids")
+
+        super().__init__(
+            self.query,
+            variables={"submissionIds": submission_ids},
+        )
+
+    def process_response(self, response) -> List[Submission]:
+        return [
+            Submission(**s)
+            for s in super().process_response(response)["retrySubmissions"]
+        ]

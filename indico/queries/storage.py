@@ -1,5 +1,6 @@
+import io
 import json
-from typing import List
+from typing import List, Dict
 from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
 from indico.errors import IndicoRequestError, IndicoInputError
 
@@ -46,14 +47,20 @@ class UploadDocument(HTTPRequest):
     Used internally for uploading documents to indico platform for later processing
 
     Args:
-        filepaths (str): list of filepaths to upload
+        files (str): A list of local filepaths to upload.
+        streams (Dict[str, io.BufferedIOBase]): A dict of filenames to BufferedIOBase streams
+            (any class that inherits BufferedIOBase is acceptable).
 
     Returns:
         files: storage objects to be use for further processing requests E.G. Document extraction (implicitly called)
     """
 
-    def __init__(self, files: List[str]):
-        super().__init__(HTTPMethod.POST, "/storage/files/store", files=files)
+    def __init__(self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None):
+
+        if (files is None and streams is None) or (files is not None and streams is not None):
+            raise IndicoInputError("Must define one of files or streams, but not both.")
+
+        super().__init__(HTTPMethod.POST, "/storage/files/store", files=files, streams=streams)
 
     def process_response(self, uploaded_files: List[dict]):
         files = [
@@ -124,5 +131,5 @@ class CreateStorageURLs(UploadDocument):
         return urls
 
 
-# Alias to ensure backwards compatability
+# Alias to ensure backwards compatibility
 UploadImages = CreateStorageURLs
