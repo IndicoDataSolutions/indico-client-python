@@ -61,7 +61,7 @@ class AddLabels(GraphQLRequest):
         )
 
 
-class GetQuestionnaireExamples(GraphQLRequest):
+class GetQuestionnairreExamples(GraphQLRequest):
     """
     Gets unlabeled examples from a Questionnaire.
 
@@ -160,7 +160,7 @@ class GetQuestionnaire(GraphQLRequest):
         return Questionnaire(**questionnaire_list[0])
 
 
-class _CreateQuestionaire(GraphQLRequest):
+class _CreateQuestionnaire(GraphQLRequest):
     """
     Creates the questionnaire (teach task) for a dataset.
 
@@ -238,8 +238,7 @@ class _CreateQuestionaire(GraphQLRequest):
             raise IndicoNotFound("Failed to create Questionnaire")
         return questionnaire
 
-
-class CreateQuestionaire(RequestChain):
+class CreateQuestionnaire(RequestChain):
     """
     Creates a labeled questionaire (teach task) for a dataset.
 
@@ -319,3 +318,8 @@ class CreateQuestionaire(RequestChain):
                     labels=labels,
                 )
         yield GetQuestionnaire(questionaire_id)
+
+# Backwards compat
+GetQuestionaireExamples = GetQuestionnaireExamples
+_CreateQuestionaire = _CreateQuestionnaire
+CreateQuestionaire = CreateQuestionnaire
