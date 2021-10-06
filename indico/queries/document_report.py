@@ -12,7 +12,12 @@ class _DocumentReportList(BaseType):
     pass
 
 class GetDocumentReport(PagedRequest):
-    query = """
+  """
+  Query to generate a Document Report.
+  Generates a paged request and paged response.
+  See examples for a sample query.
+  """
+  query = """
            query SubmissionsLog($filters: SubmissionLogFilter, $limit: Int){
   submissionsLog(filters: $filters, limit: $limit){
     submissions{
@@ -40,12 +45,12 @@ class GetDocumentReport(PagedRequest):
 }
         """
 
-    def __init__(self, filters: Union[dict, DocumentReportFilter] = None, limit: int = None):
+  def __init__(self, filters: Union[dict, DocumentReportFilter] = None, limit: int = None):
         variables = {
             "filters": filters,
             "limit": limit
         }
         super().__init__(self.query, variables=variables)
 
-    def process_response(self, response):
+  def process_response(self, response):
         return _DocumentReportList(**super().process_response(response)["submissionsLog"]).submissions

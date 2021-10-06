@@ -16,3 +16,4 @@ Examples
     submission-ex
     user-metrics-ex
     workflow-metrics-ex
+    document-report-ex
