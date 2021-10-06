@@ -119,6 +119,8 @@
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report Metrics</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -126,6 +128,8 @@
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Metrics Types</a></li>
 </ul>
 
             
@@ -217,12 +221,16 @@ using RetrieveStorageObject.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.storage.UploadDocument">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">UploadDocument</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">UploadDocument</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upload an object stored on the Indico Platform</p>
 <p>Used internally for uploading documents to indico platform for later processing</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filepaths</strong> (<em>str</em>) – list of filepaths to upload</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>files</strong> (<em>str</em>) – A list of local filepaths to upload.</p></li>
+<li><p><strong>streams</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>io.BufferedIOBase</em><em>]</em>) – A dict of filenames to BufferedIOBase streams
+(any class that inherits BufferedIOBase is acceptable).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>storage objects to be use for further processing requests E.G. Document extraction (implicitly called)</p>
@@ -235,7 +243,7 @@ using RetrieveStorageObject.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.storage.CreateStorageURLs">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">CreateStorageURLs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">CreateStorageURLs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upload an object stored on the Indico Platform and return only the storage URL to the object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

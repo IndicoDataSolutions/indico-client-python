@@ -1,5 +1,5 @@
 **********************
-Document Report Metrics Types
+Document Report Types
 **********************
 
 .. automodule:: indico.types.document_report
