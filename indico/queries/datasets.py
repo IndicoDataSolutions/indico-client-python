@@ -225,7 +225,7 @@ class CreateDataset(RequestChain):
             )
         file_metadata = self.previous
         yield CreateEmptyDataset(name=self.name, dataset_type=self.dataset_type)
-        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata)
+        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata, autoprocess=False)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
