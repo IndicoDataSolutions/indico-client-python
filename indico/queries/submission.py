@@ -112,13 +112,6 @@ class GetSubmission(GraphQLRequest):
                 status
                 inputFile
                 inputFilename
-                inputFiles {
-                    id
-                    filepath
-                    filename
-                    fileSize
-                    numPages
-                }
                 resultFile
                 retrieved
                 deleted
