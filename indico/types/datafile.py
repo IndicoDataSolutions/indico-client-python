@@ -63,5 +63,5 @@ class Datafile(BaseType):
     file_type: str
     page_ids: List[int]
     num_pages: int
-    pages: List[DataFilePages]
+    pages: List[DataFilePage]
     failure_type: str
