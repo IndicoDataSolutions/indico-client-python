@@ -174,6 +174,7 @@ class CreateDataset(RequestChain):
     Returns:
         Dataset object
     Raises:
+        IndicoError
     """
 
     previous = None

@@ -403,9 +403,16 @@ class SubmitReview(GraphQLRequest):
 class RetrySubmission(GraphQLRequest):
     """
     Given a list of submission ids, retry those failed submissions.
+    Submissions must be in a failed state and cannot be requested before
+    the cool-off period (typically 180ms).
 
-    Attributes:
+    Args:
         submission_ids (List[int]): the given submission ids to retry.
+    Options:
+
+    Raises: 
+        IndicoInputError
+
     """
 
     query = """

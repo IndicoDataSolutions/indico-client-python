@@ -1,6 +1,6 @@
-***********
 User Metrics Types
-***********
+***********************************************************
+
 
 .. automodule:: indico.types.user_metrics
 .. autoclass:: indico.types.user_metrics.AppRoles
