@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Storage &mdash; Indico Python Client 3.1.0 documentation</title><link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" /><link rel="shortcut icon" href="_static/favicon.png"/>
+  <title>Storage &mdash; Indico Python Client 3.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -16,15 +20,16 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Workflows" href="workflow.html" />
-    <link rel="prev" title="Submissions" href="submissions.html" />
+    <link rel="prev" title="Submissions" href="submissions.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-            <a href="index.html" class="icon icon-home"> Indico Python Client<img src="_static/logo-white.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-white.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -97,12 +102,12 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-
-  <div class="section" id="module-indico.queries.storage">
+             
+  <section id="module-indico.queries.storage">
 <span id="storage"></span><h1>Storage<a class="headerlink" href="#module-indico.queries.storage" title="Permalink to this headline"></a></h1>
 <dl class="py class">
-<dt id="indico.queries.storage.RetrieveStorageObject">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">RetrieveStorageObject</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.RetrieveStorageObject" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="indico.queries.storage.RetrieveStorageObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">RetrieveStorageObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.RetrieveStorageObject" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve an object stored on the Indico Platform</p>
 <p>Results of some operations, notably DocumentExtraction can be quite large
 and are stored on disk in the Indico Platform. You need to retrieve them
@@ -121,8 +126,8 @@ using RetrieveStorageObject.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="indico.queries.storage.UploadDocument">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">UploadDocument</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="indico.queries.storage.UploadDocument">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">UploadDocument</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition"></a></dt>
 <dd><p>Upload an object stored on the Indico Platform</p>
 <p>Used internally for uploading documents to indico platform for later processing</p>
 <dl class="field-list simple">
@@ -143,8 +148,8 @@ using RetrieveStorageObject.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="indico.queries.storage.CreateStorageURLs">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></code><code class="sig-name descname"><span class="pre">CreateStorageURLs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="indico.queries.storage.CreateStorageURLs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">CreateStorageURLs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition"></a></dt>
 <dd><p>Upload an object stored on the Indico Platform and return only the storage URL to the object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -159,7 +164,7 @@ using RetrieveStorageObject.</p>
 </dl>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
@@ -178,7 +183,7 @@ using RetrieveStorageObject.</p>
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
+   
 
 </footer>
         </div>
@@ -189,7 +194,7 @@ using RetrieveStorageObject.</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
+  </script> 
 
 </body>
 </html>
