@@ -1,24 +1,22 @@
-indico-client-test:
-  build:
-    dockerfile: tox.Dockerfile
-  container_name: indico-client-test
-  environment:
-    - INDICO_HOST=dev.indico.io
-    - TOX_PARALLEL_NO_SPINNER=true
-  encrypted_env_file:
-    - env.encrypted
-  volumes:
-    - .:/indico-client
 indico-client-deploy:
   build:
     dockerfile: Dockerfile
   container_name: indico-client-deploy
-  environment:
-    - TWINE_USERNAME=__token__
-    #- TWINE_REPOSITORY=testpypi #uncomment to test CD against test.pypi.org
-    - TWINE_NON_INTERACTIVE=true
   encrypted_env_file:
-    - env.encrypted
+  - env.encrypted
+  environment:
+  - TWINE_USERNAME=__token__
+  - TWINE_NON_INTERACTIVE=true
   volumes:
-    - .:/indico-client
-
+  - .:/indico-client
+indico-client-test:
+  build:
+    dockerfile: tox.Dockerfile
+  container_name: indico-client-test
+  encrypted_env_file:
+  - env.encrypted
+  environment:
+  - INDICO_HOST=dev.indico.io
+  - TOX_PARALLEL_NO_SPINNER=true
+  volumes:
+  - .:/indico-client
