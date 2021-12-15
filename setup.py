@@ -8,7 +8,7 @@ setup(
     name="indico-client",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests"]),
     description="""A Python Wrapper for indico app API.""",
     license="MIT License (See LICENSE)",
     long_description=open("README.rst").read(),
