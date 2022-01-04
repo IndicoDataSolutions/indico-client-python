@@ -93,14 +93,16 @@ class DocumentReportFilter(Filter):
     __options__ = ("workflow_id", "submission_id", "status", "created_at_start_date", "created_at_end_date",
                    "updated_at_start_date", "updated_at_end_date")
 
-    def __init__(self, submission_id: int = None, workflow_id: int = None, created_at_start_date: datetime = None,
+    def __init__(self, submission_id: int = None, workflow_id: int = None, status: str = None, created_at_start_date: datetime = None,
                  created_at_end_date: datetime = None,
                  updated_at_start_date: datetime = None, updated_at_end_date: datetime = None
                  ):
 
         kwargs = {
             "workflowId": workflow_id,
-            "id": submission_id
+            "id": submission_id,
+            "status": status
+
 
         }
         if created_at_start_date is not None and created_at_end_date is not None:
