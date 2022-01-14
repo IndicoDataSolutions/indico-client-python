@@ -108,6 +108,8 @@ class _CreateModelGroup(GraphQLRequest):
     query = """
         mutation CreateModelGroup(
             $datasetId: Int!,
+            $workflowId: Int!
+            $afterComponentId: Int,
             $sourceColumnId: Int!,
             $labelsetColumnId: Int,
             $name: String!,
@@ -120,7 +122,9 @@ class _CreateModelGroup(GraphQLRequest):
                     labelsetColumnId: $labelsetColumnId,
                     modelTrainingOptions: $modelTrainingOptions,
                     name: $name,
-                    modelType: $modelType
+                    modelType: $modelType,
+                    workflowId: $workflowId
+                    afterComponentId: $afterComponentId
                 ) {
                     id
                     status
@@ -133,6 +137,8 @@ class _CreateModelGroup(GraphQLRequest):
         self,
         name: str,
         dataset_id: int,
+        workflow_id: int,
+        after_component_id: int,
         source_column_id: int,
         labelset_id: int,
         model_training_options: dict = None,
@@ -145,6 +151,8 @@ class _CreateModelGroup(GraphQLRequest):
             variables={
                 "name": name,
                 "datasetId": dataset_id,
+                "workflowId": workflow_id,
+                "afterComponentId": after_component_id,
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_id,
                 "modelTrainingOptions": model_training_options,
@@ -201,6 +209,7 @@ class CreateModelGroup(RequestChain):
     Args:
         name (str): Name of the new model group
         dataset_id (int): id of the dataset that this model group is based upon
+        workflow_id (int): id of the workflow that this model group is associated with
         source_column_id (int): id of the source column to use in training this model group. Usually the id of source text or images.
         labelset_id (int): id of the labelset (labeled data) to use in training this model group
         wait (bool): Wait for this model group to finish training. Default is False
@@ -218,6 +227,8 @@ class CreateModelGroup(RequestChain):
         self,
         name: str,
         dataset_id: int,
+        workflow_id: int,
+        after_component_id: int,
         source_column_id: int,
         labelset_id: int,
         wait: bool = False,
@@ -226,16 +237,21 @@ class CreateModelGroup(RequestChain):
     ):
         self.name = name
         self.dataset_id = dataset_id
+        self.workflow_id = workflow_id
+        self.after_component_id = after_component_id
         self.source_column_id = source_column_id
         self.labelset_id = labelset_id
         self.wait = wait
         self.model_training_options = model_training_options
         self.model_type = model_type
+        self.after_component_id = after_component_id
 
     def requests(self):
         yield _CreateModelGroup(
             name=self.name,
             dataset_id=self.dataset_id,
+            workflow_id=self.workflow_id,
+            after_component_id=self.after_component_id,
             source_column_id=self.source_column_id,
             labelset_id=self.labelset_id,
             model_training_options=self.model_training_options,
