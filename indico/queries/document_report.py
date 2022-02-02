@@ -35,6 +35,8 @@ class GetDocumentReport(PagedRequest):
               inputFiles{
                 filename
                 submissionId
+                fileSize
+                numPages
               }
             }
             pageInfo{
