@@ -159,7 +159,7 @@ class GetQuestionnaire(GraphQLRequest):
             raise IndicoError("Cannot find questionnaire")
         return Questionnaire(**questionnaire_list[0])
 
-
+#TODO: Mark as Deprecated.
 class _CreateQuestionaire(GraphQLRequest):
     """
     Creates the questionnaire (teach task) for a dataset.
@@ -239,6 +239,7 @@ class _CreateQuestionaire(GraphQLRequest):
         return questionnaire
 
 
+#TODO: Mark as deprecated.
 class CreateQuestionaire(RequestChain):
     """
     Creates a labeled questionaire (teach task) for a dataset.

@@ -1,10 +1,12 @@
 import io
+import json
 from typing import List, Union, Dict
 
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
 from indico.queries.storage import UploadDocument
-from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS
+from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS, ModelTaskType, \
+    NewLabelsetArguments, NewQuestionaireArguments
 from indico.types.utils import cc_to_snake, snake_to_cc
 
 
@@ -29,6 +31,35 @@ class ListWorkflows(GraphQLRequest):
                     status
                     reviewEnabled
                     autoReviewEnabled
+                components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        validActions {
+                            addFilter
+                            addModel
+                            addTransformer
+                        }
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                        }
+                
+                    }
+                  componentLinks{
+                    id
+                    headComponentId
+                    tailComponentId
+                    filters{
+                      classes
+                    }
+                    validActions{
+                      addFilter
+                      addModel
+                      addTransformer
+                    }
+                  }
                 }
             }
         }
@@ -391,7 +422,7 @@ class _AddDataToWorkflow(GraphQLRequest):
 
 class AddDataToWorkflow(RequestChain):
     """
-    Mutation to update data in a workflow, pressumably
+    Mutation to update data in a workflow, presumably
     after new data is added to the dataset.
 
     Args:
@@ -417,3 +448,120 @@ class AddDataToWorkflow(RequestChain):
             while self.previous.status != "COMPLETE":
                 yield GetWorkflow(workflow_id=self.workflow_id)
                 debouncer.backoff()
+
+
+class CreateWorkflow(GraphQLRequest):
+    """
+    Mutation to create workflow given an existing dataset.
+
+    Args:
+        dataset_id(int): dataset to create workflow for
+        name(str): name for the workflow
+
+    """
+    query = """  mutation createWorkflow($datasetId: Int!, $name: String!) {
+    createWorkflow(datasetId: $datasetId, name: $name) {
+          workflow {
+                    id
+                    name
+                    status
+                    reviewEnabled
+                    autoReviewEnabled
+                }
+    }
+    }
+    """
+
+    def __init__(self, dataset_id: int, name: str):
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id,
+                       "name": name},
+        )
+
+    def process_response(self, response) -> Workflow:
+        return Workflow(
+            **super().process_response(response)["createWorkflow"]["workflow"]
+        )
+
+
+class AddModelGroupComponent(GraphQLRequest):
+    """
+    Adds extraction or classification component to a workflow.
+    Existing labelsets only currently.
+    """
+    query = """
+    mutation addExtractionModel(
+  $workflowId: Int!, 
+  $name: String!, 
+  $datasetId: Int!, 
+  $sourceColumnId: Int!, 
+  $afterComponentId: Int, 
+  $labelsetColumnId: Int
+) {
+  addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId, 
+  sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId) {
+    workflow {
+      id
+    }
+  }
+}
+    """
+
+    def __init__(self, workflow_id: int, dataset_id: int, name: str,
+                 source_column_id: int, after_component_id: int, labelset_column_id: int = None, new_labelset_args: NewLabelsetArguments = None,
+                 questionnaire_args: NewQuestionaireArguments = None):
+        super().__init__(
+            self.query,
+            variables={
+                "workflowId": workflow_id,
+                "name": name,
+                "datasetId": dataset_id,
+                "sourceColumnId": source_column_id,
+                "labelsetColumnId": labelset_column_id,
+                "afterComponentId": after_component_id,
+                "newLabelsetArgs": {
+                    "name"
+                },
+                "questionnaireArgs": json.dumps(questionnaire_args)
+                },
+        )
+
+    def process_response(self, response) -> int:
+        return super().process_response(response)["workflow"]["id"]
+
+class AddWorkflowComponent(GraphQLRequest):
+    """
+    Add a generic component to an existing workflow.
+    Component is a JSONString defining the configuration.
+    """
+    query = """mutation addWorkflowNode(
+    $afterComponentId: Int
+    $afterComponentLinkId: Int
+    $component: JSONString!
+    $workflowId: Int!
+  ) {
+    addWorkflowComponent(
+      afterComponentId: $afterComponentId
+      afterComponentLinkId: $afterComponentLinkId
+      component: $component
+      workflowId: $workflowId
+    ) {
+      workflow {
+        id
+      }
+    }
+  }"""
+
+    def __init__(self, workflow_id: int, after_component_id: int, after_component_link_id: int, component: str):
+        super().__init__(
+            self.query,
+            variables={"workflow_id": workflow_id,
+                       "after_component_link_id": after_component_link_id,
+                       "after_component_id": after_component_id,
+                       "component": component
+                       },
+        )
+
+    def process_response(self, response) -> int:
+        return super().process_response(response)["workflow"]["id"]
