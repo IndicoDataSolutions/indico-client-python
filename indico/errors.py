@@ -42,5 +42,6 @@ class IndicoAuthenticationFailed(IndicoError):
 
 class IndicoHibernationError(IndicoError):
     def __init__(self, after):
+        self.after = after
         super().__init__(f"Platform is currently hibernating. Wait {after} seconds and retry this request.")
 

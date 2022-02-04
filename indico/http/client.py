@@ -173,6 +173,7 @@ class HTTPClient:
             )
 
         content = deserialize(response, force_json=json)
+
         if response.status_code >= 400:
             if isinstance(content, dict):
                 error = (
