@@ -164,7 +164,7 @@ class HTTPClient:
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
 
-        if response.status_code == 502 and 'Retry-After' in response.headers:
+        if response.status_code == 503 and 'Retry-After' in response.headers:
             raise IndicoHibernationError(after=response.headers.get('Retry-After'))
 
         if response.status_code >= 500:
