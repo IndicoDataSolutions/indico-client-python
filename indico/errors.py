@@ -38,3 +38,9 @@ class IndicoNotFound(IndicoError):
 class IndicoAuthenticationFailed(IndicoError):
     def __init__(self):
         super().__init__("Failed to authenticate")
+
+
+class IndicoHibernationError(IndicoError):
+    def __init__(self, after):
+        super().__init__(f"Platform is currently hibernating. Wait {after} seconds and retry this request.")
+
