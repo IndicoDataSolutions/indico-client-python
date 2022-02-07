@@ -9,7 +9,7 @@ from typing import Union
 import requests
 from indico.client.request import HTTPRequest
 from indico.config import IndicoConfig
-from indico.errors import IndicoAuthenticationFailed, IndicoRequestError
+from indico.errors import IndicoAuthenticationFailed, IndicoRequestError, IndicoHibernationError
 from indico.http.serialization import deserialize
 from requests import Response
 
@@ -155,8 +155,6 @@ class HTTPClient:
         if len(url_parts) > 1 and (url_parts[-1] == "json" or url_parts[-2] == "json"):
             json = True
 
-        content = deserialize(response, force_json=json)
-
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
             self.get_short_lived_access_token()
@@ -165,6 +163,16 @@ class HTTPClient:
             )
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
+
+        if response.status_code == 503 and 'Retry-After' in response.headers:
+            raise IndicoHibernationError(after=response.headers.get('Retry-After'))
+
+        if response.status_code >= 500:
+            raise IndicoRequestError(
+                code=response.status_code
+            )
+
+        content = deserialize(response, force_json=json)
 
         if response.status_code >= 400:
             if isinstance(content, dict):
