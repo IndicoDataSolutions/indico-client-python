@@ -25,7 +25,7 @@ class WorkflowComponent(BaseType):
     """
     id: int
     component_type: str
-    valid_actions: WorkflowValidActions
+    #valid_actions: WorkflowValidActions
     task_type: str
     model_type: str
 
@@ -34,7 +34,7 @@ class WorkflowComponentLinks(BaseType):
     id: int
     head_component_id: int
     tail_component_id: int
-    valid_actions: WorkflowValidActions
+    #valid_actions: WorkflowValidActions
 
 
 class Workflow(BaseType):

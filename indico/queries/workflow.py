@@ -36,11 +36,7 @@ class ListWorkflows(GraphQLRequest):
                         componentType
                         reviewable
                         filteredClasses
-                        validActions {
-                            addFilter
-                            addModel
-                            addTransformer
-                        }
+                        
                         ... on ModelGroupComponent {
                             taskType
                             modelType
@@ -54,11 +50,7 @@ class ListWorkflows(GraphQLRequest):
                     filters{
                       classes
                     }
-                    validActions{
-                      addFilter
-                      addModel
-                      addTransformer
-                    }
+                    
                   }
                 }
             }
@@ -502,7 +494,35 @@ class AddModelGroupComponent(GraphQLRequest):
   addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId, 
   sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId) {
     workflow {
-      id
+        id
+        components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                   
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                            modelGroup {
+                                status
+                              id
+                              name
+                              taskType
+                              selectedModel{
+                                id
+                              }
+                            }
+                        }
+                
+                    }
+                    componentLinks {
+                        id
+                        headComponentId
+                        tailComponentId
+                     
+                    }
+                
     }
   }
 }
@@ -519,16 +539,11 @@ class AddModelGroupComponent(GraphQLRequest):
                 "datasetId": dataset_id,
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_column_id,
-                "afterComponentId": after_component_id,
-                "newLabelsetArgs": {
-                    "name"
-                },
-                "questionnaireArgs": json.dumps(questionnaire_args)
-                },
+                "afterComponentId": after_component_id}
         )
 
-    def process_response(self, response) -> int:
-        return super().process_response(response)["workflow"]["id"]
+    def process_response(self, response) -> Workflow:
+        return super().process_response(response)["addModelGroupComponent"]["workflow"]
 
 class AddWorkflowComponent(GraphQLRequest):
     """
