@@ -6,6 +6,8 @@ from indico.types import BaseType
 class InputFile(BaseType):
     filename: str
     submission_id: int
+    num_pages: int
+    file_size: int
 
 
 class DocumentReport(BaseType):
