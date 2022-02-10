@@ -482,7 +482,15 @@ class AddModelGroupComponent(GraphQLRequest):
             Adds extraction or classification component to a workflow.
             Available on 5.0+.
             Returns workflow with updated component list.
-            
+    Args:
+         workflow_id: int,
+         dataset_id: int,
+         name: str,
+        source_column_id: int,
+        after_component_id: int,
+        labelset_column_id: int = None
+        new_labelset_args: NewLabelsetArguments = None
+        new_questionnaire_args: NewQuestionaireArguments = None
 
     """
     query = """
