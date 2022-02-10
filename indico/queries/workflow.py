@@ -503,9 +503,11 @@ class AddModelGroupComponent(GraphQLRequest):
           $labelsetColumnId: Int,
           $newLabelsetArgs: NewLabelsetInput,
           $questionnaireArgs: QuestionnaireInput,
+          $modelTrainingOptions: JSONString
         ) {
           addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId, 
           sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId,
+          modelTrainingOptions: $modelTrainingOptions,
           
     newLabelsetArgs: $newLabelsetArgs,
     questionnaireArgs: $questionnaireArgs,) {
@@ -547,7 +549,7 @@ class AddModelGroupComponent(GraphQLRequest):
     def __init__(self, workflow_id: int, dataset_id: int, name: str,
                  source_column_id: int, after_component_id: int, labelset_column_id: int = None,
                  new_labelset_args: NewLabelsetArguments = None,
-                 new_questionnaire_args: NewQuestionaireArguments = None):
+                 new_questionnaire_args: NewQuestionaireArguments = None, model_training_options: str = None):
         if labelset_column_id is not None and new_labelset_args is not None:
             raise IndicoInputError("Cannot define both labelset_column_id and new_labelset_args, must be one "
                                    "or the other.")
@@ -563,6 +565,7 @@ class AddModelGroupComponent(GraphQLRequest):
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_column_id,
                 "afterComponentId": after_component_id,
+                "modelTrainingOptions": model_training_options,
                 "newLabelsetArgs": self.__labelset_to_json(
                     new_labelset_args) if new_labelset_args is not None else None,
                 "questionnaireArgs": self.__questionnaire_to_json(
