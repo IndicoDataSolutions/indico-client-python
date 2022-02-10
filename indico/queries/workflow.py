@@ -479,58 +479,73 @@ class CreateWorkflow(GraphQLRequest):
 
 class AddModelGroupComponent(GraphQLRequest):
     """
-    Adds extraction or classification component to a workflow.
-    Existing labelsets only currently.
+            Adds extraction or classification component to a workflow.
+            Available on 5.0+.
+            Returns workflow with updated component list.
+            
+
     """
     query = """
-    mutation addExtractionModel(
-  $workflowId: Int!, 
-  $name: String!, 
-  $datasetId: Int!, 
-  $sourceColumnId: Int!, 
-  $afterComponentId: Int, 
-  $labelsetColumnId: Int
-) {
-  addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId, 
-  sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId) {
-    workflow {
-        id
-        components {
-                        id
-                        componentType
-                        reviewable
-                        filteredClasses
-                   
-                        ... on ModelGroupComponent {
-                            taskType
-                            modelType
-                            modelGroup {
-                                status
-                              id
-                              name
-                              taskType
-                              selectedModel{
+            mutation addExtractionModel(
+          $workflowId: Int!, 
+          $name: String!, 
+          $datasetId: Int!, 
+          $sourceColumnId: Int!, 
+          $afterComponentId: Int, 
+          $labelsetColumnId: Int,
+          $newLabelsetArgs: NewLabelsetInput,
+          $questionnaireArgs: QuestionnaireInput,
+        ) {
+          addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId, 
+          sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId,
+          
+    newLabelsetArgs: $newLabelsetArgs,
+    questionnaireArgs: $questionnaireArgs,) {
+            workflow {
+                id
+                components {
                                 id
-                              }
+                                componentType
+                                reviewable
+                                filteredClasses
+
+                                ... on ModelGroupComponent {
+                                    taskType
+                                    modelType
+                                    modelGroup {
+                                        status
+                                      id
+                                      name
+                                      taskType
+                                      selectedModel{
+                                        id
+                                      }
+                                    }
+                                }
+
                             }
-                        }
-                
-                    }
-                    componentLinks {
-                        id
-                        headComponentId
-                        tailComponentId
-                     
-                    }
-                
-    }
-  }
-}
-    """
+                            componentLinks {
+                                id
+                                headComponentId
+                                tailComponentId
+
+                            }
+
+            }
+          }
+        }
+            """
 
     def __init__(self, workflow_id: int, dataset_id: int, name: str,
-                 source_column_id: int, after_component_id: int, labelset_column_id: int = None, new_labelset_args: NewLabelsetArguments = None,
-                 questionnaire_args: NewQuestionaireArguments = None):
+                 source_column_id: int, after_component_id: int, labelset_column_id: int = None,
+                 new_labelset_args: NewLabelsetArguments = None,
+                 new_questionnaire_args: NewQuestionaireArguments = None):
+        if labelset_column_id is not None and new_labelset_args is not None:
+            raise IndicoInputError("Cannot define both labelset_column_id and new_labelset_args, must be one "
+                                   "or the other.")
+        if labelset_column_id is None and new_labelset_args is None:
+            raise IndicoInputError("Must define one of either labelset_column_id or new_labelset_args.")
+
         super().__init__(
             self.query,
             variables={
@@ -539,44 +554,32 @@ class AddModelGroupComponent(GraphQLRequest):
                 "datasetId": dataset_id,
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_column_id,
-                "afterComponentId": after_component_id}
+                "afterComponentId": after_component_id,
+                "newLabelsetArgs": self.__labelset_to_json(
+                    new_labelset_args) if new_labelset_args is not None else None,
+                "questionnaireArgs": self.__questionnaire_to_json(
+                    new_questionnaire_args) if new_questionnaire_args is not None else None
+
+            }
         )
+
+    def __labelset_to_json(self, labelset: NewLabelsetArguments):
+        return {
+            "name": labelset.name,
+            "numLabelersRequired": labelset.num_labelers_required,
+            "datacolumnId": labelset.datacolumn_id,
+            "taskType": labelset.task_type,
+            "targetNames": labelset.target_names
+        }
+
+    def __questionnaire_to_json(self, questionnaire: NewQuestionaireArguments):
+        return {
+            "instructions": questionnaire.instructions,
+            "forceTextMode": questionnaire.force_text_mode,
+            "showPredictions": questionnaire.show_predictions,
+            "users": questionnaire.users
+
+        }
 
     def process_response(self, response) -> Workflow:
         return super().process_response(response)["addModelGroupComponent"]["workflow"]
-
-class AddWorkflowComponent(GraphQLRequest):
-    """
-    Add a generic component to an existing workflow.
-    Component is a JSONString defining the configuration.
-    """
-    query = """mutation addWorkflowNode(
-    $afterComponentId: Int
-    $afterComponentLinkId: Int
-    $component: JSONString!
-    $workflowId: Int!
-  ) {
-    addWorkflowComponent(
-      afterComponentId: $afterComponentId
-      afterComponentLinkId: $afterComponentLinkId
-      component: $component
-      workflowId: $workflowId
-    ) {
-      workflow {
-        id
-      }
-    }
-  }"""
-
-    def __init__(self, workflow_id: int, after_component_id: int, after_component_link_id: int, component: str):
-        super().__init__(
-            self.query,
-            variables={"workflow_id": workflow_id,
-                       "after_component_link_id": after_component_link_id,
-                       "after_component_id": after_component_id,
-                       "component": component
-                       },
-        )
-
-    def process_response(self, response) -> int:
-        return super().process_response(response)["workflow"]["id"]
