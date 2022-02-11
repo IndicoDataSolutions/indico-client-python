@@ -453,12 +453,33 @@ class CreateWorkflow(GraphQLRequest):
     """
     query = """  mutation createWorkflow($datasetId: Int!, $name: String!) {
     createWorkflow(datasetId: $datasetId, name: $name) {
-          workflow {
+           workflow {
                     id
                     name
                     status
                     reviewEnabled
                     autoReviewEnabled
+                components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                        }
+                
+                    }
+                  componentLinks{
+                    id
+                    headComponentId
+                    tailComponentId
+                    filters{
+                      classes
+                    }
+                    
+                  }
                 }
     }
     }
@@ -518,7 +539,6 @@ class AddModelGroupComponent(GraphQLRequest):
                                 componentType
                                 reviewable
                                 filteredClasses
-
                                 ... on ModelGroupComponent {
                                     taskType
                                     modelType
@@ -547,7 +567,7 @@ class AddModelGroupComponent(GraphQLRequest):
             """
 
     def __init__(self, workflow_id: int, dataset_id: int, name: str,
-                 source_column_id: int, after_component_id: int, labelset_column_id: int = None,
+                 source_column_id: int, after_component_id: int = None, labelset_column_id: int = None,
                  new_labelset_args: NewLabelsetArguments = None,
                  new_questionnaire_args: NewQuestionaireArguments = None, model_training_options: str = None):
         if labelset_column_id is not None and new_labelset_args is not None:
@@ -593,4 +613,4 @@ class AddModelGroupComponent(GraphQLRequest):
         }
 
     def process_response(self, response) -> Workflow:
-        return super().process_response(response)["addModelGroupComponent"]["workflow"]
+        return Workflow(**super().process_response(response)["addModelGroupComponent"]["workflow"])

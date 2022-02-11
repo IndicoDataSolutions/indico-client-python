@@ -28,12 +28,15 @@ class WorkflowComponent(BaseType):
     #valid_actions: WorkflowValidActions
     task_type: str
     model_type: str
-
+    model_group: ModelGroup
+    task_type: str
+    model_type: str
 
 class WorkflowComponentLinks(BaseType):
     id: int
     head_component_id: int
     tail_component_id: int
+
     #valid_actions: WorkflowValidActions
 
 
@@ -45,6 +48,9 @@ class Workflow(BaseType):
     auto_review_enabled: bool
     components: List[WorkflowComponent]
     component_links: List[WorkflowComponentLinks]
+
+    def component_by_type(self, component_type: str) -> WorkflowComponent:
+        return next(component for component in self.components if component.component_type == component_type)
 
 
 class ModelGroupComponentArguments:
