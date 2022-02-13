@@ -11,7 +11,35 @@ from indico.types.utils import cc_to_snake
 from indico.errors import IndicoNotFound, IndicoError
 
 
-class GetModelGroup(GraphQLRequest):
+class GetModelGroup(RequestChain):
+    """
+    Get an object describing a model group
+
+    Args:
+        id (int): model group id to query
+
+    Returns:
+        ModelGroup object
+
+    Raises:
+
+    """
+
+    def __init__(self, id: int, wait: bool = False):
+        self.id = id
+        self.wait = wait
+
+    def requests(self):
+        if self.wait:
+            req = GetModelGroupSelectedModelStatus(id=self.id)
+            yield req
+            while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
+                sleep(1)
+                yield req
+            yield _GetModelGroup(id=self.id)
+
+
+class _GetModelGroup(GraphQLRequest):
     """
     Get an object describing a model group
 
@@ -130,13 +158,13 @@ class _CreateModelGroup(GraphQLRequest):
     """
 
     def __init__(
-        self,
-        name: str,
-        dataset_id: int,
-        source_column_id: int,
-        labelset_id: int,
-        model_training_options: dict = None,
-        model_type: str = None,
+            self,
+            name: str,
+            dataset_id: int,
+            source_column_id: int,
+            labelset_id: int,
+            model_training_options: dict = None,
+            model_type: str = None,
     ):
         if model_training_options:
             model_training_options = json.dumps(model_training_options)
@@ -215,14 +243,14 @@ class CreateModelGroup(RequestChain):
     """
 
     def __init__(
-        self,
-        name: str,
-        dataset_id: int,
-        source_column_id: int,
-        labelset_id: int,
-        wait: bool = False,
-        model_training_options: dict = None,
-        model_type: str = None,
+            self,
+            name: str,
+            dataset_id: int,
+            source_column_id: int,
+            labelset_id: int,
+            wait: bool = False,
+            model_training_options: dict = None,
+            model_type: str = None,
     ):
         self.name = name
         self.dataset_id = dataset_id
@@ -249,7 +277,7 @@ class CreateModelGroup(RequestChain):
                 sleep(1)
                 yield req
 
-            yield GetModelGroup(id=model_group_id)
+            yield _GetModelGroup(id=model_group_id)
 
 
 class LoadModel(GraphQLRequest):
@@ -340,11 +368,11 @@ class ModelGroupPredict(RequestChain):
     """
 
     def __init__(
-        self,
-        model_id: int,
-        data: List[str],
-        load: bool = True,
-        predict_options: Dict = None,
+            self,
+            model_id: int,
+            data: List[str],
+            load: bool = True,
+            predict_options: Dict = None,
     ):
         self.model_id = model_id
         self.data = data

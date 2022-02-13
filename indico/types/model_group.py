@@ -68,3 +68,12 @@ class NewLabelsetArguments(BaseType):
     datacolumn_id: int
     task_type: str
     target_names: List[str]
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "numLabelersRequired": self.num_labelers_required,
+            "datacolumnId": self.datacolumn_id,
+            "taskType": self.task_type,
+            "targetNames": self.target_names
+        }
