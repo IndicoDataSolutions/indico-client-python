@@ -515,7 +515,7 @@ class AddModelGroupComponent(GraphQLRequest):
 
     """
     query = """
-            mutation addExtractionModel(
+            mutation addModelGroup(
           $workflowId: Int!, 
           $name: String!, 
           $datasetId: Int!, 
