@@ -41,6 +41,8 @@ class ModelType(Enum):
     OBJECT_DETECTION = 3
     FORM_EXTRACTION = 4
     DOCUMENT = 5
+    TFIDF_LR = 6
+    TFIDF_GBT = 7
 
 
 
