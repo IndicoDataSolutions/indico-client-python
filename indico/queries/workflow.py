@@ -207,7 +207,7 @@ class _WorkflowSubmission(GraphQLRequest):
             **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
-        self.record_submission = kwargs["record_submission"]
+        self.record_submission = True #record_submission is deprecated entirely.
 
         # construct mutation signature and args based on provided kwargs to ensure
         # backwards-compatible graphql calls
@@ -263,7 +263,8 @@ class WorkflowSubmission(RequestChain):
         workflow_id (int): Id of workflow to submit files to
         files (List[str], optional): List of local file paths to submit
         urls (List[str], optional): List of urls to submit
-        submission (bool, optional): Process these files as normal submissions.
+        submission (bool, optional): DEPRECATED - AsyncJobs are no longer supported.
+        Process these files as normal submissions.
             Defaults to True.
             If False, files will be processed as AsyncJobs, ignoring any workflow
             post-processing steps like Review and with no record in the system
@@ -306,7 +307,8 @@ class WorkflowSubmission(RequestChain):
             self.has_streams = True
         else:
             self.streams = None
-
+        if not submission:
+            raise IndicoInputError("This option is deprecated and no longer supported.")
         if not self.files and not self.urls and not self.has_streams:
             raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
         elif self.files and self.has_streams:
