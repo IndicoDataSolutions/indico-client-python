@@ -2,13 +2,16 @@ import json
 from time import sleep
 from typing import List, Dict
 
+import deprecation
+
 from indico.client.request import GraphQLRequest, RequestChain
-from indico.types.model_group import ModelGroup
+from indico.types import Workflow
+from indico.types.model_group import ModelGroup, NewQuestionaireArguments, NewLabelsetArguments
 from indico.types.model import Model
 from indico.types.jobs import Job
 from indico.types.utils import cc_to_snake
 
-from indico.errors import IndicoNotFound, IndicoError
+from indico.errors import IndicoNotFound, IndicoError, IndicoInputError
 
 
 class GetModelGroup(RequestChain):
@@ -132,57 +135,6 @@ class GetTrainingModelWithProgress(GraphQLRequest):
         return Model(**last)
 
 
-class _CreateModelGroup(GraphQLRequest):
-    query = """
-        mutation CreateModelGroup(
-            $datasetId: Int!,
-            $sourceColumnId: Int!,
-            $labelsetColumnId: Int,
-            $name: String!,
-            $modelTrainingOptions: JSONString,
-            $modelType: ModelType,
-        ) {
-                createModelGroup(
-                    datasetId: $datasetId,
-                    sourceColumnId: $sourceColumnId,
-                    labelsetColumnId: $labelsetColumnId,
-                    modelTrainingOptions: $modelTrainingOptions,
-                    name: $name,
-                    modelType: $modelType
-                ) {
-                    id
-                    status
-                    name
-                }
-            }
-    """
-
-    def __init__(
-            self,
-            name: str,
-            dataset_id: int,
-            source_column_id: int,
-            labelset_id: int,
-            model_training_options: dict = None,
-            model_type: str = None,
-    ):
-        if model_training_options:
-            model_training_options = json.dumps(model_training_options)
-        super().__init__(
-            query=self.query,
-            variables={
-                "name": name,
-                "datasetId": dataset_id,
-                "sourceColumnId": source_column_id,
-                "labelsetColumnId": labelset_id,
-                "modelTrainingOptions": model_training_options,
-                "modelType": model_type,
-            },
-        )
-
-    def process_response(self, response):
-        return ModelGroup(**super().process_response(response)["createModelGroup"])
-
 
 class GetModelGroupSelectedModelStatus(GraphQLRequest):
     """
@@ -222,6 +174,8 @@ class GetModelGroupSelectedModelStatus(GraphQLRequest):
         return mg.selected_model.status
 
 
+@deprecation.deprecated(deprecated_in="5.0",
+                        details="Use AddModelGroupComponent instead")
 class CreateModelGroup(RequestChain):
     """
     Create a new model group and train a model
@@ -232,6 +186,8 @@ class CreateModelGroup(RequestChain):
         source_column_id (int): id of the source column to use in training this model group. Usually the id of source text or images.
         labelset_id (int): id of the labelset (labeled data) to use in training this model group
         wait (bool): Wait for this model group to finish training. Default is False
+        after_component_id (int): The workflow component that precedes this model group.
+        workflow_id: The workflow associated with this model group.
         model_training_options (dict): Additional options for training. If the model_type is FINETUNE, this can include the base_model, which should be one of "default", "roberta", "small", "multilingual", "fast", "textcnn", or "fasttextcnn".
         model_type (str): The model type to use, defaults to the default model type for the dataset type. Valid options are "ENSEMBLE", "TFIDF_LR", "TFIDF_GBT", "STANDARD", "FINETUNE", "OBJECT_DETECTION", "RATIONALIZED", "FORM_EXTRACTION", and "DOCUMENT".
 
@@ -248,9 +204,11 @@ class CreateModelGroup(RequestChain):
             dataset_id: int,
             source_column_id: int,
             labelset_id: int,
+            workflow_id: int,
+            after_component_id: int,
             wait: bool = False,
             model_training_options: dict = None,
-            model_type: str = None,
+            model_type: str = None
     ):
         self.name = name
         self.dataset_id = dataset_id
@@ -259,17 +217,24 @@ class CreateModelGroup(RequestChain):
         self.wait = wait
         self.model_training_options = model_training_options
         self.model_type = model_type
+        self.workflow_id = workflow_id
+        self.after_component_id = after_component_id
 
     def requests(self):
-        yield _CreateModelGroup(
+        yield AddModelGroupComponent(
             name=self.name,
             dataset_id=self.dataset_id,
             source_column_id=self.source_column_id,
-            labelset_id=self.labelset_id,
+            labelset_column_id=self.labelset_id,
             model_training_options=self.model_training_options,
             model_type=self.model_type,
+            workflow_id=self.workflow_id,
+            after_component_id=self.after_component_id
+
         )
-        model_group_id = self.previous.id
+
+        mg = self.previous.model_group_by_name(self.name)
+        model_group_id = mg.model_group.id
         if self.wait:
             req = GetModelGroupSelectedModelStatus(id=model_group_id)
             yield req
@@ -395,3 +360,125 @@ class ModelGroupPredict(RequestChain):
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
         )
+
+
+class AddModelGroupComponent(GraphQLRequest):
+    """
+            Adds extraction or classification component to a workflow.
+            Available on 5.0+.
+            Returns workflow with updated component list.
+    Args:
+         workflow_id: int,
+         dataset_id: int,
+         name: str,
+        source_column_id: int,
+        after_component_id: int,
+        labelset_column_id: int = None
+        new_labelset_args: NewLabelsetArguments = None
+        new_questionnaire_args: NewQuestionaireArguments = None
+
+    """
+    query = """
+            mutation addModelGroup(
+          $workflowId: Int!, 
+          $name: String!, 
+          $datasetId: Int!, 
+          $sourceColumnId: Int!, 
+          $afterComponentId: Int, 
+          $labelsetColumnId: Int,
+          $newLabelsetArgs: NewLabelsetInput,
+          $questionnaireArgs: QuestionnaireInput,
+          $modelTrainingOptions: JSONString,
+          $modelType : ModelType
+        ) {
+          addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId, 
+          sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId,
+          modelTrainingOptions: $modelTrainingOptions,
+
+    newLabelsetArgs: $newLabelsetArgs,
+    questionnaireArgs: $questionnaireArgs, modelType: $modelType) {
+            workflow {
+                id
+                components {
+                                id
+                                componentType
+                                reviewable
+                                
+                                filteredClasses
+                                ... on ModelGroupComponent {
+                                    taskType
+                                    modelType
+                                    modelGroup {
+                                        status
+                                      id
+                                      name
+                                      taskType
+                                      selectedModel{
+                                        id
+                                      }
+                                    }
+                                }
+
+                            }
+                            componentLinks {
+                                id
+                                headComponentId
+                                tailComponentId
+
+                            }
+
+            }
+          }
+        }
+            """
+
+    def __init__(self, workflow_id: int, dataset_id: int, name: str,
+                 source_column_id: int, after_component_id: int = None, labelset_column_id: int = None,
+                 new_labelset_args: NewLabelsetArguments = None,
+                 new_questionnaire_args: NewQuestionaireArguments = None, model_training_options: str = None,
+                 model_type: str = None):
+        if labelset_column_id is not None and new_labelset_args is not None:
+            raise IndicoInputError("Cannot define both labelset_column_id and new_labelset_args, must be one "
+                                   "or the other.")
+        if labelset_column_id is None and new_labelset_args is None:
+            raise IndicoInputError("Must define one of either labelset_column_id or new_labelset_args.")
+
+        super().__init__(
+            self.query,
+            variables={
+                "workflowId": workflow_id,
+                "name": name,
+                "datasetId": dataset_id,
+                "sourceColumnId": source_column_id,
+                "labelsetColumnId": labelset_column_id,
+                "afterComponentId": after_component_id,
+                "modelTrainingOptions": model_training_options,
+                "modelType": model_type,
+                "newLabelsetArgs": self.__labelset_to_json(
+                    new_labelset_args) if new_labelset_args is not None else None,
+                "questionnaireArgs": self.__questionnaire_to_json(
+                    new_questionnaire_args) if new_questionnaire_args is not None else None
+
+            }
+        )
+
+    def __labelset_to_json(self, labelset: NewLabelsetArguments):
+        return {
+            "name": labelset.name,
+            "numLabelersRequired": labelset.num_labelers_required,
+            "datacolumnId": labelset.datacolumn_id,
+            "taskType": labelset.task_type,
+            "targetNames": labelset.target_names
+        }
+
+    def __questionnaire_to_json(self, questionnaire: NewQuestionaireArguments):
+        return {
+            "instructions": questionnaire.instructions,
+            "forceTextMode": questionnaire.force_text_mode,
+            "showPredictions": questionnaire.show_predictions,
+            "users": questionnaire.users
+
+        }
+
+    def process_response(self, response) -> Workflow:
+        return Workflow(**super().process_response(response)["addModelGroupComponent"]["workflow"])

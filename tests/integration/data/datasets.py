@@ -62,7 +62,7 @@ def airlines_model_group(indico, airlines_dataset: Dataset, airlines_workflow: W
     )
 
     workflow_update: Workflow = client.call(modelgroupreq)
-    component = workflow_update.component_by_type("MODEL_GROUP")
+    component = workflow_update.model_group_by_name(name)
 
     mg = client.call(GetModelGroup(id=component.model_group.id, wait=True))
 
@@ -119,7 +119,7 @@ def cats_dogs_modelgroup(indico, cats_dogs_image_dataset: Dataset, cat_dogs_imag
     )
 
     workflow_update: Workflow = client.call(modelgroupreq)
-    component = workflow_update.component_by_type("MODEL_GROUP")
+    component = workflow_update.model_group_by_name(name)
     mg = client.call(GetModelGroup(id=component.model_group.id, wait=True))
 
     return mg
@@ -163,7 +163,7 @@ def org_annotate_model_group(indico, org_annotate_dataset: Dataset, org_annotate
     )
 
     workflow_update: Workflow = client.call(modelgroupreq)
-    component = workflow_update.component_by_type("MODEL_GROUP")
+    component = workflow_update.model_group_by_name(name)
 
     mg = client.call(GetModelGroup(id=component.model_group.id, wait=True))
 

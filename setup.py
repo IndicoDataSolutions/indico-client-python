@@ -25,5 +25,6 @@ setup(
         "setuptools>=41.4.0",
         "pandas>=1.0.3",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
+        "deprecation>=2.1.0"
     ],
 )

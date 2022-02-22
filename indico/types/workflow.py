@@ -52,6 +52,9 @@ class Workflow(BaseType):
     def component_by_type(self, component_type: str) -> WorkflowComponent:
         return next(component for component in self.components if component.component_type == component_type)
 
+    def model_group_by_name(self, name: str) -> WorkflowComponent:
+        return next(component for component in self.components if hasattr(component, "model_group")
+                    and component.model_group.name == name)
 
 class ModelGroupComponentArguments:
     dataset_id: int
