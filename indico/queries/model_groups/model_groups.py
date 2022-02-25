@@ -413,6 +413,7 @@ class AddModelGroupComponent(GraphQLRequest):
                                       id
                                       name
                                       taskType
+                                      questionnaireId
                                       selectedModel{
                                         id
                                       }
@@ -463,6 +464,7 @@ class AddModelGroupComponent(GraphQLRequest):
         )
 
     def __labelset_to_json(self, labelset: NewLabelsetArguments):
+        targets = ', '.join(f'"{w}"' for w in labelset.target_names)
         return {
             "name": labelset.name,
             "numLabelersRequired": labelset.num_labelers_required,

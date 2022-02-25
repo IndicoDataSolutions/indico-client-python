@@ -27,6 +27,7 @@ class ModelGroup(BaseType):
     status: str
     selected_model: Model
     task_type: str
+    questionnaire_id: int
 
 
 class ModelTaskType(Enum):
