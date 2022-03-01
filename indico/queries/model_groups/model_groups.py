@@ -321,9 +321,9 @@ class ModelGroupPredict(RequestChain):
     Generate predictions from a model group on new data
 
     Args:
-        model_id= (int): selected model id use for predictions
-        data= (List[str]): list of samples to predict
-        predict_options= (JSONString): arguments for predictions
+        model_id (int): selected model id use for predictions
+        data (List[str]): list of samples to predict
+        predict_options (JSONString): arguments for predictions
 
     Returns:
         Job associated with this model group predict task
@@ -364,16 +364,15 @@ class ModelGroupPredict(RequestChain):
 
 class AddModelGroupComponent(GraphQLRequest):
     """
-            Adds extraction or classification component to a workflow.
-            Available on 5.0+.
-            Returns workflow with updated component list.
+    Adds a new model group component to a workflow, optionally with a customized questionnaire. Available on 5.0+ only.
+    Returns workflow with updated component list.
     Args:
-         workflow_id: int,
-         dataset_id: int,
-         name: str,
-        source_column_id: int,
-        after_component_id: int,
-        labelset_column_id: int = None
+         workflow_id(int),
+         dataset_id(int),
+         name(str),
+        source_column_id(str),
+        after_component_id(str),
+        labelset_column_id(int),
         new_labelset_args: NewLabelsetArguments = None
         new_questionnaire_args: NewQuestionaireArguments = None
 

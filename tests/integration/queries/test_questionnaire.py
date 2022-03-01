@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from indico.client import IndicoClient
+from indico.queries import CreateWorkflow
 from indico.queries.datasets import CreateDataset, GetDataset
 from indico.queries.questionnaire import (
     CreateQuestionaire,
@@ -14,6 +15,7 @@ from indico.queries.questionnaire import (
     AddLabels,
 )
 from indico.errors import IndicoError
+from indico.types import Workflow
 from indico.types.questionnaire import Questionnaire, Example
 
 
@@ -51,6 +53,8 @@ def test_create_questionnaire_labeled(indico):
         CreateDataset(name=f"CreateDataset-test-{int(time.time())}", files=files)
     )
 
+    workflow: Workflow = client.call(CreateWorkflow(name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id))
+    after_component = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     csv = pd.read_csv(csv_path)
     data = {
         string: json.loads(label) for string, label in zip(csv["text"], csv["labels"])
@@ -63,6 +67,8 @@ def test_create_questionnaire_labeled(indico):
             dataset_id=dataset.id,
             target_lookup=data,
             targets=targets,
+            workflow_id=workflow.id,
+            after_component_id=after_component
         )
     )
 

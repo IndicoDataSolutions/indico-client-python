@@ -164,6 +164,7 @@ class GetDatasetStatus(GraphQLRequest):
 class CreateDataset(RequestChain):
     """
     Create a dataset and upload the associated files.
+    
     Args:
         name (str): Name of the dataset
         files (List[str]): List of pathnames to the dataset files
@@ -171,10 +172,13 @@ class CreateDataset(RequestChain):
     Options:
         dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
         wait (bool, default=True): Wait for the dataset to upload and finish
+
     Returns:
         Dataset object
+
     Raises:
         IndicoError
+
     """
 
     previous = None

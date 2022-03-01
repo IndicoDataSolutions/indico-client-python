@@ -14,33 +14,38 @@ class WorkflowValidActions(BaseType):
           subType
         }
     """
-    addModel: [str]
-    addFilter: [str]
-    addTransformer: [str]
+    # addModel: [str]
+    # addFilter: [str]
+    # addTransformer: [str]
 
 
 class WorkflowComponent(BaseType):
     """
+    A componnet, such as a Model Group, that is present on a workflow.
 
     """
     id: int
     component_type: str
-    #valid_actions: WorkflowValidActions
     task_type: str
     model_type: str
     model_group: ModelGroup
     task_type: str
     model_type: str
 
+
 class WorkflowComponentLinks(BaseType):
+    """
+    Represents a link between two components.
+    """
     id: int
     head_component_id: int
     tail_component_id: int
 
-    #valid_actions: WorkflowValidActions
-
 
 class Workflow(BaseType):
+    """
+    Represents a Workflow in the Indico Data Platform.
+    """
     id: int
     name: str
     status: str
@@ -50,16 +55,14 @@ class Workflow(BaseType):
     component_links: List[WorkflowComponentLinks]
 
     def component_by_type(self, component_type: str) -> WorkflowComponent:
+        """
+        Returns first component available of type specified.
+        """
         return next(component for component in self.components if component.component_type == component_type)
 
     def model_group_by_name(self, name: str) -> WorkflowComponent:
+        """
+        Returns first model group of name.
+        """
         return next(component for component in self.components if hasattr(component, "model_group")
                     and component.model_group.name == name)
-
-class ModelGroupComponentArguments:
-    dataset_id: int
-    workflow_id: int
-    subset_id: int
-    labelset_column_id: int
-    source_column_id: int
-    model_type: ModelTaskType

@@ -18,6 +18,7 @@ from indico.queries.model_groups.metrics import (
 )
 from indico.queries.storage import UploadDocument, URL_PREFIX
 from indico.queries.jobs import JobStatus
+from indico.types import Workflow
 from indico.types.dataset import Dataset
 from indico.types.model_group import ModelGroup
 from indico.types.model import Model, TrainingProgress
@@ -29,11 +30,12 @@ from ..data.datasets import (
     cats_dogs_modelgroup,
     org_annotate_model_group,
     org_annotate_dataset,
+airlines_workflow
 )
 from indico.errors import IndicoNotFound
 
 
-def test_create_model_group(airlines_dataset: Dataset):
+def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workflow):
     client = IndicoClient()
 
     name = f"TestCreateModelGroup-{int(time.time())}"
@@ -82,10 +84,11 @@ def test_object_detection(cats_dogs_image_dataset: Dataset):
     assert mg.name == name
 
 
-def test_create_model_group_with_wait(indico, airlines_dataset: Dataset):
+def test_create_model_group_with_wait(indico, airlines_dataset: Dataset, airlines_workflow: Workflow):
     client = IndicoClient()
 
     name = f"TestCreateModelGroup-{int(time.time())}"
+    after_component = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     mg: ModelGroup = client.call(
         CreateModelGroup(
             name=name,
@@ -93,6 +96,8 @@ def test_create_model_group_with_wait(indico, airlines_dataset: Dataset):
             source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
             labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
             wait=True,
+            workflow_id = airlines_workflow.id,
+            after_component_id = after_component
         )
     )
 
