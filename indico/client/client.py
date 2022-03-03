@@ -31,7 +31,6 @@ class IndicoClient:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.config = config
         self._http = HTTPClient(config)
-        self.ipa_version = self._http.execute_request(GraphQLRequest("query getIPAVersion {\n  ipaVersion\n}\n"))['ipaVersion']
 
     def _handle_request_chain(self, chain: RequestChain):
         response = None
@@ -47,6 +46,9 @@ class IndicoClient:
             return chain.result
         return response
 
+    def get_ipa_version(self):
+        return self._http.execute_request(GraphQLRequest("query getIPAVersion {\n  ipaVersion\n}\n"))['ipaVersion']
+    
     def call(self, request: Union[HTTPRequest, RequestChain]):
         """
         Make a call to the Indico IPA Platform
