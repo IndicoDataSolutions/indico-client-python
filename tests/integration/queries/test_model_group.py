@@ -39,14 +39,19 @@ def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workfl
     client = IndicoClient()
 
     name = f"TestCreateModelGroup-{int(time.time())}"
-    mg: ModelGroup = client.call(
+    after_component = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION")
+    mg: ModelGroup  = client.call(
         CreateModelGroup(
             name=name,
+            workflow_id=airlines_workflow.id,
             dataset_id=airlines_dataset.id,
+            after_component_id=after_component.id,
             source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
             labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
         )
     )
+
+
 
     assert mg.name == name
 

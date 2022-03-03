@@ -2,7 +2,6 @@ import json
 from typing import List, Any
 import deprecation
 
-from indico.queries import AddModelGroupComponent
 from indico.queries.datasets import CreateDataset, GetDataset
 
 from indico.client.request import (
@@ -10,7 +9,8 @@ from indico.client.request import (
     RequestChain,
     Debouncer,
 )
-from indico.types import NewLabelsetArguments, NewQuestionaireArguments, Workflow
+from indico.queries import AddModelGroupComponent
+from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, Workflow
 
 from indico.types.questionnaire import Questionnaire, Example
 from indico.types.dataset import Dataset

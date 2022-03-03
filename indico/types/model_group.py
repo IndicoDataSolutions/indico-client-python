@@ -36,6 +36,7 @@ class ModelTaskType(Enum):
     FORM_EXTRACTION = 2
     OBJECT_DETECTION = 3
 
+
 class ModelType(Enum):
     STANDARD = 1
     FINETUNE = 2
@@ -46,8 +47,7 @@ class ModelType(Enum):
     TFIDF_GBT = 7
 
 
-
-class NewQuestionaireArguments(BaseType):
+class NewQuestionnaireArguments(BaseType):
     """instructions: String
 Questionnaire instructions
 
@@ -61,9 +61,10 @@ users: [Int]
 User IDs to add to the questionnaire"""
 
     instructions: str
-    force_text_mode: bool  = False
+    force_text_mode: bool = False
     show_predictions: bool = True
     users: List[int]
+
 
 class NewLabelsetArguments(BaseType):
     name: str

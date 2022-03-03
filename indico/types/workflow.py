@@ -21,7 +21,9 @@ class WorkflowValidActions(BaseType):
 
 class WorkflowComponent(BaseType):
     """
-    A componnet, such as a Model Group, that is present on a workflow.
+    A component, such as a Model Group, that is present on a workflow.
+    This is essentially a step in the workflow process, such as OCR
+    or predicting with a model group.
 
     """
     id: int
@@ -62,7 +64,7 @@ class Workflow(BaseType):
 
     def model_group_by_name(self, name: str) -> WorkflowComponent:
         """
-        Returns first model group of name.
+        Returns first model group component of name specified.
         """
         return next(component for component in self.components if hasattr(component, "model_group")
                     and component.model_group.name == name)
