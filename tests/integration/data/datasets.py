@@ -86,16 +86,16 @@ def cats_dogs_image_dataset(indico):
 
 
 @pytest.fixture(scope="module")
-def cat_dogs_image_workflow(indico, cats_dogs_image_dataset: Dataset):
+def cats_dogs_image_workflow(indico, cats_dogs_image_dataset: Dataset):
     client = IndicoClient()
-    workflowreq = CreateWorkflow(dataset_id=airlines_dataset.id, name=f"DogsAndCats-test-{int(time.time())}")
+    workflowreq = CreateWorkflow(dataset_id=cats_dogs_image_dataset.id, name=f"DogsAndCats-test-{int(time.time())}")
     response = client.call(workflowreq)
 
     return response
 
 
 @pytest.fixture(scope="module")
-def cats_dogs_modelgroup(indico, cats_dogs_image_dataset: Dataset, cat_dogs_image_workflow) -> ModelGroup:
+def cats_dogs_modelgroup(indico, cats_dogs_image_dataset: Dataset, cats_dogs_image_workflow) -> ModelGroup:
     client = IndicoClient()
     name = f"TestCreateObjectDetectionMg-{int(time.time())}"
 

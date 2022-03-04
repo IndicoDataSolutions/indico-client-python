@@ -30,6 +30,7 @@ from ..data.datasets import (
     cats_dogs_modelgroup,
     org_annotate_model_group,
     org_annotate_dataset,
+cats_dogs_image_workflow,
 airlines_workflow
 )
 from indico.errors import IndicoNotFound
@@ -63,7 +64,7 @@ def test_get_missing_model_group(indico):
         client.call(GetModelGroup(id=500000))
 
 
-def test_object_detection(cats_dogs_image_dataset: Dataset):
+def test_object_detection(cats_dogs_image_dataset: Dataset, cats_dogs_image_workflow: Workflow):
     client = IndicoClient()
     name = f"TestCreateObjectDetectionMg-{int(time.time())}"
 
@@ -79,10 +80,12 @@ def test_object_detection(cats_dogs_image_dataset: Dataset):
     mg: ModelGroup = client.call(
         CreateModelGroup(
             name=name,
+            workflow_id=cats_dogs_image_workflow.id,
+            after_component_id=cats_dogs_image_workflow.component_by_type("INPUT_IMAGE").id,
             dataset_id=cats_dogs_image_dataset.id,
             source_column_id=cats_dogs_image_dataset.datacolumn_by_name("urls").id,
             labelset_id=cats_dogs_image_dataset.labelset_by_name("label").id,
-            model_training_options=model_training_options,
+            model_training_options=model_training_options
         )
     )
 

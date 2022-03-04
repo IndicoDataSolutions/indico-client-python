@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from indico import GraphQLRequest, RequestChain
@@ -160,11 +161,15 @@ class AddModelGroupComponent(GraphQLRequest):
                  new_labelset_args: NewLabelsetArguments = None,
                  new_questionnaire_args: NewQuestionnaireArguments = None, model_training_options: str = None,
                  model_type: str = None):
+
         if labelset_column_id is not None and new_labelset_args is not None:
             raise IndicoInputError("Cannot define both labelset_column_id and new_labelset_args, must be one "
                                    "or the other.")
         if labelset_column_id is None and new_labelset_args is None:
             raise IndicoInputError("Must define one of either labelset_column_id or new_labelset_args.")
+
+        if model_training_options:
+            model_training_options = json.dumps(model_training_options)
 
         super().__init__(
             self.query,
