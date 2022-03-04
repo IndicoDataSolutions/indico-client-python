@@ -26,6 +26,7 @@ class ListWorkflows(GraphQLRequest):
             workflows(datasetIds: $datasetIds, workflowIds: $workflowIds){
                 workflows {
                     id
+                    datasetId
                     name
                     status
                     reviewEnabled
@@ -57,7 +58,7 @@ class ListWorkflows(GraphQLRequest):
     """
 
     def __init__(
-            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None
+        self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None
     ):
         super().__init__(
             self.query,
@@ -107,8 +108,7 @@ class _ToggleReview(GraphQLRequest):
         query = self.query.replace("<QUERY NAME>", self.query_name)
         query = query.replace("<TOGGLE>", self.toggle)
         super().__init__(
-            query,
-            variables={"workflowId": workflow_id, "reviewState": enable_review},
+            query, variables={"workflowId": workflow_id, "reviewState": enable_review}
         )
 
     def process_response(self, response) -> Workflow:
@@ -136,10 +136,10 @@ class UpdateWorkflowSettings(RequestChain):
     """
 
     def __init__(
-            self,
-            workflow: Union[Workflow, int],
-            enable_review: bool = None,
-            enable_auto_review: bool = None,
+        self,
+        workflow: Union[Workflow, int],
+        enable_review: bool = None,
+        enable_auto_review: bool = None,
     ):
         self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
         if enable_review is None and enable_auto_review is None:
@@ -200,13 +200,9 @@ class _WorkflowSubmission(GraphQLRequest):
         "resultVersion": "SubmissionResultVersion",
     }
 
-    def __init__(
-            self,
-            detailed_response: bool,
-            **kwargs,
-    ):
+    def __init__(self, detailed_response: bool, **kwargs):
         self.workflow_id = kwargs["workflow_id"]
-        self.record_submission = True #record_submission is deprecated entirely.
+        self.record_submission = True  # record_submission is deprecated entirely.
 
         # construct mutation signature and args based on provided kwargs to ensure
         # backwards-compatible graphql calls
@@ -285,14 +281,14 @@ class WorkflowSubmission(RequestChain):
     detailed_response = False
 
     def __init__(
-            self,
-            workflow_id: int,
-            files: List[str] = None,
-            urls: List[str] = None,
-            submission: bool = True,
-            bundle: bool = False,
-            result_version: str = None,
-            streams: Dict[str, io.BufferedIOBase] = None
+        self,
+        workflow_id: int,
+        files: List[str] = None,
+        urls: List[str] = None,
+        submission: bool = True,
+        bundle: bool = False,
+        result_version: str = None,
+        streams: Dict[str, io.BufferedIOBase] = None,
     ):
         self.workflow_id = workflow_id
         self.files = files
@@ -309,11 +305,17 @@ class WorkflowSubmission(RequestChain):
         if not submission:
             raise IndicoInputError("This option is deprecated and no longer supported.")
         if not self.files and not self.urls and not self.has_streams:
-            raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
+            raise IndicoInputError(
+                "One of 'files', 'streams', or 'urls' must be specified"
+            )
         elif self.files and self.has_streams:
-            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified.")
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams' or 'urls' may be specified."
+            )
         elif (self.files or self.has_streams) and self.urls:
-            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified")
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams' or 'urls' may be specified"
+            )
 
     def requests(self):
         if self.files:
@@ -371,12 +373,12 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
     detailed_response = True
 
     def __init__(
-            self,
-            workflow_id: int,
-            files: List[str] = None,
-            urls: List[str] = None,
-            bundle: bool = False,
-            result_version: str = None,
+        self,
+        workflow_id: int,
+        files: List[str] = None,
+        urls: List[str] = None,
+        bundle: bool = False,
+        result_version: str = None,
     ):
         super().__init__(
             workflow_id,
@@ -402,10 +404,7 @@ class _AddDataToWorkflow(GraphQLRequest):
     """
 
     def __init__(self, workflow_id: int):
-        super().__init__(
-            self.query,
-            variables={"workflowId": workflow_id},
-        )
+        super().__init__(self.query, variables={"workflowId": workflow_id})
 
     def process_response(self, response) -> Workflow:
         return Workflow(
@@ -452,6 +451,7 @@ class CreateWorkflow(GraphQLRequest):
         name(str): name for the workflow
 
     """
+
     query = """  mutation createWorkflow($datasetId: Int!, $name: String!) {
     createWorkflow(datasetId: $datasetId, name: $name) {
            workflow {
@@ -487,11 +487,7 @@ class CreateWorkflow(GraphQLRequest):
     """
 
     def __init__(self, dataset_id: int, name: str):
-        super().__init__(
-            self.query,
-            variables={"datasetId": dataset_id,
-                       "name": name},
-        )
+        super().__init__(self.query, variables={"datasetId": dataset_id, "name": name})
 
     def process_response(self, response) -> Workflow:
         return Workflow(

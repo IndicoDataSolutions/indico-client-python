@@ -14,6 +14,7 @@ class WorkflowValidActions(BaseType):
           subType
         }
     """
+
     # addModel: [str]
     # addFilter: [str]
     # addTransformer: [str]
@@ -26,6 +27,7 @@ class WorkflowComponent(BaseType):
     or predicting with a model group.
 
     """
+
     id: int
     component_type: str
     task_type: str
@@ -39,6 +41,7 @@ class WorkflowComponentLinks(BaseType):
     """
     Represents a link between two components.
     """
+
     id: int
     head_component_id: int
     tail_component_id: int
@@ -48,8 +51,10 @@ class Workflow(BaseType):
     """
     Represents a Workflow in the Indico Data Platform.
     """
+
     id: int
     name: str
+    dataset_id: int
     status: str
     review_enabled: bool
     auto_review_enabled: bool
@@ -60,11 +65,19 @@ class Workflow(BaseType):
         """
         Returns first component available of type specified.
         """
-        return next(component for component in self.components if component.component_type == component_type)
+        return next(
+            component
+            for component in self.components
+            if component.component_type == component_type
+        )
 
     def model_group_by_name(self, name: str) -> WorkflowComponent:
         """
         Returns first model group component of name specified.
         """
-        return next(component for component in self.components if hasattr(component, "model_group")
-                    and component.model_group.name == name)
+        return next(
+            component
+            for component in self.components
+            if hasattr(component, "model_group") and component.model_group.name == name
+        )
+
