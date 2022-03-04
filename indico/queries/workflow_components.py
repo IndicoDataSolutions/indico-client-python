@@ -67,7 +67,7 @@ class AddFilteredClassesComponent(RequestChain):
 
 class AddContentLengthFilterComponent(RequestChain):
 
-    def __init__(self, after_component_id: int, after_component_link_id: int, workflow_id: int, minimum: int = None,
+    def __init__(self, workflow_id: int, after_component_id: int, after_component_link_id: int = None, minimum: int = None,
                  maximum: int = None):
         component = {
             "component": {
