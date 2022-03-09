@@ -37,6 +37,11 @@ class WorkflowComponent(BaseType):
     model_type: str
 
 
+class LinkFilters(BaseType):
+    classes: List[str]
+    passed: bool
+
+
 class WorkflowComponentLinks(BaseType):
     """
     Represents a link between two components.
@@ -45,6 +50,7 @@ class WorkflowComponentLinks(BaseType):
     id: int
     head_component_id: int
     tail_component_id: int
+    filters: LinkFilters
 
 
 class Workflow(BaseType):

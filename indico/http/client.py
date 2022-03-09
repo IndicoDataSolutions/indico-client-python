@@ -1,3 +1,4 @@
+import pprint
 import http.cookiejar
 import logging
 from collections import defaultdict
@@ -9,7 +10,11 @@ from typing import Union
 import requests
 from indico.client.request import HTTPRequest
 from indico.config import IndicoConfig
-from indico.errors import IndicoAuthenticationFailed, IndicoRequestError, IndicoHibernationError
+from indico.errors import (
+    IndicoAuthenticationFailed,
+    IndicoRequestError,
+    IndicoHibernationError,
+)
 from indico.http.serialization import deserialize
 from requests import Response
 
@@ -129,12 +134,12 @@ class HTTPClient:
             [f.close() for f in files]
 
     def _make_request(
-            self,
-            method: str,
-            path: str,
-            headers: dict = None,
-            _refreshed=False,
-            **request_kwargs,
+        self,
+        method: str,
+        path: str,
+        headers: dict = None,
+        _refreshed=False,
+        **request_kwargs,
     ):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
@@ -149,6 +154,7 @@ class HTTPClient:
                 **new_kwargs,
             )
 
+        # pprint.pprint(response.json())
         # code, api_response =
         url_parts = path.split(".")
         json = False
@@ -164,13 +170,11 @@ class HTTPClient:
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
 
-        if response.status_code == 503 and 'Retry-After' in response.headers:
-            raise IndicoHibernationError(after=response.headers.get('Retry-After'))
+        if response.status_code == 503 and "Retry-After" in response.headers:
+            raise IndicoHibernationError(after=response.headers.get("Retry-After"))
 
         if response.status_code >= 500:
-            raise IndicoRequestError(
-                code=response.status_code
-            )
+            raise IndicoRequestError(code=response.status_code)
 
         content = deserialize(response, force_json=json)
 

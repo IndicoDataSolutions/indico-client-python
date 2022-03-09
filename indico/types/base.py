@@ -45,8 +45,8 @@ class BaseType:
             if k in attrs:
                 attr_type = attrs[k]
                 if inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
-                    v = attrs[k](**v)
-
+                    if v:
+                        v = attrs[k](**v)
                 if attr_type == JSONType:
                     v = json.loads(v)
 

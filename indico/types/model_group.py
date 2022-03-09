@@ -32,6 +32,7 @@ class ModelGroup(BaseType):
 
 class ModelTaskType(Enum):
     """A list of valid task types for a model group."""
+
     CLASSIFICATION = 1
     FORM_EXTRACTION = 2
     OBJECT_DETECTION = 3
@@ -70,7 +71,7 @@ class NewLabelsetArguments(BaseType):
     name: str
     num_labelers_required: int = 1
     datacolumn_id: int
-    task_type: str
+    task_type: str  # This should be an enum maybe?
     target_names: List[str]
 
     def to_json(self):
@@ -79,5 +80,5 @@ class NewLabelsetArguments(BaseType):
             "numLabelersRequired": self.num_labelers_required,
             "datacolumnId": self.datacolumn_id,
             "taskType": self.task_type,
-            "targetNames": self.target_names
+            "targetNames": self.target_names,
         }

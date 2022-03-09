@@ -40,8 +40,10 @@ class ListWorkflows(GraphQLRequest):
                         ... on ModelGroupComponent {
                             taskType
                             modelType
+                            modelGroup {
+                                id
+                            }
                         }
-                
                     }
                   componentLinks{
                     id
@@ -49,6 +51,7 @@ class ListWorkflows(GraphQLRequest):
                     tailComponentId
                     filters{
                       classes
+                      passed
                     }
                     
                   }
