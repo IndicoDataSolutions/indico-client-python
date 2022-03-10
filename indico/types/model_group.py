@@ -5,6 +5,16 @@ from indico.types.base import BaseType
 from indico.types.model import Model
 
 
+class TargetName(BaseType):
+    id: int
+    name: str
+
+
+class LabelSet(BaseType):
+    id: int
+    target_names: List[TargetName]
+
+
 class ModelGroup(BaseType):
     """
     A Model Group in the Indico Platform.
@@ -28,6 +38,8 @@ class ModelGroup(BaseType):
     selected_model: Model
     task_type: str
     questionnaire_id: int
+    labelset_column_id: int = None
+    labelset: LabelSet
 
 
 class ModelTaskType(Enum):

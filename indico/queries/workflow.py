@@ -42,6 +42,14 @@ class ListWorkflows(GraphQLRequest):
                             modelType
                             modelGroup {
                                 id
+                                questionnaireId
+                                labelset {
+                                    id
+                                    targetNames {
+                                        id
+                                        name
+                                    }
+                                }
                             }
                         }
                     }

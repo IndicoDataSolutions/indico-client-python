@@ -12,6 +12,7 @@ class Questionnaire(BaseType):
 
 
 class Example(BaseType):
+    id: int
     row_index: int
     datafile_id: int
     source: str
