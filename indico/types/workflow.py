@@ -21,7 +21,7 @@ class WorkflowValidActions(BaseType):
 
 class WorkflowComponent(BaseType):
     """
-    A component, such as a Model Group, that is present on a workflow.
+    A component, such as a Model Group or Content Length filter, that is present on a workflow.
     This is essentially a step in the workflow process, such as OCR
     or predicting with a model group.
 
@@ -33,6 +33,8 @@ class WorkflowComponent(BaseType):
     model_group: ModelGroup
     task_type: str
     model_type: str
+    minimum: int
+    maximum: int
 
 
 class WorkflowComponentLinks(BaseType):
@@ -68,3 +70,15 @@ class Workflow(BaseType):
         """
         return next(component for component in self.components if hasattr(component, "model_group")
                     and component.model_group.name == name)
+
+
+def LinkedLabelStrategy(Enum):
+    BY_ROW = 0,
+    BY_KEY = 1
+
+
+def LinkedLabelGroup(BaseType):
+    name: str
+    strategy: LinkedLabelStrategy
+    class_names: List[int]
+    strategy_settings: dict

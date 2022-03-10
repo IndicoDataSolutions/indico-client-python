@@ -1,15 +1,15 @@
-import json
+import jsons
 from typing import List
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
-from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, Workflow
+from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, Workflow, LinkedLabelGroup
 
 
 class _AddWorkflowComponent(GraphQLRequest):
     query = """mutation addWorkflowComponent($afterComponentId:Int, $afterComponentLinkId: Int, $component: JSONString!, $workflowId: Int!){
   addWorkflowComponent(afterComponentId: $afterComponentId,
-	component: $component,
+  component: $component,
   workflowId:$workflowId
   afterComponentLinkId: $afterComponentLinkId){
   workflow {
@@ -18,7 +18,11 @@ class _AddWorkflowComponent(GraphQLRequest):
                                 id
                                 componentType
                                 reviewable
-					
+                                ... on ContentLengthComponent
+                                {
+                                minimum
+                                maximum
+                                }
                                 filteredClasses
                                 ... on ModelGroupComponent {
                                     taskType
@@ -50,36 +54,95 @@ class _AddWorkflowComponent(GraphQLRequest):
   }
 }"""
 
-    def __init__(self, after_component_id: int, after_component_link: int, workflow_id: int, component: str):
-        super.__init__(self, varialbes={
+    def __init__(self, after_component_id: int, after_component_link: int, workflow_id: int, component: dict):
+        super().__init__(self.query, variables={
             "afterComponentId": after_component_id,
             "afterComponentLink": after_component_link,
             "workflowId": workflow_id,
-            "component": component
+            "component": jsons.dumps(component)
         })
 
+    def process_response(self, response) -> Workflow:
+        return Workflow(**super().process_response(response)["addWorkflowComponent"]["workflow"])
 
-class AddFilteredClassesComponent(RequestChain):
-    def __init__(self, after_component_id: int, after_component_link_id: int, classes: List[str], workflow_id: int):
-        yield _AddWorkflowComponent(after_component_id=after_component_id, after_component_link=after_component_link_id,
-                                    component=classes, workflow_id=workflow_id)
+
+class AddLinkedLabelTransformerComponent(RequestChain):
+    def __init__(self, after_component_id: int, workflow_id: int,
+                 labelset_id: int,
+                 model_group_id: int,
+                 groups: List[LinkedLabelGroup],
+                 after_component_link_id: int = None):
+        self.workflow_id = workflow_id
+        self.after_component_id = after_component_id
+        self.after_component_link_id = after_component_link_id
+        self.component = {
+            "component_type": "link_label",
+            "config": {
+                "labelset_id": labelset_id,
+                "model_group_id": model_group_id,
+                "groups": groups
+            }}
+
+    def requests(self):
+        yield _AddWorkflowComponent(after_component_id=self.after_component_id,
+                                    after_component_link=self.after_component_link_id,
+                                    workflow_id=self.workflow_id, component=self.component)
 
 
 class AddContentLengthFilterComponent(RequestChain):
 
-    def __init__(self, workflow_id: int, after_component_id: int, after_component_link_id: int = None, minimum: int = None,
+    def __init__(self, workflow_id: int, after_component_id: int, after_component_link_id: int = None,
+                 minimum: int = None,
                  maximum: int = None):
-        component = {
-            "component": {
-                "componentType": "CONTENT_LENGTH",
-                "config": {
-                    "minimum": minimum,
-                    "maximum": maximum
-                }
+        self.workflow_id = workflow_id
+        self.after_component_id = after_component_id
+        self.after_component_link_id = after_component_link_id
+        self.minimum = minimum
+        self.maximum = maximum
+        self.component = {
+            "component_type": "content_length",
+            "config": {
+                "minimum": minimum,
+                "maximum": maximum
             }
         }
-        yield _AddWorkflowComponent(after_component_id=after_component_id, after_component_link=after_component_link_id,
-                                    workflow_id=workflow_id, component=component)
+
+    def requests(self):
+        yield _AddWorkflowComponent(after_component_id=self.after_component_id,
+                                    after_component_link=self.after_component_link_id,
+                                    workflow_id=self.workflow_id, component=self.component)
+
+
+class AddLinkClassificationComponent(RequestChain):
+    """
+    Adds a link classification model component with filtered classes.
+
+    Args:
+        workflow_id(int): the workflow id.
+        after_component_id(int): the component this component follows.
+        model_group_id(int): the model group to source classes from.
+        filtered_classes(List[List[str]]): sets of classes to filter, ie: [["A"], ["A","B"]]
+        labels(str): decides if to use "actual" or "predicted" labels.
+    """
+
+    def __init__(self, workflow_id: int, after_component_id: int, model_group_id: int,
+                 filtered_classes: List[List[str]], labels: str, after_component_link_id: int = None):
+        self.workflow_id = workflow_id
+        self.after_component_id = after_component_id
+        self.after_component_link_id = after_component_link_id
+        self.component = {
+            "component_type": "link_classification_model",
+            "config": {
+                "model_group_id": model_group_id,
+                "filtered_classes": filtered_classes,
+                "labels": labels
+            }
+        }
+
+    def requests(self):
+        yield _AddWorkflowComponent(after_component_id=self.after_component_id,
+                                    after_component_link=self.after_component_link_id,
+                                    workflow_id=self.workflow_id, component=self.component)
 
 
 class AddModelGroupComponent(GraphQLRequest):
@@ -128,6 +191,11 @@ class AddModelGroupComponent(GraphQLRequest):
                                 reviewable
 
                                 filteredClasses
+                                ... on ContentLengthComponent
+                                {
+                                minimum
+                                maximum
+                                }
                                 ... on ModelGroupComponent {
                                     taskType
                                     modelType
@@ -169,7 +237,7 @@ class AddModelGroupComponent(GraphQLRequest):
             raise IndicoInputError("Must define one of either labelset_column_id or new_labelset_args.")
 
         if model_training_options:
-            model_training_options = json.dumps(model_training_options)
+            model_training_options = jsons.dumps(model_training_options)
 
         super().__init__(
             self.query,

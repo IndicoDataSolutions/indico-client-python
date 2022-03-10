@@ -35,10 +35,25 @@ class ListWorkflows(GraphQLRequest):
                         componentType
                         reviewable
                         filteredClasses
-                        
+                        ... on ContentLengthComponent
+                        {
+                                minimum
+                                maximum
+                                }
                         ... on ModelGroupComponent {
                             taskType
                             modelType
+                            modelGroup {
+                                        status
+                                      id
+                                      name
+                                      taskType
+                                      questionnaireId
+                                      selectedModel{
+                                        id
+                                      }
+                                }
+                            
                         }
                 
                     }
