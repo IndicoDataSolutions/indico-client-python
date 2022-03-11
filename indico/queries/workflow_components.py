@@ -66,7 +66,7 @@ class _AddWorkflowComponent(GraphQLRequest):
         return Workflow(**super().process_response(response)["addWorkflowComponent"]["workflow"])
 
 
-class AddLinkedLabelTransformerComponent(RequestChain):
+class AddLinkedLabelComponent(RequestChain):
     def __init__(self, after_component_id: int, workflow_id: int,
                  labelset_id: int,
                  model_group_id: int,
@@ -80,8 +80,16 @@ class AddLinkedLabelTransformerComponent(RequestChain):
             "config": {
                 "labelset_id": labelset_id,
                 "model_group_id": model_group_id,
-                "groups": groups
+                "groups": [self.__groups_to_json(group) for group in groups]
             }}
+
+    def __groups_to_json(self, group: LinkedLabelGroup):
+        return {
+            "name": group.name,
+            "strategy": group.strategy.name.lower(),
+            "class_names": group.class_ids,
+            "strategy_settings": group.strategy_settings
+        }
 
     def requests(self):
         yield _AddWorkflowComponent(after_component_id=self.after_component_id,
@@ -263,7 +271,7 @@ class AddModelGroupComponent(GraphQLRequest):
             "name": labelset.name,
             "numLabelersRequired": labelset.num_labelers_required,
             "datacolumnId": labelset.datacolumn_id,
-            "taskType": labelset.task_type,
+            "taskType": labelset.task_type.name,
             "targetNames": labelset.target_names
         }
 

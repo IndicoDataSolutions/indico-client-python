@@ -1,22 +1,7 @@
+from enum import Enum
 from typing import List, Union
 
 from indico.types import BaseType, ModelGroup, ModelTaskType
-
-
-class WorkflowValidActions(BaseType):
-    """
-    ValidActions represents components that can be added after an existing component.
-    this is becoming:
-    validActions {
-          operation
-          componentFamily
-          componentType
-          subType
-        }
-    """
-    # addModel: [str]
-    # addFilter: [str]
-    # addTransformer: [str]
 
 
 class WorkflowComponent(BaseType):
@@ -72,13 +57,14 @@ class Workflow(BaseType):
                     and component.model_group.name == name)
 
 
-def LinkedLabelStrategy(Enum):
+class LinkedLabelStrategy(Enum):
     BY_ROW = 0,
     BY_KEY = 1
 
 
-def LinkedLabelGroup(BaseType):
-    name: str
-    strategy: LinkedLabelStrategy
-    class_names: List[int]
-    strategy_settings: dict
+class LinkedLabelGroup:
+    def __init__(self, name: str, strategy: LinkedLabelStrategy, class_ids: List[int], strategy_settings: dict):
+        self.name = name
+        self.strategy = strategy
+        self.class_ids = class_ids
+        self.strategy_settings = strategy_settings

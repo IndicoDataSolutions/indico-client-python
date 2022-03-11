@@ -66,18 +66,11 @@ User IDs to add to the questionnaire"""
     users: List[int]
 
 
-class NewLabelsetArguments(BaseType):
-    name: str
-    num_labelers_required: int = 1
-    datacolumn_id: int
-    task_type: str
-    target_names: List[str]
-
-    def to_json(self):
-        return {
-            "name": self.name,
-            "numLabelersRequired": self.num_labelers_required,
-            "datacolumnId": self.datacolumn_id,
-            "taskType": self.task_type,
-            "targetNames": self.target_names
-        }
+class NewLabelsetArguments():
+    def __init__(self, name: str, task_type: ModelTaskType,
+                 target_names: List[str], datacolumn_id: int, num_labelers_required: int = 1):
+        self.name = name
+        self.num_labelers_required = num_labelers_required
+        self.task_type = task_type
+        self.target_names = target_names
+        self.datacolumn_id = datacolumn_id
