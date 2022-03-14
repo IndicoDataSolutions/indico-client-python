@@ -86,7 +86,7 @@ class DocumentReportFilter(Filter):
         created_at_start_date (datetime): earliest creation date
         created_at_end_date (datetime): latest creation date
         updated_at_start_date (datetime): earliest update ddate
-        update_at_end_date (datetime): latest update date
+        updated_at_end_date (datetime): latest update date
     Returns:
         dict containing query filter parameters
     """
