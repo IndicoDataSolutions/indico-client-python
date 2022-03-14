@@ -37,3 +37,9 @@ def test_pagination(indico):
         document_report.extend(page)
     assert document_report is not None
     assert len(document_report) > 0
+
+def test_all_submissions(indico):
+    client = IndicoClient()
+    document_report: List[DocumentReport] = []
+    page = next(client.paginate(GetDocumentReport(limit=1000, all_submissions=True)))
+    assert page is not None
