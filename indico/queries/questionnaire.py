@@ -109,6 +109,15 @@ class GetQuestionnaireExamples(GraphQLRequest):
                     id
                     rowIndex
                     datafileId
+                    context {
+                        id
+                        spans {
+                            start
+                            end
+                            pageNum
+                            value
+                        }
+                    }
                 }
             }
         }

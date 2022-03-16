@@ -153,9 +153,6 @@ class HTTPClient:
                 verify=self.config.verify_ssl,
                 **new_kwargs,
             )
-            import pprint
-
-            pprint.pprint(response.json())
 
         # pprint.pprint(response.json())
         # code, api_response =

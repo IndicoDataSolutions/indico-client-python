@@ -7,8 +7,11 @@ import deprecation
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.queries.workflow_components import AddModelGroupComponent
 from indico.types import Workflow
-from indico.types.model_group import ModelGroup, NewLabelsetArguments, \
-    NewQuestionnaireArguments
+from indico.types.model_group import (
+    ModelGroup,
+    NewLabelsetArguments,
+    NewQuestionnaireArguments,
+)
 from indico.types.model import Model
 from indico.types.jobs import Job
 from indico.types.utils import cc_to_snake
@@ -137,7 +140,6 @@ class GetTrainingModelWithProgress(GraphQLRequest):
         return Model(**last)
 
 
-
 class GetModelGroupSelectedModelStatus(GraphQLRequest):
     """
     Get the status string of the selected model for the given model group id
@@ -176,8 +178,9 @@ class GetModelGroupSelectedModelStatus(GraphQLRequest):
         return mg.selected_model.status
 
 
-@deprecation.deprecated(deprecated_in="5.0",
-                        details="Use AddModelGroupComponent instead")
+@deprecation.deprecated(
+    deprecated_in="5.0", details="Use AddModelGroupComponent instead"
+)
 class CreateModelGroup(RequestChain):
     """
     Create a new model group and train a model
@@ -201,16 +204,16 @@ class CreateModelGroup(RequestChain):
     """
 
     def __init__(
-            self,
-            name: str,
-            dataset_id: int,
-            source_column_id: int,
-            labelset_id: int,
-            workflow_id: int,
-            after_component_id: int,
-            wait: bool = False,
-            model_training_options: dict = None,
-            model_type: str = None
+        self,
+        name: str,
+        dataset_id: int,
+        source_column_id: int,
+        labelset_id: int,
+        workflow_id: int,
+        after_component_id: int,
+        wait: bool = False,
+        model_training_options: dict = None,
+        model_type: str = None,
     ):
         self.name = name
         self.dataset_id = dataset_id
@@ -231,8 +234,7 @@ class CreateModelGroup(RequestChain):
             model_training_options=self.model_training_options,
             model_type=self.model_type,
             workflow_id=self.workflow_id,
-            after_component_id=self.after_component_id
-
+            after_component_id=self.after_component_id,
         )
 
         mg = self.previous.model_group_by_name(self.name)
@@ -335,11 +337,11 @@ class ModelGroupPredict(RequestChain):
     """
 
     def __init__(
-            self,
-            model_id: int,
-            data: List[str],
-            load: bool = True,
-            predict_options: Dict = None,
+        self,
+        model_id: int,
+        data: List[str],
+        load: bool = True,
+        predict_options: Dict = None,
     ):
         self.model_id = model_id
         self.data = data
@@ -347,17 +349,17 @@ class ModelGroupPredict(RequestChain):
         self.predict_options = predict_options
 
     def requests(self):
-        retries = 0
-        if self.load:
-            while retries < 3 and self.previous != "ready":
-                retries += 1
-                yield LoadModel(self.model_id)
-                if retries > 0:
-                    sleep(1)
-            if self.previous != "ready":
-                raise IndicoError(
-                    f"Model {self.model_id} failed to load status {self.previous}"
-                )
+        # retries = 0
+        # if self.load:
+        #     while retries < 3 and self.previous != "ready":
+        #         retries += 1
+        #         yield LoadModel(self.model_id)
+        #         if retries > 0:
+        #             sleep(1)
+        #     if self.previous != "ready":
+        #         raise IndicoError(
+        #             f"Model {self.model_id} failed to load status {self.previous}"
+        #         )
 
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
