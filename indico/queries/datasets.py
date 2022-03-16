@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import jsons
 import tempfile
 from pathlib import Path
 from typing import List
@@ -13,9 +14,9 @@ from indico.client.request import (
     HTTPRequest,
     RequestChain,
 )
-from indico.errors import IndicoNotFound
+from indico.errors import IndicoNotFound, IndicoInputError
 from indico.queries.storage import UploadBatched, UploadImages
-from indico.types.dataset import Dataset
+from indico.types.dataset import Dataset, OcrEngine, OmnipageOcrOptionsInput, ReadApiOcrOptionsInput, OcrInputLanguage
 
 
 class ListDatasets(GraphQLRequest):
@@ -184,14 +185,17 @@ class CreateDataset(RequestChain):
     previous = None
 
     def __init__(
-        self,
-        name: str,
-        files: List[str],
-        wait: bool = True,
-        dataset_type: str = "TEXT",
-        from_local_images: bool = False,
-        image_filename_col: str = "filename",
-        batch_size: int = 20,
+            self,
+            name: str,
+            files: List[str],
+            wait: bool = True,
+            dataset_type: str = "TEXT",
+            from_local_images: bool = False,
+            image_filename_col: str = "filename",
+            batch_size: int = 20,
+            ocr_engine: OcrEngine = None,
+            omnipage_ocr_options: OmnipageOcrOptionsInput = None,
+            read_api_ocr_options: ReadApiOcrOptionsInput = None
     ):
         self.files = files
         self.name = name
@@ -200,6 +204,8 @@ class CreateDataset(RequestChain):
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
         self.batch_size = batch_size
+        if omnipage_ocr_options is not None and read_api_ocr_options is not None:
+            raise IndicoInputError("Must supply either omnipage or readapi options but not both.")
         super().__init__()
 
     def requests(self):
@@ -235,7 +241,7 @@ class CreateDataset(RequestChain):
         yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
         while not all(
-            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
+                f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
             debouncer.backoff()
@@ -250,7 +256,7 @@ class CreateDataset(RequestChain):
         debouncer = Debouncer()
         if self.wait is True:
             while not all(
-                [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
+                    [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
             ):
                 yield GetDatasetFileStatus(id=dataset_id)
                 debouncer.backoff()
@@ -295,20 +301,32 @@ class DeleteDataset(GraphQLRequest):
 
 class CreateEmptyDataset(GraphQLRequest):
     query = """
-    mutation($name: String!, $datasetType: DatasetType) {
-        createDataset(name: $name, datasetType: $datasetType) {
+    mutation($name: String!, $datasetType: DatasetType, $config: DataConfigInput) {
+        createDataset(name: $name, datasetType: $datasetType, config: $config ) {
             id
             name
         }
     }
     """
 
-    def __init__(self, name: str, dataset_type: str = None):
+    def __init__(self, name: str, dataset_type: str = None, ocr_engine: OcrEngine = None,
+                 omnipage_ocr_options: OmnipageOcrOptionsInput = None,
+                 readapi_ocr_options: ReadApiOcrOptionsInput = None):
         if not dataset_type:
             dataset_type = "TEXT"
-
+        config = None
+        if ocr_engine is not None:
+            config = {
+                "ocrOptions": {
+                    "ocrEngine": ocr_engine.name,
+                    "omnipageOptions": omnipage_ocr_options,
+                    "readapiOptions": readapi_ocr_options
+                }
+            }
         super().__init__(
-            self.query, variables={"name": name, "datasetType": dataset_type}
+            self.query, variables={"name": name, "datasetType": dataset_type,
+                                   "config": jsons.dump(config, key_transformer=jsons.KEY_TRANSFORMER_CAMELCASE,
+                                                        strip_nulls=True)}
         )
 
     def process_response(self, response):
@@ -324,7 +342,6 @@ class _AddFiles(GraphQLRequest):
         }
     }
     """
-    
 
     def __init__(self, dataset_id: int, metadata: List[str]):
         super().__init__(
@@ -358,11 +375,11 @@ class AddFiles(RequestChain):
     previous = None
 
     def __init__(
-        self,
-        dataset_id: int,
-        files: List[str],
-        wait: bool = True,
-        batch_size: int = 20,
+            self,
+            dataset_id: int,
+            files: List[str],
+            wait: bool = True,
+            batch_size: int = 20,
     ):
         self.dataset_id = dataset_id
         self.files = files
@@ -380,8 +397,8 @@ class AddFiles(RequestChain):
         yield GetDatasetFileStatus(id=self.dataset_id)
         debouncer = Debouncer()
         while not all(
-            f.status in ["DOWNLOADED", "FAILED", "PROCESSED"]
-            for f in self.previous.files
+                f.status in ["DOWNLOADED", "FAILED", "PROCESSED"]
+                for f in self.previous.files
         ):
             yield GetDatasetFileStatus(id=self.previous.id)
             debouncer.backoff()
@@ -448,10 +465,10 @@ class ProcessFiles(RequestChain):
     """
 
     def __init__(
-        self,
-        dataset_id: int,
-        datafile_ids: List[int],
-        wait: bool = True,
+            self,
+            dataset_id: int,
+            datafile_ids: List[int],
+            wait: bool = True,
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
@@ -463,7 +480,7 @@ class ProcessFiles(RequestChain):
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             while not all(
-                f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
+                    f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
                 debouncer.backoff()
@@ -497,7 +514,36 @@ class ProcessCSV(RequestChain):
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             while not all(
-                f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
+                    f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
                 debouncer.backoff()
+
+
+class GetOcrEngineLanguageCodes(GraphQLRequest):
+    """
+    Fetches and lists the available languages by name and code for the given OCR Engine
+
+    Args:
+        ocr_engine(OcrEngine): The engine to fetch for.
+    """
+    query = """query{
+        ocrOptions {
+            engines{
+            name
+            languages {
+                name
+                code
+                }
+            }
+        }
+    }"""
+
+    def __init__(self, engine: OcrEngine):
+        self.engine = engine
+        super().__init__(self.query)
+
+    def process_response(self, response):
+        data = super().process_response(response)["ocrOptions"]["engines"]
+        engine_laguages = next(x["languages"] for x in data if x["name"] == self.engine.name)
+        return [OcrInputLanguage(**option) for option in engine_laguages]
