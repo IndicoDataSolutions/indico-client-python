@@ -35,7 +35,7 @@ Uploading your Dataset and Training your Model
 ==============================================
 
 With your object detection labels in a CSV alongside either the URL to each image or the local 
-path to the image on your computer, you can create your dataset via the API::
+path to the image on your computer, you can create your dataset and workflow via the API::
 
     from indico.queries import CreateDataset
 
@@ -52,6 +52,10 @@ path to the image on your computer, you can create your dataset via the API::
 For the "files" parameter provide the path to your CSV and for the "image_filename_col" parameter
 provide the column name containing the paths/urls of your images. 
 
+Next, create a workflow under which your model will live::
+
+    new_workflow = client.call(CreateWorkflow(name="Name of your workflow", dataset_id=dataset.id))
+
 To train your model, you can use the parameters you see below and the dataset object 
 we created above::
 
@@ -63,17 +67,18 @@ we created above::
         "test_size": 0.0,
         "use_small_model": False,
     }
-
-    model_group = client.call(
-        CreateModelGroup(
-            name="My Model",
-            dataset_id=dataset.id,
-            source_column_id=dataset.datacolumn_by_name("urls").id,
-            labelset_id=dataset.labelset_by_name("label").id,
-            model_training_options=model_training_options,
-            wait=wait,
-        )
+    after_component_id = new_workflow.component_by_type("INPUT_IMAGE").id
+    create_model_request = AddModelGroupComponent(
+    name=workflow_name,
+    dataset_id=dataset.id,
+    after_component_id=after_component_id,
+    source_column_id=dataset.datacolumn_by_name("urls").id,
+    labelset_column_id=dataset.labelset_by_name("label").id,
+    workflow_id=new_workflow.id,
+    model_training_options = model_training_options
     )
+    client.call(create_model_request)
+
 
 In the code above, the "labelset_id" should be the CSV column name containing your bounding box labels
 (in the example above, we named the column "label"). The column "urls" will be automatically created 

@@ -38,29 +38,6 @@ def test_list_workflows(indico, airlines_dataset, airlines_model_group: ModelGro
     assert len(wfs) > 0
 
 
-def test_workflow_job(indico, airlines_dataset, airlines_model_group: ModelGroup):
-    client = IndicoClient()
-    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
-    wf = max(wfs, key=lambda w: w.id)
-
-    dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
-
-    jobs = client.call(
-        WorkflowSubmission(
-            workflow_id=wf.id, files=[dataset_filepath], submission=False
-        )
-    )
-    job = jobs[0]
-
-    assert job.id is not None
-    job = client.call(JobStatus(id=job.id, wait=True))
-    assert job.status == "SUCCESS"
-    assert job.ready is True
-    assert isinstance(job.result["url"], str)
-
-    result = client.call(RetrieveStorageObject(job.result))
-
-    assert isinstance(result, dict)
 
 
 @pytest.mark.parametrize(
@@ -258,8 +235,11 @@ def test_list_workflow_submission_paginate(
     submission_ids = client.call(
         WorkflowSubmission(workflow_id=wf.id, files=[dataset_filepath]*5)
     )
-    for sub in client.paginate(ListSubmissions(workflow_ids=[wf.id], limit=3)):
+    subs = []
 
+    for sub in client.paginate(ListSubmissions(workflow_ids=[wf.id], limit=3)):
+        subs.extend(sub)
+    for sub in subs:
         if not submission_ids:
             break
         assert sub.id == submission_ids.pop()  # list is desc by default

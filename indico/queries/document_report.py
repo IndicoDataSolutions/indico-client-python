@@ -20,8 +20,8 @@ class GetDocumentReport(PagedRequest):
     """
 
     query = """
-       query SubmissionsLog($filters: SubmissionLogFilter, $limit: Int, $after: Int){
-          submissionsLog(filters: $filters, limit: $limit, after: $after){
+       query SubmissionsLog($filters: SubmissionLogFilter, $limit: Int, $after: Int, $allSubmissions: Boolean){
+          submissionsLog(filters: $filters, limit: $limit, after: $after, allSubmissions: $allSubmissions){
             submissions{
               datasetId
               workflowId
@@ -32,6 +32,7 @@ class GetDocumentReport(PagedRequest):
               completedAt
               errors
               retrieved
+              submissionId
               inputFiles{
                 filename
                 submissionId
@@ -50,9 +51,9 @@ class GetDocumentReport(PagedRequest):
         """
 
     def __init__(
-        self, filters: Union[dict, DocumentReportFilter] = None, limit: int = None
+        self, filters: Union[dict, DocumentReportFilter] = None, limit: int = None, all_submissions = False
     ):
-        variables = {"filters": filters, "limit": limit}
+        variables = {"filters": filters, "limit": limit, "allSubmissions": all_submissions}
         super().__init__(self.query, variables=variables)
 
     def process_response(self, response):

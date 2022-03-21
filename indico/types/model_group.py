@@ -1,3 +1,6 @@
+from enum import Enum
+from typing import List
+
 from indico.types.base import BaseType
 from indico.types.model import Model
 
@@ -24,3 +27,50 @@ class ModelGroup(BaseType):
     status: str
     selected_model: Model
     task_type: str
+    questionnaire_id: int
+
+
+class ModelTaskType(Enum):
+    """A list of valid task types for a model group."""
+    CLASSIFICATION = 1
+    FORM_EXTRACTION = 2
+    OBJECT_DETECTION = 3
+
+
+class ModelType(Enum):
+    STANDARD = 1
+    FINETUNE = 2
+    OBJECT_DETECTION = 3
+    FORM_EXTRACTION = 4
+    DOCUMENT = 5
+    TFIDF_LR = 6
+    TFIDF_GBT = 7
+
+
+class NewQuestionnaireArguments(BaseType):
+    """instructions: String
+Questionnaire instructions
+
+forceTextMode: Boolean = false
+Always use Text Labeling UI
+
+showPredictions: Boolean = true
+Show predictions at the global level
+
+users: [Int]
+User IDs to add to the questionnaire"""
+
+    instructions: str
+    force_text_mode: bool = False
+    show_predictions: bool = True
+    users: List[int]
+
+
+class NewLabelsetArguments():
+    def __init__(self, name: str, task_type: ModelTaskType,
+                 target_names: List[str], datacolumn_id: int, num_labelers_required: int = 1):
+        self.name = name
+        self.num_labelers_required = num_labelers_required
+        self.task_type = task_type
+        self.target_names = target_names
+        self.datacolumn_id = datacolumn_id

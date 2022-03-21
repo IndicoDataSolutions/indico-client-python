@@ -1,4 +1,5 @@
 import io
+import json
 from typing import List, Union, Dict
 
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
@@ -29,6 +30,42 @@ class ListWorkflows(GraphQLRequest):
                     status
                     reviewEnabled
                     autoReviewEnabled
+                components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        ... on ContentLengthComponent
+                        {
+                                minimum
+                                maximum
+                                }
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                            modelGroup {
+                                        status
+                                      id
+                                      name
+                                      taskType
+                                      questionnaireId
+                                      selectedModel{
+                                        id
+                                      }
+                                }
+                            
+                        }
+                
+                    }
+                  componentLinks{
+                    id
+                    headComponentId
+                    tailComponentId
+                    filters{
+                      classes
+                    }
+                    
+                  }
                 }
             }
         }
@@ -184,7 +221,7 @@ class _WorkflowSubmission(GraphQLRequest):
             **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
-        self.record_submission = kwargs["record_submission"]
+        self.record_submission = True #record_submission is deprecated entirely.
 
         # construct mutation signature and args based on provided kwargs to ensure
         # backwards-compatible graphql calls
@@ -240,7 +277,8 @@ class WorkflowSubmission(RequestChain):
         workflow_id (int): Id of workflow to submit files to
         files (List[str], optional): List of local file paths to submit
         urls (List[str], optional): List of urls to submit
-        submission (bool, optional): Process these files as normal submissions.
+        submission (bool, optional): DEPRECATED - AsyncJobs are no longer supported.
+        Process these files as normal submissions.
             Defaults to True.
             If False, files will be processed as AsyncJobs, ignoring any workflow
             post-processing steps like Review and with no record in the system
@@ -283,7 +321,8 @@ class WorkflowSubmission(RequestChain):
             self.has_streams = True
         else:
             self.streams = None
-
+        if not submission:
+            raise IndicoInputError("This option is deprecated and no longer supported.")
         if not self.files and not self.urls and not self.has_streams:
             raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
         elif self.files and self.has_streams:
@@ -391,7 +430,7 @@ class _AddDataToWorkflow(GraphQLRequest):
 
 class AddDataToWorkflow(RequestChain):
     """
-    Mutation to update data in a workflow, pressumably
+    Mutation to update data in a workflow, presumably
     after new data is added to the dataset.
 
     Args:
@@ -417,3 +456,60 @@ class AddDataToWorkflow(RequestChain):
             while self.previous.status != "COMPLETE":
                 yield GetWorkflow(workflow_id=self.workflow_id)
                 debouncer.backoff()
+
+
+class CreateWorkflow(GraphQLRequest):
+    """
+    Mutation to create workflow given an existing dataset.
+
+    Args:
+        dataset_id(int): dataset to create workflow for
+        name(str): name for the workflow
+
+    """
+    query = """  mutation createWorkflow($datasetId: Int!, $name: String!) {
+    createWorkflow(datasetId: $datasetId, name: $name) {
+           workflow {
+                    id
+                    name
+                    status
+                    reviewEnabled
+                    autoReviewEnabled
+                components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                        }
+                
+                    }
+                  componentLinks{
+                    id
+                    headComponentId
+                    tailComponentId
+                    filters{
+                      classes
+                    }
+                    
+                  }
+                }
+    }
+    }
+    """
+
+    def __init__(self, dataset_id: int, name: str):
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id,
+                       "name": name},
+        )
+
+    def process_response(self, response) -> Workflow:
+        return Workflow(
+            **super().process_response(response)["createWorkflow"]["workflow"]
+        )
+

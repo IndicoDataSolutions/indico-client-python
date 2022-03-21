@@ -3,8 +3,6 @@ from pathlib import Path
 from typing import List
 
 import pytest
-
-from build.lib.indico.queries.questionnaire import AddLabels
 from indico import IndicoConfig
 from indico.client import IndicoClient
 from indico.queries import JobStatus, RetrieveStorageObject, CreateDataset, GetDataset, ListWorkflows, \
@@ -60,3 +58,14 @@ def test_fetch_metrics(indico, org_annotate_dataset, workflow):
     assert workflow_metric is not None
     assert workflow_metric[0].submissions is not None
     assert workflow_metric[0].submissions.aggregate.submitted is 1
+
+
+def test_fetch_metrics_queue(indico, org_annotate_dataset, workflow):
+    client = IndicoClient()
+    workflow_metric: List[WorkflowMetrics] = \
+        client.call(GetWorkflowMetrics(options=[WorkflowMetricsOptions.REVIEW], start_date=datetime.now(),
+                                       end_date=datetime.now(), workflow_ids=[workflow.id]))
+    assert workflow_metric is not None
+    assert workflow_metric[0].queues is not None
+    assert len(workflow_metric[0].queues.daily_cumulative) > 0
+
