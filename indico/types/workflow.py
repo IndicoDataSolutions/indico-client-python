@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Union
-
+from datetime import datetime
 from indico.types import BaseType, ModelGroup, ModelTaskType
 
 
@@ -42,7 +42,9 @@ class Workflow(BaseType):
     auto_review_enabled: bool
     components: List[WorkflowComponent]
     component_links: List[WorkflowComponentLinks]
-
+    createdBy: int
+    createAt: datetime
+    
     def component_by_type(self, component_type: str) -> WorkflowComponent:
         """
         Returns first component available of type specified.

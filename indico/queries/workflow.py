@@ -30,6 +30,8 @@ class ListWorkflows(GraphQLRequest):
                     status
                     reviewEnabled
                     autoReviewEnabled
+                    createdAt
+                    createdBy
                 components {
                         id
                         componentType
