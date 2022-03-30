@@ -50,6 +50,7 @@ class IndicoConfig:
         self.protocol: str = os.getenv("INDICO_PROTOCOL", "https")
         self.serializer: str = os.getenv("INDICO_SERIALIZER", "msgpack")
         self.api_token_path: str = os.getenv("INDICO_API_TOKEN_PATH", Path.home())
+        self.api_token: str = os.getenv("INDICO_API_TOKEN")
 
         for key, value in kwargs.items():
             if hasattr(self, key):

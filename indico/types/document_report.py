@@ -18,6 +18,7 @@ class DocumentReport(BaseType):
     """
     dataset_id: int
     workflow_id: int
+    submission_id: int
     status: str
     created_at: str
     updated_at: str
