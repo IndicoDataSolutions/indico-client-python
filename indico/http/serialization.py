@@ -82,6 +82,7 @@ _SERIALIZATION_FNS = defaultdict(
         "json": json_deserialization,
         "application/javascript": json_deserialization,
         "image/png": image_serialization,
+        "image/jpeg": image_serialization,
         "image/jpg": image_serialization,
         "application/zip": zip_serialization,
         "application/x-gzip": raw_bytes,
