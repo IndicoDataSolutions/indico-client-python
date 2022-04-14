@@ -42,8 +42,8 @@ class Workflow(BaseType):
     auto_review_enabled: bool
     components: List[WorkflowComponent]
     component_links: List[WorkflowComponentLinks]
-    createdBy: int
-    createAt: datetime
+    created_by: int
+    created_at: datetime
     
     def component_by_type(self, component_type: str) -> WorkflowComponent:
         """
