@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Review &mdash; Indico Python Client 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -107,9 +106,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="review">
+  <div class="section" id="review">
 <h1>Review<a class="headerlink" href="#review" title="Permalink to this headline"></a></h1>
-<section id="introduction">
+<div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
 <p>Review provides the option for users to manually approve, fix, or reject model predictions in the app.
 While the action of reviewing and approving documents must take place in the application, the API is critical
@@ -117,8 +116,8 @@ in the submission of documents for review and for retrieving the results once th
 <p>Below you can see a sample of what the Review page looks like in the app. The user can reject, edit, or
 approve the model’s predictions while viewing the source document.</p>
 <img alt="_images/review_screenshot.png" src="_images/review_screenshot.png" />
-</section>
-<section id="review-via-the-api">
+</div>
+<div class="section" id="review-via-the-api">
 <h2>Review via the API<a class="headerlink" href="#review-via-the-api" title="Permalink to this headline"></a></h2>
 <p>Submitting documents to Review requires that you have your workflow ID and have clicked “enable review” for
 that workflow. You can find “enable review” by clicking on workflows from your dataset (see image below).</p>
@@ -216,8 +215,8 @@ and marks the result as having been retrieved:</p>
 the ‘text’ field has changed from ‘John Smith’ to ‘James Smith’. Note that if the document is rejected in Review,
 “review_rejected” will equal to True and ‘final’ will equal None. A submission result that hasn’t been reviewed
 will have ‘review_id’ equal to None.</p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

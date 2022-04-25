@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sending New Samples to a Workflow (aka Workflow Submission) &mdash; Indico Python Client 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -118,7 +117,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="sending-new-samples-to-a-workflow-aka-workflow-submission">
+  <div class="section" id="sending-new-samples-to-a-workflow-aka-workflow-submission">
 <h1>Sending New Samples to a Workflow (aka Workflow Submission)<a class="headerlink" href="#sending-new-samples-to-a-workflow-aka-workflow-submission" title="Permalink to this headline"></a></h1>
 <p>An example that illustrates how to submit new samples to a workflow.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
@@ -181,7 +180,7 @@
 <span class="k">for</span> <span class="n">submission</span><span class="p">,</span> <span class="n">result_file_job</span> <span class="ow">in</span> <span class="n">result_files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="n">result_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">result_file_job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">result_url</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submission </span><span class="si">{</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has result:</span><span class="se">\n</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submission </span><span class="si">{submission.id}</span><span class="s2"> has result:</span><span class="se">\n</span><span class="si">{result}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -224,7 +223,7 @@
             <span class="n">pred</span><span class="p">[</span><span class="s2">&quot;accepted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rejected</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submitting review for </span><span class="si">{</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">changes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submitting review for </span><span class="si">{submission.id}</span><span class="s2">: </span><span class="si">{changes}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmitReview</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">,</span> <span class="n">rejected</span><span class="o">=</span><span class="n">rejected</span><span class="p">))</span>
 <span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Review&quot;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;has result&quot;</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
@@ -236,11 +235,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="n">sub_filter</span> <span class="o">=</span> <span class="n">SubmissionFilter</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s2">&quot;PROCESSING&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">ListSubmissions</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">sub_filter</span><span class="p">)):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submission </span><span class="si">{</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submission </span><span class="si">{submission.id}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># do other cool things</span>
 </pre></div>
 </div>
-</section>
+</div>
 
 
            </div>

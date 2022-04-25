@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Datasets &mdash; Indico Python Client 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -103,7 +102,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-indico.queries.datasets">
+  <div class="section" id="module-indico.queries.datasets">
 <span id="datasets"></span><h1>Datasets<a class="headerlink" href="#module-indico.queries.datasets" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.CreateDataset">
@@ -217,7 +216,53 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 <p>Raises:</p>
 </dd></dl>
 
-</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.datasets.AddDatasetFiles">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">AddDatasetFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.AddDatasetFiles" title="Permalink to this definition"></a></dt>
+<dd><p>Add files to a dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>int</em>) – ID of the dataset</p></li>
+<li><p><strong>files</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of pathnames to the dataset files</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Options:</dt><dd><p>wait (bool, default=True): Block while polling for status of files
+batch_size (int, default=20): Batch size for uploading files</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dataset</p>
+</dd>
+</dl>
+<p>Raises:</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.datasets.RemoveDatasetFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">RemoveDatasetFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.RemoveDatasetFile" title="Permalink to this definition"></a></dt>
+<dd><p>Remove a file from a dataset by ID.  To retrieve a list of files in a dataset,
+see <cite>GetDatasetFileStatus</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>int</em>) – Dataset ID</p></li>
+<li><p><strong>file_id</strong> (<em>int</em>) – Datafile ID (returned by GetDatasetFileStatus)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataset object</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndicoError</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 
 
            </div>

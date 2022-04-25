@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generating Model Predictions &mdash; Indico Python Client 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -108,9 +107,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="generating-model-predictions">
+  <div class="section" id="generating-model-predictions">
 <h1>Generating Model Predictions<a class="headerlink" href="#generating-model-predictions" title="Permalink to this headline"></a></h1>
-<section id="find-your-selected-model-id">
+<div class="section" id="find-your-selected-model-id">
 <h2>Find Your Selected Model ID<a class="headerlink" href="#find-your-selected-model-id" title="Permalink to this headline"></a></h2>
 <p>The Indico Platform keeps multiple copies of your model and holds them all in a <strong>Model Group</strong>. So,
 if you train a classifier to categorize Airline Comments as we show in one of the examples, the
@@ -118,8 +117,8 @@ classifier will be treated as a Model Group. Each new version that you train get
 Model ID”. To find the latest Selected Model ID of a model you trained in the application, just
 visit the Review page of that model and you’ll see the ID in the upper left corner (below the Model Group ID) - see below.</p>
 <img alt="_images/model_id_review_screen.png" src="_images/model_id_review_screen.png" />
-</section>
-<section id="call-modelgrouppredict">
+</div>
+<div class="section" id="call-modelgrouppredict">
 <h2>Call ModelGroupPredict<a class="headerlink" href="#call-modelgrouppredict" title="Permalink to this headline"></a></h2>
 <p>With a Selected Model ID (30403 in this case), all you need to do is call ModelGroupPredict with
 a list of samples to predict.  Here’s an example:</p>
@@ -141,14 +140,14 @@ a list of samples to predict.  Here’s an example:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="important-performance-note">
+</div>
+<div class="section" id="important-performance-note">
 <h2>Important Performance Note<a class="headerlink" href="#important-performance-note" title="Permalink to this headline"></a></h2>
 <p>If you want to run predictions on more than one sample then <strong>ALWAYS</strong> pass a list to <code class="docutils literal notranslate"><span class="pre">ModelGroupPredict</span></code>.
 Loading a new model to run predictions is a costly operation. You are far better off to only do this once
 and pass in a list of samples to predict. The list can be just a few or even a few thousand.</p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

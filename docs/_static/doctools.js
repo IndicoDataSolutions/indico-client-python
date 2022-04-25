@@ -305,6 +305,7 @@ var Documentation = {
       var activeElementType = document.activeElement.tagName;
       // don't navigate when in search box, textarea, dropdown or button
       if (activeElementType !== 'TEXTAREA' && activeElementType !== 'INPUT' && activeElementType !== 'SELECT'
+<<<<<<< HEAD
           && activeElementType !== 'BUTTON') {
         if (event.altKey || event.ctrlKey || event.metaKey)
           return;
@@ -344,6 +345,25 @@ var Documentation = {
               break;
             Documentation.focusSearchBar();
             return false;
+=======
+          && activeElementType !== 'BUTTON' && !event.altKey && !event.ctrlKey && !event.metaKey
+          && !event.shiftKey) {
+        switch (event.keyCode) {
+          case 37: // left
+            var prevHref = $('link[rel="prev"]').prop('href');
+            if (prevHref) {
+              window.location.href = prevHref;
+              return false;
+            }
+            break;
+          case 39: // right
+            var nextHref = $('link[rel="next"]').prop('href');
+            if (nextHref) {
+              window.location.href = nextHref;
+              return false;
+            }
+            break;
+>>>>>>> 4bcbe32... ADD: remove file mutation
         }
       }
     });
