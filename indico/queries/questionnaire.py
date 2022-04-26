@@ -22,7 +22,7 @@ class AddLabels(GraphQLRequest):
     Add labels to an existing labelset.
 
     Args:
-        dataset_id (int): The id of the dataset to add labels to.
+        dataset_id (int): Deprecated - The id of the dataset to add labels to.
         labelset_id (int): The id of the labelset to add labels to.
         labels (List(dict)): A list of dicts containing rowIndex and target fields for the data points to add.
 
@@ -33,29 +33,26 @@ class AddLabels(GraphQLRequest):
 
     query = """
         mutation(
-            $labels: [SubmissionLabel]!,
-            $dataset_id: Int!,
+            $labels: [LabelInput]!,
             $labelset_id: Int!,
         ){
-            submitLabels(
-                datasetId: $dataset_id,
-                labelsetId: $labelset_id,
+            submitLabelsV2(
                 labels: $labels
+                labelsetId: $labelset_id,
             ){ success }
         }
         """
 
     def __init__(
             self,
-            dataset_id: int,
             labelset_id: int,
             labels: List[dict],
+            dataset_id: int = None,
     ):
         super().__init__(
             query=self.query,
             variables={
                 "labels": labels,
-                "dataset_id": dataset_id,
                 "labelset_id": labelset_id,
             },
         )
