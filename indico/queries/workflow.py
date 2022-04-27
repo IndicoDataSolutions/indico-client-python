@@ -22,14 +22,16 @@ class ListWorkflows(GraphQLRequest):
     """
 
     query = """
-        query ListWorkflows($datasetIds: [Int], $workflowIds: [Int]){
-            workflows(datasetIds: $datasetIds, workflowIds: $workflowIds){
+        query ListWorkflows($datasetIds: [Int], $workflowIds: [Int], $limit: Int){
+            workflows(datasetIds: $datasetIds, workflowIds: $workflowIds, limit: $limit){
                 workflows {
                     id
                     name
                     status
                     reviewEnabled
                     autoReviewEnabled
+                    createdAt
+                    createdBy
                 components {
                         id
                         componentType
@@ -72,11 +74,11 @@ class ListWorkflows(GraphQLRequest):
     """
 
     def __init__(
-            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None
+            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None, limit = 100
     ):
         super().__init__(
             self.query,
-            variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids},
+            variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids, "limit": limit},
         )
 
     def process_response(self, response) -> List[Workflow]:

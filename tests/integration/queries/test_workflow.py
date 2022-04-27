@@ -1,3 +1,4 @@
+from datetime import datetime
 from indico.queries.workflow import GetWorkflow
 import pytest
 from pathlib import Path
@@ -37,7 +38,13 @@ def test_list_workflows(indico, airlines_dataset, airlines_model_group: ModelGro
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     assert len(wfs) > 0
 
-
+def test_list_workflows_audit_info(indico, airlines_dataset, airlines_model_group: ModelGroup):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    assert wfs[0].created_at
+    assert isinstance(wfs[0].created_at, datetime)
+    assert wfs[0].created_by
+    assert isinstance(wfs[0].created_by, int)
 
 
 @pytest.mark.parametrize(

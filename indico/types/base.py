@@ -2,6 +2,7 @@ import inspect
 import json
 from typing import List, Any
 from indico.types.utils import cc_to_snake
+from datetime import datetime
 
 generic_alias_cls = type(List[Any])
 
@@ -21,7 +22,7 @@ def valid_type(v):
 
     return (
         (inspect.isclass(v) and issubclass(v, BaseType))
-        or v in [str, int, float, bool, JSONType]
+        or v in [str, int, float, bool, JSONType, datetime]
         or valid_type(list_subtype(v))
     )
 
@@ -33,10 +34,9 @@ class BaseType:
         for c in classes:
             if not getattr(c, "__annotations__", None):
                 continue
-
             props.update({k: v for k, v in c.__annotations__.items() if valid_type(v)})
-
         return props
+
 
     def __init__(self, **kwargs):
         attrs = self._get_attrs()
@@ -49,6 +49,9 @@ class BaseType:
 
                 if attr_type == JSONType:
                     v = json.loads(v)
+
+                if attr_type == datetime:
+                   v = datetime.fromtimestamp(float(v))
 
                 subtype = list_subtype(attr_type)
                 if subtype and issubclass(subtype, BaseType):
