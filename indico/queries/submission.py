@@ -62,6 +62,15 @@ class ListSubmissions(PagedRequest):
                     deleted
                     retrieved
                     errors
+                    reviews {
+                        id
+                        createdAt
+                        createdBy
+                        completedAt
+                        rejected
+                        reviewType
+                        notes
+                    }
                 }
                 pageInfo {
                     endCursor
@@ -124,6 +133,15 @@ class GetSubmission(GraphQLRequest):
                 retrieved
                 deleted
                 errors
+                reviews {
+                    id
+                    createdAt
+                    createdBy
+                    completedAt
+                    rejected
+                    reviewType
+                    notes
+                }
             }
         }
     """
@@ -158,6 +176,15 @@ class WaitForSubmissions(RequestChain):
                     retrieved
                     deleted
                     errors
+                    reviews {
+                        id
+                        createdAt
+                        createdBy
+                        completedAt
+                        rejected
+                        reviewType
+                        notes
+                    }
                 }
             }
         }
