@@ -212,7 +212,6 @@ class _WorkflowSubmission(GraphQLRequest):
     mutation_args = {
         "workflowId": "Int!",
         "files": "[FileInput]!",
-        "recordSubmission": "Boolean",
         "bundle": "Boolean",
         "resultVersion": "SubmissionResultVersion",
     }
@@ -223,7 +222,6 @@ class _WorkflowSubmission(GraphQLRequest):
             **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
-        self.record_submission = True #record_submission is deprecated entirely.
 
         # construct mutation signature and args based on provided kwargs to ensure
         # backwards-compatible graphql calls
@@ -257,10 +255,10 @@ class _WorkflowSubmission(GraphQLRequest):
         response = super().process_response(response)[self.mutation_name]
         if "submissions" in response:
             return [Submission(**s) for s in response["submissions"]]
-        elif self.record_submission:
-            return response["submissionIds"]
-        elif not response["jobIds"]:
+        if not response["submissionIds"]:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
+        else:
+            return response["submissionIds"]
         return [Job(id=job_id) for job_id in response["jobIds"]]
 
 
@@ -280,10 +278,6 @@ class WorkflowSubmission(RequestChain):
         files (List[str], optional): List of local file paths to submit
         urls (List[str], optional): List of urls to submit
         submission (bool, optional): DEPRECATED - AsyncJobs are no longer supported.
-        Process these files as normal submissions.
-            Defaults to True.
-            If False, files will be processed as AsyncJobs, ignoring any workflow
-            post-processing steps like Review and with no record in the system
         bundle (bool, optional): Batch all files under a single submission id
         result_version (str, optional):
             The format of the submission result file. One of:
@@ -338,7 +332,6 @@ class WorkflowSubmission(RequestChain):
             yield _WorkflowSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
-                record_submission=self.submission,
                 files=self.previous,
                 bundle=self.bundle,
                 result_version=self.result_version,
@@ -347,7 +340,6 @@ class WorkflowSubmission(RequestChain):
             yield _WorkflowUrlSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
-                record_submission=self.submission,
                 urls=self.urls,
                 bundle=self.bundle,
                 result_version=self.result_version,
@@ -357,7 +349,6 @@ class WorkflowSubmission(RequestChain):
             yield _WorkflowSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
-                record_submission=self.submission,
                 files=self.previous,
                 bundle=self.bundle,
                 result_version=self.result_version,
