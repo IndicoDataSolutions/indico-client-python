@@ -33,8 +33,8 @@ class SubmissionReviewFilter(Filter):
     def __init__(self, rejected: bool = None, created_by: int = None, review_type: str = None):
         kwargs = {
             "rejected": rejected,
-            "created_by": created_by,
-            "review_type": review_type.upper() if review_type else review_type,
+            "createdBy": created_by,
+            "reviewType": review_type.upper() if review_type else review_type,
         }
 
         super().__init__(**kwargs)
@@ -62,7 +62,7 @@ class SubmissionFilter(Filter):
         reviews: SubmissionReviewFilter = None
     ):
         kwargs = {
-            "input_filename": input_filename,
+            "inputFilename": input_filename,
             "status": status.upper() if status else status,
             "retrieved": retrieved,
             "reviews": reviews,
