@@ -323,7 +323,7 @@ def test_workflow_submission_auto_review(
     assert submission.status == "COMPLETE" if force_complete else "PENDING_REVIEW"
 
 
-def test_list_workflow_submission_rejected():
+def test_list_workflow_submission_rejected(org_annotate_dataset):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
     wf = max(wfs, key=lambda w: w.id)
