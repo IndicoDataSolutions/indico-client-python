@@ -1,6 +1,7 @@
 import pandas as pd
 import io
 from typing import List, Union
+from enum import Enum
 
 from indico.client import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoNotFound, IndicoRequestError
@@ -8,59 +9,71 @@ from indico.types.export import Export
 from indico.queries.storage import RetrieveStorageObject
 
 
+class LabelResolutionStrategy(Enum):
+    MAJORITY_VOTE_WITH_TIES = "majority_vote_with_ties"
+    MAJORITY_VOTE_WITHOUT_TIES = "majority_vote_without_ties"
+    UNANIMOUS = "unanimous"
+    ALL = "all"
+
+
 class _CreateExport(GraphQLRequest):
     query = """
         mutation CreateExport(
-            $datasetId: Int!, 
+            $datasetId: Int!,
+            $labelsetId: Int!,
             $columnIds: [Int], 
-            $subsetIds: [Int], 
-            $labelsetIds: [Int],
+            $modelIds: [Int],
+            $frozenLabelsetIds: [Int],
+            $combineLabels: LabelResolutionStrategy,
             $fileInfo: Boolean,
-            $combineLabels: Boolean,
             $anonymous: Boolean
         ) {
             createExport(
                 datasetId: $datasetId,
+                labelsetId: $labelsetId,
                 columnIds: $columnIds,
-                subsetIds: $subsetIds,
+                modelIds: $modelIds,
+                frozenLabelsetIds: $frozenLabelsetIds,
+                combineLabels: $combineLabels,
                 fileInfo: $fileInfo,
-                labelsetIds: $labelsetIds,
-                combineLabels: $combineLabels
                 anonymous: $anonymous
             ) {
                 id,
                 datasetId,
+                labelsetId,
                 name,
                 status,
-                downloadUrl,
                 columnIds,
-                labelsetIds,
-                subsetIds,
+                modelIds,
+                frozenLabelsetIds,
                 anonymous
+                downloadUrl,
             }
-        }    
+        }
 
     """
 
     def __init__(
         self,
         dataset_id: int,
+        labelset_id: int,
         column_ids: List[int] = None,
-        subset_ids: List[int] = None,
-        labelset_ids: List[int] = None,
+        model_ids: List[int] = None,
+        frozen_labelset_ids: List[int] = None,
+        combine_labels: LabelResolutionStrategy = LabelResolutionStrategy.ALL.name,
         file_info: bool = None,
-        combine_labels: bool = None,
         anonymoous: bool = None,
     ):
         super().__init__(
             self.query,
             variables={
                 "datasetId": dataset_id,
+                "labelsetId": labelset_id,
                 "columnIds": column_ids,
-                "subsetIds": subset_ids,
-                "labelsetIds": labelset_ids,
-                "fileInfo": file_info,
+                "modelIds": model_ids,
+                "frozenLabelsetIds": frozen_labelset_ids,
                 "combineLabels": combine_labels,
+                "fileInfo": file_info,
                 "anonymous": anonymoous,
             },
         )
@@ -91,8 +104,9 @@ class GetExport(GraphQLRequest):
                 name 
                 status
                 columnIds
-                labelsetIds
-                subsetIds
+                labelsetId
+                modelIds
+                frozenLabelsetIds
                 numLabels
                 anonymous
                 downloadUrl
@@ -160,11 +174,12 @@ class CreateExport(RequestChain):
 
     Args:
         dataset_id (int): Dataset to create the export for
-        subset_ids: (List(int)): Subset ids to export rows sets
+        labelset_id: (int): Labelset column id to export
         column_ids (List(int)): Data column ids to export
-        labelset_ids: (List(int)): Labelset column ids to export
+        model_ids (List(int)): Model ids to include predictions from
+        frozen_labelset_ids: (List(int)): frozen labelset ids to limit examples by
+        combine_labels: (LabelResolutionStrategy): One row per example, combine labels from multiple labels into a single row
         file_info: (bool): Include datafile information
-        combine_labels: (bool): One row per example, combine labels from multiple labels into a single row
         anonymous: (bool): Anonymize user information
         wait: (bool): Wait for the export to complete. Default is True
 
@@ -178,20 +193,22 @@ class CreateExport(RequestChain):
     def __init__(
         self,
         dataset_id: int,
-        subset_ids: List[int] = None,
+        labelset_id: int,
         column_ids: List[int] = None,
-        labelset_ids: List[int] = None,
+        model_ids: List[int] = None,
+        frozen_labelset_ids: List[int] = None,
+        combine_labels: LabelResolutionStrategy = LabelResolutionStrategy.ALL.name,
         file_info: bool = False,
-        combine_labels: bool = False,
         anonymous: bool = False,
         wait: bool = True,
     ):
         self.dataset_id = dataset_id
+        self.labelset_id = labelset_id
         self.column_ids = column_ids
-        self.subset_ids = subset_ids
-        self.labelset_ids = labelset_ids
-        self.file_info = file_info
+        self.model_ids = model_ids
+        self.frozen_labelset_ids = frozen_labelset_ids
         self.combine_labels = combine_labels
+        self.file_info = file_info
         self.anonymous = anonymous
         self.wait = wait
         super().__init__()
@@ -199,11 +216,12 @@ class CreateExport(RequestChain):
     def requests(self):
         yield _CreateExport(
             dataset_id=self.dataset_id,
+            labelset_id=self.labelset_id,
             column_ids=self.column_ids,
-            subset_ids=self.subset_ids,
-            labelset_ids=self.labelset_ids,
-            file_info=self.file_info,
+            model_ids=self.model_ids,
+            frozen_labelset_ids=self.frozen_labelset_ids,
             combine_labels=self.combine_labels,
+            file_info=self.file_info,
             anonymoous=self.anonymous,
         )
         debouncer = Debouncer()
