@@ -11,7 +11,7 @@ PUBLIC_URL = "https://github.com/IndicoDataSolutions/indico-client-python/raw/ma
 
 
 @pytest.fixture(scope="module")
-def airlines_dataset():
+def airlines_dataset(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[0]) + "/AirlineComplaints.csv"
 

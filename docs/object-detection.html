@@ -1,78 +1,36 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Object Detection &mdash; Indico Python Client 3.1.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Migrating Client Library Scripts" href="migration.html" />
     <link rel="prev" title="Auto Review" href="auto-review.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> Indico Python Client
-          
-
-          
-            
             <img src="_static/logo-white.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -80,18 +38,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
@@ -137,75 +84,34 @@
 <li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Indico Python Client</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Object Detection</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/object-detection.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="object-detection">
-<h1>Object Detection<a class="headerlink" href="#object-detection" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="object-detection">
+<h1>Object Detection<a class="headerlink" href="#object-detection" title="Permalink to this headline"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
 <p>Using the Indico platform, you can train models to be able to detect whether an element
 is present in an image and its location (a process referred to as ‘Object Detection’).</p>
 <p>For now, you can’t label object detection models within the Indico platfrom. Instead, you should
@@ -227,9 +133,9 @@ values should look like this:</p>
 in your image.</p>
 <p>If you don’t already have a object detection labeling tool, you can try this open source tool
 from Oxford University: <a class="reference external" href="http://www.robots.ox.ac.uk/~vgg/software/via/">http://www.robots.ox.ac.uk/~vgg/software/via/</a>.</p>
-</div>
-<div class="section" id="uploading-your-dataset-and-training-your-model">
-<h2>Uploading your Dataset and Training your Model<a class="headerlink" href="#uploading-your-dataset-and-training-your-model" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="uploading-your-dataset-and-training-your-model">
+<h2>Uploading your Dataset and Training your Model<a class="headerlink" href="#uploading-your-dataset-and-training-your-model" title="Permalink to this headline"></a></h2>
 <p>With your object detection labels in a CSV alongside either the URL to each image or the local
 path to the image on your computer, you can create your dataset and workflow via the API:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span>
@@ -277,9 +183,9 @@ we created above:</p>
 <p>In the code above, the “labelset_id” should be the CSV column name containing your bounding box labels
 (in the example above, we named the column “label”). The column “urls” will be automatically created
 by the platform and represents the location of your images after they’ve been uploaded by Indico.</p>
-</div>
-<div class="section" id="predict-with-your-object-detection-model">
-<h2>Predict with your Object Detection Model<a class="headerlink" href="#predict-with-your-object-detection-model" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="predict-with-your-object-detection-model">
+<h2>Predict with your Object Detection Model<a class="headerlink" href="#predict-with-your-object-detection-model" title="Permalink to this headline"></a></h2>
 <p>To get predictions from your model, you must first upload the images you want to predict on and then
 pass them to the model, for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
@@ -317,55 +223,38 @@ pass them to the model, for example:</p>
 </div>
 <p>The data includes the bounding box location of the detected object, its predicted label,
 and the confidence with which the prediction was made.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="migration.html" class="btn btn-neutral float-right" title="Migrating Client Library Scripts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="auto-review.html" class="btn btn-neutral float-left" title="Auto Review" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="migration.html" class="btn btn-neutral float-right" title="Migrating Client Library Scripts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Indico.
-
-    </p>
+    <p>&#169; Copyright 2020, Indico.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

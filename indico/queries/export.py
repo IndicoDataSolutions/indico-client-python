@@ -1,19 +1,11 @@
 import pandas as pd
 import io
 from typing import List, Union
-from enum import Enum
 
 from indico.client import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoNotFound, IndicoRequestError
-from indico.types.export import Export
+from indico.types.export import LabelResolutionStrategy, Export
 from indico.queries.storage import RetrieveStorageObject
-
-
-class LabelResolutionStrategy(Enum):
-    MAJORITY_VOTE_WITH_TIES = "majority_vote_with_ties"
-    MAJORITY_VOTE_WITHOUT_TIES = "majority_vote_without_ties"
-    UNANIMOUS = "unanimous"
-    ALL = "all"
 
 
 class _CreateExport(GraphQLRequest):
