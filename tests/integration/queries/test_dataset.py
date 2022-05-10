@@ -287,7 +287,12 @@ def test_create_from_csv(indico):
 
     _dataset_complete(dataset)
 
-    export = client.call(CreateExport(dataset_id=dataset.id, wait=True))
+    export = client.call(CreateExport(
+                            dataset_id=dataset.id,
+                            labelset_id=dataset.labelsets[0].id,
+                            wait=True
+                        )
+                    )
 
     exported_data = client.call(DownloadExport(export.id))
 

@@ -11,11 +11,15 @@ import re
 
 def test_create_and_download_export(airlines_dataset: Dataset):
     client = IndicoClient()
-    export = client.call(CreateExport(dataset_id=airlines_dataset.id, wait=True))
+    export = client.call(
+                CreateExport(
+                    dataset_id=airlines_dataset.id,
+                    labelset_id=airlines_dataset.labelsets[0].id,
+                    wait=True
+                )
+            )
     assert export.status == "COMPLETE"
-
     csv = client.call(DownloadExport(export.id))
-
     assert all(c in csv.columns.to_list() for c in ["ID", "Target_1", "Text"])
     assert any(re.match("row_index_[0-9]+", c) for c in csv.columns.to_list())
     assert csv["Text"][0] == "Your service is so bad."
@@ -35,5 +39,10 @@ def test_download_incomplete(indico):
 
 def test_create_export_no_wait(airlines_dataset: Dataset):
     client = IndicoClient()
-    export = client.call(CreateExport(dataset_id=airlines_dataset.id, wait=False))
+    export = client.call(CreateExport(
+                            dataset_id=airlines_dataset.id,
+                            labelset_id=airlines_dataset.labelsets[0].id,
+                            wait=False
+                        )
+                    )
     assert export.status == "STARTED"
