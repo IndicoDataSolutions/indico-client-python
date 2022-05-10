@@ -39,7 +39,7 @@ class SubmissionRetries(BaseType):
 
 class SubmissionReviews(BaseType):
     f"""
-    Information about a submissions Reviews.
+    Information about a submission's Reviews.
 
     Attributes:
         id (int): The ID of the review.
