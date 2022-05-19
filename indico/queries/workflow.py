@@ -22,52 +22,51 @@ class ListWorkflows(GraphQLRequest):
     """
 
     query = """
-        query ListWorkflows($datasetIds: [Int], $workflowIds: [Int], $limit: Int){
-            workflows(datasetIds: $datasetIds, workflowIds: $workflowIds, limit: $limit){
+        query ListWorkflows($datasetIds: [Int], $workflowIds: [Int], $limit: Int) {
+            workflows(datasetIds: $datasetIds, workflowIds: $workflowIds, limit: $limit) {
                 workflows {
                     id
                     name
                     status
-                    reviewEnabled
-                    autoReviewEnabled
+                    reviewable
                     createdAt
                     createdBy
-                components {
+                    components {
                         id
                         componentType
                         reviewable
                         filteredClasses
-                        ... on ContentLengthComponent
-                        {
-                                minimum
-                                maximum
-                                }
+                        ... on ContentLengthComponent {
+                            minimum
+                            maximum
+                        }
                         ... on ModelGroupComponent {
                             taskType
                             modelType
                             modelGroup {
-                                        status
-                                      id
-                                      name
-                                      taskType
-                                      questionnaireId
-                                      selectedModel{
-                                        id
-                                      }
+                                status
+                                id
+                                name
+                                taskType
+                                questionnaireId
+                                selectedModel {
+                                id
                                 }
-                            
+                            }
                         }
-                
                     }
-                  componentLinks{
-                    id
-                    headComponentId
-                    tailComponentId
-                    filters{
-                      classes
+                    componentLinks {
+                        id
+                        headComponentId
+                        tailComponentId
+                        filters {
+                            classes
+                        }
                     }
-                    
-                  }
+                    settings {
+                        reviewQueueEnabled
+                        autoReviewQueueEnabled
+                    }
                 }
             }
         }

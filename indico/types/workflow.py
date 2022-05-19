@@ -30,6 +30,13 @@ class WorkflowComponentLinks(BaseType):
     head_component_id: int
     tail_component_id: int
 
+class ReviewSettings(BaseType):
+    """
+    Represents review queue settings.
+    """
+    review_queue_enabled: bool
+    auto_review_queue_enabled: bool
+
 
 class Workflow(BaseType):
     """
@@ -38,12 +45,12 @@ class Workflow(BaseType):
     id: int
     name: str
     status: str
-    review_enabled: bool
-    auto_review_enabled: bool
+    reviewable: bool
     components: List[WorkflowComponent]
     component_links: List[WorkflowComponentLinks]
     created_by: int
     created_at: datetime
+    settings: ReviewSettings
     
     def component_by_type(self, component_type: str) -> WorkflowComponent:
         """
