@@ -43,31 +43,20 @@ modelgroupreq = AddModelGroupComponent(
 
 client.call(modelgroupreq)
 
+
 # Example 2: Simple submission.
 
-# Return a list of workflows for this dataset id or an empty list if there are none
-workflows = client.call(ListWorkflows(dataset_ids=[dataset_id]))
-
-# You can run this with the newly created workflow or with an existing one.
-if workflows:
-    # Send a document through the workflow
-    # Get back one Job per file
-    jobs = client.call(
-        WorkflowSubmission(
-            workflow_id=workflows[0].id,
-            files=["./path/to/sample.pdf"],
-            submission=False,
-        )
+# Send a document through the workflow
+# Get back one submission ID per file (List[int])
+submission_id = client.call(
+    WorkflowSubmission(
+        workflow_id=new_workflow.id, # REPLACE with your [int] workflow ID- can also be found in the UI
+        files=["./path/to/sample.pdf"],
     )
-    job = jobs[0]
+)
+job = client.call(SubmissionResult(submission_id[0], wait=True))
+wf_result = client.call(RetrieveStorageObject(job.result))
 
-    # Retrieve and print your result
-    status = client.call(JobStatus(id=job.id, wait=True))
-    wf_result = client.call(RetrieveStorageObject(status.result))
-    print(wf_result)
-
-else:
-    print("You don't have any workflows for this dataset")
 
 # Example 3 - Adding additional components.
 
