@@ -27,10 +27,13 @@ class Filter(dict):
             raise IndicoInputError(f"One of {self.__options__} must be specified")
         self.update(and_(kwargs) if len(kwargs) > 1 else kwargs)
 
+
 class SubmissionReviewFilter(Filter):
     __options__ = ("rejected", "created_by", "review_type")
-    
-    def __init__(self, rejected: bool = None, created_by: int = None, review_type: str = None):
+
+    def __init__(
+        self, rejected: bool = None, created_by: int = None, review_type: str = None
+    ):
         kwargs = {
             "rejected": rejected,
             "createdBy": created_by,
@@ -38,6 +41,7 @@ class SubmissionReviewFilter(Filter):
         }
 
         super().__init__(**kwargs)
+
 
 class SubmissionFilter(Filter):
     """
@@ -55,11 +59,11 @@ class SubmissionFilter(Filter):
     __options__ = ("input_filename", "status", "retrieved")
 
     def __init__(
-        self, 
-        input_filename: str = None, 
-        status: str = None, 
-        retrieved: bool = None, 
-        reviews: SubmissionReviewFilter = None
+        self,
+        input_filename: str = None,
+        status: str = None,
+        retrieved: bool = None,
+        reviews: SubmissionReviewFilter = None,
     ):
         kwargs = {
             "inputFilename": input_filename,
@@ -67,6 +71,40 @@ class SubmissionFilter(Filter):
             "retrieved": retrieved,
             "reviews": reviews,
         }
+
+        super().__init__(**kwargs)
+
+
+class ExampleFilter(Filter):
+    """
+    Create a Filter when querying for examples associated with model groups.
+
+    Args:
+        file_name (str): examples with input file names containing this string
+        partial (bool): examples that are or are not partially labeled
+        status (str): submissions in this status. Options:
+            [COMPLETE, INCOMPLETE]
+        text_search (bool): examples that contain this substring in their text
+    Returns:
+        dict containing query filter parameters
+    """
+
+    # TODO: extend to support full filter list
+    __options__ = ("file_name", "partial", "status", "text_search")
+
+    def __init__(
+        self,
+        file_name: str = None,
+        partial: bool = None,
+        status: str = None,
+        text_search: str = None,
+    ):
+        kwargs = {
+            "fileName": file_name,
+            "partial": partial,
+            "textSearch": text_search,
+        }
+        kwargs["status"] = status.upper() if status else None
 
         super().__init__(**kwargs)
 
@@ -81,15 +119,14 @@ class UserMetricsFilter(Filter):
     Returns:
         dict containing query filter parameters
     """
+
     __options__ = ("user_id", "user_email")
 
     def __init__(self, user_id: int = None, user_email: str = None):
-        kwargs = {
-            "userId": user_id,
-            "userEmail": user_email
-        }
+        kwargs = {"userId": user_id, "userEmail": user_email}
 
         super().__init__(**kwargs)
+
 
 class DocumentReportFilter(Filter):
     """
@@ -106,29 +143,45 @@ class DocumentReportFilter(Filter):
     Returns:
         dict containing query filter parameters
     """
-    __options__ = ("workflow_id", "submission_id", "status", "created_at_start_date", "created_at_end_date",
-                   "updated_at_start_date", "updated_at_end_date")
 
-    def __init__(self, submission_id: int = None, workflow_id: int = None, status: str = None, created_at_start_date: datetime = None,
-                 created_at_end_date: datetime = None,
-                 updated_at_start_date: datetime = None, updated_at_end_date: datetime = None
-                 ):
+    __options__ = (
+        "workflow_id",
+        "submission_id",
+        "status",
+        "created_at_start_date",
+        "created_at_end_date",
+        "updated_at_start_date",
+        "updated_at_end_date",
+    )
 
-        kwargs = {
-            "workflowId": workflow_id,
-            "id": submission_id,
-            "status": status
+    def __init__(
+        self,
+        submission_id: int = None,
+        workflow_id: int = None,
+        status: str = None,
+        created_at_start_date: datetime = None,
+        created_at_end_date: datetime = None,
+        updated_at_start_date: datetime = None,
+        updated_at_end_date: datetime = None,
+    ):
 
-
-        }
+        kwargs = {"workflowId": workflow_id, "id": submission_id, "status": status}
         if created_at_start_date is not None and created_at_end_date is not None:
             kwargs["createdAt"] = {
-                "from": created_at_start_date.strftime('%Y-%m-%d') if created_at_start_date is not None else "",
-                "to": created_at_end_date.strftime('%Y-%m-%d') if created_at_end_date is not None else "",
+                "from": created_at_start_date.strftime("%Y-%m-%d")
+                if created_at_start_date is not None
+                else "",
+                "to": created_at_end_date.strftime("%Y-%m-%d")
+                if created_at_end_date is not None
+                else "",
             }
         if updated_at_start_date is not None and updated_at_end_date is not None:
             kwargs["updatedAt"] = {
-                "from": updated_at_start_date.strftime('%Y-%m-%d') if updated_at_start_date is not None else "",
-                "to": updated_at_end_date.strftime('%Y-%m-%d') if updated_at_end_date is not None else "",
+                "from": updated_at_start_date.strftime("%Y-%m-%d")
+                if updated_at_start_date is not None
+                else "",
+                "to": updated_at_end_date.strftime("%Y-%m-%d")
+                if updated_at_end_date is not None
+                else "",
             }
         super().__init__(**kwargs)
