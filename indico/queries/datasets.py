@@ -236,7 +236,7 @@ class CreateDataset(RequestChain):
             )
         file_metadata = self.previous
         yield CreateEmptyDataset(name=self.name, dataset_type=self.dataset_type)
-        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata)
+        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata, autoprocess=False)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
@@ -335,18 +335,18 @@ class CreateEmptyDataset(GraphQLRequest):
 
 class _AddFiles(GraphQLRequest):
     query = """
-    mutation AddFiles($datasetId: Int!, $metadata: JSONString!){
-        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata) {
+    mutation AddFiles($datasetId: Int!, $metadata: JSONString!, $autoprocess: Boolean = true){
+        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata, autoprocess: $autoprocess) {
             id
             status
         }
     }
     """
 
-    def __init__(self, dataset_id: int, metadata: List[str]):
+    def __init__(self, dataset_id: int, metadata: List[str], autoprocess: bool=True):
         super().__init__(
             self.query,
-            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
+            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata), "autoprocess": autoprocess},
         )
 
     def process_response(self, response):
@@ -375,16 +375,18 @@ class AddFiles(RequestChain):
     previous = None
 
     def __init__(
-            self,
-            dataset_id: int,
-            files: List[str],
-            wait: bool = True,
-            batch_size: int = 20,
+        self,
+        dataset_id: int,
+        files: List[str],
+        wait: bool = True,
+        batch_size: int = 20,
+        autoprocess: bool = True,
     ):
         self.dataset_id = dataset_id
         self.files = files
         self.wait = wait
         self.batch_size = batch_size
+        self.autoprocess = autoprocess
         super().__init__()
 
     def requests(self):
@@ -393,7 +395,7 @@ class AddFiles(RequestChain):
             batch_size=self.batch_size,
             request_cls=_UploadDatasetFiles,
         )
-        yield _AddFiles(dataset_id=self.dataset_id, metadata=self.previous)
+        yield _AddFiles(dataset_id=self.dataset_id, metadata=self.previous, autoprocess=self.autoprocess)
         yield GetDatasetFileStatus(id=self.dataset_id)
         debouncer = Debouncer()
         while not all(
