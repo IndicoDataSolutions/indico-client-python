@@ -12,9 +12,9 @@ class ListModelGroupExamples(PagedRequest):
 
     Options:
         model_group_ids (List[int]): Model group ids to filter by
-        filters (ExampleFilter or Dict): Submission attributes to filter by
-        limit (int, default=1000): Maximum number of Submissions to return
-        orderBy (str, default="ID"): Submission attribute to filter by
+        filters (ExampleFilter or Dict): Example attributes to filter by
+        limit (int, default=1000): Maximum number of Examples to return
+        orderBy (str, default="ID"): Example attribute to filter by
         desc: (bool, default=True): List in descending order
 
     Returns:
