@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Auto Review &mdash; Indico Python Client 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -109,15 +108,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="auto-review">
+  <div class="section" id="auto-review">
 <h1>Auto Review<a class="headerlink" href="#auto-review" title="Permalink to this headline"></a></h1>
-<section id="introduction">
+<div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
 <p>Auto Review is a feature that allows users to programatically accept and reject predictions before Review. The criteria for accepting and rejecting predictions can be customized by the user.</p>
 <p>To use Auto-review, Review and Scripted Review must be enabled from the workflows page. You can enable these features by clicking on workflows from your dataset page (shown below).</p>
 <img alt="_images/enable_auto_review.png" src="_images/enable_auto_review.png" />
-</section>
-<section id="using-auto-review">
+</div>
+<div class="section" id="using-auto-review">
 <h2>Using Auto Review<a class="headerlink" href="#using-auto-review" title="Permalink to this headline"></a></h2>
 <p>Auto review is currently only available via api call. To use it, the following steps must be performed:</p>
 <ul class="simple">
@@ -158,34 +157,28 @@
 </pre></div>
 </div>
 <p>After submitting the changes using Auto-Review, the document will be available through Review for human review. Any predictions that were accepted through Auto-Review will be pre-approved on the review page (shown below). Reviewers can still modify and add to accepted predictions in Review.</p>
-<figure class="align-right" id="id1">
+<div class="figure align-right" id="id1">
 <img alt="_images/accepted_prediction.png" src="_images/accepted_prediction.png" />
-<figcaption>
-<p><span class="caption-text">Accepted predictions</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<figure class="align-left" id="id2">
+<p class="caption"><span class="caption-text">Accepted predictions</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</div>
+<div class="figure align-left" id="id2">
 <a class="reference internal image-reference" href="_images/not_accepted_prediction.png"><img alt="_images/not_accepted_prediction.png" src="_images/not_accepted_prediction.png" style="width: 291.84px; height: 276.48px;" /></a>
-<figcaption>
-<p><span class="caption-text">Normal predictions</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<figure class="align-right" id="id3">
+<p class="caption"><span class="caption-text">Normal predictions</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</div>
+<div class="figure align-right" id="id3">
 <a class="reference internal image-reference" href="_images/rejected_prediction.png"><img alt="_images/rejected_prediction.png" src="_images/rejected_prediction.png" style="width: 282.72px; height: 199.95000000000002px;" /></a>
-<figcaption>
-<p><span class="caption-text">Rejected prediction</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
+<p class="caption"><span class="caption-text">Rejected prediction</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</div>
 <p>Predictions that were rejected through Auto-Review will not appear in Review (shown right). Human reviewers are still able to fill in these empty labels, or confirm no value. You can also confirm no value programmatically through Auto Review.</p>
-</section>
-<section id="auto-reject-a-document">
+</div>
+<div class="section" id="auto-reject-a-document">
 <h2>Auto Reject a Document<a class="headerlink" href="#auto-reject-a-document" title="Permalink to this headline"></a></h2>
 <p>When submitting changes for a given document using SubmitReview, you can reject a document and send it to the exceptions queue using the “rejected” argument:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmitReview</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">,</span> <span class="n">rejected</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
-</section>
-<section id="accepting-no-value">
+</div>
+<div class="section" id="accepting-no-value">
 <h2>Accepting No Value<a class="headerlink" href="#accepting-no-value" title="Permalink to this headline"></a></h2>
 <p>Even when all predictions are accepted, a reviewer will still need to manually accept any labels that are empty. However, you can automatically accept empty values for specific labels using the “_no_value” key. Within the model results, set the dictionary key “_no_value” equal to a dictionary containing the name of your model keying to a list of labels. This list of labels should contain all the labels you would like to automatically accept empty values for. Accepted empty labels will appear in review as accepted labels. Please note that you can only auto-accept empty labels that do not contain any predictions. Labels that contain predictions should not be inlcuded in the list of no value labels. In the example below empty labels are only accepted if the specified label is not present in the predictions:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
@@ -216,8 +209,8 @@
 <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmitReview</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">))</span>
 </pre></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

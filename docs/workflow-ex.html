@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Run Files Through a Workflow &mdash; Indico Python Client 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -118,7 +117,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="run-files-through-a-workflow">
+  <div class="section" id="run-files-through-a-workflow">
 <h1>Run Files Through a Workflow<a class="headerlink" href="#run-files-through-a-workflow" title="Permalink to this headline"></a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico</span> <span class="kn">import</span> <span class="n">IndicoClient</span><span class="p">,</span> <span class="n">IndicoConfig</span>
 <span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
@@ -165,31 +164,20 @@
 
 <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">modelgroupreq</span><span class="p">)</span>
 
+
 <span class="c1"># Example 2: Simple submission.</span>
 
-<span class="c1"># Return a list of workflows for this dataset id or an empty list if there are none</span>
-<span class="n">workflows</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">ListWorkflows</span><span class="p">(</span><span class="n">dataset_ids</span><span class="o">=</span><span class="p">[</span><span class="n">dataset_id</span><span class="p">]))</span>
-
-<span class="c1"># You can run this with the newly created workflow or with an existing one.</span>
-<span class="k">if</span> <span class="n">workflows</span><span class="p">:</span>
-    <span class="c1"># Send a document through the workflow</span>
-    <span class="c1"># Get back one Job per file</span>
-    <span class="n">jobs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-        <span class="n">WorkflowSubmission</span><span class="p">(</span>
-            <span class="n">workflow_id</span><span class="o">=</span><span class="n">workflows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span>
-            <span class="n">submission</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
+<span class="c1"># Send a document through the workflow</span>
+<span class="c1"># Get back one submission ID per file (List[int])</span>
+<span class="n">submission_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">WorkflowSubmission</span><span class="p">(</span>
+        <span class="n">workflow_id</span><span class="o">=</span><span class="n">new_workflow</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="c1"># REPLACE with your [int] workflow ID- can also be found in the UI</span>
+        <span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span>
     <span class="p">)</span>
-    <span class="n">job</span> <span class="o">=</span> <span class="n">jobs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmissionResult</span><span class="p">(</span><span class="n">submission_id</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">wf_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
 
-    <span class="c1"># Retrieve and print your result</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">JobStatus</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-    <span class="n">wf_result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">wf_result</span><span class="p">)</span>
-
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have any workflows for this dataset&quot;</span><span class="p">)</span>
 
 <span class="c1"># Example 3 - Adding additional components.</span>
 
@@ -248,7 +236,7 @@
 <span class="n">updated</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">add_classes_filter</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
+</div>
 
 
            </div>

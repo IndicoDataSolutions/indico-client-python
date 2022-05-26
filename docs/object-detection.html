@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Object Detection &mdash; Indico Python Client 3.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -108,9 +107,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="object-detection">
+  <div class="section" id="object-detection">
 <h1>Object Detection<a class="headerlink" href="#object-detection" title="Permalink to this headline"></a></h1>
-<section id="introduction">
+<div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
 <p>Using the Indico platform, you can train models to be able to detect whether an element
 is present in an image and its location (a process referred to as ‘Object Detection’).</p>
@@ -133,8 +132,8 @@ values should look like this:</p>
 in your image.</p>
 <p>If you don’t already have a object detection labeling tool, you can try this open source tool
 from Oxford University: <a class="reference external" href="http://www.robots.ox.ac.uk/~vgg/software/via/">http://www.robots.ox.ac.uk/~vgg/software/via/</a>.</p>
-</section>
-<section id="uploading-your-dataset-and-training-your-model">
+</div>
+<div class="section" id="uploading-your-dataset-and-training-your-model">
 <h2>Uploading your Dataset and Training your Model<a class="headerlink" href="#uploading-your-dataset-and-training-your-model" title="Permalink to this headline"></a></h2>
 <p>With your object detection labels in a CSV alongside either the URL to each image or the local
 path to the image on your computer, you can create your dataset and workflow via the API:</p>
@@ -183,8 +182,8 @@ we created above:</p>
 <p>In the code above, the “labelset_id” should be the CSV column name containing your bounding box labels
 (in the example above, we named the column “label”). The column “urls” will be automatically created
 by the platform and represents the location of your images after they’ve been uploaded by Indico.</p>
-</section>
-<section id="predict-with-your-object-detection-model">
+</div>
+<div class="section" id="predict-with-your-object-detection-model">
 <h2>Predict with your Object Detection Model<a class="headerlink" href="#predict-with-your-object-detection-model" title="Permalink to this headline"></a></h2>
 <p>To get predictions from your model, you must first upload the images you want to predict on and then
 pass them to the model, for example:</p>
@@ -223,8 +222,8 @@ pass them to the model, for example:</p>
 </div>
 <p>The data includes the bounding box location of the detected object, its predicted label,
 and the confidence with which the prediction was made.</p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
