@@ -4,7 +4,7 @@ from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain
+from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
@@ -12,9 +12,10 @@ from indico.types import Job, Submission
 from indico.types.submission import VALID_SUBMISSION_STATUSES
 
 
-class ListSubmissions(GraphQLRequest):
+class ListSubmissions(PagedRequest):
     """
     List all Submissions visible to the authenticated user by most recent.
+    Supports pagination (limit becomes page_size)
 
     Options:
         submission_ids (List[int]): Submission ids to filter by
@@ -26,6 +27,7 @@ class ListSubmissions(GraphQLRequest):
 
     Returns:
         List[Submission]: All the found Submission objects
+        If paginated, yields results one at a time
     """
 
     query = """
@@ -35,8 +37,9 @@ class ListSubmissions(GraphQLRequest):
             $filters: SubmissionFilter,
             $limit: Int,
             $orderBy: SUBMISSION_COLUMN_ENUM,
-            $desc: Boolean
-            
+            $desc: Boolean,
+            $after: Int
+
         ){
             submissions(
                 submissionIds: $submissionIds,
@@ -44,8 +47,9 @@ class ListSubmissions(GraphQLRequest):
                 filters: $filters,
                 limit: $limit
                 orderBy: $orderBy,
-                desc: $desc
-                
+                desc: $desc,
+                after: $after
+
             ){
                 submissions {
                     id
@@ -58,20 +62,33 @@ class ListSubmissions(GraphQLRequest):
                     deleted
                     retrieved
                     errors
+                    reviews {
+                        id
+                        createdAt
+                        createdBy
+                        completedAt
+                        rejected
+                        reviewType
+                        notes
+                    }
+                }
+                pageInfo {
+                    endCursor
+                    hasNextPage
                 }
             }
         }
     """
 
     def __init__(
-            self,
-            *,
-            submission_ids: List[int] = None,
-            workflow_ids: List[int] = None,
-            filters: Union[Dict, SubmissionFilter] = None,
-            limit: int = 1000,
-            order_by: str = "ID",
-            desc: bool = True,
+        self,
+        *,
+        submission_ids: List[int] = None,
+        workflow_ids: List[int] = None,
+        filters: Union[Dict, SubmissionFilter] = None,
+        limit: int = 1000,
+        order_by: str = "ID",
+        desc: bool = True,
     ):
         super().__init__(
             self.query,
@@ -116,18 +133,21 @@ class GetSubmission(GraphQLRequest):
                 retrieved
                 deleted
                 errors
+                reviews {
+                    id
+                    createdAt
+                    createdBy
+                    completedAt
+                    rejected
+                    reviewType
+                    notes
+                }
             }
         }
     """
 
-    def __init__(
-            self,
-            submission_id: int,
-    ):
-        super().__init__(
-            self.query,
-            variables={"submissionId": submission_id},
-        )
+    def __init__(self, submission_id: int):
+        super().__init__(self.query, variables={"submissionId": submission_id})
 
     def process_response(self, response) -> Submission:
         return Submission(**(super().process_response(response)["submission"]))
@@ -156,16 +176,21 @@ class WaitForSubmissions(RequestChain):
                     retrieved
                     deleted
                     errors
+                    reviews {
+                        id
+                        createdAt
+                        createdBy
+                        completedAt
+                        rejected
+                        reviewType
+                        notes
+                    }
                 }
             }
         }
     """
 
-    def __init__(
-            self,
-            submission_ids: List[int],
-            timeout: Union[int, float] = 60,
-    ):
+    def __init__(self, submission_ids: List[int], timeout: Union[int, float] = 60):
         if not submission_ids:
             raise IndicoInputError("Please provide submission ids")
 
@@ -180,8 +205,8 @@ class WaitForSubmissions(RequestChain):
         yield self.status_getter()
         curr_time = 0
         while (
-                not all(self.status_check(s.status) for s in self.previous)
-                and curr_time <= self.timeout
+            not all(self.status_check(s.status) for s in self.previous)
+            and curr_time <= self.timeout
         ):
             yield self.status_getter()
             time.sleep(1)
@@ -251,10 +276,7 @@ class GenerateSubmissionResult(GraphQLRequest):
 
     def __init__(self, submission: Union[int, Submission]):
         submission_id = submission if isinstance(submission, int) else submission.id
-        super().__init__(
-            self.query,
-            variables={"submissionId": submission_id},
-        )
+        super().__init__(self.query, variables={"submissionId": submission_id})
 
     def process_response(self, response) -> Job:
         response = super().process_response(response)["submissionResults"]
@@ -288,11 +310,11 @@ class SubmissionResult(RequestChain):
     previous: Submission = None
 
     def __init__(
-            self,
-            submission: Union[int, Submission],
-            check_status: str = None,
-            wait: bool = False,
-            timeout: Union[int, float] = 30,
+        self,
+        submission: Union[int, Submission],
+        check_status: str = None,
+        wait: bool = False,
+        timeout: Union[int, float] = 30,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id
@@ -315,8 +337,8 @@ class SubmissionResult(RequestChain):
         if self.wait:
             curr_time = 0
             while (
-                    not self.status_check(self.previous.status)
-                    and curr_time <= self.timeout
+                not self.status_check(self.previous.status)
+                and curr_time <= self.timeout
             ):
                 yield GetSubmission(self.submission_id)
                 time.sleep(1)
@@ -369,11 +391,11 @@ class SubmitReview(GraphQLRequest):
     }
 
     def __init__(
-            self,
-            submission: Union[int, Submission],
-            changes: Dict = None,
-            rejected: bool = False,
-            force_complete: bool = None,
+        self,
+        submission: Union[int, Submission],
+        changes: Dict = None,
+        rejected: bool = False,
+        force_complete: bool = None,
     ):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
@@ -408,10 +430,18 @@ class SubmitReview(GraphQLRequest):
 class RetrySubmission(GraphQLRequest):
     """
     Given a list of submission ids, retry those failed submissions.
+    Submissions must be in a failed state and cannot be requested before
+    the cool-off period (typically 180ms).
 
-    Attributes:
+    Args:
         submission_ids (List[int]): the given submission ids to retry.
+    Options:
+
+    Raises: 
+        IndicoInputError
+
     """
+
     query = """
     mutation retrySubmission($submissionIds:[Int]!){
   retrySubmissions(submissionIds: $submissionIds){
@@ -433,10 +463,7 @@ class RetrySubmission(GraphQLRequest):
         if submission_ids is None or len(submission_ids) < 1:
             raise IndicoInputError("You must specify submission ids")
 
-        super().__init__(
-            self.query,
-            variables={"submissionIds": submission_ids},
-        )
+        super().__init__(self.query, variables={"submissionIds": submission_ids})
 
     def process_response(self, response) -> List[Submission]:
         return [

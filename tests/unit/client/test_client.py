@@ -99,3 +99,18 @@ def test_client_requests_params(indico_request, auth):
         )
     )
     assert response == {"datasets": []}
+
+def test_client_get_ipa_version(indico_request, auth):
+    client = IndicoClient()
+    indico_request(
+        "post",
+        "/graph/api/graphql",
+        additional_matcher=lambda r: r.verify,
+        json={"data": {"datasets": []}},
+    )
+    response = client.call(
+        GraphQLRequest(
+            query="query getIPAVersion {\n  ipaVersion\n}\n",
+        )
+    )
+    assert response == {"datasets": []}

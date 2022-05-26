@@ -6,6 +6,8 @@ from indico.types import BaseType
 class InputFile(BaseType):
     filename: str
     submission_id: int
+    num_pages: int
+    file_size: int
 
 
 class DocumentReport(BaseType):
@@ -16,6 +18,7 @@ class DocumentReport(BaseType):
     """
     dataset_id: int
     workflow_id: int
+    submission_id: int
     status: str
     created_at: str
     updated_at: str

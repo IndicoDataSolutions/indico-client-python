@@ -17,7 +17,7 @@ from indico.queries.datasets import (
     ProcessCSV,
 )
 from indico.queries.export import CreateExport, DownloadExport
-from indico.types.dataset import Dataset
+from indico.types.dataset import Dataset, OmnipageOcrOptionsInput, TableReadOrder, OcrEngine
 from indico.errors import IndicoRequestError
 from tests.integration.data.datasets import airlines_dataset
 
@@ -175,6 +175,24 @@ def _dataset_complete(dataset):
     assert dataset.status == "COMPLETE"
 
 
+def test_create_with_options(indico):
+    client = IndicoClient()
+    config: OmnipageOcrOptionsInput = {
+        "auto_rotate": True,
+        "single_column": True,
+        "upscale_images": True,
+        "languages": ["ENG", "FIN"],
+        "force_render": False,
+        "native_layout": False,
+        "native_pdf": False,
+        "table_read_order": TableReadOrder.ROW
+    }
+    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.OMNIPAGE,
+                                             omnipage_ocr_options=config))
+
+
+
+
 def test_create_from_files_document(indico):
     client = IndicoClient()
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
@@ -269,7 +287,12 @@ def test_create_from_csv(indico):
 
     _dataset_complete(dataset)
 
-    export = client.call(CreateExport(dataset_id=dataset.id, wait=True))
+    export = client.call(CreateExport(
+                            dataset_id=dataset.id,
+                            labelset_id=dataset.labelsets[0].id,
+                            wait=True
+                        )
+                    )
 
     exported_data = client.call(DownloadExport(export.id))
 

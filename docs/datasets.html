@@ -1,78 +1,36 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Datasets &mdash; Indico Python Client 3.1.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Model Groups" href="model_groups.html" />
     <link rel="prev" title="DocumentExtraction" href="docextract.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> Indico Python Client
-          
-
-          
-            
             <img src="_static/logo-white.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -80,18 +38,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
@@ -120,7 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -129,86 +76,47 @@
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Indico Python Client</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Datasets</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/datasets.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-indico.queries.datasets">
-<span id="datasets"></span><h1>Datasets<a class="headerlink" href="#module-indico.queries.datasets" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="module-indico.queries.datasets">
+<span id="datasets"></span><h1>Datasets<a class="headerlink" href="#module-indico.queries.datasets" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.CreateDataset">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">CreateDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TEXT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_local_images</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_filename_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'filename'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.CreateDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a dataset and upload the associated files.
-:type name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param name: Name of the dataset
-:type name: str
-:type files: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param files: List of pathnames to the dataset files
-:type files: List[str]</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">CreateDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TEXT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_local_images</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_filename_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'filename'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocr_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omnipage_ocr_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_api_ocr_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.CreateDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Create a dataset and upload the associated files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the dataset</p></li>
+<li><p><strong>files</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of pathnames to the dataset files</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="simple">
 <dt>Options:</dt><dd><p>dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
 wait (bool, default=True): Wait for the dataset to upload and finish</p>
@@ -218,13 +126,15 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Dataset object</p>
 </dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>IndicoError</strong> – </p>
+</dd>
 </dl>
-<p>Raises:</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.GetDataset">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">GetDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">GetDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDataset" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve a dataset description object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -239,7 +149,7 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.GetDatasetStatus">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">GetDatasetStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">GetDatasetStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetStatus" title="Permalink to this definition"></a></dt>
 <dd><p>Get the status of a dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -257,7 +167,7 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.GetDatasetFileStatus">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">GetDatasetFileStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetFileStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">GetDatasetFileStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.GetDatasetFileStatus" title="Permalink to this definition"></a></dt>
 <dd><p>Get the status of dataset file upload</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -275,7 +185,7 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.ListDatasets">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">ListDatasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.ListDatasets" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">ListDatasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.ListDatasets" title="Permalink to this definition"></a></dt>
 <dd><p>List all of your datasets</p>
 <dl class="simple">
 <dt>Options:</dt><dd><p>limit (int, default=100): Max number of datasets to retrieve</p>
@@ -291,7 +201,7 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.DeleteDataset">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">DeleteDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.DeleteDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">DeleteDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.DeleteDataset" title="Permalink to this definition"></a></dt>
 <dd><p>Delete a dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -307,54 +217,37 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 <p>Raises:</p>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="model_groups.html" class="btn btn-neutral float-right" title="Model Groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="docextract.html" class="btn btn-neutral float-left" title="DocumentExtraction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="model_groups.html" class="btn btn-neutral float-right" title="Model Groups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Indico.
-
-    </p>
+    <p>&#169; Copyright 2020, Indico.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

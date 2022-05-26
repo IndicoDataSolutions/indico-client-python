@@ -27,6 +27,17 @@ class Filter(dict):
             raise IndicoInputError(f"One of {self.__options__} must be specified")
         self.update(and_(kwargs) if len(kwargs) > 1 else kwargs)
 
+class SubmissionReviewFilter(Filter):
+    __options__ = ("rejected", "created_by", "review_type")
+    
+    def __init__(self, rejected: bool = None, created_by: int = None, review_type: str = None):
+        kwargs = {
+            "rejected": rejected,
+            "createdBy": created_by,
+            "reviewType": review_type.upper() if review_type else review_type,
+        }
+
+        super().__init__(**kwargs)
 
 class SubmissionFilter(Filter):
     """
@@ -44,12 +55,17 @@ class SubmissionFilter(Filter):
     __options__ = ("input_filename", "status", "retrieved")
 
     def __init__(
-        self, input_filename: str = None, status: str = None, retrieved: bool = None
+        self, 
+        input_filename: str = None, 
+        status: str = None, 
+        retrieved: bool = None, 
+        reviews: SubmissionReviewFilter = None
     ):
         kwargs = {
-            "input_filename": input_filename,
+            "inputFilename": input_filename,
             "status": status.upper() if status else status,
             "retrieved": retrieved,
+            "reviews": reviews,
         }
 
         super().__init__(**kwargs)
@@ -86,21 +102,23 @@ class DocumentReportFilter(Filter):
         created_at_start_date (datetime): earliest creation date
         created_at_end_date (datetime): latest creation date
         updated_at_start_date (datetime): earliest update ddate
-        update_at_end_date (datetime): latest update date
+        updated_at_end_date (datetime): latest update date
     Returns:
         dict containing query filter parameters
     """
     __options__ = ("workflow_id", "submission_id", "status", "created_at_start_date", "created_at_end_date",
                    "updated_at_start_date", "updated_at_end_date")
 
-    def __init__(self, submission_id: int = None, workflow_id: int = None, created_at_start_date: datetime = None,
+    def __init__(self, submission_id: int = None, workflow_id: int = None, status: str = None, created_at_start_date: datetime = None,
                  created_at_end_date: datetime = None,
                  updated_at_start_date: datetime = None, updated_at_end_date: datetime = None
                  ):
 
         kwargs = {
             "workflowId": workflow_id,
-            "id": submission_id
+            "id": submission_id,
+            "status": status
+
 
         }
         if created_at_start_date is not None and created_at_end_date is not None:

@@ -1,4 +1,5 @@
 import io
+import json
 from typing import List, Union, Dict
 
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
@@ -21,25 +22,63 @@ class ListWorkflows(GraphQLRequest):
     """
 
     query = """
-        query ListWorkflows($datasetIds: [Int], $workflowIds: [Int]){
-            workflows(datasetIds: $datasetIds, workflowIds: $workflowIds){
+        query ListWorkflows($datasetIds: [Int], $workflowIds: [Int], $limit: Int){
+            workflows(datasetIds: $datasetIds, workflowIds: $workflowIds, limit: $limit){
                 workflows {
                     id
                     name
                     status
                     reviewEnabled
                     autoReviewEnabled
+                    createdAt
+                    createdBy
+                components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        ... on ContentLengthComponent
+                        {
+                                minimum
+                                maximum
+                                }
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                            modelGroup {
+                                        status
+                                      id
+                                      name
+                                      taskType
+                                      questionnaireId
+                                      selectedModel{
+                                        id
+                                      }
+                                }
+                            
+                        }
+                
+                    }
+                  componentLinks{
+                    id
+                    headComponentId
+                    tailComponentId
+                    filters{
+                      classes
+                    }
+                    
+                  }
                 }
             }
         }
     """
 
     def __init__(
-            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None
+            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None, limit = 100
     ):
         super().__init__(
             self.query,
-            variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids},
+            variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids, "limit": limit},
         )
 
     def process_response(self, response) -> List[Workflow]:
@@ -173,7 +212,6 @@ class _WorkflowSubmission(GraphQLRequest):
     mutation_args = {
         "workflowId": "Int!",
         "files": "[FileInput]!",
-        "recordSubmission": "Boolean",
         "bundle": "Boolean",
         "resultVersion": "SubmissionResultVersion",
     }
@@ -184,7 +222,6 @@ class _WorkflowSubmission(GraphQLRequest):
             **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
-        self.record_submission = kwargs["record_submission"]
 
         # construct mutation signature and args based on provided kwargs to ensure
         # backwards-compatible graphql calls
@@ -218,10 +255,10 @@ class _WorkflowSubmission(GraphQLRequest):
         response = super().process_response(response)[self.mutation_name]
         if "submissions" in response:
             return [Submission(**s) for s in response["submissions"]]
-        elif self.record_submission:
-            return response["submissionIds"]
-        elif not response["jobIds"]:
+        if not response["submissionIds"]:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
+        else:
+            return response["submissionIds"]
         return [Job(id=job_id) for job_id in response["jobIds"]]
 
 
@@ -240,10 +277,7 @@ class WorkflowSubmission(RequestChain):
         workflow_id (int): Id of workflow to submit files to
         files (List[str], optional): List of local file paths to submit
         urls (List[str], optional): List of urls to submit
-        submission (bool, optional): Process these files as normal submissions.
-            Defaults to True.
-            If False, files will be processed as AsyncJobs, ignoring any workflow
-            post-processing steps like Review and with no record in the system
+        submission (bool, optional): DEPRECATED - AsyncJobs are no longer supported.
         bundle (bool, optional): Batch all files under a single submission id
         result_version (str, optional):
             The format of the submission result file. One of:
@@ -283,7 +317,8 @@ class WorkflowSubmission(RequestChain):
             self.has_streams = True
         else:
             self.streams = None
-
+        if not submission:
+            raise IndicoInputError("This option is deprecated and no longer supported.")
         if not self.files and not self.urls and not self.has_streams:
             raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
         elif self.files and self.has_streams:
@@ -297,7 +332,6 @@ class WorkflowSubmission(RequestChain):
             yield _WorkflowSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
-                record_submission=self.submission,
                 files=self.previous,
                 bundle=self.bundle,
                 result_version=self.result_version,
@@ -306,7 +340,6 @@ class WorkflowSubmission(RequestChain):
             yield _WorkflowUrlSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
-                record_submission=self.submission,
                 urls=self.urls,
                 bundle=self.bundle,
                 result_version=self.result_version,
@@ -316,7 +349,6 @@ class WorkflowSubmission(RequestChain):
             yield _WorkflowSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
-                record_submission=self.submission,
                 files=self.previous,
                 bundle=self.bundle,
                 result_version=self.result_version,
@@ -391,7 +423,7 @@ class _AddDataToWorkflow(GraphQLRequest):
 
 class AddDataToWorkflow(RequestChain):
     """
-    Mutation to update data in a workflow, pressumably
+    Mutation to update data in a workflow, presumably
     after new data is added to the dataset.
 
     Args:
@@ -417,3 +449,60 @@ class AddDataToWorkflow(RequestChain):
             while self.previous.status != "COMPLETE":
                 yield GetWorkflow(workflow_id=self.workflow_id)
                 debouncer.backoff()
+
+
+class CreateWorkflow(GraphQLRequest):
+    """
+    Mutation to create workflow given an existing dataset.
+
+    Args:
+        dataset_id(int): dataset to create workflow for
+        name(str): name for the workflow
+
+    """
+    query = """  mutation createWorkflow($datasetId: Int!, $name: String!) {
+    createWorkflow(datasetId: $datasetId, name: $name) {
+           workflow {
+                    id
+                    name
+                    status
+                    reviewEnabled
+                    autoReviewEnabled
+                components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                        }
+                
+                    }
+                  componentLinks{
+                    id
+                    headComponentId
+                    tailComponentId
+                    filters{
+                      classes
+                    }
+                    
+                  }
+                }
+    }
+    }
+    """
+
+    def __init__(self, dataset_id: int, name: str):
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id,
+                       "name": name},
+        )
+
+    def process_response(self, response) -> Workflow:
+        return Workflow(
+            **super().process_response(response)["createWorkflow"]["workflow"]
+        )
+

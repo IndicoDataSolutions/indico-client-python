@@ -1,78 +1,36 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>DocumentExtraction Settings &mdash; Indico Python Client 3.1.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Generating Model Predictions" href="model_predictions.html" />
     <link rel="prev" title="OCR With DocumentExtraction" href="docextract-intro.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> Indico Python Client
-          
-
-          
-            
             <img src="_static/logo-white.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -80,18 +38,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
@@ -170,85 +117,50 @@
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Indico Python Client</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>DocumentExtraction Settings</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/docextract_settings.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="documentextraction-settings">
-<h1>DocumentExtraction Settings<a class="headerlink" href="#documentextraction-settings" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="global-settings">
-<h2>Global Settings<a class="headerlink" href="#global-settings" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="preset-configurations">
-<h3>Preset Configurations<a class="headerlink" href="#preset-configurations" title="Permalink to this headline">¶</a></h3>
+             
+  <section id="documentextraction-settings">
+<h1>DocumentExtraction Settings<a class="headerlink" href="#documentextraction-settings" title="Permalink to this headline"></a></h1>
+<section id="global-settings">
+<h2>Global Settings<a class="headerlink" href="#global-settings" title="Permalink to this headline"></a></h2>
+<section id="preset-configurations">
+<h3>Preset Configurations<a class="headerlink" href="#preset-configurations" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;simple&quot;</span>
 <span class="s2">&quot;preset_config&quot;</span><span class="p">:</span> <span class="s2">&quot;legacy&quot;</span>
@@ -284,9 +196,9 @@ attribute to the result (located on the first page). The possible block classifi
 - document_title</p>
 <p>The exact settings included in “legacy”, “simple”, “ondocument”, “standard”, and “detailed”
 are shown at the bottom of this page.</p>
-</div>
-<div class="section" id="result-granularity">
-<h3>Result Granularity<a class="headerlink" href="#result-granularity" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="result-granularity">
+<h3>Result Granularity<a class="headerlink" href="#result-granularity" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;page&quot;</span>
 <span class="s2">&quot;top_level&quot;</span><span class="p">:</span> <span class="s2">&quot;document&quot;</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
@@ -295,9 +207,9 @@ are shown at the bottom of this page.</p>
 <p>The “document” kwarg will return a nested dictionary with text data at both the page and document level
 (i.e. text data at the page-level <em>and</em> the full document text). The “page” kwarg will return
 a list of dictionaries where each dictionary is page-level text data and no document-level data is included.</p>
-</div>
-<div class="section" id="nesting">
-<h3>Nesting<a class="headerlink" href="#nesting" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="nesting">
+<h3>Nesting<a class="headerlink" href="#nesting" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 <span class="s2">&quot;nest&quot;</span><span class="p">:</span> <span class="kc">False</span>
@@ -305,18 +217,18 @@ a list of dictionaries where each dictionary is page-level text data and no docu
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to nest the dictionary results or <code class="docutils literal notranslate"><span class="pre">False</span></code> to unnest them.
 (i.e. nested- {“pages”: [{“blocks”:}]} <em>or</em>  unnested- {“pages”: [], “blocks”: [],})</p>
-</div>
-<div class="section" id="parse-order">
-<h3>Parse Order<a class="headerlink" href="#parse-order" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="parse-order">
+<h3>Parse Order<a class="headerlink" href="#parse-order" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;single_column&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 <span class="s2">&quot;single_column&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to have the document parsed top to bottom as a single column of text.</p>
-</div>
-<div class="section" id="tables">
-<h3>Tables<a class="headerlink" href="#tables" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="tables">
+<h3>Tables<a class="headerlink" href="#tables" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;table_read_order&quot;</span><span class="p">:</span> <span class="s2">&quot;row&quot;</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 <span class="s2">&quot;table_read_order&quot;</span><span class="p">:</span> <span class="s2">&quot;column&quot;</span>
@@ -345,40 +257,40 @@ a list of dictionaries where each dictionary is page-level text data and no docu
 <div><p>{“row_start”: 0, “col_start”: 0, “row_end”: 0, “col_end”: 0}</p>
 </div></blockquote>
 <p>The end of the row and column ranges are inclusive rather than exclusive.</p>
-</div>
-<div class="section" id="force-render">
-<h3>Force Render<a class="headerlink" href="#force-render" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="force-render">
+<h3>Force Render<a class="headerlink" href="#force-render" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;force_render&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">(</span><span class="n">default</span> <span class="n">since</span> <span class="n">IPA</span> <span class="mf">4.7</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
-<span class="s2">&quot;force_render&quot;</span><span class="p">:</span> <span class="kc">False</span> <span class="p">(</span><span class="n">default</span> <span class="n">prior</span> <span class="n">to</span> <span class="n">IPA</span> <span class="mf">4.7</span><span class="o">.</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;force_render&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="p">(</span><span class="n">default</span> <span class="n">since</span> <span class="n">IPA</span> <span class="mf">4.7.0</span><span class="p">)</span>
+<span class="s2">&quot;force_render&quot;</span><span class="p">:</span> <span class="kc">False</span> <span class="p">(</span><span class="n">default</span> <span class="n">prior</span> <span class="n">to</span> <span class="n">IPA</span> <span class="mf">4.7.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Force rendering of the document. Beware of increased computation cost for increased reliability of page rendering.
 Only use this setting if you know you’ve got a problem that requires it.</p>
-</div>
-<div class="section" id="native-pdf">
-<h3>Native PDF<a class="headerlink" href="#native-pdf" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="native-pdf">
+<h3>Native PDF<a class="headerlink" href="#native-pdf" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;native_pdf: True</span>
 <span class="s2">&quot;native_pdf&quot;</span><span class="p">:</span> <span class="kc">False</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> if you are certain that you are processing only native PDFs for a 3-5X performance increase.</p>
-</div>
-<div class="section" id="reblocking">
-<h3>Reblocking<a class="headerlink" href="#reblocking" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="reblocking">
+<h3>Reblocking<a class="headerlink" href="#reblocking" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;reblocking&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;lists&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Whether we should use a page-level reblocking strategy that can utilize style information, or
 specifically handle list-like documents well, or both.</p>
-</div>
-</div>
-<div class="section" id="document-level-settings">
-<h2>Document Level Settings<a class="headerlink" href="#document-level-settings" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="document-text">
-<h3>Document Text<a class="headerlink" href="#document-text" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="document-level-settings">
+<h2>Document Level Settings<a class="headerlink" href="#document-level-settings" title="Permalink to this headline"></a></h2>
+<section id="document-text">
+<h3>Document Text<a class="headerlink" href="#document-text" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">False</span>
@@ -386,21 +298,21 @@ specifically handle list-like documents well, or both.</p>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include whole document-level text in the result. Document-level text will always include tables
 as they appear on the page.</p>
-</div>
-</div>
-<div class="section" id="page-level-settings">
-<h2>Page Level Settings<a class="headerlink" href="#page-level-settings" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="page-image">
-<h3>Page Image<a class="headerlink" href="#page-image" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="page-level-settings">
+<h2>Page Level Settings<a class="headerlink" href="#page-level-settings" title="Permalink to this headline"></a></h2>
+<section id="page-image">
+<h3>Page Image<a class="headerlink" href="#page-image" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to retain a full sized image of each page</p>
-</div>
-<div class="section" id="page-thumbnails">
-<h3>Page Thumbnails<a class="headerlink" href="#page-thumbnails" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="page-thumbnails">
+<h3>Page Thumbnails<a class="headerlink" href="#page-thumbnails" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;thumbnail&quot;</span><span class="p">:</span>
     <span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="s2">&quot;128x165&quot;</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>   <span class="c1"># i.e. - &lt;x-dimension&gt;x&lt;y-dimension&gt;</span>
@@ -408,18 +320,18 @@ as they appear on the page.</p>
 </div>
 <p>Provide this setting to return page thumbnails of the specified resolution. Separate from full
 sized images.</p>
-</div>
-<div class="section" id="document-level-offsets">
-<h3>Document Level Offsets<a class="headerlink" href="#document-level-offsets" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="document-level-offsets">
+<h3>Document Level Offsets<a class="headerlink" href="#document-level-offsets" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;doc_offset&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;doc_offset&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include document-level offsets in the JSON result.</p>
-</div>
-<div class="section" id="page-text">
-<h3>Page Text<a class="headerlink" href="#page-text" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="page-text">
+<h3>Page Text<a class="headerlink" href="#page-text" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">False</span>
@@ -427,39 +339,39 @@ sized images.</p>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include page-level text in the JSON result. Page-level text will always include tables
 as they appear on the page.</p>
-</div>
-<div class="section" id="dots-per-inch-dpi">
-<h3>Dots Per Inch (DPI)<a class="headerlink" href="#dots-per-inch-dpi" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="dots-per-inch-dpi">
+<h3>Dots Per Inch (DPI)<a class="headerlink" href="#dots-per-inch-dpi" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;dpi&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;dpi&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include the X and Y DPI in the JSON result.</p>
-</div>
-<div class="section" id="page-size">
-<h3>Page Size<a class="headerlink" href="#page-size" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="page-size">
+<h3>Page Size<a class="headerlink" href="#page-size" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include the width and height of the page in pixels.</p>
-</div>
-<div class="section" id="page-number">
-<h3>Page Number<a class="headerlink" href="#page-number" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="page-number">
+<h3>Page Number<a class="headerlink" href="#page-number" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;page_num&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;page_num&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include the page number with the JSON result.</p>
-</div>
-</div>
-<div class="section" id="block-level-settings">
-<h2>Block Level Settings<a class="headerlink" href="#block-level-settings" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="block-type">
-<h3>Block Type<a class="headerlink" href="#block-type" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="block-level-settings">
+<h2>Block Level Settings<a class="headerlink" href="#block-level-settings" title="Permalink to this headline"></a></h2>
+<section id="block-type">
+<h3>Block Type<a class="headerlink" href="#block-type" title="Permalink to this headline"></a></h3>
 <p>If the “block_type” key is included, “block” objects returned in the result will contain an indicator that
 records whether they were detected to be vanilla text or tabular information:</p>
 <p>Returns:</p>
@@ -467,18 +379,18 @@ records whether they were detected to be vanilla text or tabular information:</p
 <span class="s2">&quot;block_type&quot;</span><span class="p">:</span> <span class="s2">&quot;text&quot;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="block-page-number">
-<h3>Block Page Number<a class="headerlink" href="#block-page-number" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="block-page-number">
+<h3>Block Page Number<a class="headerlink" href="#block-page-number" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;page_num&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;page_num&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to return the page number that the block occurs on</p>
-</div>
-<div class="section" id="block-level-style-information">
-<h3>Block Level Style information<a class="headerlink" href="#block-level-style-information" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="block-level-style-information">
+<h3>Block Level Style information<a class="headerlink" href="#block-level-style-information" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;doc_offset&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
 <span class="s2">&quot;page_offset&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
@@ -486,18 +398,18 @@ records whether they were detected to be vanilla text or tabular information:</p
 </pre></div>
 </div>
 <p>Include calculated style information based on token-level values</p>
-</div>
-<div class="section" id="block-level-text">
-<h3>Block Level Text<a class="headerlink" href="#block-level-text" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="block-level-text">
+<h3>Block Level Text<a class="headerlink" href="#block-level-text" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include block level text in the JSON result</p>
-</div>
-<div class="section" id="block-position">
-<h3>Block Position<a class="headerlink" href="#block-position" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="block-position">
+<h3>Block Position<a class="headerlink" href="#block-position" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">False</span>
@@ -507,12 +419,12 @@ records whether they were detected to be vanilla text or tabular information:</p
 prefix are “tight” bounding boxes, close to the character boundaries. The values prefixed
 with “bb” are looser bounding boxes where tops and bottoms are consistent throughout a line,
 and the left and right boundaries between characters won’t have pixel gaps within a token.</p>
-</div>
-</div>
-<div class="section" id="token-level-settings">
-<h2>Token Level Settings<a class="headerlink" href="#token-level-settings" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="style">
-<h3>Style<a class="headerlink" href="#style" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="token-level-settings">
+<h2>Token Level Settings<a class="headerlink" href="#token-level-settings" title="Permalink to this headline"></a></h2>
+<section id="style">
+<h3>Style<a class="headerlink" href="#style" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="kc">False</span>
@@ -522,9 +434,9 @@ and the left and right boundaries between characters won’t have pixel gaps wit
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;underlined&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;italics&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span> <span class="s2">&quot;font_size&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;background_color&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">hex</span><span class="o">&gt;</span> <span class="n">color</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;text_color&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">hex</span><span class="o">&gt;</span> <span class="n">color</span> <span class="n">value</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="token-level-confidence">
-<h3>Token Level Confidence<a class="headerlink" href="#token-level-confidence" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="token-level-confidence">
+<h3>Token Level Confidence<a class="headerlink" href="#token-level-confidence" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="kc">False</span>
@@ -532,63 +444,63 @@ and the left and right boundaries between characters won’t have pixel gaps wit
 </div>
 <p>Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to include token-level confidence in the JSON result. Token-level confidence is
 calculated from the character-level confidence values.</p>
-</div>
-<div class="section" id="token-page-number">
-<h3>Token Page Number<a class="headerlink" href="#token-page-number" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="token-page-number">
+<h3>Token Page Number<a class="headerlink" href="#token-page-number" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;page_num&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;page_num&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="token-level-style-information">
-<h3>Token Level Style information<a class="headerlink" href="#token-level-style-information" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="token-level-style-information">
+<h3>Token Level Style information<a class="headerlink" href="#token-level-style-information" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;doc_offset&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
 <span class="s2">&quot;page_offset&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
 <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="token-level-text">
-<h3>Token Level Text<a class="headerlink" href="#token-level-text" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="token-level-text">
+<h3>Token Level Text<a class="headerlink" href="#token-level-text" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="token-level-position">
-<h3>Token Level Position<a class="headerlink" href="#token-level-position" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="token-level-position">
+<h3>Token Level Position<a class="headerlink" href="#token-level-position" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="character-level-settings">
-<h2>Character Level Settings<a class="headerlink" href="#character-level-settings" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="alternative-characters">
-<h3>Alternative Characters<a class="headerlink" href="#alternative-characters" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="character-level-settings">
+<h2>Character Level Settings<a class="headerlink" href="#character-level-settings" title="Permalink to this headline"></a></h2>
+<section id="alternative-characters">
+<h3>Alternative Characters<a class="headerlink" href="#alternative-characters" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;alternatives&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;alternatives&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Include alternative OCR characters.</p>
-</div>
-<div class="section" id="character-level-offsets">
-<h3>Character Level Offsets<a class="headerlink" href="#character-level-offsets" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="character-level-offsets">
+<h3>Character Level Offsets<a class="headerlink" href="#character-level-offsets" title="Permalink to this headline"></a></h3>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;doc_index&quot;</span><span class="p">:</span> <span class="kc">True</span>
 <span class="s2">&quot;doc_index&quot;</span><span class="p">:</span> <span class="kc">False</span>
 </pre></div>
 </div>
 <p>Similar to “offsets” but with only one value.</p>
-</div>
-<div class="section" id="other-character-level-settings">
-<h3>Other Character Level Settings<a class="headerlink" href="#other-character-level-settings" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="other-character-level-settings">
+<h3>Other Character Level Settings<a class="headerlink" href="#other-character-level-settings" title="Permalink to this headline"></a></h3>
 <p>Settings:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;page_index&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
 <span class="s2">&quot;block_index&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="o">|</span> <span class="kc">False</span>
@@ -601,19 +513,19 @@ calculated from the character-level confidence values.</p>
 </pre></div>
 </div>
 <p>The settings above serve a similar function to their token-level counterparts.</p>
-</div>
-</div>
-<div class="section" id="metadata-settings">
-<h2>Metadata Settings<a class="headerlink" href="#metadata-settings" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="metadata-settings">
+<h2>Metadata Settings<a class="headerlink" href="#metadata-settings" title="Permalink to this headline"></a></h2>
 <p>Setting:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{“FileSize” &amp; “Pages” &amp; ”Encrypted” &amp; ”PageRot” &amp; ”Title” &amp; ”Author” &amp; ”Creator” &amp; ”Producer” &amp; ”CreationDate” &amp; ”ModDate” &amp; ”PDFVersion” | &quot;all&quot;}
 </pre></div>
 </div>
 <p>Include any of a variety of document metadata fields. Input format is anything that supports the python “in”
 operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get all available metadata.</p>
-</div>
-<div class="section" id="preset-configuration-details">
-<h2>Preset Configuration Details<a class="headerlink" href="#preset-configuration-details" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="preset-configuration-details">
+<h2>Preset Configuration Details<a class="headerlink" href="#preset-configuration-details" title="Permalink to this headline"></a></h2>
 <p>These are the exact settings included in the presets.</p>
 <p>Settings included in presets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">legacy</span> <span class="o">=</span> <span class="p">{</span>
@@ -663,55 +575,38 @@ operation. (e.g. set, list, dict). Optionally, simply pass in “all” to get a
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="model_predictions.html" class="btn btn-neutral float-right" title="Generating Model Predictions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="docextract-intro.html" class="btn btn-neutral float-left" title="OCR With DocumentExtraction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="model_predictions.html" class="btn btn-neutral float-right" title="Generating Model Predictions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Indico.
-
-    </p>
+    <p>&#169; Copyright 2020, Indico.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

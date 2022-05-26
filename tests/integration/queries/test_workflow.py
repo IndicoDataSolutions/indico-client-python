@@ -1,5 +1,4 @@
-import io
-
+from datetime import datetime
 from indico.queries.workflow import GetWorkflow
 import pytest
 from pathlib import Path
@@ -7,7 +6,7 @@ import time
 
 from indico.client import IndicoClient
 from indico.errors import IndicoError, IndicoInputError
-from indico.filters import SubmissionFilter
+from indico.filters import SubmissionFilter, SubmissionReviewFilter
 from indico.queries import (
     GetSubmission,
     JobStatus,
@@ -39,30 +38,13 @@ def test_list_workflows(indico, airlines_dataset, airlines_model_group: ModelGro
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     assert len(wfs) > 0
 
-
-def test_workflow_job(indico, airlines_dataset, airlines_model_group: ModelGroup):
+def test_list_workflows_audit_info(indico, airlines_dataset, airlines_model_group: ModelGroup):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
-    wf = max(wfs, key=lambda w: w.id)
-
-    dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
-
-    jobs = client.call(
-        WorkflowSubmission(
-            workflow_id=wf.id, files=[dataset_filepath], submission=False
-        )
-    )
-    job = jobs[0]
-
-    assert job.id is not None
-    job = client.call(JobStatus(id=job.id, wait=True))
-    assert job.status == "SUCCESS"
-    assert job.ready is True
-    assert isinstance(job.result["url"], str)
-
-    result = client.call(RetrieveStorageObject(job.result))
-
-    assert isinstance(result, dict)
+    assert wfs[0].created_at
+    assert isinstance(wfs[0].created_at, datetime)
+    assert wfs[0].created_by
+    assert isinstance(wfs[0].created_by, int)
 
 
 @pytest.mark.parametrize(
@@ -248,6 +230,26 @@ def test_list_workflow_submission_retrieved(
     assert all([not s.retrieved for s in submissions])
     assert submission_id not in [s.id for s in submissions]
 
+def test_list_workflow_submission_paginate(
+    indico, airlines_dataset, airlines_model_group: ModelGroup
+):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
+
+    submission_ids = client.call(
+        WorkflowSubmission(workflow_id=wf.id, files=[dataset_filepath]*5)
+    )
+    subs = []
+
+    for sub in client.paginate(ListSubmissions(workflow_ids=[wf.id], limit=3)):
+        subs.extend(sub)
+    for sub in subs:
+        if not submission_ids:
+            break
+        assert sub.id == submission_ids.pop()  # list is desc by default
 
 def test_workflow_submission_missing_workflow(indico):
     client = IndicoClient()
@@ -320,6 +322,31 @@ def test_workflow_submission_auto_review(
     submission = client.call(GetSubmission(sub.id))
     assert submission.status == "COMPLETE" if force_complete else "PENDING_REVIEW"
 
+
+def test_list_workflow_submission_rejected(org_annotate_dataset):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+    wf = client.call(
+        UpdateWorkflowSettings(wf, enable_review=True, enable_auto_review=True)
+    )
+    assert wf.review_enabled and wf.auto_review_enabled
+
+    _file = str(Path(__file__).parents[1]) + "/data/org-sample.pdf"
+
+    sub_ids = client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file]))
+    subs = client.call(WaitForSubmissions(sub_ids, timeout=120))
+    sub = subs[0]
+    assert sub.status == "PENDING_AUTO_REVIEW"
+    job = client.call(
+        SubmitReview(sub.id, rejected=True)
+    )
+    job = client.call(JobStatus(job.id))
+    submissions = client.call(
+        ListSubmissions(filters=SubmissionFilter(reviews=SubmissionReviewFilter(rejected=True)))
+    )
+    assert sub_ids[0] in [s.id for s in submissions]
+    
 
 def _new_dataset_for_updating(client):
     # new dataset

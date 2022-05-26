@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from indico.types.base import BaseType
@@ -58,3 +59,69 @@ class Dataset(BaseType):
 
     def datacolumn_by_name(self, name: str) -> DataColumn:
         return next(l for l in self.datacolumns if l.name == name)
+
+
+class TableReadOrder(Enum):
+    ROW = 0
+    COLUMN = 1
+
+class OcrEngine(Enum):
+    """
+    Enum representing available OCR engines.
+    """
+    OMNIPAGE = 0
+    READAPI = 1
+    pass
+
+class OmnipageOcrOptionsInput(BaseType):
+    """
+    Omnipage specific OCR options for dataset creation.
+
+    Args:
+        auto_rotate(bool): auto rotate.
+        single_colum(bool): Read table as a single column.
+        upscale_images(bool): Scale up low-resolution images.
+        languages(List[OmnipageLanguageCode]): List of languages to use in ocr.
+        cells(bool): Return table information for post-processing rules
+        force_render(bool): Force rednering.
+        native_layout(bool): Native layout.
+        native_pdf(bool): Native pdf.
+        table_read_order(TableReadOrder): Read table by row or column.
+
+    """
+    auto_rotate: bool
+    single_column: bool
+    upscale_images: bool
+    languages: List[str]
+    cells: bool
+    force_render: bool
+    native_layout: bool
+    native_pdf: bool
+    table_read_order: TableReadOrder
+
+class ReadApiOcrOptionsInput(BaseType):
+    """
+    Read API OCR options.
+
+    Args:
+        auto_rotate(bool): Auto rotate
+        single_column(bool): Read table as a single column.
+        upscale_images(bool): Scale up low resolution images.
+        languages(List[str]): List of languages to use.
+    """
+    auto_rotate: bool
+    single_column: bool
+    upscale_images: bool
+    languages: List[str]
+
+class OcrInputLanguage(BaseType):
+    name: str
+    code: str
+
+class OcrOptionsInput():
+    """
+    Input options for OCR engine.
+    """
+    ocr_engine: OcrEngine
+    omnipage_options: OmnipageOcrOptionsInput
+    readapi_options: ReadApiOcrOptionsInput

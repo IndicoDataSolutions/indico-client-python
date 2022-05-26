@@ -1,7 +1,10 @@
 from indico import IndicoClient, IndicoConfig
-from indico.queries import CreateDataset, CreateModelGroup, ModelGroupPredict
+from indico.queries import CreateDataset, ModelGroupPredict, AddModelGroupComponent, JobStatus, \
+    GetModelGroupSelectedModelStatus
 
 # Create an Indico API client
+from indico.types import Workflow
+
 my_config = IndicoConfig(
     host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
 )
@@ -12,17 +15,17 @@ dataset = client.call(
     CreateDataset(name="airline_comments", files=["./airline-comments.csv"])
 )
 
-# train the model w/ the relevant csv columns
-model_group = client.call(
-    CreateModelGroup(
-        name="my_classification_model",
-        dataset_id=dataset.id,
-        source_column_id=dataset.datacolumn_by_name("text").id,  # csv text column
-        labelset_id=dataset.labelset_by_name("Target_1").id,  # csv target class column
-        wait=True,  # wait for training to finish
-    )
-)
+updated_workflow: Workflow = client.call(AddModelGroupComponent(
+    name="my_classification_model",
+    dataset_id=dataset.id,
+    source_column_id=dataset.datacolumn_by_name("text").id,  # csv text column
+    labelset_id=dataset.labelset_by_name("Target_1").id,  # csv target class column
+))
 
+model_group = updated_workflow.model_group_by_name("my_classification_model")
+status = client.call(GetModelGroupSelectedModelStatus(id=model_group.id))
+while status not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
+    status = client.call(GetModelGroupSelectedModelStatus(id=model_group.id))
 
 # predict on the model
 job = client.call(

@@ -5,7 +5,7 @@ import urllib3
 
 from indico.config import IndicoConfig
 from indico.http.client import HTTPClient
-from indico.client.request import HTTPRequest, RequestChain, PagedRequest
+from indico.client.request import HTTPRequest, RequestChain, PagedRequest, GraphQLRequest
 
 
 class IndicoClient:
@@ -46,6 +46,9 @@ class IndicoClient:
             return chain.result
         return response
 
+    def get_ipa_version(self):
+        return self._http.execute_request(GraphQLRequest("query getIPAVersion {\n  ipaVersion\n}\n"))['ipaVersion']
+    
     def call(self, request: Union[HTTPRequest, RequestChain]):
         """
         Make a call to the Indico IPA Platform
