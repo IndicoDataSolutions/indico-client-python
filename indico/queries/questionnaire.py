@@ -1,5 +1,5 @@
 import json
-from typing import List, Any
+from typing import List, Any, Optional
 import deprecation
 
 from indico.queries.datasets import CreateDataset, GetDataset
@@ -44,16 +44,17 @@ class AddLabels(GraphQLRequest):
         """
 
     def __init__(
-            self,
-            labelset_id: int,
-            labels: List[dict],
-            dataset_id: int = None,
+        self,
+        labelset_id: int,
+        labels: List[dict],
+        model_group_id: int = None,
     ):
         super().__init__(
             query=self.query,
             variables={
                 "labels": labels,
                 "labelset_id": labelset_id,
+                "model_group_id": None,
             },
         )
 
@@ -74,31 +75,40 @@ class GetQuestionnaireExamples(GraphQLRequest):
     query = """
     query(
         $questionnaire_id: Int!,
-        $num_examples: Int!
+        $num_examples: Int!,
+        $datafile_id: Int
     )
     {
         questionnaires(questionnaireIds: [$questionnaire_id]) {
             questionnaires {
-                examples(numExamples: $num_examples) {
+                examples(numExamples: $num_examples, datafileId: $datafile_id) {
                     rowIndex
                     datafileId
                     source
+                    id
                 }
             }
         }
     }
     """
 
-    def __init__(self, questionnaire_id: int, num_examples: int):
+    def __init__(
+        self,
+        questionnaire_id: int,
+        num_examples: int,
+        datafile_id: Optional[int] = None,
+    ):
         super().__init__(
             query=self.query,
             variables={
                 "questionnaire_id": questionnaire_id,
                 "num_examples": num_examples,
+                "datafile_id": datafile_id,
             },
         )
 
     def process_response(self, response):
+        print(response)
         try:
             examples = [
                 Example(**e)
@@ -157,8 +167,9 @@ class GetQuestionnaire(GraphQLRequest):
         return Questionnaire(**questionnaire_list[0])
 
 
-@deprecation.deprecated(deprecated_in="5.0",
-                        details="Use AddModelGroupComponent instead")
+@deprecation.deprecated(
+    deprecated_in="5.0", details="Use AddModelGroupComponent instead"
+)
 class _CreateQuestionaire(GraphQLRequest):
     """
     Creates the questionnaire (teach task) for a dataset.
@@ -201,13 +212,13 @@ class _CreateQuestionaire(GraphQLRequest):
     """
 
     def __init__(
-            self,
-            name: str,
-            dataset_id: int,
-            source_column_id: int,
-            targets: List[str],
-            task_type: str,
-            data_type: str,
+        self,
+        name: str,
+        dataset_id: int,
+        source_column_id: int,
+        targets: List[str],
+        task_type: str,
+        data_type: str,
     ):
         questions = [
             {
@@ -237,9 +248,10 @@ class _CreateQuestionaire(GraphQLRequest):
             raise IndicoNotFound("Failed to create Questionnaire")
         return questionnaire
 
-@deprecation.deprecated(deprecated_in="5.0",
-                        details="Use AddModelGroupComponent instead")
 
+@deprecation.deprecated(
+    deprecated_in="5.0", details="Use AddModelGroupComponent instead"
+)
 class CreateQuestionaire(RequestChain):
     """
     Creates a labeled questionaire (teach task) for a dataset.
@@ -260,16 +272,15 @@ class CreateQuestionaire(RequestChain):
     previous = None
 
     def __init__(
-            self,
-            name: str,
-            targets: set,
-            dataset_id: Dataset,
-            workflow_id: int,
-            after_component_id: int,
-            target_lookup: dict = None,
-            task_type: str = "ANNOTATION",
-            data_type: str = "TEXT"
-
+        self,
+        name: str,
+        targets: set,
+        dataset_id: Dataset,
+        workflow_id: int,
+        after_component_id: int,
+        target_lookup: dict = None,
+        task_type: str = "ANNOTATION",
+        data_type: str = "TEXT",
     ):
         self.dataset_id = dataset_id
         self.target_lookup = target_lookup
@@ -277,18 +288,17 @@ class CreateQuestionaire(RequestChain):
         self.name = name
         self.task_type = task_type
         self.data_type = data_type
-        self.workflow_id = workflow_id,
+        self.workflow_id = (workflow_id,)
         self.after_component_id = after_component_id
         super().__init__()
 
     def requests(self):
         yield GetDataset(id=self.dataset_id)
         new_labelset_args = NewLabelsetArguments(
-            datacolumn_id = self.previous.datacolumns[0].id,
-            name = self.name,
-            task_type = self.task_type,
-            target_names = self.targets
-
+            datacolumn_id=self.previous.datacolumns[0].id,
+            name=self.name,
+            task_type=self.task_type,
+            target_names=self.targets,
         )
 
         yield AddModelGroupComponent(
@@ -297,10 +307,12 @@ class CreateQuestionaire(RequestChain):
             new_labelset_args=new_labelset_args,
             dataset_id=self.dataset_id,
             name=self.name,
-            after_component_id= self.after_component_id
+            after_component_id=self.after_component_id,
         )
         result: Workflow = self.previous
-        questionaire_id = result.model_group_by_name(self.name).model_group.questionnaire_id
+        questionaire_id = result.model_group_by_name(
+            self.name
+        ).model_group.questionnaire_id
         yield GetQuestionnaire(questionaire_id)
         status = self.previous.questions_status
         debouncer = Debouncer()

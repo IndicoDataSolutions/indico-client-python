@@ -14,7 +14,9 @@ class Questionnaire(BaseType):
 class Example(BaseType):
     row_index: int
     datafile_id: int
+    status: str
     source: str
+    id: int
 
 
 class QuestionnaireExamples(BaseType):
