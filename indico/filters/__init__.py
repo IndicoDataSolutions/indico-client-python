@@ -75,7 +75,7 @@ class SubmissionFilter(Filter):
         super().__init__(**kwargs)
 
 
-class ExampleFilter(Filter):
+class ModelGroupExampleFilter(Filter):
     """
     Create a Filter when querying for examples associated with model groups.
 

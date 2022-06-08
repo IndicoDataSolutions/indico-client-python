@@ -1,7 +1,7 @@
 from typing import Dict, List, Union
 
 from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
-from indico.filters import ExampleFilter
+from indico.filters import ModelGroupExampleFilter
 from indico.types import Example, model_group
 
 
@@ -12,7 +12,7 @@ class ListModelGroupExamples(PagedRequest):
 
     Options:
         model_group_ids (List[int]): Model group ids to filter by
-        filters (ExampleFilter or Dict): Example attributes to filter by
+        filters (ModelGroupExampleFilter or Dict): Example attributes to filter by
         limit (int, default=1000): Maximum number of Examples to return
         orderBy (str, default="ID"): Example attribute to filter by
         desc: (bool, default=True): List in descending order
@@ -23,7 +23,7 @@ class ListModelGroupExamples(PagedRequest):
     """
 
     query = """
-        query GetExamples($modelGroupId:Int, $orderBy: ExampleOrder, $desc: Boolean, $limit: Int, $filters: ExampleFilter, $after: Int, $before: Int) {
+        query GetExamples($modelGroupId:Int, $orderBy: ExampleOrder, $desc: Boolean, $limit: Int, $filters: ModelGroupExampleFilter, $after: Int, $before: Int) {
             modelGroups(modelGroupIds: [$modelGroupId]) {
                 modelGroups {
                     pagedExamples(orderBy:$orderBy, desc:$desc, limit: $limit, filters: $filters, after: $after, before: $before) {
@@ -47,7 +47,7 @@ class ListModelGroupExamples(PagedRequest):
         self,
         *,
         model_group_id: int = None,
-        filters: Union[Dict, ExampleFilter] = None,
+        filters: Union[Dict, ModelGroupExampleFilter] = None,
         limit: int = 1000,
         order_by: str = "ID",
         desc: bool = True,
