@@ -17,7 +17,7 @@ setup(
     author_email="engineering@indico.io",
     tests_require=["pytest>=5.2.1", "requests-mock>=1.7.0-7"],
     install_requires=[
-        "msgpack==1.0.0",
+        "msgpack>=0.5.6",
         "msgpack-numpy==0.4.4.3",
         "numpy>=1.16.0",
         "Pillow>=6.2.0",
@@ -26,6 +26,6 @@ setup(
         "pandas>=1.0.3",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
         "deprecation>=2.1.0",
-        "jsons"
+        "jsons",
     ],
 )
