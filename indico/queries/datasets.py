@@ -210,6 +210,9 @@ class CreateDataset(RequestChain):
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
         self.batch_size = batch_size
+        self.ocr_engine = ocr_engine
+        self.omnipage_ocr_options = omnipage_ocr_options
+        self.read_api_ocr_options = read_api_ocr_options
         if omnipage_ocr_options is not None and read_api_ocr_options is not None:
             raise IndicoInputError(
                 "Must supply either omnipage or readapi options but not both."
@@ -243,7 +246,13 @@ class CreateDataset(RequestChain):
                 request_cls=_UploadDatasetFiles,
             )
         file_metadata = self.previous
-        yield CreateEmptyDataset(name=self.name, dataset_type=self.dataset_type)
+        yield CreateEmptyDataset(
+            name=self.name,
+            dataset_type=self.dataset_type,
+            readapi_ocr_options=self.read_api_ocr_options,
+            omnipage_ocr_options=self.omnipage_ocr_options,
+            ocr_engine=self.ocr_engine,
+        )
         yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata)
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
