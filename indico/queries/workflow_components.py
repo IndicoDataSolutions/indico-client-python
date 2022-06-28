@@ -367,7 +367,8 @@ class AddModelGroupComponent(GraphQLRequest):
 class DeleteWorkflowComponent(GraphQLRequest):
 
     """
-    Deletes a component from a workflow. Available on 5.3+ only.
+    Deletes a component from a workflow. If the component has an associated model, the model is deleted as well.
+    Available on 5.3+ only.
     Returns workflow with updated list of components and links
 
     Args:
