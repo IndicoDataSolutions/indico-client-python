@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workflow Components &mdash; Indico Python Client 3.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto-review.html">Auto Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Indico Python Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Workflow Components</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/workflow_components.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="workflow-components">
+<h1>Workflow Components<a class="headerlink" href="#workflow-components" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.workflow_components.AddLinkedLabelComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">AddLinkedLabelComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">after_component_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_group_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_link_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.AddLinkedLabelComponent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.workflow_components.AddContentLengthFilterComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">AddContentLengthFilterComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_link_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.AddContentLengthFilterComponent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.workflow_components.AddLinkClassificationComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">AddLinkClassificationComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_group_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_link_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.AddLinkClassificationComponent" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a link classification model component with filtered classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workflow_id</strong> (<em>int</em>) – the workflow id.</p></li>
+<li><p><strong>after_component_id</strong> (<em>int</em>) – the component this component follows.</p></li>
+<li><p><strong>model_group_id</strong> (<em>int</em>) – the model group to source classes from.</p></li>
+<li><p><strong>filtered_classes</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – sets of classes to filter, ie: [[“A”], [“A”,”B”]]</p></li>
+<li><p><strong>labels</strong> (<em>str</em>) – decides if to use “actual” or “predicted” labels.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.workflow_components.AddModelGroupComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">AddModelGroupComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_column_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelset_column_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_labelset_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_questionnaire_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_training_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.AddModelGroupComponent" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a new model group to a workflow, optionally with a customized questionnaire.
+Available on 5.0+ only.
+Returns workflow with updated component list, which will contain the added Model Group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workflow_id</strong> (<em>int</em>) – the id of the workflow to add the component to.</p></li>
+<li><p><strong>dataset_id</strong> (<em>int</em>) – the id of the dataset of this workflow/model group.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the model group.</p></li>
+<li><p><strong>source_column_id</strong> (<em>str</em>) – source column identifier from dataset.</p></li>
+<li><p><strong>after_component_id</strong> (<em>str</em>) – the id of the previous component, or step, that should precede this step.
+Typically, this prior component would be something like “INPUT_OCR_EXTRACTION” or “INPUT_IMAGE” and can
+be found by using “component_by_type()” on the parent workflow.</p></li>
+<li><p><strong>labelset_column_id</strong> (<em>int</em>) – the labelset column to copy from.</p></li>
+<li><p><strong>new_labelset_args</strong> (<em>NewLabelsetArguments</em>) – if needed, new labelset to add.
+Only use if not using labelset_column_id.</p></li>
+<li><p><strong>new_questionnaire_args</strong> (<em>NewQuestionnaireArguments</em>) – Customize the questionnaire associated with this model group.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.workflow_components.DeleteWorkflowComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">DeleteWorkflowComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.DeleteWorkflowComponent" title="Permalink to this definition"></a></dt>
+<dd><p>Deletes a component from a workflow. If the component has an associated model, the model is deleted as well.
+Available on 5.3+ only.
+Returns workflow with updated list of components and links</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>workflow_id</strong> (<em>int</em>) – the id of the workflow to delete the component from.</p></li>
+<li><p><strong>component_id</strong> (<em>int</em>) – the id of the component to delete.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Indico.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
