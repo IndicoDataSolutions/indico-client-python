@@ -52,7 +52,11 @@
 <li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
+<<<<<<< HEAD
 <ul class="current">
+=======
+<ul>
+>>>>>>> ADD: docs for workflow component queries
 <li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
@@ -67,7 +71,10 @@
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
+<<<<<<< HEAD
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Workflow Components</a></li>
+=======
+>>>>>>> ADD: docs for workflow component queries
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
 </ul>
 <ul>
@@ -104,6 +111,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
+<<<<<<< HEAD
   <section id="module-indico.queries.workflow_components">
 <span id="workflow-components"></span><h1>Workflow Components<a class="headerlink" href="#module-indico.queries.workflow_components" title="Permalink to this headline"></a></h1>
 <dl class="py class">
@@ -122,10 +130,19 @@
 </dd>
 </dl>
 </dd></dl>
+=======
+  <section id="workflow-components">
+<h1>Workflow Components<a class="headerlink" href="#workflow-components" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.workflow_components.AddLinkedLabelComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">AddLinkedLabelComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">after_component_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_group_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_link_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.AddLinkedLabelComponent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+>>>>>>> ADD: docs for workflow component queries
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.workflow_components.AddContentLengthFilterComponent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">AddContentLengthFilterComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_component_link_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.AddContentLengthFilterComponent" title="Permalink to this definition"></a></dt>
+<<<<<<< HEAD
 <dd><p>Adds a content length filter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -138,6 +155,9 @@
 </dd>
 </dl>
 </dd></dl>
+=======
+<dd></dd></dl>
+>>>>>>> ADD: docs for workflow component queries
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.workflow_components.AddLinkClassificationComponent">
@@ -184,7 +204,12 @@ Only use if not using labelset_column_id.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.workflow_components.DeleteWorkflowComponent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">DeleteWorkflowComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.DeleteWorkflowComponent" title="Permalink to this definition"></a></dt>
+<<<<<<< HEAD
 <dd><p>Deletes a component from a workflow. Available on 5.3+ only.
+=======
+<dd><p>Deletes a component from a workflow. If the component has an associated model, the model is deleted as well.
+Available on 5.3+ only.
+>>>>>>> ADD: docs for workflow component queries
 Returns workflow with updated list of components and links</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -201,10 +226,14 @@ Returns workflow with updated list of components and links</p>
 
            </div>
           </div>
+<<<<<<< HEAD
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="workflow-metrics.html" class="btn btn-neutral float-left" title="Workflow Metrics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="document_report.html" class="btn btn-neutral float-right" title="Document Report" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
+=======
+          <footer>
+>>>>>>> ADD: docs for workflow component queries
 
   <hr/>
 
