@@ -83,6 +83,16 @@ class _AddWorkflowComponent(GraphQLRequest):
 
 
 class AddLinkedLabelComponent(RequestChain):
+    """
+    Adds a linked label transformer that groups together labels
+
+    Args:
+        after_component_id(int): the component this component follows.
+        workflow_id(int): the workflow id.
+        labelset_id(int): the labelset to source classes from.
+        model_group_id(int): the model group to source classes from.
+        groups (List[LinkedLabelGroup]): configuration for how to group labels.
+    """
     def __init__(
         self,
         after_component_id: int,
@@ -92,6 +102,7 @@ class AddLinkedLabelComponent(RequestChain):
         groups: List[LinkedLabelGroup],
         after_component_link_id: int = None,
     ):
+
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
         self.after_component_link_id = after_component_link_id
@@ -122,6 +133,15 @@ class AddLinkedLabelComponent(RequestChain):
 
 
 class AddContentLengthFilterComponent(RequestChain):
+    """
+    Adds a content length filter.
+
+    Args:
+        workflow_id(int): the workflow id.
+        after_component_id(int): the component this component follows.
+        minimum(int): minimum length of content to accept. Defaults to None.
+        maximum(int): maximum length of content to accept. Defaults to None.
+    """
     def __init__(
         self,
         workflow_id: int,
