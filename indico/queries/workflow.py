@@ -506,3 +506,25 @@ class CreateWorkflow(GraphQLRequest):
             **super().process_response(response)["createWorkflow"]["workflow"]
         )
 
+class DeleteWorkflow(GraphQLRequest):
+    """
+    Mutation to delete workflow given workflow id. Note that this operation includes deleting 
+    all components and models associated with this workflow.
+
+    Args:
+        workflow_id(int): id of workflow to delete
+    """
+
+    query = """        
+        mutation deleteWorkflow($workflowId: Int!){
+            deleteWorkflow(workflowId: $workflowId){
+                success
+            }
+        }
+    """
+
+    def __init__(self, workflow_id: int):
+        super().__init__(self.query, variables={"workflowId": workflow_id})
+
+    def process_response(self, response) -> bool:
+        return super().process_response(response)["deleteWorkflow"]["success"]

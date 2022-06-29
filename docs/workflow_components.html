@@ -184,7 +184,8 @@ Only use if not using labelset_column_id.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.workflow_components.DeleteWorkflowComponent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_components.</span></span><span class="sig-name descname"><span class="pre">DeleteWorkflowComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workflow_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_components.DeleteWorkflowComponent" title="Permalink to this definition"></a></dt>
-<dd><p>Deletes a component from a workflow. Available on 5.3+ only.
+<dd><p>Deletes a component from a workflow. If the component has an associated model, the model is deleted as well.
+Available on 5.3+ only.
 Returns workflow with updated list of components and links</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

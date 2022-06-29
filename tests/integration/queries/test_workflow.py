@@ -24,6 +24,7 @@ from indico.queries import (
     AddFiles,
     ProcessCSV,
     CreateDataset,
+    DeleteWorkflow
 )
 from indico.queries.questionnaire import CreateQuestionaire, GetQuestionnaire
 from indico.types import ModelGroup
@@ -401,3 +402,20 @@ def test_add_data_to_workflow_nowait(indico):
 
     wf = client.call(AddDataToWorkflow(wf.id))
     assert wf.status == "ADDING_DATA"
+
+@pytest.fixture
+def wf_to_delete(indico, airlines_dataset: Dataset) -> Workflow:
+    client = IndicoClient()
+    workflowreq = CreateWorkflow(dataset_id=airlines_dataset.id, name=f"AirlineComplaints-test-{int(time.time())}")
+    response = client.call(workflowreq)
+
+    return response
+
+def test_delete_workflow(indico, airlines_dataset: Dataset, wf_to_delete: Workflow):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    num_wfs = len(wfs)
+    client.call(DeleteWorkflow(workflow_id=wf_to_delete.id))
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    assert len(wfs) == num_wfs - 1
+    assert wf_to_delete.id not in {wf.id for wf in wfs}
