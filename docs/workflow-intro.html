@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workflows &mdash; Indico Python Client 3.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/indicotheme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Review" href="review-intro.html" />
+    <link rel="prev" title="Generating Model Predictions" href="model_predictions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-workflows-via-api">Running Workflows via API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto-review.html">Auto Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docextract.html">DocumentExtraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
+<li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Indico Python Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Workflows</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/workflow-intro.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="workflows">
+<h1>Workflows<a class="headerlink" href="#workflows" title="Permalink to this headline"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<p>The Indico Platform includes the ability to link several models and operations together into a unified Workflow.
+Here’s an example of what a Workflow with three linked models looks like on the Indico Platform:</p>
+<img alt="_images/sample-workflow.png" src="_images/sample-workflow.png" />
+<p>In this case, we are linking OCR to a classification model to two extraction models
+to a human-in-the-loop Review process before arriving at a final output. The input to this Workflow is an unknown Financial
+Disclosure or Invoice document, which is then classified (as one of those two types), passed to an extraction model where data
+specific to the document type is retrieved, sent to a Review step where a human will validate the classification and
+extraction model predictions, and finally output as a JSON where it can be processed into your organization’s systems.</p>
+<p>Using the Indico API, your organization has flexibility to customize the processes described above. For example,
+you can set up push notifications to alert you when a document has receieved its predictions and/or when it has been human reviewed.
+You can also apply custom functions to model output prior to human review to standardize fields and/or automatically accept certain predictions
+without a human-in-the-loop review (note: you should be very cautious in the types of predictions you auto-accept).</p>
+<p>A Workflow is automatically created whenever you train a new model. Information about your Workflows can be found through
+the dataset page, where you can also enable human-in-the-loop Review. For more details on creating Workflows, <a class="reference external" href="https://indicodata.zendesk.com/hc/en-us/articles/360045464112-Creating-Administering-a-Workflow">see this article</a>.
+With Workflows, you can encapsulate multiple model calls and processing steps into one API call and easily integrate Indico
+into your systems.</p>
+</section>
+<section id="running-workflows-via-api">
+<h2>Running Workflows via API<a class="headerlink" href="#running-workflows-via-api" title="Permalink to this headline"></a></h2>
+<p>To begin using the API with your Workflow, first you will want to find the Workflow ID. From the dataset page,
+click on the associated dataset, click the ‘WORKFLOWS’ tab, and then click the name of your Workflow. In the URL,
+find the number that appears after ‘workflows’. For example, in the URL below the Workflow ID is ‘1000’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">app</span><span class="o">.</span><span class="n">indico</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="mi">7589</span><span class="o">/</span><span class="n">workflows</span><span class="o">/</span><span class="mi">1000</span>
+</pre></div>
+</div>
+<p>Alternatively, you can use the ListWorkflows API call along with the dataset ID (7589 in the example above) to identify all of
+the workflows associated with a given dataset.</p>
+<p>The following snippet demonstrates how to submit a document to a Workflow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">WorkflowSubmission</span>
+
+<span class="n">submissions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">WorkflowSubmission</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./path/to/sample.pdf&quot;</span><span class="p">],</span> <span class="n">workflow_id</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above snippet, we passed a single PDF file to a Workflow, but we could have just as easilly passed multiple files.
+Submitted documents are processed asynchronously within the Indico platform and each is assigned a unique and persistent
+submission ID. The “submissions” variable above will be a list of integers (length equal to the number of documents submitted)
+where each integer represents a unique and persistent submission ID per document (the order of the IDs maps to the
+order of documents in the list passed to the files kwarg).</p>
+<p>You can then use these IDs to track the status of individual submissions like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">WorkflowSubmission</span>
+
+<span class="n">submission</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">GetSubmission</span><span class="p">(</span><span class="mi">8231</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">submission</span><span class="o">.</span><span class="n">input_filename</span><span class="p">,</span> <span class="n">submission</span><span class="o">.</span><span class="n">retrieved</span><span class="p">,</span> <span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>GetSubmission returns a Submission object containing useful information about the submission (including whether
+it has been processed, reviewed, and/or retrieved).</p>
+<p>If the submission has been processed, you can retrieve the json result for a submission like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">SubmissionResult</span><span class="p">,</span> <span class="n">RetrieveStorageObject</span>
+
+<span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmissionResult</span><span class="p">(</span><span class="mi">8231</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">RetrieveStorageObject</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="review-intro.html"><span class="doc">Review</span></a> section for more details on working with Workflows, including how to query for multiple submissions
+to a workflow, what different submissions statuses mean, and how to mark a submission as retrieved.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="model_predictions.html" class="btn btn-neutral float-left" title="Generating Model Predictions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="review-intro.html" class="btn btn-neutral float-right" title="Review" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Indico.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
