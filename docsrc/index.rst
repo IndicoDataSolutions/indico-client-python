@@ -42,6 +42,7 @@ Reference
     graphql_queries
     user_metrics
     workflow-metrics
+    workflow_components
     document_report
 
 **Types**

@@ -42,16 +42,16 @@ class _AddWorkflowComponent(GraphQLRequest):
                                         id
                                       }
                                     }
-                                 
+
                                 }
-                  
+
 
                             }
                             componentLinks {
                                 id
                                 headComponentId
                                 tailComponentId
-                              
+
 
                             }
 
@@ -83,6 +83,16 @@ class _AddWorkflowComponent(GraphQLRequest):
 
 
 class AddLinkedLabelComponent(RequestChain):
+    """
+    Adds a linked label transformer that groups together labels
+
+    Args:
+        after_component_id(int): the component this component follows.
+        workflow_id(int): the workflow id.
+        labelset_id(int): the labelset to source classes from.
+        model_group_id(int): the model group to source classes from.
+        groups (List[LinkedLabelGroup]): configuration for how to group labels.
+    """
     def __init__(
         self,
         after_component_id: int,
@@ -92,6 +102,7 @@ class AddLinkedLabelComponent(RequestChain):
         groups: List[LinkedLabelGroup],
         after_component_link_id: int = None,
     ):
+
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
         self.after_component_link_id = after_component_link_id
@@ -122,6 +133,15 @@ class AddLinkedLabelComponent(RequestChain):
 
 
 class AddContentLengthFilterComponent(RequestChain):
+    """
+    Adds a content length filter.
+
+    Args:
+        workflow_id(int): the workflow id.
+        after_component_id(int): the component this component follows.
+        minimum(int): minimum length of content to accept. Defaults to None.
+        maximum(int): maximum length of content to accept. Defaults to None.
+    """
     def __init__(
         self,
         workflow_id: int,
@@ -214,18 +234,18 @@ class AddModelGroupComponent(GraphQLRequest):
 
     query = """
             mutation addModelGroup(
-          $workflowId: Int!, 
-          $name: String!, 
-          $datasetId: Int!, 
-          $sourceColumnId: Int!, 
-          $afterComponentId: Int, 
+          $workflowId: Int!,
+          $name: String!,
+          $datasetId: Int!,
+          $sourceColumnId: Int!,
+          $afterComponentId: Int,
           $labelsetColumnId: Int,
           $newLabelsetArgs: NewLabelsetInput,
           $questionnaireArgs: QuestionnaireInput,
           $modelTrainingOptions: JSONString,
           $modelType : ModelType
         ) {
-          addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId, 
+          addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId,
           sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId,
           modelTrainingOptions: $modelTrainingOptions,
 
@@ -341,4 +361,73 @@ class AddModelGroupComponent(GraphQLRequest):
     def process_response(self, response) -> Workflow:
         return Workflow(
             **super().process_response(response)["addModelGroupComponent"]["workflow"]
+        )
+
+
+class DeleteWorkflowComponent(GraphQLRequest):
+
+    """
+    Deletes a component from a workflow. Available on 5.3+ only.
+    Returns workflow with updated list of components and links
+
+    Args:
+        workflow_id(int): the id of the workflow to delete the component from.
+        component_id(int): the id of the component to delete.
+    """
+
+    query = """
+        mutation deleteWorkflowComponent(
+            $workflowId: Int!,
+            $componentId: Int!
+        ){
+            deleteWorkflowComponent(
+                workflowId: $workflowId,
+                componentId: $componentId
+            ){
+                workflow {
+                    id
+                    components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        ... on ContentLengthComponent {
+                            minimum
+                            maximum
+                        }
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                            modelGroup {
+                                status
+                                id
+                                name
+                                taskType
+                                questionnaireId
+                                selectedModel{
+                                    id
+                                }
+                            }
+                        }
+
+                    }
+                    componentLinks {
+                        id
+                        headComponentId
+                        tailComponentId
+                    }
+                }
+            }
+        }
+    """
+
+    def __init__(self, workflow_id: int, component_id: int):
+        super().__init__(
+            self.query,
+            variables={"workflowId": workflow_id, "componentId": component_id},
+        )
+
+    def process_response(self, response) -> Workflow:
+        return Workflow(
+            **super().process_response(response)["deleteWorkflowComponent"]["workflow"]
         )
