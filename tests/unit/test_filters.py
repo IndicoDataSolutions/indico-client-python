@@ -1,7 +1,8 @@
 import pytest
+from datetime import datetime
 
 from indico.errors import IndicoInputError
-from indico.filters import Filter, SubmissionFilter, and_, or_
+from indico.filters import Filter, SubmissionFilter, and_, or_, DocumentReportFilter
 
 
 def test_filter():
@@ -24,3 +25,17 @@ def test_builder(fn, key):
 def test_submission_filter():
     f = SubmissionFilter(status="complete")
     assert dict(f) == {"status": "COMPLETE"}
+
+
+def test_doc_report_filter():
+    todays_date = datetime.now().strftime("%Y-%m-%d")
+
+    filter_opts = DocumentReportFilter(created_at_start_date=datetime(2021, 7, 1))
+    assert filter_opts['createdAt']['to'] == todays_date
+    with pytest.raises(IndicoInputError):
+        DocumentReportFilter(created_at_end_date=datetime.now())
+
+    filter_opts = DocumentReportFilter(updated_at_start_date=datetime(2021, 8, 1))
+    assert filter_opts['updatedAt']['to'] == todays_date
+    with pytest.raises(IndicoInputError):
+        DocumentReportFilter(updated_at_end_date=datetime.now())

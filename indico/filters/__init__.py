@@ -166,22 +166,24 @@ class DocumentReportFilter(Filter):
     ):
 
         kwargs = {"workflowId": workflow_id, "id": submission_id, "status": status}
-        if created_at_start_date is not None and created_at_end_date is not None:
+        if created_at_end_date and not created_at_start_date:
+            raise IndicoInputError("Must specify created_at_start_date")
+        if created_at_start_date:
             kwargs["createdAt"] = {
-                "from": created_at_start_date.strftime("%Y-%m-%d")
-                if created_at_start_date is not None
-                else "",
+                "from": created_at_start_date.strftime("%Y-%m-%d"),
                 "to": created_at_end_date.strftime("%Y-%m-%d")
                 if created_at_end_date is not None
-                else "",
+                else datetime.datetime.now().strftime("%Y-%m-%d"),
             }
-        if updated_at_start_date is not None and updated_at_end_date is not None:
+
+
+        if updated_at_end_date and not updated_at_start_date:
+            raise IndicoInputError("Must specify updated_at_start_date")
+        if updated_at_start_date is not None:
             kwargs["updatedAt"] = {
-                "from": updated_at_start_date.strftime("%Y-%m-%d")
-                if updated_at_start_date is not None
-                else "",
+                "from": updated_at_start_date.strftime("%Y-%m-%d"),
                 "to": updated_at_end_date.strftime("%Y-%m-%d")
                 if updated_at_end_date is not None
-                else "",
+                else datetime.datetime.now().strftime("%Y-%m-%d"),
             }
         super().__init__(**kwargs)
