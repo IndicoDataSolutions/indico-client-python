@@ -253,22 +253,8 @@ class CreateDataset(RequestChain):
             omnipage_ocr_options=self.omnipage_ocr_options,
             ocr_engine=self.ocr_engine,
         )
-        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata)
+        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata, autoprocess=True)
         dataset_id = self.previous.id
-        yield GetDatasetFileStatus(id=dataset_id)
-        debouncer = Debouncer()
-        while not all(
-            f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
-        ):
-            yield GetDatasetFileStatus(id=self.previous.id)
-            debouncer.backoff()
-        csv_files = [f.id for f in self.previous.files if f.file_type == "CSV"]
-        non_csv_files = [f.id for f in self.previous.files if f.file_type != "CSV"]
-
-        if csv_files:
-            yield _ProcessCSV(dataset_id=dataset_id, datafile_ids=csv_files)
-        elif non_csv_files:
-            yield _ProcessFiles(dataset_id=dataset_id, datafile_ids=non_csv_files)
         yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
         if self.wait is True:
@@ -476,10 +462,11 @@ class AddDatasetFiles(RequestChain):
             autoprocess=self.autoprocess,
         )
         yield GetDatasetFileStatus(id=self.dataset_id)
-        debouncer = Debouncer()
-        while not all(f.status in self.expected_statuses for f in self.previous.files):
-            yield GetDatasetFileStatus(id=self.previous.id)
-            debouncer.backoff()
+        if self.wait:
+            debouncer = Debouncer()
+            while not all(f.status in self.expected_statuses for f in self.previous.files):
+                yield GetDatasetFileStatus(id=self.previous.id)
+                debouncer.backoff()
 
 
 # Alias for backwards compatibility
