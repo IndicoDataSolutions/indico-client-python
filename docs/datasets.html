@@ -220,8 +220,8 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.datasets.AddDatasetFiles">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">AddDatasetFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.AddDatasetFiles" title="Permalink to this definition"></a></dt>
-<dd><p>Add files to a dataset</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.datasets.</span></span><span class="sig-name descname"><span class="pre">AddDatasetFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.datasets.AddDatasetFiles" title="Permalink to this definition"></a></dt>
+<dd><p>Add files to a dataset. By default, do not process files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -231,7 +231,8 @@ wait (bool, default=True): Wait for the dataset to upload and finish</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>Options:</dt><dd><p>wait (bool, default=True): Block while polling for status of files
+<dt>Options:</dt><dd><p>autoprocess (bool, default=False): Automatically process new dataset files
+wait (bool, default=True): Block while polling for status of files
 batch_size (int, default=20): Batch size for uploading files</p>
 </dd>
 </dl>
