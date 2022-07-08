@@ -400,18 +400,22 @@ class CreateEmptyDataset(GraphQLRequest):
 
 class _AddFiles(GraphQLRequest):
     query = """
-    mutation AddFiles($datasetId: Int!, $metadata: JSONString!){
-        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata) {
+    mutation AddFiles($datasetId: Int!, $metadata: JSONString!, $autoprocess: Boolean){
+        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata, autoprocess: $autoprocess) {
             id
             status
         }
     }
     """
 
-    def __init__(self, dataset_id: int, metadata: List[str]):
+    def __init__(self, dataset_id: int, metadata: List[str], autoprocess: bool):
         super().__init__(
             self.query,
-            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
+            variables={
+                "datasetId": dataset_id,
+                "metadata": json.dumps(metadata),
+                "autoprocess": autoprocess,
+            },
         )
 
     def process_response(self, response):
@@ -420,13 +424,14 @@ class _AddFiles(GraphQLRequest):
 
 class AddDatasetFiles(RequestChain):
     """
-    Add files to a dataset
+    Add files to a dataset. By default, do not process files.
 
     Args:
         dataset_id (int): ID of the dataset
         files (List[str]): List of pathnames to the dataset files
 
     Options:
+        autoprocess (bool, default=False): Automatically process new dataset files
         wait (bool, default=True): Block while polling for status of files
         batch_size (int, default=20): Batch size for uploading files
 
@@ -443,6 +448,7 @@ class AddDatasetFiles(RequestChain):
         self,
         dataset_id: int,
         files: List[str],
+        autoprocess: bool = False,
         wait: bool = True,
         batch_size: int = 20,
     ):
@@ -450,6 +456,12 @@ class AddDatasetFiles(RequestChain):
         self.files = files
         self.wait = wait
         self.batch_size = batch_size
+        self.autoprocess = autoprocess
+        self.expected_statuses = (
+            {"FAILED", "PROCESSED"}
+            if autoprocess
+            else {"DOWNLOADED", "FAILED", "PROCESSED"}
+        )
         super().__init__()
 
     def requests(self):
@@ -458,13 +470,14 @@ class AddDatasetFiles(RequestChain):
             batch_size=self.batch_size,
             request_cls=_UploadDatasetFiles,
         )
-        yield _AddFiles(dataset_id=self.dataset_id, metadata=self.previous)
+        yield _AddFiles(
+            dataset_id=self.dataset_id,
+            metadata=self.previous,
+            autoprocess=self.autoprocess,
+        )
         yield GetDatasetFileStatus(id=self.dataset_id)
         debouncer = Debouncer()
-        while not all(
-            f.status in ["DOWNLOADED", "FAILED", "PROCESSED"]
-            for f in self.previous.files
-        ):
+        while not all(f.status in self.expected_statuses for f in self.previous.files):
             yield GetDatasetFileStatus(id=self.previous.id)
             debouncer.backoff()
 
