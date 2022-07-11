@@ -417,7 +417,7 @@ class AddDatasetFiles(RequestChain):
         files (List[str]): List of pathnames to the dataset files
 
     Options:
-        autoprocess (bool, default=True): Automatically process new dataset files
+        autoprocess (bool, default=False): Automatically process new dataset files
         wait (bool, default=True): Block while polling for status of files
         batch_size (int, default=20): Batch size for uploading files
 
@@ -434,7 +434,7 @@ class AddDatasetFiles(RequestChain):
         self,
         dataset_id: int,
         files: List[str],
-        autoprocess: bool = True,
+        autoprocess: bool = False,
         wait: bool = True,
         batch_size: int = 20,
     ):
