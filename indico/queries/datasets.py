@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
+import deprecation
+
 from indico.client.request import (
     Debouncer,
     GraphQLRequest,
@@ -515,7 +517,8 @@ class _ProcessCSV(GraphQLRequest):
     def process_response(self, response):
         return Dataset(**super().process_response(response)["addDataCsv"])
 
-
+@deprecation.deprecated(deprecated_in="5.3",
+                        details="Use AddFiles wtih autoprocess=True instead")
 class ProcessFiles(RequestChain):
     """
     Process files associated with a dataset and add corresponding data to the dataset
@@ -554,7 +557,8 @@ class ProcessFiles(RequestChain):
                 yield GetDatasetFileStatus(id=self.dataset_id)
                 debouncer.backoff()
 
-
+@deprecation.deprecated(deprecated_in="5.3",
+                        details="Use AddFiles wtih autoprocess=True instead")
 class ProcessCSV(RequestChain):
     """
     Process CSV associated with a dataset and add corresponding data to the dataset
