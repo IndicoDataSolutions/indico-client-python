@@ -1,8 +1,9 @@
 """
 Setup for indico apis
 """
+from setuptools import find_packages, setup
+
 import versioneer
-from setuptools import setup, find_packages
 
 setup(
     name="indico-client",
@@ -21,7 +22,7 @@ setup(
         "msgpack-numpy==0.4.4.3",
         "numpy>=1.16.0",
         "Pillow>=6.2.0",
-        "requests==2.22.0",
+        "requests>=2.22.0",
         "setuptools>=41.4.0",
         "pandas>=1.0.3",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
