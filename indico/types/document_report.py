@@ -21,10 +21,12 @@ class DocumentReport(BaseType):
     submission_id: int
     status: str
     created_at: str
+    created_by: str
     updated_at: str
     updated_by: str
     completed_at: str
     errors: str
     retrieved: bool
     input_files: List[InputFile]
+    deleted: bool
 

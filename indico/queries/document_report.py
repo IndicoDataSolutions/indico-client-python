@@ -27,12 +27,14 @@ class GetDocumentReport(PagedRequest):
               workflowId
               status
               createdAt
+              createdBy
               updatedAt
               updatedBy
               completedAt
               errors
               retrieved
               submissionId
+              deleted
               inputFiles{
                 filename
                 submissionId
