@@ -15,6 +15,9 @@ def test_fetch_docs(indico):
     assert len(document_report) > 0
     assert isinstance(document_report[0].input_files[0].num_pages, int)
     assert isinstance(document_report[0].input_files[0].file_size, int)
+    assert isinstance(document_report[0].input_files[0].id, int)
+    assert isinstance(document_report[0].input_files[0].submission_id, int)
+    assert document_report[0].input_files[0].filename
 
 
 def test_fetch_docs_limit(indico):
