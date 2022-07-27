@@ -36,7 +36,9 @@ class GetDocumentReport(PagedRequest):
               submissionId
               deleted
               inputFiles{
+                id
                 filename
+                filepath
                 submissionId
                 fileSize
                 numPages

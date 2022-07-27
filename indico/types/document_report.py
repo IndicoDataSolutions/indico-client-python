@@ -1,13 +1,7 @@
 from typing import List
 
 from indico.types import BaseType
-
-
-class InputFile(BaseType):
-    filename: str
-    submission_id: int
-    num_pages: int
-    file_size: int
+from indico.types import SubmissionFile
 
 
 class DocumentReport(BaseType):
@@ -27,6 +21,6 @@ class DocumentReport(BaseType):
     completed_at: str
     errors: str
     retrieved: bool
-    input_files: List[InputFile]
+    input_files: List[SubmissionFile]
     deleted: bool
 
