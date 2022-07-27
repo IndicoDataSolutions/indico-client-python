@@ -20,7 +20,6 @@ def test_fetch_docs(indico):
     assert document_report[0].input_files[0].filename
 
 
-
 def test_fetch_docs_limit(indico):
     client = IndicoClient()
     filter_opts = DocumentReportFilter(
