@@ -6,7 +6,7 @@ from indico.types import SubmissionFile
 
 class DocumentReport(BaseType):
     """
-    A Document report about the associated InputFiles.
+    A Document report about the associated input files.
 
 
     """
