@@ -38,23 +38,15 @@ development environment.
 
 ## API Examples
 
-### Getting Classification/Extraction Results
+### Creating a Client
 ```python3
 from indico import IndicoClient, IndicoConfig
-from indico.queries import JobStatus, ModelGroupPredict
 
 config = IndicoConfig(
     host='app.indico.io', # or your custom app location
     api_token_path='./indico_api_token.txt' # path to your API token
     )
 client = IndicoClient(config=config)
-
-data = ["Test example", "Test example 2"]
-job = client.call(ModelGroupPredict(model_id=32777, data=data))
-
-prediction = client.call(JobStatus(id=job.id, wait=True))
-
-print(prediction.result)
 ```
 
 ### Performing OCR / Document Text and Data Extraction
