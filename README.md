@@ -48,33 +48,6 @@ config = IndicoConfig(
     )
 client = IndicoClient(config=config)
 ```
-
-### Performing OCR / Document Text and Data Extraction
-``` python3 
-from indico import IndicoClient, IndicoConfig
-from indico.queries import DocumentExtraction, JobStatus, RetrieveStorageObject
-
-config = IndicoConfig(
-    host='app.indico.io',
-    api_token_path='./indico_api_token.txt'
-    )
-
-client = IndicoClient(config=config)
-file_paths = ['./test_data.pdf', './test_data2.pdf']
-job = client.call(
-    DocumentExtraction(
-        files=file_paths, 
-        json_config={"preset_config": "ondocument"} # see full docs for config options
-        )
-    )
-# job is a list object with length equal to # of files, retrieve each extraction by 
-# its index- below, we're retrieving the first extraction in file_paths
-
-job_file = client.call(JobStatus(id=job[0].id, wait=True))
-result = client.call(RetrieveStorageObject(job_file.result))
-print(result)
-```
-
 ### Pure GraphQL example
 ```
 from indico import IndicoClient

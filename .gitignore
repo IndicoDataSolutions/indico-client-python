@@ -56,3 +56,4 @@ docsrc/_build
 docs/.doctrees
 
 .venv
+.vscode/
