@@ -63,7 +63,8 @@ class DocumentExtraction(RequestChain):
 
         standard - Provides page text and block text/position in a nested format.
 
-        For more information, please see the DocumentExtraction settings page.
+        For more information, please reference the Indico knowledgebase article on OCR:
+        https://docs.indicodata.ai/articles/documentation-publication/ocr
 
     Example:
 

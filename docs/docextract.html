@@ -42,14 +42,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto-review.html">Auto Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul class="current">
@@ -132,7 +128,8 @@ extract raw text for model training and prediction.</p>
 <p>detailed - Provides detailed bounding box information on tokens and characters. Returns data in a nested format at the document level with all metadata included.</p>
 <p>ondocument - Provides detailed information at the page-level in an unnested format.</p>
 <p>standard - Provides page text and block text/position in a nested format.</p>
-<p>For more information, please see the DocumentExtraction settings page.</p>
+<p>For more information, please reference the Indico knowledgebase article on OCR:
+<a class="reference external" href="https://docs.indicodata.ai/articles/documentation-publication/ocr">https://docs.indicodata.ai/articles/documentation-publication/ocr</a></p>
 <p class="rubric">Example</p>
 <p>Call DocumentExtraction and wait for the result:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">DocumentExtraction</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">src_path</span><span class="p">],</span> <span class="n">json_config</span><span class="o">=</span><span class="s1">&#39;{&quot;preset_config&quot;: &quot;legacy&quot;}&#39;</span><span class="p">))</span>
