@@ -33,8 +33,9 @@ class _AddWorkflowComponent(GraphQLRequest):
                                     taskType
                                     modelType
                                     modelGroup {
-                                        status
+                                      status
                                       id
+                                      classNames
                                       name
                                       taskType
                                       questionnaireId
