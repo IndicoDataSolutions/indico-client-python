@@ -240,13 +240,14 @@ class AddModelGroupComponent(GraphQLRequest):
           $sourceColumnId: Int!,
           $afterComponentId: Int,
           $labelsetColumnId: Int,
+          $afterLinkId: Int,
           $newLabelsetArgs: NewLabelsetInput,
           $questionnaireArgs: QuestionnaireInput,
           $modelTrainingOptions: JSONString,
           $modelType : ModelType
         ) {
           addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId,
-          sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId,
+          sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, afterLinkId: $afterLinkId, labelsetColumnId: $labelsetColumnId,
           modelTrainingOptions: $modelTrainingOptions,
 
     newLabelsetArgs: $newLabelsetArgs,
@@ -299,6 +300,7 @@ class AddModelGroupComponent(GraphQLRequest):
         name: str,
         source_column_id: int,
         after_component_id: int = None,
+        after_link_id: int = None,
         labelset_column_id: int = None,
         new_labelset_args: NewLabelsetArguments = None,
         new_questionnaire_args: NewQuestionnaireArguments = None,
@@ -328,6 +330,7 @@ class AddModelGroupComponent(GraphQLRequest):
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_column_id,
                 "afterComponentId": after_component_id,
+                "afterLinkId": after_link_id,
                 "modelTrainingOptions": model_training_options,
                 "modelType": model_type,
                 "newLabelsetArgs": self.__labelset_to_json(new_labelset_args)
