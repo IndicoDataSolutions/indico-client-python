@@ -187,7 +187,7 @@ class AddLinkClassificationComponent(RequestChain):
         after_component_id: int,
         model_group_id: int,
         filtered_classes: List[List[str]],
-        labels: str,
+        labels: str = None,
         after_component_link_id: int = None,
     ):
         self.workflow_id = workflow_id
