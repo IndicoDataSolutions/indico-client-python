@@ -51,6 +51,7 @@ class ListWorkflows(GraphQLRequest):
                                       name
                                       taskType
                                       questionnaireId
+                                      classNames
                                       selectedModel{
                                         id
                                       }
@@ -484,7 +485,7 @@ class CreateWorkflow(GraphQLRequest):
                     id
                     headComponentId
                     tailComponentId
-                    filters{
+                    filters {
                       classes
                     }
                     

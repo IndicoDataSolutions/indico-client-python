@@ -33,8 +33,9 @@ class _AddWorkflowComponent(GraphQLRequest):
                                     taskType
                                     modelType
                                     modelGroup {
-                                        status
+                                      status
                                       id
+                                      classNames
                                       name
                                       taskType
                                       questionnaireId
@@ -51,7 +52,9 @@ class _AddWorkflowComponent(GraphQLRequest):
                                 id
                                 headComponentId
                                 tailComponentId
-
+                                filters{
+                                    classes
+                                }
 
                             }
 
@@ -187,7 +190,7 @@ class AddLinkClassificationComponent(RequestChain):
         after_component_id: int,
         model_group_id: int,
         filtered_classes: List[List[str]],
-        labels: str,
+        labels: str = None,
         after_component_link_id: int = None,
     ):
         self.workflow_id = workflow_id
@@ -240,13 +243,14 @@ class AddModelGroupComponent(GraphQLRequest):
           $sourceColumnId: Int!,
           $afterComponentId: Int,
           $labelsetColumnId: Int,
+          $afterLinkId: Int,
           $newLabelsetArgs: NewLabelsetInput,
           $questionnaireArgs: QuestionnaireInput,
           $modelTrainingOptions: JSONString,
           $modelType : ModelType
         ) {
           addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId,
-          sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, labelsetColumnId: $labelsetColumnId,
+          sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, afterLinkId: $afterLinkId, labelsetColumnId: $labelsetColumnId,
           modelTrainingOptions: $modelTrainingOptions,
 
     newLabelsetArgs: $newLabelsetArgs,
@@ -272,6 +276,7 @@ class AddModelGroupComponent(GraphQLRequest):
                                       id
                                       name
                                       taskType
+                                      classNames
                                       questionnaireId
                                       selectedModel{
                                         id
@@ -284,7 +289,9 @@ class AddModelGroupComponent(GraphQLRequest):
                                 id
                                 headComponentId
                                 tailComponentId
-
+                                filters {
+                                    classes
+                                }
                             }
 
             }
@@ -299,6 +306,7 @@ class AddModelGroupComponent(GraphQLRequest):
         name: str,
         source_column_id: int,
         after_component_id: int = None,
+        after_link_id: int = None,
         labelset_column_id: int = None,
         new_labelset_args: NewLabelsetArguments = None,
         new_questionnaire_args: NewQuestionnaireArguments = None,
@@ -328,6 +336,7 @@ class AddModelGroupComponent(GraphQLRequest):
                 "sourceColumnId": source_column_id,
                 "labelsetColumnId": labelset_column_id,
                 "afterComponentId": after_component_id,
+                "afterLinkId": after_link_id,
                 "modelTrainingOptions": model_training_options,
                 "modelType": model_type,
                 "newLabelsetArgs": self.__labelset_to_json(new_labelset_args)
@@ -416,6 +425,9 @@ class DeleteWorkflowComponent(GraphQLRequest):
                         id
                         headComponentId
                         tailComponentId
+                        filters {
+                            classes
+                        }
                     }
                 }
             }
