@@ -69,7 +69,7 @@ class Workflow(BaseType):
 
 
 class LinkedLabelStrategy(Enum):
-    BY_ROW = (0,)
+    BY_ROW = 0,
     BY_KEY = 1
 
 
