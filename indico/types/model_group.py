@@ -28,6 +28,7 @@ class ModelGroup(BaseType):
     selected_model: Model
     task_type: str
     questionnaire_id: int
+    class_names: List[str]
 
 
 class ModelTaskType(Enum):

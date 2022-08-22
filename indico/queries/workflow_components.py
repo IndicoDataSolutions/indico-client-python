@@ -52,7 +52,9 @@ class _AddWorkflowComponent(GraphQLRequest):
                                 id
                                 headComponentId
                                 tailComponentId
-
+                                filters{
+                                    classes
+                                }
 
                             }
 
@@ -286,7 +288,9 @@ class AddModelGroupComponent(GraphQLRequest):
                                 id
                                 headComponentId
                                 tailComponentId
-
+                                filters {
+                                    classes
+                                }
                             }
 
             }
@@ -420,6 +424,9 @@ class DeleteWorkflowComponent(GraphQLRequest):
                         id
                         headComponentId
                         tailComponentId
+                        filters {
+                            classes
+                        }
                     }
                 }
             }
