@@ -480,6 +480,13 @@ class CreateWorkflow(GraphQLRequest):
                         }
                 
                     }
+                  componentLinks{
+                    id
+                    headComponentId
+                    tailComponentId
+                    filters {
+                      classes
+                    }
                     
                   }
                 }
