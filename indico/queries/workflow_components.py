@@ -276,6 +276,7 @@ class AddModelGroupComponent(GraphQLRequest):
                                       id
                                       name
                                       taskType
+                                      classNames
                                       questionnaireId
                                       selectedModel{
                                         id

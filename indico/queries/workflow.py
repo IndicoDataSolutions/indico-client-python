@@ -51,6 +51,7 @@ class ListWorkflows(GraphQLRequest):
                                       name
                                       taskType
                                       questionnaireId
+                                      classNames
                                       selectedModel{
                                         id
                                       }
