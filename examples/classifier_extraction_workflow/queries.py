@@ -1,8 +1,7 @@
-from config import INDICO_CLIENT
 from indico.queries import GraphQLRequest
 
 
-def get_user_ids(dataset_id):
+def get_user_ids(dataset_id, indico_client):
     get_user_id_query = """
     query getDatasetUsers($datasetId: Int) {
         dataset(id: $datasetId) {
@@ -16,12 +15,12 @@ def get_user_ids(dataset_id):
     }
     """
     variables = {"datasetId": dataset_id}
-    resp = INDICO_CLIENT.call(GraphQLRequest(get_user_id_query, variables))
+    resp = indico_client.call(GraphQLRequest(get_user_id_query, variables))
     user_ids = [user["userId"] for user in resp["dataset"]["users"]]
     return user_ids
 
 
-def get_component_links(workflow_id):
+def get_component_links(workflow_id, indico_client):
     workflow_query = """
         query ListWorkflows($workflowIds: [Int]){
             workflows(workflowIds: $workflowIds){
@@ -39,5 +38,5 @@ def get_component_links(workflow_id):
         }            
     """
     variables = {"workflowIds": [workflow_id]}
-    resp = INDICO_CLIENT.call(GraphQLRequest(workflow_query, variables))
+    resp = indico_client.call(GraphQLRequest(workflow_query, variables))
     return resp["workflows"]["workflows"][0]["componentLinks"]
