@@ -47,7 +47,7 @@ class UploadDocument(HTTPRequest):
     Used internally for uploading documents to indico platform for later processing
 
     Args:
-        files (str): A list of local filepaths to upload.
+        files (str): A list of local filepaths to upload_file.
         streams (Dict[str, io.BufferedIOBase]): A dict of filenames to BufferedIOBase streams
             (any class that inherits BufferedIOBase is acceptable).
 
@@ -90,9 +90,9 @@ class UploadBatched(RequestChain):
     Batch uploading of files to the Indico Platform
 
     Args:
-        filepaths (str): list of filepaths to upload
+        filepaths (str): list of filepaths to upload_file
         batch_size (int): number of files to load per batch
-        request_cls (HTTPRequest): Type of upload request: UploadDocument or UploadImage
+        request_cls (HTTPRequest): Type of upload_file request: UploadDocument or UploadImage
 
     Returns:
         files: storage objects for further processing, e.g. Document extraction or dataset creation
@@ -121,7 +121,7 @@ class CreateStorageURLs(UploadDocument):
     Upload an object stored on the Indico Platform and return only the storage URL to the object
 
     Args:
-        files (str): list of filepaths to upload
+        files (str): list of filepaths to upload_file
 
     Returns:
         urls: list of storage urls to be use for further processing requests (e.g. FormExtraction)
@@ -192,14 +192,14 @@ class UploadDocumentSigned(GraphQLRequest):
         response = super().process_response(response)
         signed_url = response["requestStorageUploadUrl"]["signedUrl"]
         relative_path = response["requestStorageUploadUrl"]["relativePath"]
-        upload: dict = UploadWithSignedUrl(signed_url=signed_url, file=self.file)
+        upload_file: dict = UploadWithSignedUrl(signed_url=signed_url, file=self.file)
 
         file_meta: dict = {
-            "filename": upload.kwargs["file"],
+            "filename": upload_file.kwargs["file"],
             "filemeta": json.dumps(
                 {
                     "path": relative_path,
-                    "name": upload.kwargs["file"],
+                    "name": upload_file.kwargs["file"],
                     "uploadType": "user",
                 }
             ),
@@ -213,7 +213,7 @@ class UploadWithSignedUrl(HTTPRequest):
     Upload files with a signed url
 
     Args:
-        files (str): A list of local filepaths to upload.
+        files (str): A list of local filepaths to upload_file.
     """
 
     def __init__(
