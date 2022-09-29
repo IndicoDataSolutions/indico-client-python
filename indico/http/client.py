@@ -143,7 +143,6 @@ class HTTPClient:
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
-        print(method, path, headers, request_kwargs)
 
         with self._handle_files(request_kwargs) as new_kwargs:
             response = getattr(self.request_session, method)(

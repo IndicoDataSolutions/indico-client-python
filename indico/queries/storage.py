@@ -1,6 +1,5 @@
 import io
 import json
-from lib2to3.pgen2 import grammar
 from typing import List, Dict
 from indico.client.request import HTTPMethod, HTTPRequest, RequestChain, GraphQLRequest
 from indico.errors import IndicoRequestError, IndicoInputError
@@ -161,14 +160,15 @@ class RequestStorageDownloadUrl(GraphQLRequest):
     """
 
     def __init__(self, *, uri: str):
-        uri = uri.replace("indico-file://", "")
+        uri = "indico-file:///storage" + uri
         super().__init__(self.query, variables={"uri": uri})
 
-    def process_response(self, response):
-        return super().process_response(response)
+    def process_response(self, response: dict) -> str:
+        response = super().process_response(response)
+        return response["requestStorageDownloadUrl"]["signedUrl"]
 
 
-class RequestStorageUploadUrl(GraphQLRequest):
+class UploadDocumentSigned(GraphQLRequest):
     """
     Receive a signed url for the file being uploaded
 
@@ -178,26 +178,47 @@ class RequestStorageUploadUrl(GraphQLRequest):
         mutation {
             requestStorageUploadUrl {
                 signedUrl
+                relativePath
             }
         }
     """
 
-    def __init__(
-        self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None
-    ):
+    def __init__(self, file: str):
+        self.file = file
 
-        if (files is None and streams is None) or (
-            files is not None and streams is not None
-        ):
-            raise IndicoInputError("Must define one of files or streams, but not both.")
-
-        variables: dict
-        if files:
-            variables = {"files": files}
-        else:
-            variables = {"streams": streams}
-
-        super().__init__(self.query, variables)
+        super().__init__(self.query)
 
     def process_response(self, response):
         response = super().process_response(response)
+        signed_url = response["requestStorageUploadUrl"]["signedUrl"]
+        relative_path = response["requestStorageUploadUrl"]["relativePath"]
+        upload: dict = UploadWithSignedUrl(signed_url=signed_url, file=self.file)
+
+        file_meta: dict = {
+            "filename": upload.kwargs["file"],
+            "filemeta": json.dumps(
+                {
+                    "path": relative_path,
+                    "name": upload.kwargs["file"],
+                    "uploadType": "user",
+                }
+            ),
+        }
+
+        return file_meta
+
+
+class UploadWithSignedUrl(HTTPRequest):
+    """
+    Upload files with a signed url
+
+    Args:
+        files (str): A list of local filepaths to upload.
+    """
+
+    def __init__(
+        self,
+        signed_url: str,
+        file: str,
+    ):
+        super().__init__(HTTPMethod.PUT, path=signed_url, file=file)
