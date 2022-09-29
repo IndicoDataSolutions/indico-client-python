@@ -1,7 +1,8 @@
 import io
 import json
+from lib2to3.pgen2 import grammar
 from typing import List, Dict
-from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
+from indico.client.request import HTTPMethod, HTTPRequest, RequestChain, GraphQLRequest
 from indico.errors import IndicoRequestError, IndicoInputError
 
 
@@ -55,12 +56,18 @@ class UploadDocument(HTTPRequest):
         files: storage objects to be use for further processing requests E.G. Document extraction (implicitly called)
     """
 
-    def __init__(self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None):
+    def __init__(
+        self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None
+    ):
 
-        if (files is None and streams is None) or (files is not None and streams is not None):
+        if (files is None and streams is None) or (
+            files is not None and streams is not None
+        ):
             raise IndicoInputError("Must define one of files or streams, but not both.")
 
-        super().__init__(HTTPMethod.POST, "/storage/files/store", files=files, streams=streams)
+        super().__init__(
+            HTTPMethod.POST, "/storage/files/store", files=files, streams=streams
+        )
 
     def process_response(self, uploaded_files: List[dict]):
         files = [
@@ -133,3 +140,64 @@ class CreateStorageURLs(UploadDocument):
 
 # Alias to ensure backwards compatibility
 UploadImages = CreateStorageURLs
+
+
+class RequestStorageDownloadUrl(GraphQLRequest):
+    """
+    Retrieve a signed url with a uri
+
+    Args:
+        uri (str): the storage uri prefixed by indico-file:///storage
+    Returns:
+        url (str): signed url of storage object
+    """
+
+    query = """
+        mutation($uri: String!) {
+            requestStorageDownloadUrl(uri: $uri) {
+                signedUrl
+            }
+        }
+    """
+
+    def __init__(self, *, uri: str):
+        uri = uri.replace("indico-file://", "")
+        super().__init__(self.query, variables={"uri": uri})
+
+    def process_response(self, response):
+        return super().process_response(response)
+
+
+class RequestStorageUploadUrl(GraphQLRequest):
+    """
+    Receive a signed url for the file being uploaded
+
+    """
+
+    query = """
+        mutation {
+            requestStorageUploadUrl {
+                signedUrl
+            }
+        }
+    """
+
+    def __init__(
+        self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None
+    ):
+
+        if (files is None and streams is None) or (
+            files is not None and streams is not None
+        ):
+            raise IndicoInputError("Must define one of files or streams, but not both.")
+
+        variables: dict
+        if files:
+            variables = {"files": files}
+        else:
+            variables = {"streams": streams}
+
+        super().__init__(self.query, variables)
+
+    def process_response(self, response):
+        response = super().process_response(response)
