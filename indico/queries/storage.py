@@ -222,11 +222,11 @@ class UploadSigned(RequestChain):
         self.signed_url: str | None = None
 
     def requests(self):
-        self.result = {}
+        self.result: dict = {}
         yield GetUploadURL()
 
-        signed_url = self.previous["signed_url"]
-        relative_path = self.previous["relative_path"]
+        signed_url: str = self.previous["signed_url"]
+        relative_path: str = self.previous["relative_path"]
 
         yield UploadSignedURL(signed_url, self.file)
 
