@@ -82,9 +82,6 @@ class IndicoClient:
             for res in executor.map(self.call, requests):
                 data.append(res)
 
-        import ipdb
-
-        ipdb.set_trace()
         return data
 
     def paginate(self, request: PagedRequest):

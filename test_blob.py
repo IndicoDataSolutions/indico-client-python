@@ -1,6 +1,6 @@
 from indico.client import IndicoClient
 from indico.config import IndicoConfig
-from indico.queries.storage import RequestStorageDownloadUrl, UploadSigned
+from indico.queries.storage import GetDownloadUrl, UploadSigned
 
 host = "blob-us-west-2.us-west-2.indico-dev.indico.io"
 token_path = "/home/ubuntu/Downloads/indico_api_token_blob.txt"
@@ -10,16 +10,17 @@ client = IndicoClient(config=config)
 
 # jerry_file = "/home/jerry/indico/sub-workflows/834_2_3.pdf"
 jerry_file = "/home/jerry/indico/sub-workflows/first_page.txt"
+jacob_file = "/home/ubuntu/test_blob/test2.txt"
 files = [
-    "/home/jerry/indico/sub-workflows/834_2_3.pdf",
-    "/home/ubuntu/test-blob/test2.txt",
+    "/home/ubuntu/test_blob/test1.txt",
+    "/home/ubuntu/test_blob/test2.txt",
 ]
-uri = "/uploads/4/c74bf4bc-cd07-4902-a945-600d99a3c07b"
+uri = "/uploads/4/06ae9e83-90d0-4fce-9692-78076144443c"
 
 
-res = client.call(UploadSigned(jerry_file))
+# res = client.call(UploadSigned(jacob_file))
 
 
 # res = client.call_concurrent([UploadSigned(f) for f in files])
-# res = client.call(RequestStorageDownloadUrl(uri=uri))
+res = client.call(GetDownloadUrl(uri=uri))
 print(f"{res}")

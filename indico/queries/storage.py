@@ -143,7 +143,7 @@ class CreateStorageURLs(UploadDocument):
 UploadImages = CreateStorageURLs
 
 
-class RequestStorageDownloadUrl(GraphQLRequest):
+class GetDownloadUrl(GraphQLRequest):
     """
     Retrieve a signed url with a uri
 
@@ -197,24 +197,6 @@ class GetUploadURL(GraphQLRequest):
         }
 
 
-class UploadSigned(RequestChain):
-    def __init__(self, file: str):
-        self.file = file
-        self.signed_url: str | None = None
-
-    def requests(self):
-        yield GetUploadURL()
-
-        signed_url = self.previous["signed_url"]
-
-        yield UploadSignedURL(signed_url, self.file)
-
-        # now self.previous should have the signed URL
-        # You can now return filemeta
-        # return the relative path and then test that we can download it by fetching a download url
-        self.result = signed_url
-
-
 class UploadSignedURL(HTTPRequest):
     """
     Upload files with a signed url
@@ -229,7 +211,29 @@ class UploadSignedURL(HTTPRequest):
         file: str,
     ):
         with open(file, "rb") as f:
-            contents = f.read()
             super().__init__(
-                HTTPMethod.PUT, path=signed_url, data=contents, indico_url=False
+                HTTPMethod.PUT, path=signed_url, data=f.read(), indico_url=False
             )
+
+
+class UploadSigned(RequestChain):
+    def __init__(self, file: str):
+        self.file = file
+        self.signed_url: str | None = None
+
+    def requests(self):
+        self.result = {}
+        yield GetUploadURL()
+
+        signed_url = self.previous["signed_url"]
+        relative_path = self.previous["relative_path"]
+
+        yield UploadSignedURL(signed_url, self.file)
+
+        # now self.previous should have the signed URL
+        # You can now return filemeta
+        # return the relative path and then test that we can download it by fetching a download url
+        self.result[self.file] = {
+            "signed_url": signed_url,
+            "relative_path": relative_path,
+        }
