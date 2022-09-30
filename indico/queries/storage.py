@@ -1,10 +1,11 @@
 import concurrent.futures
 import io
 import json
-from typing import List, Dict
-from indico.client.request import HTTPMethod, HTTPRequest, RequestChain, GraphQLRequest
-from indico.errors import IndicoRequestError, IndicoInputError
+from typing import Dict, List
+from urllib.request import Request
 
+from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
+from indico.errors import IndicoInputError, IndicoRequestError
 
 URL_PREFIX = "indico-file:///storage"
 
@@ -169,7 +170,7 @@ class RequestStorageDownloadUrl(GraphQLRequest):
         return response["requestStorageDownloadUrl"]["signedUrl"]
 
 
-class UploadSignedSingle(GraphQLRequest):
+class GetUploadURL(GraphQLRequest):
     """
     Receive a signed url for the file being uploaded
 
@@ -184,32 +185,47 @@ class UploadSignedSingle(GraphQLRequest):
         }
     """
 
-    def __init__(self, file: str):
-        self.file = file
-
+    def __init__(self):
         super().__init__(self.query)
 
     def process_response(self, response):
         response = super().process_response(response)
-        signed_url = response["requestStorageUploadUrl"]["signedUrl"]
-        relative_path = response["requestStorageUploadUrl"]["relativePath"]
-        upload_file: dict = _UploadWithSignedUrl(signed_url=signed_url, file=self.file)
+        # relative_path = response["requestStorageUploadUrl"]["relativePath"]
+        # upload_file: dict = _UploadWithSignedUrl(signed_url=signed_url, file=self.file)
 
-        file_meta: dict = {
-            "filename": upload_file.kwargs["file"],
-            "filemeta": json.dumps(
-                {
-                    "path": relative_path,
-                    "name": upload_file.kwargs["file"],
-                    "uploadType": "user",
-                }
-            ),
+        # file_meta: dict = {
+        #     "filename": upload_file.kwargs["file"],
+        #     "filemeta": json.dumps(
+        #         {
+        #             "path": relative_path,
+        #             "name": upload_file.kwargs["file"],
+        #             "uploadType": "user",
+        #         }
+        #     ),
+        # }
+
+        return {
+            "signed_url": response["requestStorageUploadUrl"]["signedUrl"],
+            "relative_path": response["requestStorageUploadUrl"]["relativePath"],
         }
 
-        return file_meta
+
+class UploadSigned(RequestChain):
+    def __init__(self, file: str):
+        self.file = file
+        self.signed_url: str | None = None
+
+    def requests(self):
+        yield GetUploadURL()
+
+        yield UploadSignedURL(self.previous["signed_url"], self.file)
+
+        # now self.previous should have the signed URL
+        # You can now return filemeta
+        self.previous
 
 
-class _UploadWithSignedUrl(HTTPRequest):
+class UploadSignedURL(HTTPRequest):
     """
     Upload files with a signed url
 
@@ -222,28 +238,28 @@ class _UploadWithSignedUrl(HTTPRequest):
         signed_url: str,
         file: str,
     ):
-        super().__init__(HTTPMethod.PUT, path=signed_url, file=file)
+        super().__init__(HTTPMethod.POST, path=signed_url, files=[file])
 
 
-class UploadDocuments(UploadSignedSingle):
-    """
-    Upload multiple files at a time and UploadSignedSingle on a threadpoool for each file
+# class UploadDocuments(UploadSignedSingle):
+#     """
+#     Upload multiple files at a time and UploadSignedSingle on a threadpoool for each file
 
-    Args:
-        files (list[str]): A list of files to upload
-    """
+#     Args:
+#         files (list[str]): A list of files to upload
+#     """
 
-    def __init__(self, files: list[str]):
-        data: list[dict] = []
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            for res in executor.map(super().__init__, files):
-                data.append(res)
-            print(data)
-        #     for file in files:
-        #         data.append(executor.submit(super().__init__, file))
-        #     for future in data:
-        #         try:
-        #             future.result()
-        #         except Exception as exc:
-        #             print(f"{future} generated an exception: {exc}")
-        # print(data)
+#     def __init__(self, files: list[str]):
+#         data: list[dict] = []
+#         with concurrent.futures.ThreadPoolExecutor() as executor:
+#             for res in executor.map(super().__init__, files):
+#                 data.append(res)
+#             print(data)
+#     for file in files:
+#         data.append(executor.submit(super().__init__, file))
+#     for future in data:
+#         try:
+#             future.result()
+#         except Exception as exc:
+#             print(f"{future} generated an exception: {exc}")
+# print(data)

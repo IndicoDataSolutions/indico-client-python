@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 import concurrent.futures
 from typing import Union
-import urllib3
 
+from indico.client.request import (
+    GraphQLRequest,
+    HTTPRequest,
+    PagedRequest,
+    RequestChain,
+)
 from indico.config import IndicoConfig
 from indico.http.client import HTTPClient
-from indico.client.request import (
-    HTTPRequest,
-    RequestChain,
-    PagedRequest,
-    GraphQLRequest,
-)
+
+import urllib3
 
 
 class IndicoClient:
@@ -75,16 +76,15 @@ class IndicoClient:
         elif request and isinstance(request, HTTPRequest):
             return self._http.execute_request(request)
 
-    def call_concurrent(
-        self, request: Union[HTTPRequest, RequestChain], files: list[str]
-    ):
+    def call_concurrent(self, requests: list[HTTPRequest]):
         data: list[dict] = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-            for res in executor.map(request, files):
+            for res in executor.map(self.call, requests):
                 data.append(res)
-        for d in data:
-            self._http.execute_request(d)
-            print(d.__dict__)
+
+        import ipdb
+
+        ipdb.set_trace()
         return data
 
     def paginate(self, request: PagedRequest):
