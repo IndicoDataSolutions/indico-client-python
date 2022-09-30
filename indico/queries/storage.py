@@ -202,7 +202,8 @@ class UploadSignedURL(HTTPRequest):
     Upload files with a signed url
 
     Args:
-        files (str): A list of local filepaths to upload_file.
+        file (str): a file to upload
+        signed_url (str): the url to upload a file
     """
 
     def __init__(
@@ -217,6 +218,13 @@ class UploadSignedURL(HTTPRequest):
 
 
 class UploadSigned(RequestChain):
+    """
+    Two step process to get a signed url to upload a file to
+
+    Args:
+        file (str): file to upload
+    """
+
     def __init__(self, file: str):
         self.file = file
 

@@ -1,6 +1,5 @@
 import http.cookiejar
 import logging
-from collections import defaultdict
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
@@ -16,7 +15,6 @@ from indico.errors import (
 from indico.http.serialization import deserialize
 
 import requests
-from requests import Response
 
 logger = logging.getLogger(__file__)
 
@@ -178,8 +176,12 @@ class HTTPClient:
 
         # Successful signed upload returns no content, so early exit
         # before we crash trying to deserialize anything
-        if response.status_code == 200 and response.headers.get("Server") == "AmazonS3":
-            return
+
+        if (
+            response.status_code == 200
+            and not response.headers.get("Content-Type") == "application/json"
+        ):
+            return response.text
 
         content = deserialize(response, force_json=json)
 

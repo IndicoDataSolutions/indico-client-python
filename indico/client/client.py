@@ -13,6 +13,8 @@ from indico.http.client import HTTPClient
 
 import urllib3
 
+THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+
 
 class IndicoClient:
     """
@@ -90,7 +92,7 @@ class IndicoClient:
             IndicoRequestError: With errors in processing the request
         """
         data: list[dict] = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        with THREAD_POOL as executor:
             for res in executor.map(self.call, requests):
                 data.append(res)
 
