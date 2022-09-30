@@ -1,4 +1,5 @@
 import http.cookiejar
+import io
 import logging
 from contextlib import contextmanager
 from copy import deepcopy
@@ -93,7 +94,15 @@ class HTTPClient:
             if req_kwargs["streams"] is not None:
                 streams = req_kwargs["streams"].copy()
             del req_kwargs["streams"]
+        # data could be a buffered reader for PUT
+        data: io.BufferedReader = None
+        if isinstance(req_kwargs.get("data"), io.BufferedReader):
+            data = req_kwargs.pop("data")
 
+        new_kwargs = deepcopy(req_kwargs)
+
+        if data is not None:
+            new_kwargs["data"] = data
         new_kwargs = deepcopy(req_kwargs)
 
         files = []

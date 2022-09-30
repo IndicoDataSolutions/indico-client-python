@@ -211,10 +211,10 @@ class UploadSignedURL(HTTPRequest):
         signed_url: str,
         file: str,
     ):
-        with open(file, "rb") as f:
-            super().__init__(
-                HTTPMethod.PUT, path=signed_url, data=f.read(), indico_url=False
-            )
+
+        super().__init__(
+            HTTPMethod.PUT, path=signed_url, data=open(file, "rb"), indico_url=False
+        )
 
 
 class UploadSigned(RequestChain):
