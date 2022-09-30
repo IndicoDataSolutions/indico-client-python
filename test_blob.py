@@ -4,7 +4,7 @@ from indico.queries.storage import RequestStorageDownloadUrl, UploadSigned
 
 host = "blob-us-west-2.us-west-2.indico-dev.indico.io"
 token_path = "/home/ubuntu/Downloads/indico_api_token_blob.txt"
-token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MzAsInVzZXJfaWQiOjQsInVzZXJfZW1haWwiOiJqYWNvYi5hbmRlcnNvbkBpbmRpY28uaW8iLCJpYXQiOjE2NjQ0NzI3NDQsImF1ZCI6WyJpbmRpY286cmVmcmVzaF90b2tlbiJdfQ.6ObsnGKajiB9k1s4BIYXXQZvxoNvNWokh4h4rf1N_88"
+token = ""
 config = IndicoConfig(host=host, api_token=token)
 client = IndicoClient(config=config)
 
