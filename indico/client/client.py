@@ -80,11 +80,9 @@ class IndicoClient:
     ):
         data: list[dict] = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-            for res in executor.map(request, files):
+            for res in executor.map(self.call(request), files):
                 data.append(res)
-        for d in data:
-            self._http.execute_request(d)
-            print(d.__dict__)
+
         return data
 
     def paginate(self, request: PagedRequest):
