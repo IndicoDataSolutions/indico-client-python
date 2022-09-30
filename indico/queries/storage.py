@@ -1,3 +1,4 @@
+import concurrent.futures
 import io
 import json
 from typing import List, Dict
@@ -168,7 +169,7 @@ class RequestStorageDownloadUrl(GraphQLRequest):
         return response["requestStorageDownloadUrl"]["signedUrl"]
 
 
-class UploadDocumentSigned(GraphQLRequest):
+class UploadSignedSingle(GraphQLRequest):
     """
     Receive a signed url for the file being uploaded
 
@@ -192,7 +193,7 @@ class UploadDocumentSigned(GraphQLRequest):
         response = super().process_response(response)
         signed_url = response["requestStorageUploadUrl"]["signedUrl"]
         relative_path = response["requestStorageUploadUrl"]["relativePath"]
-        upload_file: dict = UploadWithSignedUrl(signed_url=signed_url, file=self.file)
+        upload_file: dict = _UploadWithSignedUrl(signed_url=signed_url, file=self.file)
 
         file_meta: dict = {
             "filename": upload_file.kwargs["file"],
@@ -208,7 +209,7 @@ class UploadDocumentSigned(GraphQLRequest):
         return file_meta
 
 
-class UploadWithSignedUrl(HTTPRequest):
+class _UploadWithSignedUrl(HTTPRequest):
     """
     Upload files with a signed url
 
@@ -222,3 +223,27 @@ class UploadWithSignedUrl(HTTPRequest):
         file: str,
     ):
         super().__init__(HTTPMethod.PUT, path=signed_url, file=file)
+
+
+class UploadDocuments(UploadSignedSingle):
+    """
+    Upload multiple files at a time and UploadSignedSingle on a threadpoool for each file
+
+    Args:
+        files (list[str]): A list of files to upload
+    """
+
+    def __init__(self, files: list[str]):
+        data: list[dict] = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            for res in executor.map(super().__init__, files):
+                data.append(res)
+            print(data)
+        #     for file in files:
+        #         data.append(executor.submit(super().__init__, file))
+        #     for future in data:
+        #         try:
+        #             future.result()
+        #         except Exception as exc:
+        #             print(f"{future} generated an exception: {exc}")
+        # print(data)
