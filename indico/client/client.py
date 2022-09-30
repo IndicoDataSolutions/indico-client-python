@@ -76,7 +76,19 @@ class IndicoClient:
         elif request and isinstance(request, HTTPRequest):
             return self._http.execute_request(request)
 
-    def call_concurrent(self, requests: list[HTTPRequest]):
+    def call_concurrent(self, requests: list[HTTPRequest]) -> list[dict]:
+        """
+        Make batched calls to Indico IPA Platform with thread pool.
+
+        Args:
+            request (GraphQLRequest or RequestChain): GraphQL request to send to the Indico Platform
+
+        Returns:
+            Response appropriate to the class of the provided request parameter. Often JSON but not always.
+
+        Raises:
+            IndicoRequestError: With errors in processing the request
+        """
         data: list[dict] = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             for res in executor.map(self.call, requests):

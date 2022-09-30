@@ -188,7 +188,7 @@ class GetUploadURL(GraphQLRequest):
     def __init__(self):
         super().__init__(self.query)
 
-    def process_response(self, response):
+    def process_response(self, response: dict) -> dict:
         response = super().process_response(response)
 
         return {
@@ -219,9 +219,8 @@ class UploadSignedURL(HTTPRequest):
 class UploadSigned(RequestChain):
     def __init__(self, file: str):
         self.file = file
-        self.signed_url: str | None = None
 
-    def requests(self):
+    def requests(self) -> list[dict]:
         self.result: dict = {}
         yield GetUploadURL()
 
@@ -230,9 +229,6 @@ class UploadSigned(RequestChain):
 
         yield UploadSignedURL(signed_url, self.file)
 
-        # now self.previous should have the signed URL
-        # You can now return filemeta
-        # return the relative path and then test that we can download it by fetching a download url
         self.result[self.file] = {
             "signed_url": signed_url,
             "relative_path": relative_path,
