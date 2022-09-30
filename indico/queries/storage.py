@@ -235,7 +235,7 @@ class UploadDocuments(UploadSignedSingle):
 
     def __init__(self, files: list[str]):
         data: list[dict] = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             for res in executor.map(super().__init__, files):
                 data.append(res)
             print(data)

@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-
+import concurrent.futures
 from typing import Union
 import urllib3
 
 from indico.config import IndicoConfig
 from indico.http.client import HTTPClient
-from indico.client.request import HTTPRequest, RequestChain, PagedRequest, GraphQLRequest
+from indico.client.request import (
+    HTTPRequest,
+    RequestChain,
+    PagedRequest,
+    GraphQLRequest,
+)
 
 
 class IndicoClient:
@@ -47,8 +52,10 @@ class IndicoClient:
         return response
 
     def get_ipa_version(self):
-        return self._http.execute_request(GraphQLRequest("query getIPAVersion {\n  ipaVersion\n}\n"))['ipaVersion']
-    
+        return self._http.execute_request(
+            GraphQLRequest("query getIPAVersion {\n  ipaVersion\n}\n")
+        )["ipaVersion"]
+
     def call(self, request: Union[HTTPRequest, RequestChain]):
         """
         Make a call to the Indico IPA Platform
@@ -67,6 +74,18 @@ class IndicoClient:
             return self._handle_request_chain(request)
         elif request and isinstance(request, HTTPRequest):
             return self._http.execute_request(request)
+
+    def call_concurrent(
+        self, request: Union[HTTPRequest, RequestChain], files: list[str]
+    ):
+        data: list[dict] = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            for res in executor.map(request, files):
+                data.append(res)
+        for d in data:
+            self._http.execute_request(d)
+            print(d.__dict__)
+        return data
 
     def paginate(self, request: PagedRequest):
         """
