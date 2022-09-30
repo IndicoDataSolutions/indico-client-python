@@ -6,15 +6,16 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Union
 
-import requests
 from indico.client.request import HTTPRequest
 from indico.config import IndicoConfig
 from indico.errors import (
     IndicoAuthenticationFailed,
-    IndicoRequestError,
     IndicoHibernationError,
+    IndicoRequestError,
 )
 from indico.http.serialization import deserialize
+
+import requests
 from requests import Response
 
 logger = logging.getLogger(__file__)
@@ -137,6 +138,7 @@ class HTTPClient:
         method: str,
         path: str,
         headers: dict = None,
+        indico_url=True,
         _refreshed=False,
         **request_kwargs,
     ):
@@ -146,7 +148,7 @@ class HTTPClient:
 
         with self._handle_files(request_kwargs) as new_kwargs:
             response = getattr(self.request_session, method)(
-                f"{self.base_url}{path}",
+                (f"{self.base_url}{path}" if indico_url else path),
                 headers=headers,
                 stream=True,
                 verify=self.config.verify_ssl,
@@ -173,6 +175,11 @@ class HTTPClient:
 
         if response.status_code >= 500:
             raise IndicoRequestError(code=response.status_code)
+
+        # Successful signed upload returns no content, so early exit
+        # before we crash trying to deserialize anything
+        if response.status_code == 200 and response.headers.get("Server") == "AmazonS3":
+            return
 
         content = deserialize(response, force_json=json)
 

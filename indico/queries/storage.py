@@ -190,19 +190,6 @@ class GetUploadURL(GraphQLRequest):
 
     def process_response(self, response):
         response = super().process_response(response)
-        # relative_path = response["requestStorageUploadUrl"]["relativePath"]
-        # upload_file: dict = _UploadWithSignedUrl(signed_url=signed_url, file=self.file)
-
-        # file_meta: dict = {
-        #     "filename": upload_file.kwargs["file"],
-        #     "filemeta": json.dumps(
-        #         {
-        #             "path": relative_path,
-        #             "name": upload_file.kwargs["file"],
-        #             "uploadType": "user",
-        #         }
-        #     ),
-        # }
 
         return {
             "signed_url": response["requestStorageUploadUrl"]["signedUrl"],
@@ -218,11 +205,14 @@ class UploadSigned(RequestChain):
     def requests(self):
         yield GetUploadURL()
 
-        yield UploadSignedURL(self.previous["signed_url"], self.file)
+        signed_url = self.previous["signed_url"]
+
+        yield UploadSignedURL(signed_url, self.file)
 
         # now self.previous should have the signed URL
         # You can now return filemeta
-        self.previous
+        # return the relative path and then test that we can download it by fetching a download url
+        self.result = signed_url
 
 
 class UploadSignedURL(HTTPRequest):
@@ -238,28 +228,8 @@ class UploadSignedURL(HTTPRequest):
         signed_url: str,
         file: str,
     ):
-        super().__init__(HTTPMethod.POST, path=signed_url, files=[file])
-
-
-# class UploadDocuments(UploadSignedSingle):
-#     """
-#     Upload multiple files at a time and UploadSignedSingle on a threadpoool for each file
-
-#     Args:
-#         files (list[str]): A list of files to upload
-#     """
-
-#     def __init__(self, files: list[str]):
-#         data: list[dict] = []
-#         with concurrent.futures.ThreadPoolExecutor() as executor:
-#             for res in executor.map(super().__init__, files):
-#                 data.append(res)
-#             print(data)
-#     for file in files:
-#         data.append(executor.submit(super().__init__, file))
-#     for future in data:
-#         try:
-#             future.result()
-#         except Exception as exc:
-#             print(f"{future} generated an exception: {exc}")
-# print(data)
+        with open(file, "rb") as f:
+            contents = f.read()
+            super().__init__(
+                HTTPMethod.PUT, path=signed_url, data=contents, indico_url=False
+            )
