@@ -2,6 +2,8 @@
 import concurrent.futures
 from typing import Union
 
+import urllib3
+
 from indico.client.request import (
     GraphQLRequest,
     HTTPRequest,
@@ -11,9 +13,9 @@ from indico.client.request import (
 from indico.config import IndicoConfig
 from indico.http.client import HTTPClient
 
-import urllib3
-
-THREAD_POOL = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+THREAD_POOL: concurrent.futures.ThreadPoolExecutor = (
+    concurrent.futures.ThreadPoolExecutor(max_workers=8)
+)
 
 
 class IndicoClient:
