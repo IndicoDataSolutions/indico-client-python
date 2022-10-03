@@ -3,9 +3,9 @@
 import json
 from typing import List
 
-from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod, HTTPRequest
+from indico.client.request import RequestChain, GraphQLRequest
 from indico.types.jobs import Job
-from indico.queries.storage import UploadDocument, UploadBatched
+from indico.queries.storage import UploadDocument, UploadBatched, UploadSigned
 
 
 class _DocumentExtraction(GraphQLRequest):
@@ -91,4 +91,53 @@ class DocumentExtraction(RequestChain):
             )
         else:
             yield UploadDocument(files=self.files)
+        yield _DocumentExtraction(files=self.previous, json_config=self.json_config)
+
+
+class DocumentExtractionSigned(RequestChain):
+    """
+    Extract raw text from PDF or TIF files.
+
+    DocumentExtraction performs Optical Character Recognition (OCR) on PDF or TIF files to
+    extract raw text for model training and prediction.
+
+    Args:
+        file= (str): Pathname of file to OCR
+        json_config (dict or JSON str): Configuration settings for OCR. See Notes below.
+    Returns:
+        Job object
+
+    Raises:
+
+    Notes:
+        DocumentExtraction is extremely configurable. Four preset configurations are provided:
+
+        simple - Provides a simple and fast response for native PDFs (3-5x faster). Will NOT work with scanned PDFs.
+
+        legacy - Provided to mimic the behavior of Indico's older pdf_extraction function. Use this if your model was trained with data from the older pdf_extraction.
+
+        detailed - Provides detailed bounding box information on tokens and characters. Returns data in a nested format at the document level with all metadata included.
+
+        ondocument - Provides detailed information at the page-level in an unnested format.
+
+        standard - Provides page text and block text/position in a nested format.
+
+        For more information, please reference the Indico knowledgebase article on OCR:
+        https://docs.indicodata.ai/articles/documentation-publication/ocr
+
+    Example:
+
+        Call DocumentExtraction and wait for the result::
+
+            job = client.call_concurrent(DocumentExtraction(file=f, json_config='{"preset_config": "legacy"}') for f in src_path)
+            job = client.call(JobStatus(id=job[0].id, wait=True))
+            extracted_data = client.call(RetrieveStorageObject(job.result))
+    """
+
+    def __init__(self, file: str, json_config: dict = None):
+        self.file = file
+        self.json_config = json_config
+
+    def requests(self):
+        yield UploadSigned(file=self.file)
         yield _DocumentExtraction(files=self.previous, json_config=self.json_config)

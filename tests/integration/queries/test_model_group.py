@@ -30,8 +30,8 @@ from ..data.datasets import (
     cats_dogs_modelgroup,
     org_annotate_model_group,
     org_annotate_dataset,
-cats_dogs_image_workflow,
-airlines_workflow
+    cats_dogs_image_workflow,
+    airlines_workflow,
 )
 from indico.errors import IndicoNotFound
 
@@ -41,7 +41,7 @@ def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workfl
 
     name = f"TestCreateModelGroup-{int(time.time())}"
     after_component = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION")
-    mg: ModelGroup  = client.call(
+    mg: ModelGroup = client.call(
         CreateModelGroup(
             name=name,
             workflow_id=airlines_workflow.id,
@@ -51,8 +51,6 @@ def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workfl
             labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
         )
     )
-
-
 
     assert mg.name == name
 
@@ -64,7 +62,9 @@ def test_get_missing_model_group(indico):
         client.call(GetModelGroup(id=500000))
 
 
-def test_object_detection(cats_dogs_image_dataset: Dataset, cats_dogs_image_workflow: Workflow):
+def test_object_detection(
+    cats_dogs_image_dataset: Dataset, cats_dogs_image_workflow: Workflow
+):
     client = IndicoClient()
     name = f"TestCreateObjectDetectionMg-{int(time.time())}"
 
@@ -81,18 +81,22 @@ def test_object_detection(cats_dogs_image_dataset: Dataset, cats_dogs_image_work
         CreateModelGroup(
             name=name,
             workflow_id=cats_dogs_image_workflow.id,
-            after_component_id=cats_dogs_image_workflow.component_by_type("INPUT_IMAGE").id,
+            after_component_id=cats_dogs_image_workflow.component_by_type(
+                "INPUT_IMAGE"
+            ).id,
             dataset_id=cats_dogs_image_dataset.id,
             source_column_id=cats_dogs_image_dataset.datacolumn_by_name("urls").id,
             labelset_id=cats_dogs_image_dataset.labelset_by_name("label").id,
-            model_training_options=model_training_options
+            model_training_options=model_training_options,
         )
     )
 
     assert mg.name == name
 
 
-def test_create_model_group_with_wait(indico, airlines_dataset: Dataset, airlines_workflow: Workflow):
+def test_create_model_group_with_wait(
+    indico, airlines_dataset: Dataset, airlines_workflow: Workflow
+):
     client = IndicoClient()
 
     name = f"TestCreateModelGroup-{int(time.time())}"
@@ -104,8 +108,8 @@ def test_create_model_group_with_wait(indico, airlines_dataset: Dataset, airline
             source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
             labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
             wait=True,
-            workflow_id = airlines_workflow.id,
-            after_component_id = after_component
+            workflow_id=airlines_workflow.id,
+            after_component_id=after_component,
         )
     )
 

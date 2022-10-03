@@ -2,7 +2,7 @@ from typing import List
 from pathlib import Path
 
 from indico.client.request import RequestChain, GraphQLRequest
-from indico.queries.storage import UploadBatched, UploadDocument
+from indico.queries.storage import UploadBatched, UploadDocument, UploadSigned
 from indico.queries.jobs import Job
 
 
@@ -56,4 +56,23 @@ class FormPreprocessing(RequestChain):
             )
         else:
             yield UploadDocument(files=self.files)
+        yield _FormPreprocessing(files=self.previous)
+
+
+class FormPreprocessingSigned(RequestChain):
+    """
+    Attempt to auto-detect form fields and labels
+
+    Args:
+        file (str): filepath to upload
+
+    Returns:
+        suggested_fields: list of dictionarys (1 per PDF) containing structured field data
+    """
+
+    def __init__(self, file: str):
+        self.file = file
+
+    def requests(self):
+        yield UploadSigned(file=self.file)
         yield _FormPreprocessing(files=self.previous)
