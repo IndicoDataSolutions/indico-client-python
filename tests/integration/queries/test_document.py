@@ -155,7 +155,6 @@ def test_upload_duplicate_documents(indico):
     assert [f["filename"] for f in uploaded_files] == file_names
 
 
-@pytest.mark.skip(reason="skip until merge blob api to dev")
 def test_blob_upload_document_single(indico):
     file_name = "mock.pdf"
     client = IndicoClient()
@@ -168,7 +167,6 @@ def test_blob_upload_document_single(indico):
     assert uploaded_file["filename"] == file_name
 
 
-@pytest.mark.skip(reason="skip until merge blob api to dev")
 def test_blob_upload_document_mulitple(indico):
     file_names = ["mock.pdf", "mock_2.pdf", "mock_3.pdf"]
     client = IndicoClient()
@@ -184,7 +182,6 @@ def test_blob_upload_document_mulitple(indico):
     assert [f["filename"] for f in uploaded_files] == file_names
 
 
-@pytest.mark.skip(reason="skip until merge blob api to dev")
 def test_document_extraction_signed(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
