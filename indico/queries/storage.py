@@ -188,7 +188,7 @@ class GetUploadURL(GraphQLRequest):
     def __init__(self):
         super().__init__(self.query)
 
-    def process_response(self, response: dict) -> dict:
+    def process_response(self, response: dict) -> dict[str, str]:
         response = super().process_response(response)
 
         return {
@@ -228,7 +228,7 @@ class UploadSigned(RequestChain):
     def __init__(self, file: str):
         self.file = file
 
-    def requests(self) -> list[dict]:
+    def requests(self) -> list[dict[str, dict]]:
         self.result: dict = {}
         yield GetUploadURL()
 

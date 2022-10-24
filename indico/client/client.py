@@ -82,16 +82,20 @@ class IndicoClient:
 
     def call_concurrent(self, requests: list[HTTPRequest]) -> list[dict]:
         """
-        Make batched calls to Indico IPA Platform with thread pool.
+            Make batched calls to Indico IPA Platform with thread pool.
 
-        Args:
-            request (GraphQLRequest or RequestChain): GraphQL request to send to the Indico Platform
+            Args:
+                request (GraphQLRequest or RequestChain): GraphQL request to send to the Indico Platform
 
-        Returns:
-            Response appropriate to the class of the provided request parameter. Often JSON but not always.
+            Returns:
+                Response appropriate to the class of the provided request parameter. Often JSON but not always.
 
-        Raises:
-            IndicoRequestError: With errors in processing the request
+            Raises:
+                IndicoRequestError: With errors in processing the request
+
+            Example: uploaded_files = client.call_concurrent(
+            [UploadSigned(f) for f in dataset_filepaths]
+        )
         """
         data: list[dict] = []
         with THREAD_POOL as executor:
