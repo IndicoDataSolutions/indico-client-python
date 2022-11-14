@@ -2,12 +2,13 @@ import concurrent.futures
 import io
 import json
 from typing import Dict, List
-from urllib.request import Request
 
 from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
 
-URL_PREFIX = "indico-file:///storage"
+URL_SCHEME_BLOB = "indico-blob"
+URL_SCHEME_LEGACY = "indico-file"
+URL_PREFIX = f"{URL_SCHEME_BLOB}:///storage"
 
 
 class RetrieveStorageObject(HTTPRequest):
@@ -38,7 +39,11 @@ class RetrieveStorageObject(HTTPRequest):
         else:
             url = storage_object
 
-        url = url.replace("indico-file://", "")
+        if url.startswith(URL_SCHEME_BLOB):
+            url = url.replace(f"{URL_SCHEME_BLOB}://", "")
+        else:
+            url = url.replace(f"{URL_SCHEME_LEGACY}://", "")
+
         super().__init__(method=HTTPMethod.GET, path=url)
 
 
