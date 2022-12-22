@@ -10,3 +10,4 @@ from .export import *
 from .workflow_components import *
 from .example import *
 from .questionnaire import *
+from .integration import *

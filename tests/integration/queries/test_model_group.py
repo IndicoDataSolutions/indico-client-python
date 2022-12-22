@@ -52,8 +52,6 @@ def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workfl
         )
     )
 
-
-
     assert mg.name == name
 
 
