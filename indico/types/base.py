@@ -51,9 +51,9 @@ class BaseType:
                     v = json.loads(v)
 
                 if attr_type == datetime:
-                    if isinstance(v, float):
+                    try:
                         v = datetime.fromtimestamp(float(v))
-                    else:
+                    except ValueError:
                         v = datetime.fromisoformat(v)
 
                 subtype = list_subtype(attr_type)
