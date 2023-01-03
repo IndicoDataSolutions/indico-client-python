@@ -2,10 +2,10 @@ import os
 import pytest
 import time
 from pathlib import Path
-from indico.client import IndicoClient
+from indico.client import IndicoClient, GraphQLRequest
 from indico.queries import CreateDataset, CreateModelGroup, CreateWorkflow, AddModelGroupComponent, \
-    GetModelGroupSelectedModelStatus, GetModelGroup
-from indico.types import ModelGroup, Dataset, Workflow
+    GetModelGroupSelectedModelStatus, GetModelGroup, AddExchangeIntegration, GetWorkflow
+from indico.types import ModelGroup, Dataset, Workflow, Integration
 
 PUBLIC_URL = "https://github.com/IndicoDataSolutions/indico-client-python/raw/master/tests/integration/data/"
 
@@ -143,8 +143,28 @@ def org_annotate_dataset(indico):
 def org_annotate_workflow(indico, org_annotate_dataset: Dataset):
     client = IndicoClient()
     workflowreq = CreateWorkflow(dataset_id=org_annotate_dataset.id, name=f"OrgAnnotate-test-{int(time.time())}")
-    response = client.call(workflowreq)
+    wf = client.call(workflowreq)
 
+    # TODO: Replace this with AddComponent once it supports outputs
+    # currently on dev, json output component is blueprint 16
+    blueprint_id=16
+    add_output = """
+        mutation addWorkflowNode($afterComponentId: Int, $blueprintId: Int, $component: JSONString!, $workflowId: Int!) {
+            addWorkflowComponent(afterComponentId: $afterComponentId, blueprintId: $blueprintId, component: $component, workflowId: $workflowId) {
+                workflow {
+                    id
+                }
+            }
+        }
+
+        """
+    client.call(GraphQLRequest(query=add_output, variables={
+        "afterComponentId": wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+        "blueprintId": blueprint_id,
+        "component": "{\"component_type\":\"default_output\",\"config\":{}}",
+        "workflowId": wf.id
+    }))
+    response = client.call(GetWorkflow(workflow_id=wf.id))
     return response
 
 
@@ -157,7 +177,7 @@ def org_annotate_model_group(indico, org_annotate_dataset: Dataset, org_annotate
         name=name,
         dataset_id=org_annotate_dataset.id,
         after_component_id=after_component_id,
-        source_column_id=org_annotate_dataset.datacolumn_by_name("New Healines w/Company Names").id,
+        source_column_id=org_annotate_dataset.datacolumn_by_name("News Headlines w/Company Names").id,
         labelset_column_id=org_annotate_dataset.labelset_by_name("question_825").id,
         workflow_id=org_annotate_workflow.id
     )
@@ -168,3 +188,27 @@ def org_annotate_model_group(indico, org_annotate_dataset: Dataset, org_annotate
     mg = client.call(GetModelGroup(id=component.model_group.id, wait=True))
 
     return mg
+
+@pytest.fixture(scope="module")
+def org_annotate_exchange_integration(org_annotate_workflow: Workflow) -> Integration:
+    client = IndicoClient()
+    creds = {
+        "clientId": os.getenv("EXCH_CLIENT_ID"),
+        "clientSecret": os.getenv("EXCH_CLIENT_SECRET"),
+        "tenantId": os.getenv("EXCH_TENANT_ID")
+    }
+
+    config = {
+        "userId": os.getenv("EXCH_USER_ID"),
+        "folderId": "mailFolders('inbox')"
+    }
+
+    integ: Integration = client.call(
+        AddExchangeIntegration(
+            workflow_id=org_annotate_workflow.id,
+            config=config,
+            credentials=creds
+        )
+    )
+
+    return integ
