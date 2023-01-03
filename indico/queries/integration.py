@@ -3,7 +3,7 @@ from typing import List
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
-from indico.types.integration import Integration, ExchangeIntegrationConfiguration, ExchangeIntegrationCredentials
+from indico.types.integration import ExchangeIntegration, ExchangeIntegrationConfiguration, ExchangeIntegrationCredentials
 
 class AddExchangeIntegration(GraphQLRequest):
     """
@@ -50,7 +50,7 @@ class AddExchangeIntegration(GraphQLRequest):
             },
         )
 
-    def process_response(self, response) -> Integration:
-        return Integration(
+    def process_response(self, response) -> ExchangeIntegration:
+        return ExchangeIntegration(
             **super().process_response(response)["addExchangeIntegrationToWorkflow"]["integration"]
         )
