@@ -54,3 +54,31 @@ class AddExchangeIntegration(GraphQLRequest):
         return ExchangeIntegration(
             **super().process_response(response)["addExchangeIntegrationToWorkflow"]["integration"]
         )
+
+class StartIntegration(GraphQLRequest):
+    """
+    Mutation to start an existing integration. Once an integration is started, documents will be submitted to the associated workflow.
+
+    Args:
+        integration_id(int): id of the integration to start
+
+    """
+
+    query = """
+        mutation StartIntegration($integration_id: Int!){
+          startWorkflowIntegration(integrationId: $integration_id){
+            success
+          }
+        }
+    """
+
+    def __init__(
+        self,
+        integration_id: int,
+    ):
+        super().__init__(
+            self.query,
+            variables={
+                "integration_id": integration_id
+            },
+        )

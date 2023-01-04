@@ -4,8 +4,9 @@ import time
 from pathlib import Path
 from indico.client import IndicoClient
 from indico.queries import CreateDataset, CreateModelGroup, CreateWorkflow, AddModelGroupComponent, \
-    GetModelGroupSelectedModelStatus, GetModelGroup
-from indico.types import ModelGroup, Dataset, Workflow
+    GetModelGroupSelectedModelStatus, GetModelGroup, AddExchangeIntegration, GetWorkflow
+from indico.queries.workflow_components import _AddWorkflowComponent
+from indico.types import ModelGroup, Dataset, Workflow, Integration
 
 PUBLIC_URL = "https://github.com/IndicoDataSolutions/indico-client-python/raw/master/tests/integration/data/"
 
@@ -143,8 +144,14 @@ def org_annotate_dataset(indico):
 def org_annotate_workflow(indico, org_annotate_dataset: Dataset):
     client = IndicoClient()
     workflowreq = CreateWorkflow(dataset_id=org_annotate_dataset.id, name=f"OrgAnnotate-test-{int(time.time())}")
-    response = client.call(workflowreq)
-
+    wf = client.call(workflowreq)
+    # add default output node
+    client.call(_AddWorkflowComponent(after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+        component="{\"component_type\":\"default_output\",\"config\":{}}",
+        workflow_id=wf.id,
+        after_component_link=None
+    ))
+    response = client.call(GetWorkflow(workflow_id=wf.id))
     return response
 
 
@@ -168,3 +175,27 @@ def org_annotate_model_group(indico, org_annotate_dataset: Dataset, org_annotate
     mg = client.call(GetModelGroup(id=component.model_group.id, wait=True))
 
     return mg
+
+@pytest.fixture(scope="module")
+def org_annotate_exchange_integration(org_annotate_workflow: Workflow) -> Integration:
+    client = IndicoClient()
+    creds = {
+        "clientId": os.getenv("EXCH_CLIENT_ID"),
+        "clientSecret": os.getenv("EXCH_CLIENT_SECRET"),
+        "tenantId": os.getenv("EXCH_TENANT_ID")
+    }
+
+    config = {
+        "userId": os.getenv("EXCH_USER_ID"),
+        "folderId": "mailFolders('inbox')"
+    }
+
+    integ: Integration = client.call(
+        AddExchangeIntegration(
+            workflow_id=org_annotate_workflow.id,
+            config=config,
+            credentials=creds
+        )
+    )
+
+    return integ
