@@ -32,6 +32,7 @@ class ListWorkflows(GraphQLRequest):
                     autoReviewEnabled
                     createdAt
                     createdBy
+                    submissionRunnable
                 components {
                         id
                         componentType
@@ -469,6 +470,7 @@ class CreateWorkflow(GraphQLRequest):
                     status
                     reviewEnabled
                     autoReviewEnabled
+                    submissionRunnable
                 components {
                         id
                         componentType

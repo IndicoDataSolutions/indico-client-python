@@ -444,3 +444,5 @@ class DeleteWorkflowComponent(GraphQLRequest):
         return Workflow(
             **super().process_response(response)["deleteWorkflowComponent"]["workflow"]
         )
+
+ # TODO Add mutation to add output node
