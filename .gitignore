@@ -54,6 +54,7 @@ indico_api_token.txt
 examples/readme.py
 docsrc/_build
 docs/.doctrees
+setup_tests.sh
 
 .venv
 .vscode/
