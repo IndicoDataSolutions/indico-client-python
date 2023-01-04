@@ -3,7 +3,7 @@ indico-client-test:
     dockerfile: tox.Dockerfile
   container_name: indico-client-test
   environment:
-    - INDICO_HOST=dev.indico.io
+    - INDICO_HOST=dev-ci.us-east-2.indico-dev.indico.io
     - TOX_PARALLEL_NO_SPINNER=true
   encrypted_env_file:
     - env.encrypted
