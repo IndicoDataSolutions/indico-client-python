@@ -2,9 +2,10 @@ import os
 import pytest
 import time
 from pathlib import Path
-from indico.client import IndicoClient, GraphQLRequest
+from indico.client import IndicoClient
 from indico.queries import CreateDataset, CreateModelGroup, CreateWorkflow, AddModelGroupComponent, \
     GetModelGroupSelectedModelStatus, GetModelGroup, AddExchangeIntegration, GetWorkflow
+from indico.queries.workflow_components import _AddWorkflowComponent
 from indico.types import ModelGroup, Dataset, Workflow, Integration
 
 PUBLIC_URL = "https://github.com/IndicoDataSolutions/indico-client-python/raw/master/tests/integration/data/"
@@ -144,26 +145,12 @@ def org_annotate_workflow(indico, org_annotate_dataset: Dataset):
     client = IndicoClient()
     workflowreq = CreateWorkflow(dataset_id=org_annotate_dataset.id, name=f"OrgAnnotate-test-{int(time.time())}")
     wf = client.call(workflowreq)
-
-    # TODO: Replace this with AddComponent once it supports outputs
-    # currently on dev, json output component is blueprint 16
-    blueprint_id=16
-    add_output = """
-        mutation addWorkflowNode($afterComponentId: Int, $blueprintId: Int, $component: JSONString!, $workflowId: Int!) {
-            addWorkflowComponent(afterComponentId: $afterComponentId, blueprintId: $blueprintId, component: $component, workflowId: $workflowId) {
-                workflow {
-                    id
-                }
-            }
-        }
-
-        """
-    client.call(GraphQLRequest(query=add_output, variables={
-        "afterComponentId": wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
-        "blueprintId": blueprint_id,
-        "component": "{\"component_type\":\"default_output\",\"config\":{}}",
-        "workflowId": wf.id
-    }))
+    # add default output node
+    client.call(_AddWorkflowComponent(after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+        component="{\"component_type\":\"default_output\",\"config\":{}}",
+        workflow_id=wf.id,
+        after_component_link=None
+    ))
     response = client.call(GetWorkflow(workflow_id=wf.id))
     return response
 
