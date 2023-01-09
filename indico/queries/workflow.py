@@ -1,6 +1,7 @@
 import io
 import json
 from typing import List, Union, Dict
+import tempfile
 
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
@@ -274,13 +275,6 @@ class _WorkflowUrlSubmission(_WorkflowSubmission):
     del mutation_args["files"]
 
 
-class _WorkflowRawTextSubmission(_WorkflowSubmission):
-    # TODO: Finish by convert text to tempfile upload as file then delete/clean up
-    mutation_name = "workflowRawTextSubmission"
-    mutation_args = {**_WorkflowSubmission.mutation_args, "text": "[String]!"}
-    del mutation_args["files"]
-
-
 class WorkflowSubmission(RequestChain):
     f"""
     Submit files to a workflow for processing.
@@ -299,6 +293,7 @@ class WorkflowSubmission(RequestChain):
         streams (Dict[str, io.BufferedIOBase]): List of filename keys mapped to streams
             for upload. Similar to files but mutually exclusive with files. 
             Can take for example: io.BufferedReader, io.BinaryIO, or io.BytesIO.
+        raw_text (str, optional): Raw text to submit 
 
     Returns:
         List[int]: If `submission`, these will be submission ids.
@@ -335,15 +330,18 @@ class WorkflowSubmission(RequestChain):
         if not submission:
             raise IndicoInputError(
                 "This option is deprecated and no longer supported.")
-        if not self.files and not self.urls and not self.has_streams:
+        if not self.files and not self.urls and not self.has_streams and not self.raw_text:
             raise IndicoInputError(
-                "One of 'files', 'streams', or 'urls' must be specified")
-        elif self.files and self.has_streams:
+                "One of 'files', 'streams', 'urls', or 'raw_text' must be specified")
+        elif (self.files or self.urls or self.raw_text) and self.has_streams:
             raise IndicoInputError(
-                "Only one of 'files' or 'streams' or 'urls' may be specified.")
-        elif (self.files or self.has_streams) and self.urls:
+                "Only one of 'files' or 'streams', 'urls', or 'raw_text' may be specified.")
+        elif (self.files or self.raw_text) and self.urls:
             raise IndicoInputError(
-                "Only one of 'files' or 'streams' or 'urls' may be specified")
+                "Only one of 'files' or 'streams', 'urls', or 'raw_text' may be specified")
+        elif self.files and self.raw_text:
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams', 'urls', or 'raw_text' may be specified")
 
     def requests(self):
         if self.files:
@@ -373,13 +371,20 @@ class WorkflowSubmission(RequestChain):
                 result_version=self.result_version,
             )
         elif self.raw_text:
-            yield _WorkflowRawTextSubmission(
-                self.detailed_response,
-                workflow_id=self.workflow_id,
-                text=self.raw_text,
-                bundle=self.bundle,
-                result_version=self.result_version
-            )
+            temp = tempfile.NamedTemporaryFile(mode='w+', suffix='.txt')
+            try:
+                temp.write(self.raw_text)
+                temp.seek(0)
+                yield UploadDocument(files=[temp.name])
+                yield _WorkflowSubmission(
+                    self.detailed_response,
+                    workflow_id=self.workflow_id,
+                    files=self.previous,
+                    bundle=self.bundle,
+                    result_version=self.result_version,
+                )
+            finally:
+                temp.close()
 
 
 class WorkflowSubmissionDetailed(WorkflowSubmission):
