@@ -76,6 +76,28 @@ def test_document_extraction_with_string_config(indico):
     assert type(extract) == dict
     assert "pages" in extract
 
+def test_document_extraction_with_readapi(indico):
+    client = IndicoClient()
+    dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
+
+    jobs = client.call(
+        DocumentExtraction(
+            files=[dataset_filepath], json_config={"preset_config": "simple"}, ocr_engine="READAPI"
+        )
+    )
+
+    assert len(jobs) == 1
+    job = jobs[0]
+    assert job.id is not None
+    job = client.call(JobStatus(id=job.id, wait=True))
+    assert job.status == "SUCCESS"
+    assert job.ready is True
+    assert type(job.result["url"]) == str
+
+    extract = client.call(RetrieveStorageObject(job.result))
+    assert type(extract) == dict
+    assert "pages" in extract
+
 
 def test_upload_documents_batched(indico):
     file_names = ["mock.pdf", "mock_2.pdf", "mock_3.pdf"]
