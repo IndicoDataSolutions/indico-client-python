@@ -70,6 +70,22 @@ response = client.call(GraphQLRequest(
 model_groups = response["model_groups"]["model_groups"]
 ```
 
+# Running Tests
+
+To run the tests associated with this repo perform the following:
+1. Create a virtual environment
+`python3 -m venv venv`
+2. Activate the virtual environment
+`source venv/bin/activate`
+3. Install the client
+`python3 setup.py install`
+4. Install pytest
+`pip3 install pytest`
+5. Run tests
+`pytest -sv tests/`
+
+Note, you can be more specfic about tests you run by selecting a specific test folder or file.
+
 # Contributing
 
 This repository adheres (as best as possible) to the following standards:
