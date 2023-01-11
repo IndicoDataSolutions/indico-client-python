@@ -74,7 +74,7 @@ model_groups = response["model_groups"]["model_groups"]
 
 To run the tests associated with this repo perform the following:
 ### Prerequisite
-Set the `INDICO_API_TOKEN` environment variable to the token of the environment you need to run tests against.
+Set the `INDICO_HOST` environment variable to the address of the environment you'd like to run the integration tests against, and set `INDICO_API_TOKEN` to the token of the environment you need to run tests against. For more information about how to obtain a token, visit [the documentation](https://docs.indicodata.ai/articles/#!common-questions-publication/how-do-i-get-started-developing-with-the-indico-api/q/API%2520token/qid/3328/qp/1). 
 `export INDICO_API_TOKEN=<api_token>
 
 ### Running the tests
