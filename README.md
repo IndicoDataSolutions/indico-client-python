@@ -27,14 +27,15 @@ docker run -it indico-client bash
 
 ## Authentication 
 
+## Indico API token
 The Indico Platform and Client Libraries use JSON Web Tokens (JWT) for user 
-authentication. You can download a token from your [user dashboard](https://app.indico.io/auth/user) by clicking the 
-large, blue “Download new API Token” button. Most browsers will download the API token 
-as indico_api_token.txt and place it in your Downloads directory. You should move the 
-token file from Downloads to either your home directory or another location in your 
-development environment.
+authentication. Details on acquiring this token can be found at this [documentation](https://docs.indicodata.ai/articles/#!common-questions-publication/how-do-i-get-started-developing-with-the-indico-api/q/API%2520token/qid/3328/qp/1)
 
 
+### Environment variables
+The following environment variables are used to configure the default `IndicoClient` object
+* `INDICO_HOST`:  URL of the IPA instance
+* `INDICO_API_TOKEN`: user token downloaded from these [directions](#indico-api-token)
 
 ## API Examples
 
@@ -74,8 +75,7 @@ model_groups = response["model_groups"]["model_groups"]
 
 To run the tests associated with this repo perform the following:
 ### Prerequisite
-Set the `INDICO_HOST` environment variable to the address of the environment you'd like to run the integration tests against, and set `INDICO_API_TOKEN` to the token of the environment you need to run tests against. For more information about how to obtain a token, visit [the documentation](https://docs.indicodata.ai/articles/#!common-questions-publication/how-do-i-get-started-developing-with-the-indico-api/q/API%2520token/qid/3328/qp/1). 
-`export INDICO_API_TOKEN=<api_token>
+Ensure you have set the environment variables detailed [here](#environment-variables)
 
 ### Running the tests
 1. Create a virtual environment
