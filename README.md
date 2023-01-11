@@ -33,7 +33,7 @@ authentication. Details on acquiring this token can be found at this [documentat
 
 
 ### Environment variables
-The following environment variables are used to configure the default `IndicoClient` object
+The following environment variables are used for authentication in the default `IndicoClient` object
 * `INDICO_HOST`:  URL of the IPA instance
 * `INDICO_API_TOKEN`: user token downloaded from these [directions](#indico-api-token)
 
