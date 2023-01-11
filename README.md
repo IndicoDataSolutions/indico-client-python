@@ -88,7 +88,8 @@ Set the `INDICO_API_TOKEN` environment variable to the token of the environment 
 `pip3 install pytest`
 5. Run tests
 `pytest -sv --host <indico_host> tests/`
-    * Note: you can run more specific tests by providing the path to the test e.g. ``pytest -sv --host <indico_host> tests/integration/test_base_client.py`
+    * Only run unit tests `pytest -sv --host <indico_host> tests/unit/`
+    * Only run integration tests `pytest -sv --host <indico_host> tests/integration/`
 
 
 # Contributing
