@@ -27,7 +27,7 @@ docker run -it indico-client bash
 
 ## Authentication 
 
-## Indico API token
+### Indico API token
 The Indico Platform and Client Libraries use JSON Web Tokens (JWT) for user 
 authentication. Details on acquiring this token can be found at this [documentation](https://docs.indicodata.ai/articles/#!common-questions-publication/how-do-i-get-started-developing-with-the-indico-api/q/API%2520token/qid/3328/qp/1)
 
