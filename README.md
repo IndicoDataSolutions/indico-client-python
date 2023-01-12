@@ -27,14 +27,15 @@ docker run -it indico-client bash
 
 ## Authentication 
 
+### Indico API token
 The Indico Platform and Client Libraries use JSON Web Tokens (JWT) for user 
-authentication. You can download a token from your [user dashboard](https://app.indico.io/auth/user) by clicking the 
-large, blue “Download new API Token” button. Most browsers will download the API token 
-as indico_api_token.txt and place it in your Downloads directory. You should move the 
-token file from Downloads to either your home directory or another location in your 
-development environment.
+authentication. Details on acquiring this token can be found at this [documentation](https://docs.indicodata.ai/articles/#!common-questions-publication/how-do-i-get-started-developing-with-the-indico-api/q/API%2520token/qid/3328/qp/1)
 
 
+### Environment variables
+The following environment variables are used for authentication in the default `IndicoClient` object
+* `INDICO_HOST`:  URL of the IPA instance
+* `INDICO_API_TOKEN`: user token downloaded from these [directions](#indico-api-token)
 
 ## API Examples
 
@@ -69,6 +70,27 @@ response = client.call(GraphQLRequest(
 
 model_groups = response["model_groups"]["model_groups"]
 ```
+
+# Testing the SDK
+
+To run the tests associated with this repo perform the following:
+### Prerequisite
+Ensure you have set the environment variables detailed [here](#environment-variables)
+
+### Running the tests
+1. Create a virtual environment
+`python3 -m venv venv`
+2. Activate the virtual environment
+`source venv/bin/activate`
+3. Install the client
+`python3 setup.py install`
+4. Install pytest
+`pip3 install pytest`
+5. Run tests
+`pytest -sv --host <indico_host> tests/`
+    * Only run unit tests `pytest -sv --host <indico_host> tests/unit/`
+    * Only run integration tests `pytest -sv --host <indico_host> tests/integration/`
+
 
 # Contributing
 
