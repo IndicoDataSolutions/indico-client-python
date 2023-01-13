@@ -215,6 +215,7 @@ class _WorkflowSubmission(GraphQLRequest):
         "files": "[FileInput]!",
         "bundle": "Boolean",
         "resultVersion": "SubmissionResultVersion",
+        "duplicationId": "String"
     }
 
     def __init__(
@@ -280,6 +281,9 @@ class WorkflowSubmission(RequestChain):
         urls (List[str], optional): List of urls to submit
         submission (bool, optional): DEPRECATED - AsyncJobs are no longer supported.
         bundle (bool, optional): Batch all files under a single submission id
+        duplication_id (str, optional): UUID to uniquely identify this submission.  
+            If re-used, existing submission ID will be returned rather than creating a 
+            new submission ID.
         result_version (str, optional):
             The format of the submission result file. One of:
                 {SUBMISSION_RESULT_VERSIONS}
@@ -304,7 +308,8 @@ class WorkflowSubmission(RequestChain):
             submission: bool = True,
             bundle: bool = False,
             result_version: str = None,
-            streams: Dict[str, io.BufferedIOBase] = None
+            streams: Dict[str, io.BufferedIOBase] = None,
+            duplication_id: str = None
     ):
         self.workflow_id = workflow_id
         self.files = files
@@ -312,6 +317,7 @@ class WorkflowSubmission(RequestChain):
         self.submission = submission
         self.bundle = bundle
         self.result_version = result_version
+        self.duplication_id = duplication_id
         self.has_streams = False
         if streams is not None:
             self.streams = streams.copy()
@@ -336,6 +342,7 @@ class WorkflowSubmission(RequestChain):
                 files=self.previous,
                 bundle=self.bundle,
                 result_version=self.result_version,
+                duplication_id=self.duplication_id,
             )
         elif self.urls:
             yield _WorkflowUrlSubmission(
@@ -344,6 +351,7 @@ class WorkflowSubmission(RequestChain):
                 urls=self.urls,
                 bundle=self.bundle,
                 result_version=self.result_version,
+                duplication_id=self.duplication_id
             )
         elif self.has_streams:
             yield UploadDocument(streams=self.streams)
@@ -353,6 +361,7 @@ class WorkflowSubmission(RequestChain):
                 files=self.previous,
                 bundle=self.bundle,
                 result_version=self.result_version,
+                duplication_id=self.duplication_id,
             )
 
 
