@@ -117,14 +117,14 @@ def test_workflow_submission_with_streams(
     assert isinstance(sub, Submission)
     assert sub.retrieved is True
 
-def test_workflow_submission_with_raw_text(
+def test_workflow_submission_with_text(
     indico, airlines_dataset, airlines_model_group: ModelGroup
 ):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     wf = max(wfs, key=lambda w: w.id)
 
-    submission_ids = client.call(WorkflowSubmission(workflow_id=wf.id, raw_text="hello this is a test"))
+    submission_ids = client.call(WorkflowSubmission(workflow_id=wf.id, text="hello this is a test"))
     submission_id = submission_ids[0]
     assert submission_id is not None
 

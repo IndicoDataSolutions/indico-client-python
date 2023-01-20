@@ -57,3 +57,5 @@ docs/.doctrees
 
 .venv
 .vscode/
+
+.DS_Store
