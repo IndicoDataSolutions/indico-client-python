@@ -155,6 +155,10 @@ class HTTPClient:
         if len(url_parts) > 1 and (url_parts[-1] == "json" or url_parts[-2] == "json"):
             json = True
 
+        decompress = False
+        if len(url_parts) > 1 and (url_parts[-1] == "gz"):
+            decompress = True
+
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
             self.get_short_lived_access_token()
@@ -172,7 +176,7 @@ class HTTPClient:
                 code=response.status_code
             )
 
-        content = deserialize(response, force_json=json)
+        content = deserialize(response, force_json=json, force_decompress=decompress)
 
         if response.status_code >= 400:
             if isinstance(content, dict):
