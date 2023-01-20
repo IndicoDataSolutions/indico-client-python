@@ -11,18 +11,18 @@ from indico.queries.storage import UploadDocument, UploadBatched
 class _DocumentExtraction(GraphQLRequest):
 
     query = """
-        mutation($files: [FileInput], $jsonConfig: JSONString) {
-            documentExtraction(files: $files, jsonConfig: $jsonConfig ) {
+        mutation($files: [FileInput], $jsonConfig: JSONString, $ocrEngine: OCREngine) {
+            documentExtraction(files: $files, jsonConfig: $jsonConfig, ocrEngine: $ocrEngine) {
                 jobIds
             }
         }
     """
 
-    def __init__(self, files, json_config={"preset_config": "legacy"}):
+    def __init__(self, files, json_config={"preset_config": "legacy"}, ocr_engine=None):
         if json_config and type(json_config) == dict:
             json_config = json.dumps(json_config)
         super().__init__(
-            query=self.query, variables={"files": files, "jsonConfig": json_config}
+            query=self.query, variables={"files": files, "jsonConfig": json_config, "ocrEngine": ocr_engine}
         )
 
     def process_response(self, response):
@@ -44,6 +44,7 @@ class DocumentExtraction(RequestChain):
         files= (List[str]): Pathnames of one or more files to OCR
         json_config (dict or JSON str): Configuration settings for OCR. See Notes below.
         upload_batch_size (int): size of batches for document upload if uploading many documents
+        ocr_engine (str): Denotes which ocr engine to use. Defaults to OMNIPAGE.
 
     Returns:
         Job object
@@ -76,11 +77,12 @@ class DocumentExtraction(RequestChain):
     """
 
     def __init__(
-        self, files: List[str], json_config: dict = None, upload_batch_size: int = None
+        self, files: List[str], json_config: dict = None, upload_batch_size: int = None, ocr_engine: str = "OMNIPAGE"
     ):
         self.files = files
         self.json_config = json_config
         self.upload_batch_size = upload_batch_size
+        self.ocr_engine = ocr_engine
 
     def requests(self):
         if self.upload_batch_size:
@@ -91,4 +93,4 @@ class DocumentExtraction(RequestChain):
             )
         else:
             yield UploadDocument(files=self.files)
-        yield _DocumentExtraction(files=self.previous, json_config=self.json_config)
+        yield _DocumentExtraction(files=self.previous, json_config=self.json_config, ocr_engine=self.ocr_engine)

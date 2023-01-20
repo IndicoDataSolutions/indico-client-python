@@ -248,7 +248,7 @@ def test_create_from_files_image(indico):
         os.path.join(parent_path, file_name) for file_name in file_names
     ]
 
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=dataset_filepaths))
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=dataset_filepaths, autoprocess=True))
 
     file_names = ["4.jpg", "5.jpg"]
     dataset_filepaths = [
