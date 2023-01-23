@@ -29,7 +29,14 @@ def airlines_dataset(indico):
 def airlines_workflow(indico, airlines_dataset: Dataset):
     client = IndicoClient()
     workflowreq = CreateWorkflow(dataset_id=airlines_dataset.id, name=f"AirlineComplaints-test-{int(time.time())}")
-    response = client.call(workflowreq)
+    wf = client.call(workflowreq)
+    # add default output node
+    client.call(_AddWorkflowComponent(after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+        component="{\"component_type\":\"default_output\",\"config\":{}}",
+        workflow_id=wf.id,
+        after_component_link=None
+    ))
+    response = client.call(GetWorkflow(workflow_id=wf.id))
 
     return response
 
