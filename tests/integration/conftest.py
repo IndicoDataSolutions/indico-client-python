@@ -2,8 +2,6 @@ import logging
 import pytest
 import os
 
-from indico.config import IndicoConfig
-
 logging.getLogger("indico").setLevel(logging.DEBUG)
 
 
