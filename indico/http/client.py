@@ -1,6 +1,5 @@
 import http.cookiejar
 import logging
-from collections import defaultdict
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
@@ -149,11 +148,8 @@ class HTTPClient:
                 **new_kwargs,
             )
 
-        # code, api_response =
-        url_parts = path.split(".")
-        json = False
-        if len(url_parts) > 1 and (url_parts[-1] == "json" or url_parts[-2] == "json"):
-            json = True
+        json: bool = ".json" in Path(path).suffixes
+        decompress: bool = Path(path).suffix == ".gz"
 
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
@@ -172,7 +168,7 @@ class HTTPClient:
                 code=response.status_code
             )
 
-        content = deserialize(response, force_json=json)
+        content = deserialize(response, force_json=json, force_decompress=decompress)
 
         if response.status_code >= 400:
             if isinstance(content, dict):
