@@ -196,22 +196,25 @@ class WaitForSubmissions(RequestChain):
 
         self.submission_ids = submission_ids
         self.timeout = timeout
-        self.status_check = partial(ne, "PROCESSING")
         self.status_getter = partial(
             ListSubmissions, submission_ids=self.submission_ids, limit=None
         )
+
+    @staticmethod
+    def _status_check(status) -> bool:
+        return status in {"PROCESSING, POST_PROCESSING"}
 
     def requests(self) -> List[Submission]:
         yield self.status_getter()
         curr_time = 0
         while (
-            not all(self.status_check(s.status) for s in self.previous)
+            not all(self._status_check(s.status) for s in self.previous)
             and curr_time <= self.timeout
         ):
             yield self.status_getter()
             time.sleep(1)
             curr_time += 1
-        if not all(self.status_check(s.status) for s in self.previous):
+        if not all(self._status_check(s.status) for s in self.previous):
             raise IndicoTimeoutError(curr_time)
 
 
@@ -290,7 +293,7 @@ class SubmissionResult(RequestChain):
     Args:
         submission (int or Submission): Id of the submission or Submission object
         check_status (str, optional): Submission status to check for.
-            Defaults to any status other than `PROCESSING`
+            Defaults to any status other than `PROCESSING` or `POST_PROCESSING`
         wait (bool, optional): Wait until the submission is `check_status`
             and wait for the result file to be generated. Defaults to False
         timeout (int or float, optional): Maximum number of seconds to wait before
@@ -329,8 +332,12 @@ class SubmissionResult(RequestChain):
         self.status_check = (
             partial(eq, check_status.upper())
             if check_status
-            else partial(ne, "PROCESSING")
+            else self._default_status_check
         )
+
+    @staticmethod
+    def _default_status_check(status) -> bool:
+        return status in {"PROCESSING", "POST_PROCESSING"}
 
     def requests(self) -> Union[Job, str]:
         yield GetSubmission(self.submission_id)
