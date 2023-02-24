@@ -76,6 +76,7 @@ class OcrEngine(Enum):
     """
     OMNIPAGE = 0
     READAPI = 1
+    READAPI_V2 = 2
     pass
 
 class OmnipageOcrOptionsInput(BaseType):
