@@ -1,6 +1,7 @@
 import io
 import json
 from typing import List, Union, Dict
+import tempfile
 
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
@@ -75,11 +76,12 @@ class ListWorkflows(GraphQLRequest):
     """
 
     def __init__(
-            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None, limit = 100
+            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None, limit=100
     ):
         super().__init__(
             self.query,
-            variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids, "limit": limit},
+            variables={"datasetIds": dataset_ids,
+                       "workflowIds": workflow_ids, "limit": limit},
         )
 
     def process_response(self, response) -> List[Workflow]:
@@ -126,7 +128,8 @@ class _ToggleReview(GraphQLRequest):
         query = query.replace("<TOGGLE>", self.toggle)
         super().__init__(
             query,
-            variables={"workflowId": workflow_id, "reviewState": enable_review},
+            variables={"workflowId": workflow_id,
+                       "reviewState": enable_review},
         )
 
     def process_response(self, response) -> Workflow:
@@ -159,7 +162,8 @@ class UpdateWorkflowSettings(RequestChain):
             enable_review: bool = None,
             enable_auto_review: bool = None,
     ):
-        self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
+        self.workflow_id = workflow.id if isinstance(
+            workflow, Workflow) else workflow
         if enable_review is None and enable_auto_review is None:
             raise IndicoInputError("Must provide at least one review option")
 
@@ -242,7 +246,8 @@ class _WorkflowSubmission(GraphQLRequest):
         args = [
             _arg for _arg in self.mutation_args.keys() if kwargs.get(cc_to_snake(_arg))
         ]
-        signature = ",".join(f"${_arg}: {self.mutation_args[_arg]}" for _arg in args)
+        signature = ",".join(
+            f"${_arg}: {self.mutation_args[_arg]}" for _arg in args)
         args = ",".join(f"{_arg}: ${_arg}" for _arg in args)
 
         super().__init__(
@@ -257,7 +262,8 @@ class _WorkflowSubmission(GraphQLRequest):
         if "submissions" in response:
             return [Submission(**s) for s in response["submissions"]]
         if not response["submissionIds"]:
-            raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
+            raise IndicoError(
+                f"Failed to submit to workflow {self.workflow_id}")
         else:
             return response["submissionIds"]
         return [Job(id=job_id) for job_id in response["jobIds"]]
@@ -287,6 +293,7 @@ class WorkflowSubmission(RequestChain):
         streams (Dict[str, io.BufferedIOBase]): List of filename keys mapped to streams
             for upload. Similar to files but mutually exclusive with files. 
             Can take for example: io.BufferedReader, io.BinaryIO, or io.BytesIO.
+        text (str, optional): text to submit. Note: submission may still go through OCR.
 
     Returns:
         List[int]: If `submission`, these will be submission ids.
@@ -304,7 +311,8 @@ class WorkflowSubmission(RequestChain):
             submission: bool = True,
             bundle: bool = False,
             result_version: str = None,
-            streams: Dict[str, io.BufferedIOBase] = None
+            streams: Dict[str, io.BufferedIOBase] = None,
+            text: str = ""
     ):
         self.workflow_id = workflow_id
         self.files = files
@@ -318,14 +326,22 @@ class WorkflowSubmission(RequestChain):
             self.has_streams = True
         else:
             self.streams = None
+        self.text = text
         if not submission:
-            raise IndicoInputError("This option is deprecated and no longer supported.")
-        if not self.files and not self.urls and not self.has_streams:
-            raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
-        elif self.files and self.has_streams:
-            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified.")
-        elif (self.files or self.has_streams) and self.urls:
-            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified")
+            raise IndicoInputError(
+                "This option is deprecated and no longer supported.")
+        if not self.files and not self.urls and not self.has_streams and not self.text:
+            raise IndicoInputError(
+                "One of 'files', 'streams', 'urls', or 'text' must be specified")
+        elif (self.files or self.urls or self.text) and self.has_streams:
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified.")
+        elif (self.files or self.text) and self.urls:
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified")
+        elif self.files and self.text:
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified")
 
     def requests(self):
         if self.files:
@@ -354,6 +370,21 @@ class WorkflowSubmission(RequestChain):
                 bundle=self.bundle,
                 result_version=self.result_version,
             )
+        elif self.text:
+            temp = tempfile.NamedTemporaryFile(mode='w+', suffix='.txt')
+            try:
+                temp.write(self.text)
+                temp.seek(0)
+                yield UploadDocument(files=[temp.name])
+                yield _WorkflowSubmission(
+                    self.detailed_response,
+                    workflow_id=self.workflow_id,
+                    files=self.previous,
+                    bundle=self.bundle,
+                    result_version=self.result_version,
+                )
+            finally:
+                temp.close()
 
 
 class WorkflowSubmissionDetailed(WorkflowSubmission):
@@ -506,6 +537,7 @@ class CreateWorkflow(GraphQLRequest):
         return Workflow(
             **super().process_response(response)["createWorkflow"]["workflow"]
         )
+
 
 class DeleteWorkflow(GraphQLRequest):
     """
