@@ -17,7 +17,7 @@ from indico.queries.datasets import (
     ProcessCSV,
 )
 from indico.queries.export import CreateExport, DownloadExport
-from indico.types.dataset import Dataset, OmnipageOcrOptionsInput, TableReadOrder, OcrEngine
+from indico.types.dataset import Dataset, OmnipageOcrOptionsInput, TableReadOrder, OcrEngine, ReadApiOcrOptionsInput
 from indico.errors import IndicoRequestError
 from tests.integration.data.datasets import airlines_dataset
 
@@ -35,7 +35,6 @@ def test_create_dataset(indico):
     assert isinstance(response, Dataset)
     assert response.status == "COMPLETE"
     assert isinstance(response.id, int)
-
 
 def test_get_datasets(indico, airlines_dataset):
     client = IndicoClient()
@@ -189,7 +188,32 @@ def test_create_with_options(indico):
     }
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.OMNIPAGE,
                                              omnipage_ocr_options=config))
+    
+def test_create_with_options_readapi(indico):
+    client = IndicoClient()
+    config: ReadApiOcrOptionsInput = {
+        "auto_rotate": True,
+        "single_column": False,
+        "upscale_images": True,
+        "languages": ["AUTO"]
+    }
+    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.READAPI,
+                                             readapi_ocr_options=config))
+    
+def test_create_from_files_with_readapiv2(indico):
+    client = IndicoClient()
+    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.READAPI_V2))
+    file_names = ["us_doi.tiff", "mock.pdf"]
+    parent_path = str(Path(__file__).parent.parent / "data")
+    dataset_filepaths = [
+        os.path.join(parent_path, file_name) for file_name in file_names
+    ]
 
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[0]], autoprocess=True))
+    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]], autoprocess=True))
+
+    _dataset_complete(dataset)
+    
 
 def test_create_from_files_document_without_autoprocess(indico):
     client = IndicoClient()
