@@ -10,7 +10,7 @@ from indico.client.request import (
     Debouncer,
 )
 from indico.queries import AddModelGroupComponent
-from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, Workflow
+from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, Workflow, ModelTaskType
 
 from indico.types.questionnaire import Questionnaire, Example
 from indico.types.dataset import Dataset
@@ -48,6 +48,7 @@ class AddLabels(GraphQLRequest):
         labelset_id: int,
         labels: List[dict],
         model_group_id: int = None,
+        dataset_id: int = None
     ):
         super().__init__(
             query=self.query,
@@ -297,10 +298,9 @@ class CreateQuestionaire(RequestChain):
         new_labelset_args = NewLabelsetArguments(
             datacolumn_id=self.previous.datacolumns[0].id,
             name=self.name,
-            task_type=self.task_type,
+            task_type=next(v for v in ModelTaskType if v.name == self.task_type),
             target_names=self.targets,
         )
-
         yield AddModelGroupComponent(
             workflow_id=self.workflow_id[0],
             source_column_id=self.previous.datacolumns[0].id,
