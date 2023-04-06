@@ -54,6 +54,21 @@ def too_small_dataset(indico):
     assert response.status == "COMPLETE"
     return response
 
+@pytest.fixture(scope="module")
+def too_small_workflow(indico, too_small_dataset: Dataset) -> Workflow:
+    client = IndicoClient()
+    workflowreq = CreateWorkflow(dataset_id=too_small_dataset.id, name=f"TooSmall-test-{int(time.time())}")
+    wf = client.call(workflowreq)
+    # add default output node
+    client.call(_AddWorkflowComponent(after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+        component="{\"component_type\":\"default_output\",\"config\":{}}",
+        workflow_id=wf.id,
+        after_component_link=None
+    ))
+    response = client.call(GetWorkflow(workflow_id=wf.id))
+
+    return response
+
 
 @pytest.fixture(scope="module")
 def airlines_model_group(indico, airlines_dataset: Dataset, airlines_workflow: Workflow) -> ModelGroup:

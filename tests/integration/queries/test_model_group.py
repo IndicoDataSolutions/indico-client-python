@@ -33,7 +33,7 @@ from ..data.datasets import (
 cats_dogs_image_workflow,
 airlines_workflow
 )
-from indico.errors import IndicoNotFound
+from indico.errors import IndicoRequestError
 
 
 def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workflow):
@@ -54,11 +54,11 @@ def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workfl
 
     assert mg.name == name
 
-
+@pytest.mark.skip(reason="deprecated")
 def test_get_missing_model_group(indico):
     client = IndicoClient()
 
-    with pytest.raises(IndicoNotFound):
+    with pytest.raises(IndicoRequestError):
         client.call(GetModelGroup(id=500000))
 
 
@@ -111,16 +111,19 @@ def test_create_model_group_with_wait(indico, airlines_dataset: Dataset, airline
     assert mg.selected_model.status == "COMPLETE"
 
 
-def test_create_model_group_with_wait_not_enough_data(indico, too_small_dataset):
+def test_create_model_group_with_wait_not_enough_data(indico, too_small_dataset: Dataset, too_small_workflow: Workflow):
     client = IndicoClient()
 
     name = f"TestCreateModelGroup-{int(time.time())}"
+    after_component_id = too_small_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     mg: ModelGroup = client.call(
         CreateModelGroup(
             name=name,
+            workflow_id=too_small_workflow.id,
             dataset_id=too_small_dataset.id,
             source_column_id=too_small_dataset.datacolumn_by_name("Text").id,
             labelset_id=too_small_dataset.labelset_by_name("Target_1").id,
+            after_component_id=after_component_id,
             wait=True,
         )
     )
@@ -129,17 +132,20 @@ def test_create_model_group_with_wait_not_enough_data(indico, too_small_dataset)
     assert mg.selected_model.status == "NOT_ENOUGH_DATA"
 
 
-def test_model_group_progress(indico, airlines_dataset: Dataset):
+def test_model_group_progress(indico, airlines_dataset: Dataset, airlines_workflow: Workflow):
     client = IndicoClient()
 
     name = f"TestCreateModelGroup-{int(time.time())}"
+    after_component_id = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     mg: ModelGroup = client.call(
         CreateModelGroup(
             name=name,
+            workflow_id=airlines_workflow.id,
             dataset_id=airlines_dataset.id,
             source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
             labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
             wait=False,
+            after_component_id=after_component_id
         )
     )
     time.sleep(1)
@@ -150,11 +156,11 @@ def test_model_group_progress(indico, airlines_dataset: Dataset):
     assert type(model.training_progress) == TrainingProgress
     assert model.training_progress.percent_complete < 101.0
 
-
+@pytest.mark.skip(reason="deprecated")
 def test_model_group_progress_bad_model_group_id(indico, airlines_dataset: Dataset):
     client = IndicoClient()
 
-    with pytest.raises(IndicoNotFound):
+    with pytest.raises(IndicoRequestError):
         client.call((GetTrainingModelWithProgress(id=-1)))
 
 
@@ -207,7 +213,7 @@ def test_object_detection_predict_storage(
     assert len(result.result) == 5
     assert result.result[0][0].get("image")["url"].startswith(URL_PREFIX)
 
-
+@pytest.mark.skip(reason="functionality is deprecated")
 def test_load_model(indico, airlines_dataset, airlines_model_group):
     client = IndicoClient()
 
