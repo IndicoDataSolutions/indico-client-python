@@ -246,7 +246,8 @@ class CreateModelGroup(RequestChain):
 
         yield _GetModelGroup(id=model_group_id)
 
-
+@deprecation.deprecated(deprecated_in="6.0",
+                        details="Removed from platform. This call is a no-op.")
 class LoadModel(GraphQLRequest):
     """
     Load model into system cache (implicit in ModelGroupPredict unless load=False)
@@ -272,7 +273,7 @@ class LoadModel(GraphQLRequest):
         super().__init__(self.query, variables={"modelId": model_id})
 
     def process_response(self, response):
-        return super().process_response(response)["modelLoad"]["status"]
+        return "ready"
 
 
 class _ModelGroupPredict(GraphQLRequest):
@@ -343,21 +344,9 @@ class ModelGroupPredict(RequestChain):
     ):
         self.model_id = model_id
         self.data = data
-        self.load = load
         self.predict_options = predict_options
 
     def requests(self):
-        retries = 0
-        if self.load:
-            while retries < 3 and self.previous != "ready":
-                retries += 1
-                yield LoadModel(self.model_id)
-                if retries > 0:
-                    sleep(1)
-            if self.previous != "ready":
-                raise IndicoError(
-                    f"Model {self.model_id} failed to load status {self.previous}"
-                )
 
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
