@@ -77,7 +77,6 @@ def test_create_questionnaire_labeled(indico):
 
     assert isinstance(response, Questionnaire)
 
-@pytest.mark.skip(reason="functionality is deprecated")
 def test_get_nonexistent_questionnaire(indico):
     client = IndicoClient()
     with pytest.raises(IndicoError):

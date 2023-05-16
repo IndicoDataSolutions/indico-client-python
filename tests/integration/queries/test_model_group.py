@@ -54,7 +54,6 @@ def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workfl
 
     assert mg.name == name
 
-@pytest.mark.skip(reason="deprecated")
 def test_get_missing_model_group(indico):
     client = IndicoClient()
 
@@ -156,7 +155,6 @@ def test_model_group_progress(indico, airlines_dataset: Dataset, airlines_workfl
     assert type(model.training_progress) == TrainingProgress
     assert model.training_progress.percent_complete < 101.0
 
-@pytest.mark.skip(reason="deprecated")
 def test_model_group_progress_bad_model_group_id(indico, airlines_dataset: Dataset):
     client = IndicoClient()
 
@@ -213,7 +211,7 @@ def test_object_detection_predict_storage(
     assert len(result.result) == 5
     assert result.result[0][0].get("image")["url"].startswith(URL_PREFIX)
 
-@pytest.mark.skip(reason="functionality is deprecated")
+
 def test_load_model(indico, airlines_dataset, airlines_model_group):
     client = IndicoClient()
 

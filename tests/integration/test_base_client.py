@@ -58,7 +58,6 @@ def test_graphql_request(indico):
     )
     assert "modelGroups" in response
 
-@pytest.mark.skip(reason="test fails with permission error, and functionality already tested elsewhere")
 def test_graphql_with_ids():
     client = IndicoClient()
     response = client.call(
