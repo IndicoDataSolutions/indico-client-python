@@ -157,7 +157,7 @@ def org_annotate_model_group(indico, org_annotate_dataset: Dataset, org_annotate
         name=name,
         dataset_id=org_annotate_dataset.id,
         after_component_id=after_component_id,
-        source_column_id=org_annotate_dataset.datacolumn_by_name("New Healines w/Company Names").id,
+        source_column_id=org_annotate_dataset.datacolumn_by_name("News Headlines w/Company Names").id,
         labelset_column_id=org_annotate_dataset.labelset_by_name("question_825").id,
         workflow_id=org_annotate_workflow.id
     )
