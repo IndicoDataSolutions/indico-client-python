@@ -139,11 +139,10 @@ def test_document_extraction_batched(indico):
         assert isinstance(job.result["url"], str)
 
 
-def test_document_extraction_thumbnails(indico):
+def test_document_extraction_images(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
-
-    jobs = client.call(DocumentExtraction(files=[dataset_filepath]))
+    jobs = client.call(DocumentExtraction(files=[dataset_filepath], json_config='{"preset_config": "simple"}'))
 
     assert len(jobs) == 1
     job = jobs[0]
