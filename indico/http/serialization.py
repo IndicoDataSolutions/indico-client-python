@@ -21,14 +21,10 @@ def decompress(response):
     return gzip.decompress(value)
 
 
-def raw_bytes(content, *args, **kwargs):
-    return content
-
-
-def deserialize(response, force_json=False):
+def deserialize(response, force_json=False, force_decompress=False):
     content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
 
-    if content_type in ["application/x-gzip", "application/gzip"]:
+    if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = decompress(response)
     else:
         content = response.content
@@ -47,6 +43,10 @@ def deserialize(response, force_json=False):
             content_type, charset, content.decode("ascii", "ignore")
         )
 
+
+
+def raw_bytes(content, *args, **kwargs):
+    return content
 
 def msgpack_deserialization(content, charset):
     return msgpack.unpackb(content)

@@ -7,3 +7,4 @@ from .submission_file import *
 from .submission import *
 from .workflow import *
 from .questionnaire import Example
+from .integration import *

@@ -28,12 +28,16 @@ def unlabeled_questionnaire(indico):
     dataset = client.call(
         CreateDataset(name=f"CreateDataset-test-{int(time.time())}", files=files)
     )
+    workflow: Workflow = client.call(CreateWorkflow(name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id))
+    after_component = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
 
     questionnaire = client.call(
         CreateQuestionaire(
             name=f"CreateDatasetTeach-test-{int(time.time())}",
             dataset_id=dataset.id,
             targets=["A", "B", "C"],
+            workflow_id=workflow.id,
+            after_component_id=after_component
         )
     )
     return {"dataset": dataset, "questionnaire": questionnaire}
@@ -52,7 +56,6 @@ def test_create_questionnaire_labeled(indico):
     dataset = client.call(
         CreateDataset(name=f"CreateDataset-test-{int(time.time())}", files=files)
     )
-
     workflow: Workflow = client.call(CreateWorkflow(name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id))
     after_component = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     csv = pd.read_csv(csv_path)
@@ -74,7 +77,6 @@ def test_create_questionnaire_labeled(indico):
 
     assert isinstance(response, Questionnaire)
 
-
 def test_get_nonexistent_questionnaire(indico):
     client = IndicoClient()
     with pytest.raises(IndicoError):
@@ -88,7 +90,7 @@ def test_get_questionnaire(indico, unlabeled_questionnaire):
     )
     assert isinstance(response, Questionnaire)
     assert response.id == unlabeled_questionnaire["questionnaire"].id
-    assert response.odl is True
+    assert not response.odl
     assert response.num_total_examples == 3
     assert response.num_fully_labeled == 0
 

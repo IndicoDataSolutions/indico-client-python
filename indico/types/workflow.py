@@ -46,6 +46,7 @@ class Workflow(BaseType):
     component_links: List[WorkflowComponentLinks]
     created_by: int
     created_at: datetime
+    submission_runnable: bool
 
     def component_by_type(self, component_type: str) -> WorkflowComponent:
         """

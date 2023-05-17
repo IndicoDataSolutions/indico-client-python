@@ -172,7 +172,7 @@ def test_workflow_submission_versioned(
     result = client.call(RetrieveStorageObject(submissions[0].result_file))
 
     assert isinstance(result, dict)
-    assert result["file_version"] == 2
+    assert result["file_version"] == 3
     assert len(result["submission_results"]) == 1
     assert result["submission_results"][0]["input_filename"] == "mock.pdf"
 
@@ -205,7 +205,7 @@ def test_workflow_submission_bundled(
     result = client.call(RetrieveStorageObject(submissions[0].result_file))
 
     assert isinstance(result, dict)
-    assert result["file_version"] == 2
+    assert result["file_version"] == 3
     assert len(result["submission_results"]) == len(next(iter(_input.values())))
     assert result["submission_results"][0]["input_filename"] == "mock.pdf"
 
