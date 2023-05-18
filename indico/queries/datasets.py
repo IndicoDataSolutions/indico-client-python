@@ -593,6 +593,25 @@ class ProcessCSV(RequestChain):
                 debouncer.backoff()
 
 
+class GetAvailableOcrEngines(GraphQLRequest):
+    """
+    Fetches and lists the available OCR engines
+    """
+    query = """query{
+        ocrOptions {
+            engines{
+                name
+            }
+        }
+    }"""
+
+    def __init__(self):
+        super().__init__(self.query)
+
+    def process_response(self, response):
+        engines = super().process_response(response)["ocrOptions"]["engines"]
+        return [OcrEngine[e["name"]] for e in engines]
+
 class GetOcrEngineLanguageCodes(GraphQLRequest):
     """
     Fetches and lists the available languages by name and code for the given OCR Engine
@@ -612,6 +631,7 @@ class GetOcrEngineLanguageCodes(GraphQLRequest):
             }
         }
     }"""
+
 
     def __init__(self, engine: OcrEngine):
         self.engine = engine

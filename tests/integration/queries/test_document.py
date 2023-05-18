@@ -1,3 +1,4 @@
+import pytest
 import os
 from pathlib import Path
 from indico.client import IndicoClient
@@ -76,6 +77,7 @@ def test_document_extraction_with_string_config(indico):
     assert type(extract) == dict
     assert "pages" in extract
 
+@pytest.mark.ocr("readapi")
 def test_document_extraction_with_readapi(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"

@@ -40,11 +40,13 @@ def test_fetch_snapshots_with_limit(indico):
 
 def test_fetch_filtered_snapshots(indico):
     client = IndicoClient()
-    snapshots = []
-    filter_opts = or_(UserMetricsFilter(user_id=1), UserMetricsFilter(user_id=2))
+    snapshots = client.call(GetUserSnapshots(date=datetime.now(), limit=2))
+    user_ids = [s.id for s in snapshots]
+    filtered_snapshots = []
+    filter_opts = or_(UserMetricsFilter(user_id=user_ids[0]), UserMetricsFilter(user_id=user_ids[1]))
     for snapshot in client.paginate(GetUserSnapshots(date=datetime.now(), filters=filter_opts)):
-        snapshots.extend(snapshot)
-    assert len(snapshots) == 2
+        filtered_snapshots.extend(snapshot)
+    assert len(filtered_snapshots) == 2
 
 
 def test_changelog(indico):
