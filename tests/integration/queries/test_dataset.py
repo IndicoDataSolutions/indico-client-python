@@ -173,7 +173,7 @@ def _dataset_complete(dataset):
 
     assert dataset.status == "COMPLETE"
 
-
+@pytest.mark.ocr("omnipage")
 def test_create_with_options(indico):
     client = IndicoClient()
     config: OmnipageOcrOptionsInput = {
@@ -188,7 +188,8 @@ def test_create_with_options(indico):
     }
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.OMNIPAGE,
                                              omnipage_ocr_options=config))
-    
+
+@pytest.mark.ocr("readapi")
 def test_create_with_options_readapi(indico):
     client = IndicoClient()
     config: ReadApiOcrOptionsInput = {
@@ -199,7 +200,8 @@ def test_create_with_options_readapi(indico):
     }
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.READAPI,
                                              readapi_ocr_options=config))
-    
+
+@pytest.mark.ocr("readapi_v2")
 def test_create_from_files_with_readapiv2(indico):
     client = IndicoClient()
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.READAPI_V2))
