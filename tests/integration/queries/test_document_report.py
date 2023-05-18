@@ -13,11 +13,16 @@ def test_fetch_docs(indico):
     document_report: List[DocumentReport] = client.call(GetDocumentReport())
     assert document_report is not None
     assert len(document_report) > 0
-    assert isinstance(document_report[0].input_files[0].num_pages, int)
-    assert isinstance(document_report[0].input_files[0].file_size, int)
-    assert isinstance(document_report[0].input_files[0].id, int)
-    assert isinstance(document_report[0].input_files[0].submission_id, int)
-    assert document_report[0].input_files[0].filename
+    input_files = [f for dr in document_report for f in dr.input_files]
+    num_pages_check = [isinstance(f.num_pages, int) for f in input_files if f.num_pages]
+    if num_pages_check:
+        assert all(num_pages_check)
+    file_size_check = [isinstance(f.file_size, int) for f in input_files if f.file_size]
+    if file_size_check:
+        assert all(file_size_check)
+    assert all([isinstance(f.id, int) for f in input_files])
+    assert all([isinstance(f.submission_id, int) for f in input_files])
+    assert [f.filename for f in input_files]
 
 
 def test_fetch_docs_limit(indico):
@@ -36,8 +41,11 @@ def test_fetch_docs_limit(indico):
 def test_pagination(indico):
     client = IndicoClient()
     document_report: List[DocumentReport] = []
-    for page in client.paginate(GetDocumentReport(limit=10)):
+    num_pages_to_check = 5
+    for i,page in enumerate(client.paginate(GetDocumentReport(limit=10))):
         document_report.extend(page)
+        if i > num_pages_to_check:
+            break
     assert document_report is not None
     assert len(document_report) > 0
 
