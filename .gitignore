@@ -60,3 +60,5 @@ setup_tests.sh
 .vscode/
 
 .DS_Store
+.ipynb_checkpoints/
+*.ipynb
