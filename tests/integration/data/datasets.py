@@ -221,3 +221,28 @@ def org_annotate_exchange_integration(org_annotate_workflow: Workflow) -> Integr
     )
 
     return integ
+
+
+@pytest.fixture(scope="module")
+def exchange_integration_to_delete(org_annotate_workflow: Workflow) -> Integration:
+    client = IndicoClient()
+    creds = {
+        "clientId": os.getenv("EXCH_CLIENT_ID"),
+        "clientSecret": os.getenv("EXCH_CLIENT_SECRET"),
+        "tenantId": os.getenv("EXCH_TENANT_ID")
+    }
+
+    config = {
+        "userId": os.getenv("EXCH_USER_ID"),
+        "folderId": "mailFolders('inbox')"
+    }
+
+    integ: Integration = client.call(
+        AddExchangeIntegration(
+            workflow_id=org_annotate_workflow.id,
+            config=config,
+            credentials=creds
+        )
+    )
+
+    return integ
