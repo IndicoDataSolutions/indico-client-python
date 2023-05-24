@@ -110,14 +110,5 @@ class DeleteIntegration(GraphQLRequest):
     def __init__(self, integration_id: int):
         super().__init__(
             self.query,
-            variables={"integration_id": integration_id},
-        )
-
-    # TODO: edit this process response
-    # See expected outputs for completion or non existant exchange
-    def process_response(self, response) -> ExchangeIntegration:
-        return ExchangeIntegration(
-            **super().process_response(response)["deleteWorkflowIntegration"][
-                "integration"
-            ]
+            variables={"integrationId": integration_id},
         )

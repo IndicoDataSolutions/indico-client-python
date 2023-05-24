@@ -109,7 +109,6 @@ class GetQuestionnaireExamples(GraphQLRequest):
         )
 
     def process_response(self, response):
-        print(response)
         try:
             examples = [
                 Example(**e)
