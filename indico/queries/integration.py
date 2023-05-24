@@ -95,7 +95,7 @@ class DeleteIntegration(GraphQLRequest):
     Mutation to delete an existing Integration.
 
     Args:
-        integration_id(int): id of the integration to start
+        integration_id(int): id of the integration to delete
 
     """
 

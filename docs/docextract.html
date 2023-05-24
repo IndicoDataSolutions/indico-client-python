@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DocumentExtraction &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,10 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -28,12 +29,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-            <a href="index.html" class="icon icon-home"> Indico Python Client
-            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Indico Python Client
+              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -51,7 +56,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="config.html">IndicoConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">IndicoClient</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">DocumentExtraction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DocumentExtraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#indico.queries.documents.DocumentExtraction"><code class="docutils literal notranslate"><span class="pre">DocumentExtraction</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
@@ -89,8 +97,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>DocumentExtraction</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DocumentExtraction</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/docextract.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -101,7 +109,7 @@
            <div itemprop="articleBody">
              
   <section id="module-indico.queries.documents">
-<span id="documentextraction"></span><h1>DocumentExtraction<a class="headerlink" href="#module-indico.queries.documents" title="Permalink to this headline"></a></h1>
+<span id="documentextraction"></span><h1>DocumentExtraction<a class="headerlink" href="#module-indico.queries.documents" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.documents.DocumentExtraction">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.documents.</span></span><span class="sig-name descname"><span class="pre">DocumentExtraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upload_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocr_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OMNIPAGE'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.documents.DocumentExtraction" title="Permalink to this definition"></a></dt>
@@ -109,7 +117,7 @@
 <p>DocumentExtraction performs Optical Character Recognition (OCR) on PDF or TIF files to
 extract raw text for model training and prediction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>files=</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Pathnames of one or more files to OCR</p></li>
 <li><p><strong>json_config</strong> (<em>dict</em><em> or </em><em>JSON str</em>) – Configuration settings for OCR. See Notes below.</p></li>
@@ -117,7 +125,7 @@ extract raw text for model training and prediction.</p>
 <li><p><strong>ocr_engine</strong> (<em>str</em>) – Denotes which ocr engine to use. Defaults to OMNIPAGE.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Job object</p>
 </dd>
 </dl>
