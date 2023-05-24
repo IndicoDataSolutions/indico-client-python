@@ -10,14 +10,10 @@ User Guide
 
     intro
     concepts
-    docextract-intro
-    docextract_settings
-    model_predictions
     workflow-intro
     review-intro
     auto-review
     object-detection
-    migration
     examples
 
 Reference
@@ -44,6 +40,7 @@ Reference
     workflow-metrics
     workflow_components
     document_report
+    integration
 
 **Types**
 
@@ -57,3 +54,4 @@ Reference
     user-metrics-types
     workflow-metrics-types
     document_report_types
+    integration-types

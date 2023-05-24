@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -76,6 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration-types.html">Integration Types</a></li>
 </ul>
 
         </div>
@@ -132,6 +134,8 @@
       <li><a href="workflow_components.html#indico.queries.workflow_components.AddContentLengthFilterComponent">AddContentLengthFilterComponent (class in indico.queries.workflow_components)</a>
 </li>
       <li><a href="datasets.html#indico.queries.datasets.AddDatasetFiles">AddDatasetFiles (class in indico.queries.datasets)</a>
+</li>
+      <li><a href="integration.html#indico.queries.integration.AddExchangeIntegration">AddExchangeIntegration (class in indico.queries.integration)</a>
 </li>
       <li><a href="workflow_components.html#indico.queries.workflow_components.AddLinkClassificationComponent">AddLinkClassificationComponent (class in indico.queries.workflow_components)</a>
 </li>
@@ -299,6 +303,8 @@
 </li>
       <li><a href="datasets.html#indico.queries.datasets.DeleteDataset">DeleteDataset (class in indico.queries.datasets)</a>
 </li>
+      <li><a href="integration.html#indico.queries.integration.DeleteIntegration">DeleteIntegration (class in indico.queries.integration)</a>
+</li>
       <li><a href="workflow.html#indico.queries.workflow.DeleteWorkflow">DeleteWorkflow (class in indico.queries.workflow)</a>
 </li>
       <li><a href="workflow_components.html#indico.queries.workflow_components.DeleteWorkflowComponent">DeleteWorkflowComponent (class in indico.queries.workflow_components)</a>
@@ -327,6 +333,14 @@
         <li><a href="user-metrics-types.html#indico.types.user_metrics.UserSummaryCounts.enabled">(indico.types.user_metrics.UserSummaryCounts attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="integration-types.html#indico.types.integration.ExchangeIntegration">ExchangeIntegration (class in indico.types.integration)</a>
+</li>
+      <li><a href="integration-types.html#indico.types.integration.ExchangeIntegrationConfiguration">ExchangeIntegrationConfiguration (class in indico.types.integration)</a>
+</li>
+      <li><a href="integration-types.html#indico.types.integration.ExchangeIntegrationCredentials">ExchangeIntegrationCredentials (class in indico.types.integration)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -462,6 +476,13 @@
 </li>
       </ul></li>
       <li>
+    indico.queries.integration
+
+      <ul>
+        <li><a href="integration.html#module-indico.queries.integration">module</a>
+</li>
+      </ul></li>
+      <li>
     indico.queries.jobs
 
       <ul>
@@ -475,8 +496,6 @@
         <li><a href="model_groups.html#module-indico.queries.model_groups">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     indico.queries.storage
 
@@ -484,6 +503,8 @@
         <li><a href="storage.html#module-indico.queries.storage">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     indico.queries.submission
 
@@ -527,6 +548,13 @@
 </li>
       </ul></li>
       <li>
+    indico.types.integration
+
+      <ul>
+        <li><a href="integration-types.html#module-indico.types.integration">module</a>
+</li>
+      </ul></li>
+      <li>
     indico.types.jobs
 
       <ul>
@@ -564,6 +592,10 @@
       <li><a href="client.html#indico.client.client.IndicoClient">IndicoClient (class in indico.client.client)</a>
 </li>
       <li><a href="config.html#indico.config.config.IndicoConfig">IndicoConfig (class in indico.config.config)</a>
+</li>
+      <li><a href="integration-types.html#indico.types.integration.Integration">Integration (class in indico.types.integration)</a>
+</li>
+      <li><a href="integration-types.html#indico.types.integration.IntegrationType">IntegrationType (class in indico.types.integration)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -631,6 +663,8 @@
 </li>
         <li><a href="exports.html#module-indico.queries.export">indico.queries.export</a>
 </li>
+        <li><a href="integration.html#module-indico.queries.integration">indico.queries.integration</a>
+</li>
         <li><a href="jobs.html#module-indico.queries.jobs">indico.queries.jobs</a>
 </li>
         <li><a href="model_groups.html#module-indico.queries.model_groups">indico.queries.model_groups</a>
@@ -648,6 +682,8 @@
         <li><a href="dataset-type.html#module-indico.types.dataset">indico.types.dataset</a>
 </li>
         <li><a href="document_report_types.html#module-indico.types.document_report">indico.types.document_report</a>
+</li>
+        <li><a href="integration-types.html#module-indico.types.integration">indico.types.integration</a>
 </li>
         <li><a href="jobs-type.html#module-indico.types.jobs">indico.types.jobs</a>
 </li>
@@ -698,14 +734,16 @@
 </li>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.pages">pages (indico.types.datafile.Datafile attribute)</a>
 </li>
+      <li><a href="integration.html#indico.queries.integration.PauseIntegration">PauseIntegration (class in indico.queries.integration)</a>
+</li>
       <li><a href="model-type.html#indico.types.model.TrainingProgress.percent_complete">percent_complete (indico.types.model.TrainingProgress attribute)</a>
 </li>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset.permissions">permissions (indico.types.dataset.Dataset attribute)</a>
 </li>
-      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.PredictionMetric">PredictionMetric (class in indico.types.workflow_metrics)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.PredictionMetric">PredictionMetric (class in indico.types.workflow_metrics)</a>
+</li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.PredictionMetrics">PredictionMetrics (class in indico.types.workflow_metrics)</a>
 </li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.predictions">predictions (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
@@ -790,6 +828,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="integration.html#indico.queries.integration.StartIntegration">StartIntegration (class in indico.queries.integration)</a>
+</li>
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.status">status (indico.types.datafile.Datafile attribute)</a>
 
       <ul>
