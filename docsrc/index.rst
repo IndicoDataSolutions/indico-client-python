@@ -44,6 +44,7 @@ Reference
     workflow-metrics
     workflow_components
     document_report
+    integration
 
 **Types**
 
@@ -57,3 +58,4 @@ Reference
     user-metrics-types
     workflow-metrics-types
     document_report_types
+    integration-types
