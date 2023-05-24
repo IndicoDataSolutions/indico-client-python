@@ -112,3 +112,26 @@ class DeleteIntegration(GraphQLRequest):
             self.query,
             variables={"integrationId": integration_id},
         )
+
+
+class PauseIntegration(GraphQLRequest):
+    """
+    Mutation to pause an existing Integration.
+
+    Args:
+        integration_id(int): id of the integration to pause
+    """
+    
+    query = """
+        mutation PauseIntegration($integrationId: Int!){
+            pauseWorkflowIntegration(integrationId: $integrationId){
+             success # bool
+        }
+    }
+    """
+    
+    def __init__(self, integration_id: int):
+        super().__init__(
+            self.query,
+            variables={"integrationId": integration_id},
+        )

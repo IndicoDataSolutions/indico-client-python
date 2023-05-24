@@ -2,16 +2,23 @@ import os
 from time import sleep
 
 from indico.client import IndicoClient
-from indico.queries import AddExchangeIntegration, StartIntegration, DeleteIntegration
+from indico.queries import (
+    AddExchangeIntegration,
+    StartIntegration,
+    DeleteIntegration,
+    PauseIntegration,
+)
+
 from indico.types import Workflow, Integration, ModelGroup
 from tests.integration.data.datasets import (
-    airlines_workflow, 
-    airlines_dataset, 
-    org_annotate_workflow, 
-    org_annotate_dataset, 
-    org_annotate_exchange_integration, 
+    airlines_workflow,
+    airlines_dataset,
+    org_annotate_workflow,
+    org_annotate_dataset,
+    org_annotate_exchange_integration,
     org_annotate_model_group,
     exchange_integration_to_delete,
+    started_exchange_integration
 )
 
 def test_add_integration(airlines_workflow: Workflow):
@@ -60,3 +67,14 @@ def test_delete_integration(exchange_integration_to_delete: Integration):
         )
     )
     assert resp["deleteWorkflowIntegration"]["success"]
+
+
+def test_pause_integration(started_exchange_integration: Integration):
+    integ = started_exchange_integration
+    client = IndicoClient()
+    resp = client.call(
+        PauseIntegration(
+            integration_id=integ.id
+        )
+    )
+    assert resp["pauseWorkflowIntegration"]["success"]

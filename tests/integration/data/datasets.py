@@ -9,6 +9,7 @@ from indico.queries import (
     AddModelGroupComponent, 
     GetModelGroup, 
     AddExchangeIntegration, 
+    StartIntegration,
     GetWorkflow,
 )
 from indico.queries.workflow_components import _AddWorkflowComponent
@@ -252,3 +253,32 @@ def exchange_integration_to_delete(org_annotate_workflow: Workflow) -> Integrati
     )
 
     return integ
+
+
+@pytest.fixture(scope="module")
+def started_exchange_integration(org_annotate_workflow: Workflow) -> Integration:
+    client = IndicoClient()
+    creds = {
+        "clientId": os.getenv("EXCH_CLIENT_ID"),
+        "clientSecret": os.getenv("EXCH_CLIENT_SECRET"),
+        "tenantId": os.getenv("EXCH_TENANT_ID")
+    }
+
+    config = {
+        "userId": os.getenv("EXCH_USER_ID"),
+        "folderId": "mailFolders('inbox')"
+    }
+
+    integ: Integration = client.call(
+        AddExchangeIntegration(
+            workflow_id=org_annotate_workflow.id,
+            config=config,
+            credentials=creds
+        )
+    )
+    client.call(
+        StartIntegration(
+            integration_id=integ.id
+        )
+    )
+    yield integ
