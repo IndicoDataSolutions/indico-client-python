@@ -4,6 +4,15 @@ from time import sleep
 from indico.client import IndicoClient
 from indico.queries import AddExchangeIntegration, StartIntegration, DeleteIntegration
 from indico.types import Workflow, Integration, ModelGroup
+from tests.integration.data.datasets import (
+    airlines_workflow, 
+    airlines_dataset, 
+    org_annotate_workflow, 
+    org_annotate_dataset, 
+    org_annotate_exchange_integration, 
+    org_annotate_model_group,
+    exchange_integration_to_delete,
+)
 
 def test_add_integration(airlines_workflow: Workflow):
     client = IndicoClient()

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Auto Review &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,10 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -28,12 +29,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-            <a href="index.html" class="icon icon-home"> Indico Python Client
-            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Indico Python Client
+              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -95,8 +100,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Auto Review</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Auto Review</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/auto-review.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -107,15 +112,15 @@
            <div itemprop="articleBody">
              
   <section id="auto-review">
-<h1>Auto Review<a class="headerlink" href="#auto-review" title="Permalink to this headline"></a></h1>
+<h1>Auto Review<a class="headerlink" href="#auto-review" title="Permalink to this heading"></a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
 <p>Auto Review is a feature that allows users to programatically accept and reject predictions before Review. The criteria for accepting and rejecting predictions can be customized by the user.</p>
 <p>To use Auto-review, Review and Scripted Review must be enabled from the workflows page. You can enable these features by clicking on workflows from your dataset page (shown below).</p>
 <img alt="_images/enable_auto_review.png" src="_images/enable_auto_review.png" />
 </section>
 <section id="using-auto-review">
-<h2>Using Auto Review<a class="headerlink" href="#using-auto-review" title="Permalink to this headline"></a></h2>
+<h2>Using Auto Review<a class="headerlink" href="#using-auto-review" title="Permalink to this heading"></a></h2>
 <p>Auto review is currently only available via api call. To use it, the following steps must be performed:</p>
 <ul class="simple">
 <li><p>Submit a document through your workflow</p></li>
@@ -176,14 +181,14 @@
 <p>Predictions that were rejected through Auto-Review will not appear in Review (shown right). Human reviewers are still able to fill in these empty labels, or confirm no value. You can also confirm no value programmatically through Auto Review.</p>
 </section>
 <section id="auto-reject-a-document">
-<h2>Auto Reject a Document<a class="headerlink" href="#auto-reject-a-document" title="Permalink to this headline"></a></h2>
+<h2>Auto Reject a Document<a class="headerlink" href="#auto-reject-a-document" title="Permalink to this heading"></a></h2>
 <p>When submitting changes for a given document using SubmitReview, you can reject a document and send it to the exceptions queue using the “rejected” argument:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">SubmitReview</span><span class="p">(</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">,</span> <span class="n">rejected</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
 <section id="accepting-no-value">
-<h2>Accepting No Value<a class="headerlink" href="#accepting-no-value" title="Permalink to this headline"></a></h2>
+<h2>Accepting No Value<a class="headerlink" href="#accepting-no-value" title="Permalink to this heading"></a></h2>
 <p>Even when all predictions are accepted, a reviewer will still need to manually accept any labels that are empty. However, you can automatically accept empty values for specific labels using the “_no_value” key. Within the model results, set the dictionary key “_no_value” equal to a dictionary containing the name of your model keying to a list of labels. This list of labels should contain all the labels you would like to automatically accept empty values for. Accepted empty labels will appear in review as accepted labels. Please note that you can only auto-accept empty labels that do not contain any predictions. Labels that contain predictions should not be inlcuded in the list of no value labels. In the example below empty labels are only accepted if the specified label is not present in the predictions:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">WorkflowSubmission</span><span class="p">,</span>

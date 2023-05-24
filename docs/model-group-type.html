@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Model Group Types &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,10 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -28,12 +29,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-            <a href="index.html" class="icon icon-home"> Indico Python Client
-            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Indico Python Client
+              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,7 +74,16 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Group Types</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Group Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#indico.types.model_group.ModelGroup"><code class="docutils literal notranslate"><span class="pre">ModelGroup</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#indico.types.model_group.ModelGroup.id"><code class="docutils literal notranslate"><span class="pre">ModelGroup.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indico.types.model_group.ModelGroup.name"><code class="docutils literal notranslate"><span class="pre">ModelGroup.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indico.types.model_group.ModelGroup.status"><code class="docutils literal notranslate"><span class="pre">ModelGroup.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indico.types.model_group.ModelGroup.task_type"><code class="docutils literal notranslate"><span class="pre">ModelGroup.task_type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
@@ -89,8 +103,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Model Group Types</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Model Group Types</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/model-group-type.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -101,7 +115,7 @@
            <div itemprop="articleBody">
              
   <section id="module-indico.types.model_group">
-<span id="model-group-types"></span><h1>Model Group Types<a class="headerlink" href="#module-indico.types.model_group" title="Permalink to this headline"></a></h1>
+<span id="model-group-types"></span><h1>Model Group Types<a class="headerlink" href="#module-indico.types.model_group" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.types.model_group.ModelGroup">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.types.model_group.</span></span><span class="sig-name descname"><span class="pre">ModelGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.model_group.ModelGroup" title="Permalink to this definition"></a></dt>
@@ -115,7 +129,7 @@ be the best performing.</p>
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#indico.types.model_group.ModelGroup.id" title="Permalink to this definition"></a></dt>
 <dd><p>The model group id</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -126,7 +140,7 @@ be the best performing.</p>
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#indico.types.model_group.ModelGroup.name" title="Permalink to this definition"></a></dt>
 <dd><p>The name of the model group</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -137,7 +151,7 @@ be the best performing.</p>
 <span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#indico.types.model_group.ModelGroup.status" title="Permalink to this definition"></a></dt>
 <dd><p>“CREATED”, “TRAINING”, “COMPLETE” or “FAILED”</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -148,7 +162,7 @@ be the best performing.</p>
 <span class="sig-name descname"><span class="pre">selected</span> <span class="pre">model</span></span></dt>
 <dd><p>A Model object representing the selected (active) model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="model-type.html#indico.types.model.Model" title="indico.types.model.Model">Model</a></p>
 </dd>
 </dl>
@@ -159,7 +173,7 @@ be the best performing.</p>
 <span class="sig-name descname"><span class="pre">task_type</span></span><a class="headerlink" href="#indico.types.model_group.ModelGroup.task_type" title="Permalink to this definition"></a></dt>
 <dd><p>Type of machine learning task the model solves</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>

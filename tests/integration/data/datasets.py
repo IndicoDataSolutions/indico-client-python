@@ -3,8 +3,14 @@ import pytest
 import time
 from pathlib import Path
 from indico.client import IndicoClient
-from indico.queries import CreateDataset, CreateModelGroup, CreateWorkflow, AddModelGroupComponent, \
-    GetModelGroupSelectedModelStatus, GetModelGroup, AddExchangeIntegration, GetWorkflow
+from indico.queries import (
+    CreateDataset, 
+    CreateWorkflow, 
+    AddModelGroupComponent, 
+    GetModelGroup, 
+    AddExchangeIntegration, 
+    GetWorkflow,
+)
 from indico.queries.workflow_components import _AddWorkflowComponent
 from indico.types import ModelGroup, Dataset, Workflow, Integration
 
