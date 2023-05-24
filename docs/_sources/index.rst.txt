@@ -10,14 +10,10 @@ User Guide
 
     intro
     concepts
-    docextract-intro
-    docextract_settings
-    model_predictions
     workflow-intro
     review-intro
     auto-review
     object-detection
-    migration
     examples
 
 Reference
