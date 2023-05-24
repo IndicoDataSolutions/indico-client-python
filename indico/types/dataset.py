@@ -77,7 +77,7 @@ class OcrEngine(Enum):
     OMNIPAGE = 0
     READAPI = 1
     READAPI_V2 = 2
-    pass
+    READAPI_TABLES_V1 = 3
 
 class OmnipageOcrOptionsInput(BaseType):
     """
@@ -131,3 +131,4 @@ class OcrOptionsInput():
     ocr_engine: OcrEngine
     omnipage_options: OmnipageOcrOptionsInput
     readapi_options: ReadApiOcrOptionsInput
+    
