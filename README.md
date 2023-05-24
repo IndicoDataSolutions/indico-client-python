@@ -77,6 +77,11 @@ To run the tests associated with this repo perform the following:
 ### Prerequisite
 Ensure you have set the environment variables detailed [here](#environment-variables)
 
+You will also need the following env variables set for the Exchange integration tests:
+* `EXCH_TENANT_ID`
+* `EXCH_CLIENT_ID`
+* `EXCH_CLIENT_SECRET`
+* `EXCH_USER_ID`
 ### Running the tests
 1. Create a virtual environment
 `python3 -m venv venv`

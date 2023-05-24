@@ -3,7 +3,12 @@ from typing import List
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
-from indico.types.integration import ExchangeIntegration, ExchangeIntegrationConfiguration, ExchangeIntegrationCredentials
+from indico.types.integration import (
+    ExchangeIntegration,
+    ExchangeIntegrationConfiguration,
+    ExchangeIntegrationCredentials,
+)
+
 
 class AddExchangeIntegration(GraphQLRequest):
     """
@@ -52,8 +57,11 @@ class AddExchangeIntegration(GraphQLRequest):
 
     def process_response(self, response) -> ExchangeIntegration:
         return ExchangeIntegration(
-            **super().process_response(response)["addExchangeIntegrationToWorkflow"]["integration"]
+            **super().process_response(response)["addExchangeIntegrationToWorkflow"][
+                "integration"
+            ]
         )
+
 
 class StartIntegration(GraphQLRequest):
     """
@@ -78,7 +86,29 @@ class StartIntegration(GraphQLRequest):
     ):
         super().__init__(
             self.query,
-            variables={
-                "integration_id": integration_id
-            },
+            variables={"integration_id": integration_id},
+        )
+
+
+class DeleteIntegration(GraphQLRequest):
+    """
+    Mutation to delete an existing Integration.
+
+    Args:
+        integration_id(int): id of the integration to start
+
+    """
+
+    query = """
+        mutation DeleteWorkflowIntegration($integrationId: Int!) {
+            deleteWorkflowIntegration(integrationId: $integrationId) {
+                success
+            }
+        }
+    """
+
+    def __init__(self, integration_id: int):
+        super().__init__(
+            self.query,
+            variables={"integrationId": integration_id},
         )
