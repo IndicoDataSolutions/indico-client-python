@@ -257,6 +257,7 @@ def test_object_detection_metrics(
 def test_model_group_metrics_query(
     indico, org_annotate_dataset, org_annotate_model_group
 ):
+    """This test is sometimes flaky"""
     client = IndicoClient()
     result = client.call(
         GetModelGroupMetrics(model_group_id=org_annotate_model_group.id)

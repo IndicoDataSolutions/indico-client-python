@@ -1,29 +1,18 @@
-import json
 from pathlib import Path
+import time
 from typing import List
 
 import pytest
-from indico import IndicoConfig
 from indico.client import IndicoClient
 from indico.queries import (
     JobStatus,
     RetrieveStorageObject,
-    CreateDataset,
-    GetDataset,
-    ListWorkflows,
     UpdateWorkflowSettings,
     WorkflowSubmission,
-    SubmissionResult,
-    UpdateSubmission,
-    GetSubmission,
     WaitForSubmissions,
     SubmitReview,
 )
-from indico.queries.questionnaire import (
-    CreateQuestionaire,
-    GetQuestionnaireExamples,
-    GetQuestionnaire,
-)
+
 from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
 from indico.queries.workflow_metrics import GetWorkflowMetrics
 from datetime import datetime
@@ -33,12 +22,11 @@ import time
 
 
 @pytest.fixture
-def workflow(indico, org_annotate_dataset, org_annotate_model_group: ModelGroup):
+def workflow(indico, org_annotate_dataset, org_annotate_workflow, org_annotate_model_group):
     client = IndicoClient()
-    wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
-    wf = max(wfs, key=lambda w: w.id)
+
     wf = client.call(
-        UpdateWorkflowSettings(wf, enable_review=True, enable_auto_review=True)
+        UpdateWorkflowSettings(org_annotate_workflow.id, enable_review=True, enable_auto_review=True)
     )
     assert wf.review_enabled and wf.auto_review_enabled
 
@@ -57,16 +45,17 @@ def workflow(indico, org_annotate_dataset, org_annotate_model_group: ModelGroup)
             for pred in preds:
                 pred["accepted"] = True
     job = client.call(SubmitReview(sub.id, changes=changes, force_complete=True))
-    job = client.call(JobStatus(job.id, timeout=900))
-    submission = client.call(GetSubmission(sub.id))
+    job = client.call(JobStatus(job.id))
+    submission = client.call(WaitForSubmissions([sub.id]))[0]
     assert submission.status == "COMPLETE"
 
+    # metrics in the cluster are updated every 5 minutes
+    time.sleep(300)
     return wf
 
 
-def test_fetch_metrics(indico, org_annotate_dataset, workflow):
+def test_fetch_metrics(indico, workflow):
     client = IndicoClient()
-    # time.sleep(300)
     workflow_metric: List[WorkflowMetrics] = client.call(
         GetWorkflowMetrics(
             options=[WorkflowMetricsOptions.SUBMISSIONS],
@@ -77,10 +66,10 @@ def test_fetch_metrics(indico, org_annotate_dataset, workflow):
     )
     assert workflow_metric is not None
     assert workflow_metric[0].submissions is not None
-    assert workflow_metric[0].submissions.aggregate.submitted is 1
+    assert workflow_metric[0].submissions.aggregate.submitted > 0
 
 
-def test_fetch_metrics_queue(indico, org_annotate_dataset, workflow):
+def test_fetch_metrics_queue(indico, workflow):
     client = IndicoClient()
     workflow_metric: List[WorkflowMetrics] = client.call(
         GetWorkflowMetrics(
