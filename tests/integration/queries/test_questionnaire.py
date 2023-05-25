@@ -1,5 +1,6 @@
 import time
 import pytest
+import unittest
 import json
 from pathlib import Path
 
@@ -118,23 +119,18 @@ def test_get_examples(indico, unlabeled_questionnaire):
         assert isinstance(example.row_index, int)
         assert isinstance(example.datafile_id, int)
 
-
+@unittest.skip("Format of labels changed in 5.x. Ticket to update: https://indicodata.atlassian.net/browse/CAT-657")
 def test_add_labels(indico, unlabeled_questionnaire):
     client = IndicoClient()
     example = client.call(
         GetQuestionnaireExamples(
-            questionnaire_id=unlabeled_questionnaire.id, num_examples=1
+            questionnaire_id=unlabeled_questionnaire["questionnaire"].id, num_examples=1
         )
     )
-    import pdb
-
-    pdb.set_trace()
     labels = [
         {
-            "exampleId": example[0].id,
-            "targets": json.dumps(
-                [{"clsId": "A", "spans": [{"start": 0, "end": 10, "page_num": 1}]}]
-            ),
+            "rowIndex": example[0].row_index,
+            "target": json.dumps([{"start": 0, "end": 10, "label": "A"}]),
         }
     ]
     dataset_id = unlabeled_questionnaire["dataset"].id
