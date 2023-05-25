@@ -28,8 +28,12 @@ def unlabeled_questionnaire(indico):
     dataset = client.call(
         CreateDataset(name=f"CreateDataset-test-{int(time.time())}", files=files)
     )
-    workflow: Workflow = client.call(CreateWorkflow(name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id))
-    after_component = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
+    workflow: Workflow = client.call(
+        CreateWorkflow(
+            name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id
+        )
+    )
+    after_component_id = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
 
     questionnaire = client.call(
         CreateQuestionaire(
@@ -37,7 +41,7 @@ def unlabeled_questionnaire(indico):
             dataset_id=dataset.id,
             targets=["A", "B", "C"],
             workflow_id=workflow.id,
-            after_component_id=after_component
+            after_component_id=after_component_id,
         )
     )
     return {"dataset": dataset, "questionnaire": questionnaire}
@@ -56,7 +60,11 @@ def test_create_questionnaire_labeled(indico):
     dataset = client.call(
         CreateDataset(name=f"CreateDataset-test-{int(time.time())}", files=files)
     )
-    workflow: Workflow = client.call(CreateWorkflow(name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id))
+    workflow: Workflow = client.call(
+        CreateWorkflow(
+            name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id
+        )
+    )
     after_component = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     csv = pd.read_csv(csv_path)
     data = {
@@ -71,11 +79,12 @@ def test_create_questionnaire_labeled(indico):
             target_lookup=data,
             targets=targets,
             workflow_id=workflow.id,
-            after_component_id=after_component
+            after_component_id=after_component,
         )
     )
 
     assert isinstance(response, Questionnaire)
+
 
 def test_get_nonexistent_questionnaire(indico):
     client = IndicoClient()
@@ -114,13 +123,18 @@ def test_add_labels(indico, unlabeled_questionnaire):
     client = IndicoClient()
     example = client.call(
         GetQuestionnaireExamples(
-            questionnaire_id=unlabeled_questionnaire["questionnaire"].id, num_examples=1
+            questionnaire_id=unlabeled_questionnaire.id, num_examples=1
         )
     )
+    import pdb
+
+    pdb.set_trace()
     labels = [
         {
-            "rowIndex": example[0].row_index,
-            "target": json.dumps([{"start": 0, "end": 10, "label": "A"}]),
+            "exampleId": example[0].id,
+            "targets": json.dumps(
+                [{"clsId": "A", "spans": [{"start": 0, "end": 10, "page_num": 1}]}]
+            ),
         }
     ]
     dataset_id = unlabeled_questionnaire["dataset"].id

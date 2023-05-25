@@ -42,15 +42,18 @@ def test_pagination(indico):
     client = IndicoClient()
     document_report: List[DocumentReport] = []
     num_pages_to_check = 5
-    for i,page in enumerate(client.paginate(GetDocumentReport(limit=10))):
+    for i, page in enumerate(client.paginate(GetDocumentReport(limit=10))):
         document_report.extend(page)
         if i > num_pages_to_check:
             break
     assert document_report is not None
     assert len(document_report) > 0
 
+
 def test_all_submissions(indico):
+    """
+    This test is expected to fail unless user has ALL_SUBMISSION_LOGs scope
+    """
     client = IndicoClient()
-    document_report: List[DocumentReport] = []
     page = next(client.paginate(GetDocumentReport(limit=1000, all_submissions=True)))
     assert page is not None

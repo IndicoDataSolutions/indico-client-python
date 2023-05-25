@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from indico.queries.workflow import GetWorkflow
 import pytest
@@ -22,11 +23,11 @@ from indico.queries import (
     WorkflowSubmissionDetailed,
     AddDataToWorkflow,
     AddFiles,
-    ProcessCSV,
     CreateDataset,
-    DeleteWorkflow
+    DeleteWorkflow,
 )
 from indico.queries.questionnaire import CreateQuestionaire, GetQuestionnaire
+from indico.queries.workflow_components import _AddWorkflowComponent
 from indico.types import ModelGroup
 from indico.types.submission import Submission
 
@@ -39,7 +40,10 @@ def test_list_workflows(indico, airlines_dataset, airlines_model_group: ModelGro
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     assert len(wfs) > 0
 
-def test_list_workflows_audit_info(indico, airlines_dataset, airlines_model_group: ModelGroup):
+
+def test_list_workflows_audit_info(
+    indico, airlines_dataset, airlines_model_group: ModelGroup
+):
     client = IndicoClient()
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     assert wfs[0].created_at
@@ -72,7 +76,9 @@ def test_workflow_submission(
     with pytest.raises(IndicoInputError):
         client.call(SubmissionResult(submission_id, "INVALID_STATUS"))
 
-    result_url = client.call(SubmissionResult(submission_id, "COMPLETE", wait=True))
+    result_url = client.call(
+        SubmissionResult(submission_id, "COMPLETE", wait=True, timeout=120)
+    )
     result = client.call(RetrieveStorageObject(result_url.result))
     assert isinstance(result, dict)
     assert result["submission_id"] == submission_id
@@ -85,6 +91,7 @@ def test_workflow_submission(
     sub = client.call(GetSubmission(submission_id))
     assert sub.retrieved is True
 
+
 def test_workflow_submission_with_streams(
     indico, airlines_dataset, airlines_model_group: ModelGroup
 ):
@@ -94,9 +101,7 @@ def test_workflow_submission_with_streams(
 
     path = Path(str(Path(__file__).parents[1]) + "/data/mock.pdf")
     fd = open(path.absolute(), "rb")
-    files = {
-        "mock.pdf": fd
-    }
+    files = {"mock.pdf": fd}
     submission_ids = client.call(WorkflowSubmission(workflow_id=wf.id, streams=files))
     submission_id = submission_ids[0]
     assert submission_id is not None
@@ -107,7 +112,9 @@ def test_workflow_submission_with_streams(
     with pytest.raises(IndicoInputError):
         client.call(SubmissionResult(submission_id, "INVALID_STATUS"))
 
-    result_url = client.call(SubmissionResult(submission_id, "COMPLETE", wait=True))
+    result_url = client.call(
+        SubmissionResult(submission_id, "COMPLETE", wait=True, timeout=120)
+    )
     result = client.call(RetrieveStorageObject(result_url.result))
     assert isinstance(result, dict)
     assert result["submission_id"] == submission_id
@@ -117,6 +124,7 @@ def test_workflow_submission_with_streams(
     assert isinstance(sub, Submission)
     assert sub.retrieved is True
 
+
 def test_workflow_submission_with_text(
     indico, airlines_dataset, airlines_model_group: ModelGroup
 ):
@@ -124,7 +132,9 @@ def test_workflow_submission_with_text(
     wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
     wf = max(wfs, key=lambda w: w.id)
 
-    submission_ids = client.call(WorkflowSubmission(workflow_id=wf.id, text="hello this is a test"))
+    submission_ids = client.call(
+        WorkflowSubmission(workflow_id=wf.id, text="hello this is a test")
+    )
     submission_id = submission_ids[0]
     assert submission_id is not None
 
@@ -134,7 +144,9 @@ def test_workflow_submission_with_text(
     with pytest.raises(IndicoInputError):
         client.call(SubmissionResult(submission_id, "INVALID_STATUS"))
 
-    result_url = client.call(SubmissionResult(submission_id, "COMPLETE", wait=True))
+    result_url = client.call(
+        SubmissionResult(submission_id, "COMPLETE", wait=True, timeout=120)
+    )
     result = client.call(RetrieveStorageObject(result_url.result))
     assert isinstance(result, dict)
     assert result["submission_id"] == submission_id
@@ -143,7 +155,6 @@ def test_workflow_submission_with_text(
     sub = client.call(GetSubmission(submission_id))
     assert isinstance(sub, Submission)
     assert sub.retrieved is True
-
 
 
 @pytest.mark.parametrize(
@@ -168,13 +179,16 @@ def test_workflow_submission_versioned(
     submission_id = submission_ids[0]
     assert submission_id is not None
 
-    submissions = client.call(WaitForSubmissions(submission_id))
+    submissions = client.call(WaitForSubmissions(submission_id, timeout=120))
     result = client.call(RetrieveStorageObject(submissions[0].result_file))
 
     assert isinstance(result, dict)
     assert result["file_version"] == 3
     assert len(result["submission_results"]) == 1
-    assert result["submission_results"][0]["input_filename"] == "mock.pdf"
+    assert (
+        os.path.basename(result["submission_results"][0]["input_filename"])
+        == "mock.pdf"
+    )
 
 
 @pytest.mark.parametrize(
@@ -201,13 +215,16 @@ def test_workflow_submission_bundled(
     submission_id = submission_ids[0]
     assert submission_id
 
-    submissions = client.call(WaitForSubmissions(submission_id))
+    submissions = client.call(WaitForSubmissions(submission_id, timeout=120))
     result = client.call(RetrieveStorageObject(submissions[0].result_file))
 
     assert isinstance(result, dict)
     assert result["file_version"] == 3
     assert len(result["submission_results"]) == len(next(iter(_input.values())))
-    assert result["submission_results"][0]["input_filename"] == "mock.pdf"
+    assert (
+        os.path.basename(result["submission_results"][0]["input_filename"])
+        == "mock.pdf"
+    )
 
 
 @pytest.mark.parametrize(
@@ -230,16 +247,14 @@ def test_workflow_submission_detailed(
 
 
 def test_list_workflow_submission_retrieved(
-    indico, airlines_dataset, airlines_model_group: ModelGroup
+    indico, airlines_dataset, airlines_workflow, airlines_model_group: ModelGroup
 ):
     client = IndicoClient()
-    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
-    wf = max(wfs, key=lambda w: w.id)
 
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
 
     submission_ids = client.call(
-        WorkflowSubmission(workflow_id=wf.id, files=[dataset_filepath])
+        WorkflowSubmission(workflow_id=airlines_workflow.id, files=[dataset_filepath])
     )
     submission_id = submission_ids[0]
     assert submission_id is not None
@@ -258,6 +273,7 @@ def test_list_workflow_submission_retrieved(
     assert all([not s.retrieved for s in submissions])
     assert submission_id not in [s.id for s in submissions]
 
+
 def test_list_workflow_submission_paginate(
     indico, airlines_dataset, airlines_model_group: ModelGroup
 ):
@@ -268,7 +284,7 @@ def test_list_workflow_submission_paginate(
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
 
     submission_ids = client.call(
-        WorkflowSubmission(workflow_id=wf.id, files=[dataset_filepath]*5)
+        WorkflowSubmission(workflow_id=wf.id, files=[dataset_filepath] * 5)
     )
     subs = []
 
@@ -278,6 +294,7 @@ def test_list_workflow_submission_paginate(
         if not submission_ids:
             break
         assert sub.id == submission_ids.pop()  # list is desc by default
+
 
 def test_workflow_submission_missing_workflow(indico):
     client = IndicoClient()
@@ -319,13 +336,19 @@ def test_auto_review_enabled_in_get_workflow_response(
 
 @pytest.mark.parametrize("force_complete", [None, True])
 def test_workflow_submission_auto_review(
-    indico, force_complete, org_annotate_dataset, org_annotate_model_group
+    indico,
+    force_complete,
+    org_annotate_dataset,
+    org_annotate_workflow,
+    org_annotate_model_group,
 ):
+
     client = IndicoClient()
-    wfs = client.call(ListWorkflows(dataset_ids=[org_annotate_dataset.id]))
-    wf = max(wfs, key=lambda w: w.id)
+
     wf = client.call(
-        UpdateWorkflowSettings(wf, enable_review=True, enable_auto_review=True)
+        UpdateWorkflowSettings(
+            org_annotate_workflow.id, enable_review=True, enable_auto_review=True
+        )
     )
     assert wf.review_enabled and wf.auto_review_enabled
 
@@ -347,7 +370,7 @@ def test_workflow_submission_auto_review(
         SubmitReview(sub.id, changes=changes, force_complete=force_complete)
     )
     job = client.call(JobStatus(job.id))
-    submission = client.call(GetSubmission(sub.id))
+    submission = client.call(WaitForSubmissions([sub.id]))[0]
     assert submission.status == "COMPLETE" if force_complete else "PENDING_REVIEW"
 
 
@@ -366,15 +389,15 @@ def test_list_workflow_submission_rejected(org_annotate_dataset):
     subs = client.call(WaitForSubmissions(sub_ids, timeout=120))
     sub = subs[0]
     assert sub.status == "PENDING_AUTO_REVIEW"
-    job = client.call(
-        SubmitReview(sub.id, rejected=True)
-    )
+    job = client.call(SubmitReview(sub.id, rejected=True))
     job = client.call(JobStatus(job.id))
     submissions = client.call(
-        ListSubmissions(filters=SubmissionFilter(reviews=SubmissionReviewFilter(rejected=True)))
+        ListSubmissions(
+            filters=SubmissionFilter(reviews=SubmissionReviewFilter(rejected=True))
+        )
     )
     assert sub_ids[0] in [s.id for s in submissions]
-    
+
 
 def _new_dataset_for_updating(client):
     # new dataset
@@ -385,29 +408,36 @@ def _new_dataset_for_updating(client):
         )
     )
 
-    # new teach task
+    workflowreq = CreateWorkflow(
+        dataset_id=dataset.id, name=f"Update-test-{int(time.time())}"
+    )
+    wf = client.call(workflowreq)
+
     questionnaire = client.call(
         CreateQuestionaire(
-            name=f"AddDataToWorkflowTeach-test-{int(time.time())}",
+            name=f"CreateDatasetTeach-test-{int(time.time())}",
             dataset_id=dataset.id,
-            targets=["positive", "negative"],
+            targets=["A", "B", "C"],
+            workflow_id=wf.id,
+            after_component_id=wf.component_by_type("INPUT_OCR_EXTRACTION").id,
         )
     )
 
-    assert questionnaire.num_total_examples > 0
+    client.call(
+        _AddWorkflowComponent(
+            after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+            component='{"component_type":"default_output","config":{}}',
+            workflow_id=wf.id,
+            after_component_link=None,
+        )
+    )
 
     # add data to dataset and process
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[airline_csv]))
-    datafile_ids = [f.id for f in dataset.files]
     dataset = client.call(
-        ProcessCSV(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
+        AddFiles(dataset_id=dataset.id, files=[airline_csv], autoprocess=True)
     )
 
     assert dataset.status == "COMPLETE"
-
-    # get workflow
-    wfs = client.call(ListWorkflows(dataset_ids=[dataset.id]))
-    wf = max(wfs, key=lambda w: w.id)
     return dataset, wf, questionnaire
 
 
@@ -430,13 +460,18 @@ def test_add_data_to_workflow_nowait(indico):
     wf = client.call(AddDataToWorkflow(wf.id))
     assert wf.status == "ADDING_DATA"
 
+
 @pytest.fixture
 def wf_to_delete(indico, airlines_dataset: Dataset) -> Workflow:
     client = IndicoClient()
-    workflowreq = CreateWorkflow(dataset_id=airlines_dataset.id, name=f"AirlineComplaints-test-{int(time.time())}")
+    workflowreq = CreateWorkflow(
+        dataset_id=airlines_dataset.id,
+        name=f"AirlineComplaints-test-{int(time.time())}",
+    )
     response = client.call(workflowreq)
 
     return response
+
 
 def test_delete_workflow(indico, airlines_dataset: Dataset, wf_to_delete: Workflow):
     client = IndicoClient()
