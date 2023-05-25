@@ -293,9 +293,6 @@ def test_create_from_csv(indico):
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
     dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
-
-    dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
     _dataset_complete(dataset)
     full_dataset = dataset = client.call(GetDataset(id=dataset.id))
     export = client.call(CreateExport(
@@ -306,7 +303,7 @@ def test_create_from_csv(indico):
                     )
 
     exported_data = client.call(DownloadExport(export.id))
-
+    exported_data.to_csv("test.csv")
     baseline_data = pd.read_csv(dataset_filepath)
     for col in baseline_data.columns:
         assert all(
@@ -355,7 +352,6 @@ def test_create_from_csv_doc_urls(indico):
     _dataset_complete(dataset)
 
 
-@unittest.skip
 def test_csv_incompat_columns(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
