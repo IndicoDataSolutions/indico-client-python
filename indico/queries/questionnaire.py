@@ -162,7 +162,7 @@ class GetQuestionnaire(GraphQLRequest):
         questionnaire_list = super().process_response(response)["questionnaires"][
             "questionnaires"
         ]
-        if not questionnaire_list:
+        if not questionnaire_list or not questionnaire_list[0]:
             raise IndicoError("Cannot find questionnaire")
         return Questionnaire(**questionnaire_list[0])
 

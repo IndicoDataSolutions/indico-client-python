@@ -41,7 +41,7 @@ class GetModelGroup(RequestChain):
             while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
                 sleep(1)
                 yield req
-            yield _GetModelGroup(id=self.id)
+        yield _GetModelGroup(id=self.id)
 
 
 class _GetModelGroup(GraphQLRequest):

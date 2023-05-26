@@ -1,7 +1,9 @@
 import pytest
+
 from indico.client import IndicoClient, IndicoConfig
 from indico.client.request import HTTPRequest, HTTPMethod, GraphQLRequest
 from indico.errors import IndicoAuthenticationFailed
+from tests.integration.data.datasets import org_annotate_dataset
 
 
 def test_http_request(indico):
@@ -58,7 +60,8 @@ def test_graphql_request(indico):
     )
     assert "modelGroups" in response
 
-def test_graphql_with_ids():
+
+def test_graphql_with_ids(org_annotate_dataset):
     client = IndicoClient()
     response = client.call(
         GraphQLRequest(
@@ -69,7 +72,7 @@ def test_graphql_with_ids():
                 }
             }
         """,
-            variables={"id": 1},
+            variables={"id": org_annotate_dataset.id},
         )
     )
 

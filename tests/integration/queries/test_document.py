@@ -1,3 +1,4 @@
+import unittest
 import pytest
 import os
 from pathlib import Path
@@ -77,6 +78,7 @@ def test_document_extraction_with_string_config(indico):
     assert type(extract) == dict
     assert "pages" in extract
 
+
 @pytest.mark.ocr("readapi")
 def test_document_extraction_with_readapi(indico):
     client = IndicoClient()
@@ -84,7 +86,9 @@ def test_document_extraction_with_readapi(indico):
 
     jobs = client.call(
         DocumentExtraction(
-            files=[dataset_filepath], json_config={"preset_config": "simple"}, ocr_engine="READAPI"
+            files=[dataset_filepath],
+            json_config={"preset_config": "simple"},
+            ocr_engine="READAPI",
         )
     )
 
@@ -140,11 +144,15 @@ def test_document_extraction_batched(indico):
         assert job.ready is True
         assert isinstance(job.result["url"], str)
 
-
+@unittest.skip("Expected to fail pending https://indicodata.atlassian.net/browse/SUP-437")
 def test_document_extraction_images(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
-    jobs = client.call(DocumentExtraction(files=[dataset_filepath], json_config='{"preset_config": "simple"}'))
+    jobs = client.call(
+        DocumentExtraction(
+            files=[dataset_filepath], json_config='{"preset_config": "simple"}'
+        )
+    )
 
     assert len(jobs) == 1
     job = jobs[0]
@@ -159,9 +167,7 @@ def test_document_extraction_images(indico):
     assert type(extract) == dict
     assert "pages" in extract
     image = extract["pages"][0]["image"]
-
     image = client.call(RetrieveStorageObject(image))
-
     assert image
 
 

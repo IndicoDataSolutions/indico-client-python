@@ -4,11 +4,11 @@ import time
 from pathlib import Path
 from indico.client import IndicoClient
 from indico.queries import (
-    CreateDataset, 
-    CreateWorkflow, 
-    AddModelGroupComponent, 
-    GetModelGroup, 
-    AddExchangeIntegration, 
+    CreateDataset,
+    CreateWorkflow,
+    AddModelGroupComponent,
+    GetModelGroup,
+    AddExchangeIntegration,
     StartIntegration,
     GetWorkflow,
 )
@@ -35,14 +35,20 @@ def airlines_dataset(indico):
 @pytest.fixture(scope="module")
 def airlines_workflow(indico, airlines_dataset: Dataset):
     client = IndicoClient()
-    workflowreq = CreateWorkflow(dataset_id=airlines_dataset.id, name=f"AirlineComplaints-test-{int(time.time())}")
+    workflowreq = CreateWorkflow(
+        dataset_id=airlines_dataset.id,
+        name=f"AirlineComplaints-test-{int(time.time())}",
+    )
     wf = client.call(workflowreq)
     # add default output node
-    client.call(_AddWorkflowComponent(after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
-        component="{\"component_type\":\"default_output\",\"config\":{}}",
-        workflow_id=wf.id,
-        after_component_link=None
-    ))
+    client.call(
+        _AddWorkflowComponent(
+            after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+            component='{"component_type":"default_output","config":{}}',
+            workflow_id=wf.id,
+            after_component_link=None,
+        )
+    )
     response = client.call(GetWorkflow(workflow_id=wf.id))
 
     return response
@@ -61,24 +67,32 @@ def too_small_dataset(indico):
     assert response.status == "COMPLETE"
     return response
 
+
 @pytest.fixture(scope="module")
 def too_small_workflow(indico, too_small_dataset: Dataset) -> Workflow:
     client = IndicoClient()
-    workflowreq = CreateWorkflow(dataset_id=too_small_dataset.id, name=f"TooSmall-test-{int(time.time())}")
+    workflowreq = CreateWorkflow(
+        dataset_id=too_small_dataset.id, name=f"TooSmall-test-{int(time.time())}"
+    )
     wf = client.call(workflowreq)
     # add default output node
-    client.call(_AddWorkflowComponent(after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
-        component="{\"component_type\":\"default_output\",\"config\":{}}",
-        workflow_id=wf.id,
-        after_component_link=None
-    ))
+    client.call(
+        _AddWorkflowComponent(
+            after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+            component='{"component_type":"default_output","config":{}}',
+            workflow_id=wf.id,
+            after_component_link=None,
+        )
+    )
     response = client.call(GetWorkflow(workflow_id=wf.id))
 
     return response
 
 
 @pytest.fixture(scope="module")
-def airlines_model_group(indico, airlines_dataset: Dataset, airlines_workflow: Workflow) -> ModelGroup:
+def airlines_model_group(
+    indico, airlines_dataset: Dataset, airlines_workflow: Workflow
+) -> ModelGroup:
     client = IndicoClient()
     name = f"TestCreateModelGroup-{int(time.time())}"
     after_component_id = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
@@ -88,7 +102,7 @@ def airlines_model_group(indico, airlines_dataset: Dataset, airlines_workflow: W
         after_component_id=after_component_id,
         source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
         labelset_column_id=airlines_dataset.labelset_by_name("Target_1").id,
-        workflow_id=airlines_workflow.id
+        workflow_id=airlines_workflow.id,
     )
 
     workflow_update: Workflow = client.call(modelgroupreq)
@@ -118,14 +132,27 @@ def cats_dogs_image_dataset(indico):
 @pytest.fixture(scope="module")
 def cats_dogs_image_workflow(indico, cats_dogs_image_dataset: Dataset):
     client = IndicoClient()
-    workflowreq = CreateWorkflow(dataset_id=cats_dogs_image_dataset.id, name=f"DogsAndCats-test-{int(time.time())}")
-    response = client.call(workflowreq)
+    workflowreq = CreateWorkflow(
+        dataset_id=cats_dogs_image_dataset.id,
+        name=f"DogsAndCats-test-{int(time.time())}",
+    )
+    wf = client.call(workflowreq)
+    client.call(
+        _AddWorkflowComponent(
+            after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+            component='{"component_type":"default_output","config":{}}',
+            workflow_id=wf.id,
+            after_component_link=None,
+        )
+    )
 
-    return response
+    return wf
 
 
 @pytest.fixture(scope="module")
-def cats_dogs_modelgroup(indico, cats_dogs_image_dataset: Dataset, cats_dogs_image_workflow) -> ModelGroup:
+def cats_dogs_modelgroup(
+    indico, cats_dogs_image_dataset: Dataset, cats_dogs_image_workflow
+) -> ModelGroup:
     client = IndicoClient()
     name = f"TestCreateObjectDetectionMg-{int(time.time())}"
 
@@ -137,15 +164,15 @@ def cats_dogs_modelgroup(indico, cats_dogs_image_dataset: Dataset, cats_dogs_ima
         "test_size": 0.2,
         "use_small_model": True,
     }
-    after_component_id = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
+    after_component_id = cats_dogs_image_workflow.component_by_type("INPUT_IMAGE").id
     modelgroupreq = AddModelGroupComponent(
         name=name,
-        dataset_id=airlines_dataset.id,
+        dataset_id=cats_dogs_image_dataset.id,
         after_component_id=after_component_id,
-        source_column_id=airlines_dataset.datacolumn_by_name("urls").id,
-        labelset_column_id=airlines_dataset.labelset_by_name("label").id,
-        workflow_id=airlines_workflow.id,
-        model_training_options=model_training_options
+        source_column_id=cats_dogs_image_dataset.datacolumn_by_name("urls").id,
+        labelset_column_id=cats_dogs_image_dataset.labelset_by_name("label").id,
+        workflow_id=cats_dogs_image_workflow.id,
+        model_training_options=model_training_options,
     )
 
     workflow_update: Workflow = client.call(modelgroupreq)
@@ -172,30 +199,41 @@ def org_annotate_dataset(indico):
 @pytest.fixture(scope="module")
 def org_annotate_workflow(indico, org_annotate_dataset: Dataset):
     client = IndicoClient()
-    workflowreq = CreateWorkflow(dataset_id=org_annotate_dataset.id, name=f"OrgAnnotate-test-{int(time.time())}")
+    workflowreq = CreateWorkflow(
+        dataset_id=org_annotate_dataset.id, name=f"OrgAnnotate-test-{int(time.time())}"
+    )
     wf = client.call(workflowreq)
     # add default output node
-    client.call(_AddWorkflowComponent(after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
-        component="{\"component_type\":\"default_output\",\"config\":{}}",
-        workflow_id=wf.id,
-        after_component_link=None
-    ))
+    client.call(
+        _AddWorkflowComponent(
+            after_component_id=wf.component_by_type("OUTPUT_JSON_FORMATTER").id,
+            component='{"component_type":"default_output","config":{}}',
+            workflow_id=wf.id,
+            after_component_link=None,
+        )
+    )
     response = client.call(GetWorkflow(workflow_id=wf.id))
     return response
 
 
 @pytest.fixture(scope="module")
-def org_annotate_model_group(indico, org_annotate_dataset: Dataset, org_annotate_workflow: Workflow) -> ModelGroup:
+def org_annotate_model_group(
+    indico, org_annotate_dataset: Dataset, org_annotate_workflow: Workflow
+) -> ModelGroup:
     client = IndicoClient()
     name = f"TestFinetuneModelGroup-{int(time.time())}"
-    after_component_id = org_annotate_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
+    after_component_id = org_annotate_workflow.component_by_type(
+        "INPUT_OCR_EXTRACTION"
+    ).id
     modelgroupreq = AddModelGroupComponent(
         name=name,
         dataset_id=org_annotate_dataset.id,
         after_component_id=after_component_id,
-        source_column_id=org_annotate_dataset.datacolumn_by_name("News Headlines w/Company Names").id,
+        source_column_id=org_annotate_dataset.datacolumn_by_name(
+            "News Headlines w/Company Names"
+        ).id,
         labelset_column_id=org_annotate_dataset.labelset_by_name("question_825").id,
-        workflow_id=org_annotate_workflow.id
+        workflow_id=org_annotate_workflow.id,
     )
 
     workflow_update: Workflow = client.call(modelgroupreq)
@@ -205,25 +243,21 @@ def org_annotate_model_group(indico, org_annotate_dataset: Dataset, org_annotate
 
     return mg
 
+
 @pytest.fixture(scope="module")
 def org_annotate_exchange_integration(org_annotate_workflow: Workflow) -> Integration:
     client = IndicoClient()
     creds = {
         "clientId": os.getenv("EXCH_CLIENT_ID"),
         "clientSecret": os.getenv("EXCH_CLIENT_SECRET"),
-        "tenantId": os.getenv("EXCH_TENANT_ID")
+        "tenantId": os.getenv("EXCH_TENANT_ID"),
     }
 
-    config = {
-        "userId": os.getenv("EXCH_USER_ID"),
-        "folderId": "mailFolders('inbox')"
-    }
+    config = {"userId": os.getenv("EXCH_USER_ID"), "folderId": "mailFolders('inbox')"}
 
     integ: Integration = client.call(
         AddExchangeIntegration(
-            workflow_id=org_annotate_workflow.id,
-            config=config,
-            credentials=creds
+            workflow_id=org_annotate_workflow.id, config=config, credentials=creds
         )
     )
 
