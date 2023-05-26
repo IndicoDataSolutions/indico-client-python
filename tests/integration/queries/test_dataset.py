@@ -1,4 +1,5 @@
 import time
+import json
 import pytest
 import unittest
 import pandas as pd
@@ -17,7 +18,13 @@ from indico.queries.datasets import (
     ProcessCSV,
 )
 from indico.queries.export import CreateExport, DownloadExport
-from indico.types.dataset import Dataset, OmnipageOcrOptionsInput, TableReadOrder, OcrEngine, ReadApiOcrOptionsInput
+from indico.types.dataset import (
+    Dataset,
+    OmnipageOcrOptionsInput,
+    TableReadOrder,
+    OcrEngine,
+    ReadApiOcrOptionsInput,
+)
 from indico.errors import IndicoRequestError
 from tests.integration.data.datasets import airlines_dataset
 
@@ -35,6 +42,7 @@ def test_create_dataset(indico):
     assert isinstance(response, Dataset)
     assert response.status == "COMPLETE"
     assert isinstance(response.id, int)
+
 
 def test_get_datasets(indico, airlines_dataset):
     client = IndicoClient()
@@ -173,6 +181,7 @@ def _dataset_complete(dataset):
 
     assert dataset.status == "COMPLETE"
 
+
 @pytest.mark.ocr("omnipage")
 def test_create_with_options(indico):
     client = IndicoClient()
@@ -184,10 +193,16 @@ def test_create_with_options(indico):
         "force_render": False,
         "native_layout": False,
         "native_pdf": False,
-        "table_read_order": TableReadOrder.ROW
+        "table_read_order": TableReadOrder.ROW,
     }
-    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.OMNIPAGE,
-                                             omnipage_ocr_options=config))
+    dataset = client.call(
+        CreateEmptyDataset(
+            name=f"dataset-{int(time.time())}",
+            ocr_engine=OcrEngine.OMNIPAGE,
+            omnipage_ocr_options=config,
+        )
+    )
+
 
 @pytest.mark.ocr("readapi")
 def test_create_with_options_readapi(indico):
@@ -196,26 +211,40 @@ def test_create_with_options_readapi(indico):
         "auto_rotate": True,
         "single_column": False,
         "upscale_images": True,
-        "languages": ["AUTO"]
+        "languages": ["AUTO"],
     }
-    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.READAPI,
-                                             readapi_ocr_options=config))
+    dataset = client.call(
+        CreateEmptyDataset(
+            name=f"dataset-{int(time.time())}",
+            ocr_engine=OcrEngine.READAPI,
+            readapi_ocr_options=config,
+        )
+    )
+
 
 @pytest.mark.ocr("readapi_v2")
 def test_create_from_files_with_readapiv2(indico):
     client = IndicoClient()
-    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.READAPI_V2))
+    dataset = client.call(
+        CreateEmptyDataset(
+            name=f"dataset-{int(time.time())}", ocr_engine=OcrEngine.READAPI_V2
+        )
+    )
     file_names = ["us_doi.tiff", "mock.pdf"]
     parent_path = str(Path(__file__).parent.parent / "data")
     dataset_filepaths = [
         os.path.join(parent_path, file_name) for file_name in file_names
     ]
 
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[0]], autoprocess=True))
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[0]], autoprocess=True)
+    )
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]], autoprocess=True)
+    )
 
     _dataset_complete(dataset)
-    
+
 
 def test_create_from_files_document_without_autoprocess(indico):
     client = IndicoClient()
@@ -257,8 +286,12 @@ def test_create_from_files_document(indico):
         os.path.join(parent_path, file_name) for file_name in file_names
     ]
 
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[0]], autoprocess=True))
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[0]], autoprocess=True)
+    )
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]], autoprocess=True)
+    )
 
     _dataset_complete(dataset)
 
@@ -274,45 +307,48 @@ def test_create_from_files_image(indico):
         os.path.join(parent_path, file_name) for file_name in file_names
     ]
 
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=dataset_filepaths, autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=dataset_filepaths, autoprocess=True)
+    )
 
     file_names = ["4.jpg", "5.jpg"]
     dataset_filepaths = [
         os.path.join(parent_path, file_name) for file_name in file_names
     ]
 
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=dataset_filepaths, autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=dataset_filepaths, autoprocess=True)
+    )
     _dataset_complete(dataset)
 
-@unittest.skip
+
 def test_create_from_csv(indico):
-    """
-    TODO: investigate why this test is failing
-    """
     client = IndicoClient()
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
-
-    dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True)
+    )
     _dataset_complete(dataset)
     full_dataset = dataset = client.call(GetDataset(id=dataset.id))
-    export = client.call(CreateExport(
-                            dataset_id=full_dataset.id,
-                            labelset_id=full_dataset.labelsets[0].id,
-                            wait=True
-                        )
-                    )
+    export = client.call(
+        CreateExport(
+            dataset_id=full_dataset.id,
+            labelset_id=full_dataset.labelsets[0].id,
+            wait=True,
+        )
+    )
 
     exported_data = client.call(DownloadExport(export.id))
-
+    exported_data.to_csv("test.csv")
     baseline_data = pd.read_csv(dataset_filepath)
     for col in baseline_data.columns:
-        assert all(
-            baseline_data[col].apply(str).str.strip().values
-            == exported_data[: len(baseline_data)][col].apply(str).values
-        )
+        assert col in exported_data.columns
+    assert (baseline_data["Text"] == exported_data["Text"]).all()
+    export_labels = exported_data["Target_1"].apply(
+        lambda x: json.loads(x)["targets"][0]["label"]
+    )
+    assert (baseline_data["Target_1"].str.strip() == export_labels).all()
 
 
 def test_create_from_csv_image_urls(indico):
@@ -321,7 +357,9 @@ def test_create_from_csv_image_urls(indico):
     dataset = client.call(
         CreateEmptyDataset(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
     )
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True)
+    )
 
     _dataset_complete(dataset)
 
@@ -334,7 +372,9 @@ def test_create_from_csv_image_urls_with_broken(indico):
     dataset = client.call(
         CreateEmptyDataset(name=f"dataset-{int(time.time())}", dataset_type="IMAGE")
     )
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True)
+    )
 
     failed = 0
     for df in dataset.files:
@@ -350,23 +390,28 @@ def test_create_from_csv_doc_urls(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True)
+    )
 
     _dataset_complete(dataset)
 
 
-@unittest.skip
 def test_csv_incompat_columns(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/pdf_links.csv"
     dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True)
+    )
 
     for f in dataset.files:
         assert f.status == "PROCESSED"
 
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/AirlineComplaints.csv"
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True))
+    dataset = client.call(
+        AddFiles(dataset_id=dataset.id, files=[dataset_filepath], autoprocess=True)
+    )
 
     failed = 0
     for df in dataset.files:
