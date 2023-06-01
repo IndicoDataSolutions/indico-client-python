@@ -8,6 +8,9 @@ from indico.filters import DocumentReportFilter
 
 
 def test_fetch_docs(indico):
+    """
+    NOTE: this test will fail if the cluster hasn't yet processed any submissions
+    """
     client = IndicoClient()
 
     document_report: List[DocumentReport] = client.call(GetDocumentReport())
@@ -26,6 +29,9 @@ def test_fetch_docs(indico):
 
 
 def test_fetch_docs_limit(indico):
+    """
+    NOTE: this test will fail if the cluster hasn't yet processed any submissions
+    """
     client = IndicoClient()
     filter_opts = DocumentReportFilter(
         created_at_start_date=datetime(2021, 7, 1), created_at_end_date=datetime.now()
@@ -39,6 +45,9 @@ def test_fetch_docs_limit(indico):
 
 
 def test_pagination(indico):
+    """
+    NOTE: this test will fail if the cluster hasn't yet processed any submissions
+    """
     client = IndicoClient()
     document_report: List[DocumentReport] = []
     num_pages_to_check = 5
@@ -52,7 +61,7 @@ def test_pagination(indico):
 
 def test_all_submissions(indico):
     """
-    This test is expected to fail unless user has ALL_SUBMISSION_LOGs scope
+    NOTE: This test is expected to fail unless user has ALL_SUBMISSION_LOGS scope
     """
     client = IndicoClient()
     page = next(client.paginate(GetDocumentReport(limit=1000, all_submissions=True)))
