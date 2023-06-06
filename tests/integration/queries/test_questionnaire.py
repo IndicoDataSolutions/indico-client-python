@@ -1,6 +1,6 @@
 import time
 import pytest
-import unittest
+import typing as t
 import json
 from pathlib import Path
 
@@ -17,7 +17,7 @@ from indico.queries.questionnaire import (
 )
 from indico.errors import IndicoError
 from indico.types import Workflow
-from indico.types.questionnaire import Questionnaire, Example
+from indico.types.questionnaire import Questionnaire, Example, TargetName
 
 
 @pytest.fixture
@@ -119,18 +119,28 @@ def test_get_examples(indico, unlabeled_questionnaire):
         assert isinstance(example.row_index, int)
         assert isinstance(example.datafile_id, int)
 
-@unittest.skip("Format of labels changed in 5.x. Ticket to update: https://indicodata.atlassian.net/browse/CAT-657")
+
 def test_add_labels(indico, unlabeled_questionnaire):
     client = IndicoClient()
+    questionnaire = client.call(
+        GetQuestionnaire(questionnaire_id=unlabeled_questionnaire["questionnaire"].id)
+    )
+    targets = questionnaire.question.labelset.target_names
     example = client.call(
         GetQuestionnaireExamples(
             questionnaire_id=unlabeled_questionnaire["questionnaire"].id, num_examples=1
         )
     )
+    targets = [
+        {
+            "clsId": next(t for t in targets if t.name == "A")
+            "spans": [{"start": 0, "end": 10, "pageNum": 0}],
+        }
+    ]
     labels = [
         {
-            "rowIndex": example[0].row_index,
-            "target": json.dumps([{"start": 0, "end": 10, "label": "A"}]),
+            "exampleId": example[0].id,
+            "targets": targets,
         }
     ]
     dataset_id = unlabeled_questionnaire["dataset"].id
@@ -149,3 +159,9 @@ def test_add_labels(indico, unlabeled_questionnaire):
     )
     assert questionnaire.num_total_examples == 3
     assert questionnaire.num_fully_labeled == 1
+
+
+def get_cls_id(cls_name: str, targets: t.List[TargetName]) -> int:
+    for target in targets:
+        if target.name == cls_name:
+            return target.id

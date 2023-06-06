@@ -2,6 +2,19 @@ from typing import List
 from indico.types.base import BaseType
 
 
+class TargetName(BaseType):
+    id: int
+    name: str
+
+
+class LabelSet(BaseType):
+    target_names: List[TargetName]
+
+
+class Question(BaseType):
+    labelset: LabelSet
+
+
 class Questionnaire(BaseType):
     id: int
     questions_status: str
@@ -9,6 +22,7 @@ class Questionnaire(BaseType):
     name: str
     num_total_examples: int
     num_fully_labeled: int
+    question: Question
 
 
 class Example(BaseType):
