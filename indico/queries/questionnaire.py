@@ -147,6 +147,14 @@ class GetQuestionnaire(GraphQLRequest):
                 name
                 numTotalExamples
                 numFullyLabeled
+                question {
+                    labelset{
+                        targetNames{
+                            id
+                            name
+                        }
+                    }
+                }
             }
         }
     }
