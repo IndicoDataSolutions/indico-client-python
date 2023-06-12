@@ -95,7 +95,7 @@ class GetUserSnapshots(PagedRequest):
 }
     """
 
-    def __init__(self, *, date: datetime, filters: Union[Dict, UserMetricsFilter] = None, limit: int = None):
+    def __init__(self, *, date: datetime = None, filters: Union[Dict, UserMetricsFilter] = None, limit: int = None):
         variables = {
             "date": date.strftime('%Y-%m-%d') if date is not None else None,
             "filters": filters,
