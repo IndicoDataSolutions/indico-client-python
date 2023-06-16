@@ -165,7 +165,9 @@ class HTTPClient:
 
         if response.status_code >= 500:
             raise IndicoRequestError(
-                code=response.status_code
+                code=response.status_code,
+                error=response.reason,
+                extras=repr(response.content),
             )
 
         content = deserialize(response, force_json=json, force_decompress=decompress)
