@@ -1,4 +1,3 @@
-import jsons
 from indico.client import IndicoClient
 from indico.queries import DeleteWorkflowComponent, GetWorkflow, GetDataset
 from indico.queries.workflow_components import AddLinkClassificationComponent
