@@ -27,7 +27,7 @@ def test_add_mg_new_labelset(indico, org_annotate_dataset):
         source_column_id=source_column_id,
         new_labelset_args=NewLabelsetArguments(
             name=labelset_name,
-            task_type=ModelTaskType.CLASSIFICATION_MULTIPLE,
+            task_type=ModelTaskType.ANNOTATION,
             target_names=["target 1", "target 2"],
             datacolumn_id=source_column_id,
         ),
