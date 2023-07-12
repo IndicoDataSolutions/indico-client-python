@@ -32,6 +32,7 @@ class WorkflowComponentLinks(BaseType):
     head_component_id: int
     tail_component_id: int
 
+
 class Workflow(BaseType):
     """
     Represents a Workflow in the Indico Data Platform.
@@ -86,3 +87,11 @@ class LinkedLabelGroup:
         self.strategy = strategy
         self.class_ids = class_ids
         self.strategy_settings = strategy_settings
+
+
+class ComponentFamily(Enum):
+    MODEL = 0,
+    FILTER = 1,
+    TRANSFORMER = 2,
+    REVIEW = 3,
+    OUTPUT = 4
