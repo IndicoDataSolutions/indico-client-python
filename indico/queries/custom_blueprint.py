@@ -1,8 +1,10 @@
 import typing as t
 
 from indico import GraphQLRequest
+from indico.errors import IndicoInputError
 from indico.types.workflow import ComponentFamily
 from indico.types.custom_blueprint import TaskBlueprint
+
 
 class RegisterCustomBlueprint(GraphQLRequest):
     query = """
@@ -51,6 +53,28 @@ mutation createCustomBP(
         all_access: bool = None,
         dataset_ids: t.List[int] = None,
     ):
+        if not component_family or not name or not description or not config or not tags:
+            none_vals = []
+            if not component_family:
+                none_vals.append("component_family")
+            if not name:
+                none_vals.append("name")
+            if not description:
+                none_vals.append("description")
+            if not config:
+                none_vals.append("config")
+            if not tags:
+                none_vals.append("tags")
+            raise IndicoInputError(f"The following arguments cannot be None: {','.join(none_vals)}")
+        if not all([isinstance(t, str) for t in tags]):
+            raise IndicoInputError("'tags' must be a list of strings")
+        if not all(config.values()):
+            raise IndicoInputError("values in the 'config' dict must not be None")
+        if not isinstance(component_family, ComponentFamily):
+            raise IndicoInputError("'component_family' must be of type indico.types.workflows.ComponentFamily")
+        if component_family.name not in ["OUTPUT", "FILTER", "MODEL"]:
+            raise IndicoInputError("component_family must be one of ComponentFamily.OUTPUT, ComponentFamily.FILTER, or ComponentFamily.MODEL")
+        
         comp_fam_str = component_family.name.title()
         self.mutation_name = f"createCustom{comp_fam_str}TaskBlueprint"
         super().__init__(

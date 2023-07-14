@@ -20,4 +20,5 @@ def test_register_blueprint(indico):
         footer="version 2"
     )
     bp = client.call(bpreq)
+    print(bp.__dict__)
     assert bp.id
