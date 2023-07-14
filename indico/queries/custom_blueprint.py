@@ -5,6 +5,12 @@ from indico.errors import IndicoInputError
 from indico.types.workflow import ComponentFamily
 from indico.types.custom_blueprint import TaskBlueprint
 
+SUPPORTED_CUSTOM_COMPONENT_FAMILIES = [
+    ComponentFamily.OUTPUT,
+    ComponentFamily.FILTER,
+    ComponentFamily.MODEL,
+]
+
 
 class RegisterCustomBlueprint(GraphQLRequest):
     query = """
@@ -53,7 +59,13 @@ mutation createCustomBP(
         all_access: bool = None,
         dataset_ids: t.List[int] = None,
     ):
-        if not component_family or not name or not description or not config or not tags:
+        if (
+            not component_family
+            or not name
+            or not description
+            or not config
+            or not tags
+        ):
             none_vals = []
             if not component_family:
                 none_vals.append("component_family")
@@ -65,20 +77,29 @@ mutation createCustomBP(
                 none_vals.append("config")
             if not tags:
                 none_vals.append("tags")
-            raise IndicoInputError(f"The following arguments cannot be None: {','.join(none_vals)}")
+            raise IndicoInputError(
+                f"The following arguments cannot be None: {', '.join(none_vals)}"
+            )
         if not all([isinstance(t, str) for t in tags]):
             raise IndicoInputError("'tags' must be a list of strings")
         if not all(config.values()):
             raise IndicoInputError("values in the 'config' dict must not be None")
         if not isinstance(component_family, ComponentFamily):
-            raise IndicoInputError("'component_family' must be of type indico.types.workflows.ComponentFamily")
-        if component_family.name not in ["OUTPUT", "FILTER", "MODEL"]:
-            raise IndicoInputError("component_family must be one of ComponentFamily.OUTPUT, ComponentFamily.FILTER, or ComponentFamily.MODEL")
-        
+            raise IndicoInputError(
+                "'component_family' must be of type indico.types.workflows.ComponentFamily"
+            )
+        if component_family.name not in SUPPORTED_CUSTOM_COMPONENT_FAMILIES:
+            raise IndicoInputError(
+                f"component_family must be one of {', '.join([cf.name for cf in SUPPORTED_CUSTOM_COMPONENT_FAMILIES])}"
+            )
+
         comp_fam_str = component_family.name.title()
         self.mutation_name = f"createCustom{comp_fam_str}TaskBlueprint"
         super().__init__(
-            self.query.format(config_type = f"{comp_fam_str}Config", mutation_name=self.mutation_name, ),
+            self.query.format(
+                config_type=f"{comp_fam_str}Config",
+                mutation_name=self.mutation_name,
+            ),
             variables={
                 "name": name,
                 "description": description,
@@ -92,7 +113,4 @@ mutation createCustomBP(
         )
 
     def process_response(self, response) -> TaskBlueprint:
-        return TaskBlueprint(
-            **super().process_response(response)[self.mutation_name]
-        )
-
+        return TaskBlueprint(**super().process_response(response)[self.mutation_name])
