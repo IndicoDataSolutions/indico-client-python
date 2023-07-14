@@ -13,6 +13,26 @@ SUPPORTED_CUSTOM_COMPONENT_FAMILIES = [
 
 
 class RegisterCustomBlueprint(GraphQLRequest):
+    """
+    Mutation to register a custom blueprint, making it available in the gallery to add to workflows
+
+    Args:
+        component_family (ComponentFamily): family this blueprint belongs to; supported families are Output, Filter, and Model
+        name (str): Name of the blueprint
+        description (str): Description of this blueprint
+        config (dict): Blueprint configuration options
+        tags: (list[str]): List of tags associated with this blueprint
+
+    Options:
+        footer (str): Footnote for this blueprint's description
+        icon (str): Name or storage location of image to use when displaying this blueprint in the gallery
+        all_access (bool): This blueprint can be added to all workflows
+        dataset_ids (list[int]): This blueprint can only be added to workflows associated with these dataset ids
+
+    Returns:
+        TaskBlueprint: The newly created TaskBlueprint object
+    """
+
     query = """
 mutation createCustomBP(
   $name: String!,
