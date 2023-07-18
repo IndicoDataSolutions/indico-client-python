@@ -39,6 +39,7 @@ Reference
     user_metrics
     workflow-metrics
     workflow_components
+    blueprints
     document_report
     integration
 
@@ -52,6 +53,8 @@ Reference
     model-group-type
     model-type
     user-metrics-types
+    blueprint-types
+    workflow-types
     workflow-metrics-types
     document_report_types
     integration-types

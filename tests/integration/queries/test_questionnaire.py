@@ -133,7 +133,7 @@ def test_add_labels(indico, unlabeled_questionnaire):
     )
     targets = [
         {
-            "clsId": next(t for t in targets if t.name == "A")
+            "clsId": next(t for t in targets if t.name == "A"),
             "spans": [{"start": 0, "end": 10, "pageNum": 0}],
         }
     ]
