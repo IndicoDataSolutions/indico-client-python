@@ -25,7 +25,8 @@ class RegisterCustomBlueprint(GraphQLRequest):
 
     Options:
         footer (str): Footnote for this blueprint's description
-        icon (str): Name or storage location of image to use when displaying this blueprint in the gallery
+        icon (str): Image to use when displaying this blueprint in the gallery. Can be the name of an Indico-provided image,
+        or the storage location of a custom image. If left unspecified, the platform will use a default icon.
         all_access (bool): This blueprint can be added to all workflows
         dataset_ids (list[int]): This blueprint can only be added to workflows associated with these dataset ids
 

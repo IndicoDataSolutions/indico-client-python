@@ -54,6 +54,7 @@ Reference
     model-type
     user-metrics-types
     blueprint-types
+    workflow-types
     workflow-metrics-types
     document_report_types
     integration-types

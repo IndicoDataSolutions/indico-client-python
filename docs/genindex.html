@@ -66,6 +66,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blueprints.html">Blueprints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a></li>
 </ul>
@@ -75,6 +76,8 @@
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blueprint-types.html">Blueprint Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-types.html">Workflow Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integration-types.html">Integration Types</a></li>
@@ -226,6 +229,8 @@
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.completed_in_review">completed_in_review (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
 </li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.DailySubmissionMetric.completed_review_queue">completed_review_queue (indico.types.workflow_metrics.DailySubmissionMetric attribute)</a>
+</li>
+      <li><a href="workflow-types.html#indico.types.workflow.ComponentFamily">ComponentFamily (class in indico.types.workflow)</a>
 </li>
       <li><a href="user-metrics-types.html#indico.types.user_metrics.AppRoles.count">count (indico.types.user_metrics.AppRoles attribute)</a>
 </li>
@@ -455,6 +460,13 @@
 </li>
       </ul></li>
       <li>
+    indico.queries.custom_blueprint
+
+      <ul>
+        <li><a href="blueprints.html#module-indico.queries.custom_blueprint">module</a>
+</li>
+      </ul></li>
+      <li>
     indico.queries.datasets
 
       <ul>
@@ -527,6 +539,13 @@
 </li>
       </ul></li>
       <li>
+    indico.types.custom_blueprint
+
+      <ul>
+        <li><a href="blueprint-types.html#module-indico.types.custom_blueprint">module</a>
+</li>
+      </ul></li>
+      <li>
     indico.types.datafile
 
       <ul>
@@ -583,6 +602,13 @@
 </li>
       </ul></li>
       <li>
+    indico.types.workflow
+
+      <ul>
+        <li><a href="workflow-types.html#module-indico.types.workflow">module</a>
+</li>
+      </ul></li>
+      <li>
     indico.types.workflow_metrics
 
       <ul>
@@ -621,8 +647,12 @@
 </li>
       <li><a href="dataset-type.html#indico.types.dataset.Dataset.labelsets">labelsets (indico.types.dataset.Dataset attribute)</a>
 </li>
+      <li><a href="workflow-types.html#indico.types.workflow.LinkedLabelGroup">LinkedLabelGroup (class in indico.types.workflow)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-types.html#indico.types.workflow.LinkedLabelStrategy">LinkedLabelStrategy (class in indico.types.workflow)</a>
+</li>
       <li><a href="datasets.html#indico.queries.datasets.ListDatasets">ListDatasets (class in indico.queries.datasets)</a>
 </li>
       <li><a href="submissions.html#indico.queries.submission.ListSubmissions">ListSubmissions (class in indico.queries.submission)</a>
@@ -657,6 +687,8 @@
 </li>
         <li><a href="filters.html#module-indico.filters.__init__">indico.filters.__init__</a>
 </li>
+        <li><a href="blueprints.html#module-indico.queries.custom_blueprint">indico.queries.custom_blueprint</a>
+</li>
         <li><a href="datasets.html#module-indico.queries.datasets">indico.queries.datasets</a>
 </li>
         <li><a href="docextract.html#module-indico.queries.documents">indico.queries.documents</a>
@@ -677,6 +709,8 @@
 </li>
         <li><a href="workflow_components.html#module-indico.queries.workflow_components">indico.queries.workflow_components</a>
 </li>
+        <li><a href="blueprint-types.html#module-indico.types.custom_blueprint">indico.types.custom_blueprint</a>
+</li>
         <li><a href="dataset-type.html#module-indico.types.datafile">indico.types.datafile</a>
 </li>
         <li><a href="dataset-type.html#module-indico.types.dataset">indico.types.dataset</a>
@@ -692,6 +726,8 @@
         <li><a href="model-group-type.html#module-indico.types.model_group">indico.types.model_group</a>
 </li>
         <li><a href="user-metrics-types.html#module-indico.types.user_metrics">indico.types.user_metrics</a>
+</li>
+        <li><a href="workflow-types.html#module-indico.types.workflow">indico.types.workflow</a>
 </li>
         <li><a href="workflow-metrics-types.html#module-indico.types.workflow_metrics">indico.types.workflow_metrics</a>
 </li>
@@ -775,6 +811,8 @@
       <li><a href="dataset-type.html#indico.types.datafile.Datafile.rainbow_url">rainbow_url (indico.types.datafile.Datafile attribute)</a>
 </li>
       <li><a href="jobs-type.html#indico.types.jobs.Job.ready">ready (indico.types.jobs.Job attribute)</a>
+</li>
+      <li><a href="blueprints.html#indico.queries.custom_blueprint.RegisterCustomBlueprint">RegisterCustomBlueprint (class in indico.queries.custom_blueprint)</a>
 </li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions.REIVEW">REIVEW (indico.types.workflow_metrics.WorkflowMetricsOptions attribute)</a>
 </li>
@@ -876,6 +914,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="model-group-type.html#indico.types.model_group.ModelGroup.task_type">task_type (indico.types.model_group.ModelGroup attribute)</a>
 </li>
+      <li><a href="blueprint-types.html#indico.types.custom_blueprint.TaskBlueprint">TaskBlueprint (class in indico.types.custom_blueprint)</a>
+</li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.time_on_task">time_on_task (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
 </li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions.TIME_ON_TASK">TIME_ON_TASK (indico.types.workflow_metrics.WorkflowMetricsOptions attribute)</a>
@@ -932,12 +972,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="submissions.html#indico.queries.submission.WaitForSubmissions">WaitForSubmissions (class in indico.queries.submission)</a>
 </li>
+      <li><a href="workflow-types.html#indico.types.workflow.Workflow">Workflow (class in indico.types.workflow)</a>
+</li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.StraightThroughProcessing.workflow">workflow (indico.types.workflow_metrics.StraightThroughProcessing attribute)</a>
 </li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics.workflow_id">workflow_id (indico.types.workflow_metrics.WorkflowMetrics attribute)</a>
 </li>
+      <li><a href="workflow-types.html#indico.types.workflow.WorkflowComponent">WorkflowComponent (class in indico.types.workflow)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="workflow-types.html#indico.types.workflow.WorkflowComponentLinks">WorkflowComponentLinks (class in indico.types.workflow)</a>
+</li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetrics">WorkflowMetrics (class in indico.types.workflow_metrics)</a>
 </li>
       <li><a href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions">WorkflowMetricsOptions (class in indico.types.workflow_metrics)</a>
