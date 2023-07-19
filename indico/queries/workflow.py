@@ -279,7 +279,7 @@ class _WorkflowUrlSubmission(_WorkflowSubmission):
 class WorkflowSubmission(RequestChain):
     f"""
     Submit files to a workflow for processing.
-    One of `files` or `urls` is required.
+    One of `files`, `urls`, 'streams`, or `text` is required.
 
     Args:
         workflow_id (int): Id of workflow to submit files to
