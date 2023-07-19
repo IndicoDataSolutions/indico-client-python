@@ -65,7 +65,7 @@ class GetUserSnapshots(PagedRequest):
     Requests per-date detailed information about app users.
 
     Args:
-        filters (UserMetricsFilter): filter the query based on UserSnapshotFilter criteria.
+        filters (UserMetricsFilter): filter the query based on UserMetricsFilter criteria.
         date (datetime): specific day to query.
         limit (int): limit how many come back per query or per page.
     """
