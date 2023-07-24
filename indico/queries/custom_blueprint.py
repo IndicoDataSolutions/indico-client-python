@@ -109,7 +109,7 @@ mutation createCustomBP(
             raise IndicoInputError(
                 "'component_family' must be of type indico.types.workflows.ComponentFamily"
             )
-        if component_family.name not in SUPPORTED_CUSTOM_COMPONENT_FAMILIES:
+        if component_family not in SUPPORTED_CUSTOM_COMPONENT_FAMILIES:
             raise IndicoInputError(
                 f"component_family must be one of {', '.join([cf.name for cf in SUPPORTED_CUSTOM_COMPONENT_FAMILIES])}"
             )
