@@ -133,7 +133,7 @@ def test_add_labels(indico, unlabeled_questionnaire):
     )
     targets = [
         {
-            "clsId": next(t for t in targets if t.name == "A"),
+            "clsId": next(t.id for t in targets if t.name == "A"),
             "spans": [{"start": 0, "end": 10, "pageNum": 0}],
         }
     ]
@@ -159,9 +159,3 @@ def test_add_labels(indico, unlabeled_questionnaire):
     )
     assert questionnaire.num_total_examples == 3
     assert questionnaire.num_fully_labeled == 1
-
-
-def get_cls_id(cls_name: str, targets: t.List[TargetName]) -> int:
-    for target in targets:
-        if target.name == cls_name:
-            return target.id
