@@ -73,6 +73,7 @@ _SERIALIZATION_FNS = defaultdict(
     {
         "application/octet-stream": raw_bytes,
         "application/pdf": raw_bytes,
+        "binary/octet-stream": raw_bytes,
         "text/html": text_deserialization,
         "application/x-msgpack": msgpack_deserialization,
         "application/msgpack": msgpack_deserialization,
