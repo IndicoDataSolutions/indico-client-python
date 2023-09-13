@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+from reprlib import recursive_repr
+from typing import Iterator, Tuple
 
 from pathlib import Path
 from indico.errors import IndicoInvalidConfigSetting
@@ -79,3 +81,21 @@ class IndicoConfig:
 
         with path.open("r") as f:
             return path, f.read().strip()
+
+    @recursive_repr()
+    def __repr__(self) -> str:
+        return (
+            type(self).__name__
+            + "("
+            + ", ".join(
+                f"{attr}={value!r}"
+                for attr, value in vars(self).items()
+                if not attr.startswith("_")
+            )
+            + ")"
+        )
+
+    def __rich_repr__(self) -> Iterator[Tuple[str, object]]:
+        for attr, value in vars(self).items():
+            if not attr.startswith("_"):
+                yield attr, value

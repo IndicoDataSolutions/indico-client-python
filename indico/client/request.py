@@ -1,6 +1,8 @@
 from typing import Dict, Any
 from enum import Enum
 from indico.errors import IndicoRequestError
+from reprlib import recursive_repr
+from typing import Iterator, Tuple
 import time
 
 
@@ -18,6 +20,24 @@ class HTTPRequest:
         self.method = method
         self.path = path
         self.kwargs = kwargs
+
+    @recursive_repr()
+    def __repr__(self) -> str:
+        return (
+            type(self).__name__
+            + "("
+            + ", ".join(
+                f"{attr}={value!r}"
+                for attr, value in vars(self).items()
+                if not attr.startswith("_")
+            )
+            + ")"
+        )
+
+    def __rich_repr__(self) -> Iterator[Tuple[str, object]]:
+        for attr, value in vars(self).items():
+            if not attr.startswith("_"):
+                yield attr, value
 
     def process_response(self, response):
         return response

@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import List, Union
 from datetime import datetime
+from reprlib import recursive_repr
+from typing import Iterator, List, Tuple, Union
 from indico.types import BaseType, ModelGroup, ModelTaskType
 
 
@@ -87,6 +88,24 @@ class LinkedLabelGroup:
         self.strategy = strategy
         self.class_ids = class_ids
         self.strategy_settings = strategy_settings
+
+    @recursive_repr()
+    def __repr__(self) -> str:
+        return (
+            type(self).__name__
+            + "("
+            + ", ".join(
+                f"{attr}={value!r}"
+                for attr, value in vars(self).items()
+                if not attr.startswith("_")
+            )
+            + ")"
+        )
+
+    def __rich_repr__(self) -> Iterator[Tuple[str, object]]:
+        for attr, value in vars(self).items():
+            if not attr.startswith("_"):
+                yield attr, value
 
 
 class ComponentFamily(Enum):

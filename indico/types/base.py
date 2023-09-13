@@ -1,6 +1,7 @@
 import inspect
 import json
-from typing import List, Any
+from reprlib import recursive_repr
+from typing import Any, Iterator, List, Tuple
 from indico.types.utils import cc_to_snake
 from datetime import datetime
 
@@ -37,7 +38,6 @@ class BaseType:
             props.update({k: v for k, v in c.__annotations__.items() if valid_type(v)})
         return props
 
-
     def __init__(self, **kwargs):
         attrs = self._get_attrs()
         for k, v in kwargs.items():
@@ -60,6 +60,24 @@ class BaseType:
                 if subtype and issubclass(subtype, BaseType):
                     v = [subtype(**x) for x in v]
                 setattr(self, k, v)
+
+    @recursive_repr()
+    def __repr__(self) -> str:
+        return (
+            type(self).__name__
+            + "("
+            + ", ".join(
+                f"{attr}={value!r}"
+                for attr, value in vars(self).items()
+                if not attr.startswith("_")
+            )
+            + ")"
+        )
+
+    def __rich_repr__(self) -> Iterator[Tuple[str, object]]:
+        for attr, value in vars(self).items():
+            if not attr.startswith("_"):
+                yield attr, value
 
 
 class JSONType:

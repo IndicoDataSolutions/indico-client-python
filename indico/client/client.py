@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from typing import Union
+from reprlib import recursive_repr
+from typing import Iterator, Tuple, Union
 import urllib3
 
 from indico.config import IndicoConfig
@@ -31,6 +32,24 @@ class IndicoClient:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.config = config
         self._http = HTTPClient(config)
+
+    @recursive_repr()
+    def __repr__(self) -> str:
+        return (
+            type(self).__name__
+            + "("
+            + ", ".join(
+                f"{attr}={value!r}"
+                for attr, value in vars(self).items()
+                if not attr.startswith("_")
+            )
+            + ")"
+        )
+
+    def __rich_repr__(self) -> Iterator[Tuple[str, object]]:
+        for attr, value in vars(self).items():
+            if not attr.startswith("_"):
+                yield attr, value
 
     def _handle_request_chain(self, chain: RequestChain):
         response = None
