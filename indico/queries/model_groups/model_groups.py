@@ -339,7 +339,6 @@ class ModelGroupPredict(RequestChain):
             self,
             model_id: int,
             data: List[str],
-            load: bool = True,
             predict_options: Dict = None,
     ):
         self.model_id = model_id
