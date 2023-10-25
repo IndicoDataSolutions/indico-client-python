@@ -1,6 +1,7 @@
 import unittest.mock
 import pytest
 
+
 from indico.client import IndicoClient, HTTPRequest, HTTPMethod, GraphQLRequest
 from indico.config import IndicoConfig
 
@@ -96,7 +97,6 @@ def test_client_requests_params(indico_request, auth, indico_test_config):
         additional_matcher=lambda r: not r.verify,
         json={"data": {"datasets": []}},
     )
-
     response = client.call(
         GraphQLRequest(
             query="query list_datasets($ids: List(Int)) { datasets(ids: $ids) { id } }",

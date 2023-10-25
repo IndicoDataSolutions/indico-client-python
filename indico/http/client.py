@@ -138,13 +138,12 @@ class HTTPClient:
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
-
         with self._handle_files(request_kwargs) as new_kwargs:
             response = getattr(self.request_session, method)(
                 f"{self.base_url}{path}",
                 headers=headers,
                 stream=True,
-                verify=self.config.verify_ssl,
+                verify=False if not self.config.verify_ssl or not self.request_session.verify else True,
                 **new_kwargs,
             )
 
