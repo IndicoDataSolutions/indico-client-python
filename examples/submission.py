@@ -102,6 +102,7 @@ Use the client paginator to retrieve all PROCESSING submissions
 Without the paginator, the hard limit is 1000
 """
 sub_filter = SubmissionFilter(status="PROCESSING")
-for submission in client.paginate(ListSubmissions(filters=sub_filter)):
-    print(f"Submission {submission.id}")
-    # do other cool things
+for submission_page in client.paginate(ListSubmissions(filters=sub_filter)):
+    for submission in submission_page:
+        print(f"Submission {submission.id}")
+        # do other cool things
