@@ -2,20 +2,6 @@
 indicoio Python Client Library
 ******************************
 
-User Guide
-==========
-
-.. toctree::
-    :maxdepth: 1
-
-    intro
-    concepts
-    workflow-intro
-    review-intro
-    auto-review
-    object-detection
-    examples
-
 Reference
 =========
 
