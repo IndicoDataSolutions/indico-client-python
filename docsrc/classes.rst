@@ -5,20 +5,20 @@ Python Client Library Classes
 .. toctree::
     :maxdepth: 2
 
+    blueprints
     config
     client
-    docextract
     datasets
-    model-groups
-    jobs
-    submissions
-    storage
-    workflow
+    docextract
+    document-report
     exports
     filters
-    user-metrics
-    workflow-metrics
-    workflow-components
-    blueprints
-    document-report
     integration
+    model-groups
+    jobs
+    storage
+    submissions
+    user-metrics
+    workflow
+    workflow-components
+    workflow-metrics
