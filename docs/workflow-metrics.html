@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -67,10 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Workflow Metrics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.workflow_metrics.GetWorkflowMetrics"><code class="docutils literal notranslate"><span class="pre">GetWorkflowMetrics</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Workflow Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="blueprints.html">Blueprints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
@@ -115,27 +112,6 @@
              
   <section id="workflow-metrics">
 <h1>Workflow Metrics<a class="headerlink" href="#workflow-metrics" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.workflow_metrics.GetWorkflowMetrics">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.workflow_metrics.</span></span><span class="sig-name descname"><span class="pre">GetWorkflowMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.workflow_metrics.GetWorkflowMetrics" title="Permalink to this definition"></a></dt>
-<dd><p>Requests detailed workflow metric data.
-Includes daily and total submission counts,
-Review queue counts, and Straight through processing details.
-Query can be configured to include only specific metrics
-by passing in one of WorkflowOptions for SUBMISSIONS,
-REVIEW, or STRAIGHT_THROUGH_PROCESSING.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>options</strong> (<em>List</em><em>[</em><a class="reference internal" href="workflow-metrics-types.html#indico.types.workflow_metrics.WorkflowMetricsOptions" title="indico.types.workflow_metrics.WorkflowMetricsOptions"><em>WorkflowMetricsOptions</em></a><em>]</em>) – specific metrics to return.</p></li>
-<li><p><strong>start_date</strong> (<em>datetime</em>) – start date for metrics data.</p></li>
-<li><p><strong>end_date</strong> (<em>datetime</em>) – end date for metrics data. defaults to today.</p></li>
-<li><p><strong>workflow_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – ids of specific workflows to query.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 
 

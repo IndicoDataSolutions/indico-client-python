@@ -4,12 +4,13 @@ from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
+from indico.client.request import GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
 from indico.types import Job, Submission
 from indico.types.submission import VALID_SUBMISSION_STATUSES
+from indico.types.utils import Timer
 
 
 class ListSubmissions(PagedRequest):
@@ -190,7 +191,7 @@ class WaitForSubmissions(RequestChain):
         }
     """
 
-    def __init__(self, submission_ids: List[int], timeout: Union[int, float] = 60):
+    def __init__(self, submission_ids: List[int], timeout: int = 60):
         if not submission_ids:
             raise IndicoInputError("Please provide submission ids")
 
@@ -202,18 +203,13 @@ class WaitForSubmissions(RequestChain):
         )
 
     def requests(self) -> List[Submission]:
-        yield self.status_getter()
-        curr_time = 0
-        while (
-            not all(self.status_check(s.status) for s in self.previous)
-            and curr_time <= self.timeout
-        ):
-            yield self.status_getter()
-            time.sleep(1)
-            curr_time += 1
-        if not all(self.status_check(s.status) for s in self.previous):
-            raise IndicoTimeoutError(curr_time)
+        timer = Timer(self.timeout)
+        timer.run()
 
+        while True:
+            yield self.status_getter()
+            if all(self.status_check(s.status) for s in self.previous):
+                break
 
 class UpdateSubmission(GraphQLRequest):
     """
@@ -293,7 +289,7 @@ class SubmissionResult(RequestChain):
             Defaults to any status other than `PROCESSING`
         wait (bool, optional): Wait until the submission is `check_status`
             and wait for the result file to be generated. Defaults to False
-        timeout (int or float, optional): Maximum number of seconds to wait before
+        timeout (int, optional): Maximum number of seconds to wait before
             timing out. Ignored if not `wait`. Defaults to 30
 
     Returns:
@@ -314,7 +310,7 @@ class SubmissionResult(RequestChain):
         submission: Union[int, Submission],
         check_status: str = None,
         wait: bool = False,
-        timeout: Union[int, float] = 30,
+        timeout: int = 30,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id
@@ -333,13 +329,12 @@ class SubmissionResult(RequestChain):
         )
 
     def requests(self) -> Union[Job, str]:
+        timer = Timer(self.timeout)
+        timer.run()
         yield GetSubmission(self.submission_id)
         if self.wait:
             curr_time = 0
-            while (
-                not self.status_check(self.previous.status)
-                and curr_time <= self.timeout
-            ):
+            while not self.status_check(self.previous.status):
                 yield GetSubmission(self.submission_id)
                 time.sleep(1)
                 curr_time += 1
@@ -437,7 +432,7 @@ class RetrySubmission(GraphQLRequest):
         submission_ids (List[int]): the given submission ids to retry.
     Options:
 
-    Raises: 
+    Raises:
         IndicoInputError
 
     """

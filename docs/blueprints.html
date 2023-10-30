@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -69,10 +69,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Blueprints</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.custom_blueprint.RegisterCustomBlueprint"><code class="docutils literal notranslate"><span class="pre">RegisterCustomBlueprint</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Blueprints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a></li>
 </ul>
@@ -113,41 +110,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-indico.queries.custom_blueprint">
-<span id="blueprints"></span><h1>Blueprints<a class="headerlink" href="#module-indico.queries.custom_blueprint" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.custom_blueprint.RegisterCustomBlueprint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.custom_blueprint.</span></span><span class="sig-name descname"><span class="pre">RegisterCustomBlueprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_family</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">footer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_access</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.custom_blueprint.RegisterCustomBlueprint" title="Permalink to this definition"></a></dt>
-<dd><p>Mutation to register a custom blueprint, making it available in the gallery to add to workflows</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>component_family</strong> (<a class="reference internal" href="workflow-types.html#indico.types.workflow.ComponentFamily" title="indico.types.workflow.ComponentFamily"><em>ComponentFamily</em></a>) – family this blueprint belongs to; supported families are Output, Filter, and Model</p></li>
-<li><p><strong>name</strong> (<em>str</em>) – Name of the blueprint</p></li>
-<li><p><strong>description</strong> (<em>str</em>) – Description of this blueprint</p></li>
-<li><p><strong>config</strong> (<em>dict</em>) – Blueprint configuration options</p></li>
-<li><p><strong>tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – (list[str]): List of tags associated with this blueprint</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Options:</dt><dd><p>footer (str): Footnote for this blueprint’s description
-icon (str): Image to use when displaying this blueprint in the gallery. Can be the name of an Indico-provided image,
-or the storage location of a custom image. If left unspecified, the platform will use a default icon.
-all_access (bool): This blueprint can be added to all workflows
-dataset_ids (list[int]): This blueprint can only be added to workflows associated with these dataset ids</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The newly created TaskBlueprint object</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="blueprint-types.html#indico.types.custom_blueprint.TaskBlueprint" title="indico.types.custom_blueprint.TaskBlueprint">TaskBlueprint</a></p>
-</dd>
-</dl>
-</dd></dl>
-
+  <section id="blueprints">
+<h1>Blueprints<a class="headerlink" href="#blueprints" title="Permalink to this heading"></a></h1>
 </section>
 
 

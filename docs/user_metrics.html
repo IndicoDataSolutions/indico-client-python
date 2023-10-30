@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -66,13 +66,7 @@
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">User Metrics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.usermetrics.GetUserSnapshots"><code class="docutils literal notranslate"><span class="pre">GetUserSnapshots</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.usermetrics.GetUserChangelog"><code class="docutils literal notranslate"><span class="pre">GetUserChangelog</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.usermetrics.GetUserSummary"><code class="docutils literal notranslate"><span class="pre">GetUserSummary</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.usermetrics.GenerateChangelogReport"><code class="docutils literal notranslate"><span class="pre">GenerateChangelogReport</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="blueprints.html">Blueprints</a></li>
@@ -118,66 +112,6 @@
              
   <section id="user-metrics">
 <h1>User Metrics<a class="headerlink" href="#user-metrics" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.usermetrics.GetUserSnapshots">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GetUserSnapshots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserSnapshots" title="Permalink to this definition"></a></dt>
-<dd><p>Requests per-date detailed information about app users.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filters</strong> (<a class="reference internal" href="filters.html#indico.filters.__init__.UserMetricsFilter" title="indico.filters.__init__.UserMetricsFilter"><em>UserMetricsFilter</em></a>) – filter the query based on UserMetricsFilter criteria.</p></li>
-<li><p><strong>date</strong> (<em>datetime</em>) – specific day to query.</p></li>
-<li><p><strong>limit</strong> (<em>int</em>) – limit how many come back per query or per page.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.usermetrics.GetUserChangelog">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GetUserChangelog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserChangelog" title="Permalink to this definition"></a></dt>
-<dd><p>Requests per-date detailed information about app users.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filters</strong> (<em>UserSnapshotFilter</em>) – filter the query based on UserMetricsFilter criteria.</p></li>
-<li><p><strong>start_date</strong> (<em>datetime</em>) – specific start date for query.</p></li>
-<li><p><strong>end_date</strong> (<em>datetime</em>) – specific end date for query.</p></li>
-<li><p><strong>limit</strong> (<em>int</em>) – limit how many come back per query or per page.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.usermetrics.GetUserSummary">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GetUserSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GetUserSummary" title="Permalink to this definition"></a></dt>
-<dd><p>Requests summary level information per-date of users in the app.
-Includes enabled/disabled user counts, names of roles,
-and number of users assigned to that role.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>date</strong> (<em>datetime</em>) – specific day to summarize.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.usermetrics.GenerateChangelogReport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.usermetrics.</span></span><span class="sig-name descname"><span class="pre">GenerateChangelogReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'csv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.usermetrics.GenerateChangelogReport" title="Permalink to this definition"></a></dt>
-<dd><p>Requests per-date detailed information about app users.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filters</strong> (<em>UserSnapshotFilter</em>) – filter the query based on UserMetricsFilter criteria.</p></li>
-<li><p><strong>start_date</strong> (<em>datetime</em>) – specific start date for query.</p></li>
-<li><p><strong>end_date</strong> (<em>datetime</em>) – specific end date for query.</p></li>
-<li><p><strong>report_format</strong> (<em>str</em>) – specific format of the report, JSON or CSV.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 
 

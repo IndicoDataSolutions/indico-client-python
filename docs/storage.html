@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -61,12 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
 <li class="toctree-l1"><a class="reference internal" href="submissions.html">Submissions</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.storage.RetrieveStorageObject"><code class="docutils literal notranslate"><span class="pre">RetrieveStorageObject</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.storage.UploadDocument"><code class="docutils literal notranslate"><span class="pre">UploadDocument</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.storage.CreateStorageURLs"><code class="docutils literal notranslate"><span class="pre">CreateStorageURLs</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">Filters</a></li>
@@ -115,67 +110,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-indico.queries.storage">
-<span id="storage"></span><h1>Storage<a class="headerlink" href="#module-indico.queries.storage" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.storage.RetrieveStorageObject">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">RetrieveStorageObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.RetrieveStorageObject" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve an object stored on the Indico Platform</p>
-<p>Results of some operations, notably DocumentExtraction can be quite large
-and are stored on disk in the Indico Platform. You need to retrieve them
-using RetrieveStorageObject.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>storage_object</strong> (<em>str</em><em> or </em><em>dict</em>) – either a string or dict with a url of the storage object to be retrieved. If a dict then “url” should be used as the key for the storage object url.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Contents of the storage object, most often JSON</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>contents (dict)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.storage.UploadDocument">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">UploadDocument</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.UploadDocument" title="Permalink to this definition"></a></dt>
-<dd><p>Upload an object stored on the Indico Platform</p>
-<p>Used internally for uploading documents to indico platform for later processing</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>files</strong> (<em>str</em>) – A list of local filepaths to upload.</p></li>
-<li><p><strong>streams</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>io.BufferedIOBase</em><em>]</em>) – A dict of filenames to BufferedIOBase streams
-(any class that inherits BufferedIOBase is acceptable).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>storage objects to be use for further processing requests E.G. Document extraction (implicitly called)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>files</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="indico.queries.storage.CreateStorageURLs">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.storage.</span></span><span class="sig-name descname"><span class="pre">CreateStorageURLs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">streams</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.storage.CreateStorageURLs" title="Permalink to this definition"></a></dt>
-<dd><p>Upload an object stored on the Indico Platform and return only the storage URL to the object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>files</strong> (<em>str</em>) – list of filepaths to upload</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of storage urls to be use for further processing requests (e.g. FormExtraction)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>urls</p>
-</dd>
-</dl>
-</dd></dl>
-
+  <section id="storage">
+<h1>Storage<a class="headerlink" href="#storage" title="Permalink to this heading"></a></h1>
 </section>
 
 

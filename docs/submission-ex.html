@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -229,9 +229,10 @@
 <span class="sd">Without the paginator, the hard limit is 1000</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="n">sub_filter</span> <span class="o">=</span> <span class="n">SubmissionFilter</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s2">&quot;PROCESSING&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">ListSubmissions</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">sub_filter</span><span class="p">)):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submission </span><span class="si">{</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="c1"># do other cool things</span>
+<span class="k">for</span> <span class="n">submission_page</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span><span class="n">ListSubmissions</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">sub_filter</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">submission</span> <span class="ow">in</span> <span class="n">submission_page</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Submission </span><span class="si">{</span><span class="n">submission</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># do other cool things</span>
 </pre></div>
 </div>
 </section>

@@ -54,4 +54,4 @@ def test_job_timeout(indico):
         )
     )[0]
     with pytest.raises(IndicoTimeoutError):
-        job = client.call(JobStatus(id=job.id, wait=True, timeout=0.0))
+        job = client.call(JobStatus(id=job.id, wait=True, timeout=0))
