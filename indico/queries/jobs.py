@@ -76,9 +76,6 @@ class JobStatus(RequestChain):
     def requests(self):
         yield _JobStatus(id=self.id)
         if self.wait:
-            if self.timeout is not None:
-                timer = Timer(self.timeout)
-                timer.run()
             # Check status of job until done if wait == True
             while not (
                 (self.previous.status in ["SUCCESS"] and self.previous.ready)
@@ -91,6 +88,9 @@ class JobStatus(RequestChain):
                     "RETRY",
                 ]
             ):
+                if self.timeout is not None:
+                    timer = Timer(self.timeout)
+                    timer.check()
                 time.sleep(self.request_interval)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
