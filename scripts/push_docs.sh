@@ -1,10 +1,10 @@
-
 #!/bin/bash
-git clone https://user:$GITHUB_TOKEN@github.com/IndicoDataSolutions/indico-readme.git
-cd indico-readme
+cd /harness/indico-readme
 git checkout -b docs-version-$TAG
-touch test.md
-git add test.md
+./add_frontmatter.yaml
+# touch test.md
+# git add test.md
+git add --all
 git commit -m "a set of doc changes"
 git push --set-upstream origin docs-version-$TAG
 curl -L \
