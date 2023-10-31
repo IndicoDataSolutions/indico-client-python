@@ -3,7 +3,6 @@ git clone https://user:$GITHUB_TOKEN@github.com/IndicoDataSolutions/indico-readm
 cd indico-readme
 git config --global user.email "engineering@indico.io"
 git config --global user.name "cat-automation"
-git checkout meghan/reorg
 git checkout -b docs-version-$TAG
 mkdir markdown
 cp -r $DOCS_PATH ./markdown/$LANGUAGE
@@ -19,4 +18,4 @@ curl -L \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/IndicoDataSolutions/indico-readme/pulls \
-  -d '{"title":"Amazing new feature","body":"Please pull these awesome changes in!","head":"docs-version-'"$TAG"'","base":"meghan/reorg"}'
+  -d '{"title":"Amazing new feature","body":"Please pull these awesome changes in!","head":"docs-version-'"$TAG"'","base":"main"}'
