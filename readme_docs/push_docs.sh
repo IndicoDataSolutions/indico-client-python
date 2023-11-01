@@ -1,11 +1,17 @@
-
 #!/bin/bash
 git clone https://user:$GITHUB_TOKEN@github.com/IndicoDataSolutions/indico-readme.git
 cd indico-readme
+git config --global user.email "engineering@indico.io"
+git config --global user.name "cat-automation"
 git checkout -b docs-version-$TAG
-touch test.md
-git add test.md
+
+mkdir -p markdown
+cp -r $DOCS_PATH ./markdown/$LANGUAGE
+bash add_frontmatter_yaml.sh
+
+git add ./markdown/$LANGUAGE
 git commit -m "a set of doc changes"
+
 git push --set-upstream origin docs-version-$TAG
 curl -L \
   -X POST \
