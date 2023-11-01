@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blueprints &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,11 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,16 +28,12 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            Indico Python Client
-              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -69,10 +64,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Blueprints</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.custom_blueprint.RegisterCustomBlueprint"><code class="docutils literal notranslate"><span class="pre">RegisterCustomBlueprint</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Blueprints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a></li>
 </ul>
@@ -102,8 +94,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Blueprints</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Blueprints</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/blueprints.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -114,13 +106,13 @@
            <div itemprop="articleBody">
              
   <section id="module-indico.queries.custom_blueprint">
-<span id="blueprints"></span><h1>Blueprints<a class="headerlink" href="#module-indico.queries.custom_blueprint" title="Permalink to this heading"></a></h1>
+<span id="blueprints"></span><h1>Blueprints<a class="headerlink" href="#module-indico.queries.custom_blueprint" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.custom_blueprint.RegisterCustomBlueprint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.custom_blueprint.</span></span><span class="sig-name descname"><span class="pre">RegisterCustomBlueprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_family</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">footer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_access</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.custom_blueprint.RegisterCustomBlueprint" title="Permalink to this definition"></a></dt>
 <dd><p>Mutation to register a custom blueprint, making it available in the gallery to add to workflows</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>component_family</strong> (<a class="reference internal" href="workflow-types.html#indico.types.workflow.ComponentFamily" title="indico.types.workflow.ComponentFamily"><em>ComponentFamily</em></a>) – family this blueprint belongs to; supported families are Output, Filter, and Model</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – Name of the blueprint</p></li>
@@ -139,10 +131,10 @@ dataset_ids (list[int]): This blueprint can only be added to workflows associate
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The newly created TaskBlueprint object</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="blueprint-types.html#indico.types.custom_blueprint.TaskBlueprint" title="indico.types.custom_blueprint.TaskBlueprint">TaskBlueprint</a></p>
 </dd>
 </dl>

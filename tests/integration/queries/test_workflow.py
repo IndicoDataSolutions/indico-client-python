@@ -6,7 +6,7 @@ from pathlib import Path
 import time
 
 from indico.client import IndicoClient
-from indico.errors import IndicoError, IndicoInputError
+from indico.errors import IndicoError, IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter, SubmissionReviewFilter
 from indico.queries import (
     GetSubmission,
@@ -244,6 +244,43 @@ def test_workflow_submission_detailed(
     submissions = client.call(WorkflowSubmissionDetailed(workflow_id=wf.id, **_input))
     assert isinstance(submissions[0], Submission)
     assert submissions[0].input_filename == _output
+
+
+@pytest.mark.parametrize(
+    "_input",
+    [
+        {"urls": [PUBLIC_URL + "mock.pdf"] * 3},
+        {"files": [str(Path(__file__).parents[1]) + "/data/mock.pdf"] * 3},
+    ],
+)
+def test_workflow_submission_timeout(
+    indico, airlines_dataset, airlines_model_group: ModelGroup, _input
+):
+    client = IndicoClient()
+    wfs = client.call(ListWorkflows(dataset_ids=[airlines_dataset.id]))
+    wf = max(wfs, key=lambda w: w.id)
+
+    submission_ids = client.call(
+        WorkflowSubmission(
+            workflow_id=wf.id, bundle=True, result_version="LATEST", **_input
+        )
+    )
+
+    assert len(submission_ids) == 1
+    submission_id = submission_ids[0]
+    assert submission_id
+
+    with pytest.raises(IndicoTimeoutError):
+        start = time.time()
+        client.call(WaitForSubmissions(submission_id, timeout=1))
+        end = time.time()
+        assert(end - start >= 1 and end - start < 2)
+
+    with pytest.raises(IndicoTimeoutError):
+        start = time.time()
+        client.call(SubmissionResult(submission_id, "COMPLETE", wait=True, timeout=1))
+        end = time.time()
+        assert(end - start >= 1 and end - start < 2)
 
 
 def test_list_workflow_submission_retrieved(

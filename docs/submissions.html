@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Submissions &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,11 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,16 +28,12 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            Indico Python Client
-              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -60,17 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_groups.html">Model Groups</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">Jobs and Job Status</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Submissions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.ListSubmissions"><code class="docutils literal notranslate"><span class="pre">ListSubmissions</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.GetSubmission"><code class="docutils literal notranslate"><span class="pre">GetSubmission</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.UpdateSubmission"><code class="docutils literal notranslate"><span class="pre">UpdateSubmission</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.SubmissionResult"><code class="docutils literal notranslate"><span class="pre">SubmissionResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.SubmitReview"><code class="docutils literal notranslate"><span class="pre">SubmitReview</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.RetrySubmission"><code class="docutils literal notranslate"><span class="pre">RetrySubmission</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.WaitForSubmissions"><code class="docutils literal notranslate"><span class="pre">WaitForSubmissions</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.queries.submission.GenerateSubmissionResult"><code class="docutils literal notranslate"><span class="pre">GenerateSubmissionResult</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Submissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">Exports</a></li>
@@ -109,8 +94,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Submissions</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Submissions</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/submissions.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -121,7 +106,7 @@
            <div itemprop="articleBody">
              
   <section id="module-indico.queries.submission">
-<span id="submissions"></span><h1>Submissions<a class="headerlink" href="#module-indico.queries.submission" title="Permalink to this heading"></a></h1>
+<span id="submissions"></span><h1>Submissions<a class="headerlink" href="#module-indico.queries.submission" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.queries.submission.ListSubmissions">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.submission.</span></span><span class="sig-name descname"><span class="pre">ListSubmissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workflow_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.ListSubmissions" title="Permalink to this definition"></a></dt>
@@ -137,11 +122,11 @@ desc: (bool, default=True): List in descending order</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>All the found Submission objects
 If paginated, yields results one at a time</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p>List[Submission]</p>
 </dd>
 </dl>
@@ -152,13 +137,13 @@ If paginated, yields results one at a time</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.submission.</span></span><span class="sig-name descname"><span class="pre">GetSubmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.GetSubmission" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve a Submission by id</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>submission_id</strong> (<em>int</em>) – Submission id</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Found Submission object</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>Submission</p>
 </dd>
 </dl>
@@ -169,16 +154,16 @@ If paginated, yields results one at a time</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.submission.</span></span><span class="sig-name descname"><span class="pre">UpdateSubmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retrieved</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.UpdateSubmission" title="Permalink to this definition"></a></dt>
 <dd><p>Update the retrieval status of a Submission by id</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>submission_id</strong> (<em>int</em>) – Submission id</p></li>
 <li><p><strong>retrieved</strong> (<em>bool</em>) – Bool to indicate if you have retrieved prediction results</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Found Submission object</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>Submission</p>
 </dd>
 </dl>
@@ -189,7 +174,7 @@ If paginated, yields results one at a time</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.submission.</span></span><span class="sig-name descname"><span class="pre">SubmissionResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.SubmissionResult" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a result file for a Submission</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>submission</strong> (<em>int</em><em> or </em><em>Submission</em>) – Id of the submission or Submission object</p></li>
 <li><p><strong>check_status</strong> (<em>str</em><em>, </em><em>optional</em>) – Submission status to check for.
@@ -200,13 +185,13 @@ and wait for the result file to be generated. Defaults to False</p></li>
 timing out. Ignored if not <cite>wait</cite>. Defaults to 30</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A Job that can be watched for results</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="jobs-type.html#indico.types.jobs.Job" title="indico.types.jobs.Job">Job</a></p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>if wait</strong> – IndicoTimeoutError: Submission was not <cite>check_status</cite>
        <cite>or result file Job did not complete within `timeout</cite> seconds.</p></li>
@@ -221,7 +206,7 @@ timing out. Ignored if not <cite>wait</cite>. Defaults to 30</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.submission.</span></span><span class="sig-name descname"><span class="pre">SubmitReview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submission</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rejected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_complete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.submission.SubmitReview" title="Permalink to this definition"></a></dt>
 <dd><p>Submit an “Auto” Review for a submission. Requires that the submission be in PENDING_AUTO_REVIEW status.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>submission_id</strong> (<em>int</em>) – Id of submission to submit reviewEnabled for</p>
 </dd>
 </dl>
@@ -237,10 +222,10 @@ NOT RECOMMENDED</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A Job that can be watched for status of review</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="jobs-type.html#indico.types.jobs.Job" title="indico.types.jobs.Job">Job</a></p>
 </dd>
 </dl>
@@ -253,13 +238,13 @@ NOT RECOMMENDED</p>
 Submissions must be in a failed state and cannot be requested before
 the cool-off period (typically 180ms).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>submission_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – the given submission ids to retry.</p>
 </dd>
 </dl>
 <p>Options:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>IndicoInputError</strong> – </p>
 </dd>
 </dl>

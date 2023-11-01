@@ -4,12 +4,13 @@ from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
+from indico.client.request import GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
 from indico.types import Job, Submission
 from indico.types.submission import VALID_SUBMISSION_STATUSES
+from indico.types.utils import Timer
 
 
 class ListSubmissions(PagedRequest):
@@ -202,18 +203,13 @@ class WaitForSubmissions(RequestChain):
         )
 
     def requests(self) -> List[Submission]:
-        yield self.status_getter()
-        curr_time = 0
-        while (
-            not all(self.status_check(s.status) for s in self.previous)
-            and curr_time <= self.timeout
-        ):
-            yield self.status_getter()
-            time.sleep(1)
-            curr_time += 1
-        if not all(self.status_check(s.status) for s in self.previous):
-            raise IndicoTimeoutError(curr_time)
+        timer = Timer(self.timeout)
 
+        while True:
+            timer.check()
+            yield self.status_getter()
+            if all(self.status_check(s.status) for s in self.previous):
+                break
 
 class UpdateSubmission(GraphQLRequest):
     """
@@ -333,18 +329,16 @@ class SubmissionResult(RequestChain):
         )
 
     def requests(self) -> Union[Job, str]:
+        timer = Timer(self.timeout)
+        timer.check()
         yield GetSubmission(self.submission_id)
         if self.wait:
-            curr_time = 0
-            while (
-                not self.status_check(self.previous.status)
-                and curr_time <= self.timeout
-            ):
+            while not self.status_check(self.previous.status):
+                timer.check()
                 yield GetSubmission(self.submission_id)
                 time.sleep(1)
-                curr_time += 1
             if not self.status_check(self.previous.status):
-                raise IndicoTimeoutError(curr_time)
+                raise IndicoTimeoutError(timer.elapsed)
         elif not self.status_check(self.previous.status):
             raise IndicoInputError(
                 f"Submission {self.submission_id} does not meet status requirements"
@@ -437,7 +431,7 @@ class RetrySubmission(GraphQLRequest):
         submission_ids (List[int]): the given submission ids to retry.
     Options:
 
-    Raises: 
+    Raises:
         IndicoInputError
 
     """

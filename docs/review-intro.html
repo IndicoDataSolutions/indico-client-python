@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Review &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,11 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,16 +28,12 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            Indico Python Client
-              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -103,8 +98,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Review</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Review</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/review-intro.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -115,9 +110,9 @@
            <div itemprop="articleBody">
              
   <section id="review">
-<h1>Review<a class="headerlink" href="#review" title="Permalink to this heading"></a></h1>
+<h1>Review<a class="headerlink" href="#review" title="Permalink to this headline"></a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
 <p>Review provides the option for users to manually approve, fix, or reject model predictions in the app.
 While the action of reviewing and approving documents must take place in the application, the API is critical
 in the submission of documents for review and for retrieving the results once they’ve been approved.</p>
@@ -126,7 +121,7 @@ approve the model’s predictions while viewing the source document.</p>
 <img alt="_images/review_screenshot.png" src="_images/review_screenshot.png" />
 </section>
 <section id="review-via-the-api">
-<h2>Review via the API<a class="headerlink" href="#review-via-the-api" title="Permalink to this heading"></a></h2>
+<h2>Review via the API<a class="headerlink" href="#review-via-the-api" title="Permalink to this headline"></a></h2>
 <p>Submitting documents to Review requires that you have your workflow ID and have clicked “enable review” for
 that workflow. You can find “enable review” by clicking on workflows from your dataset (see image below).</p>
 <img alt="_images/enable_review.png" src="_images/enable_review.png" />
