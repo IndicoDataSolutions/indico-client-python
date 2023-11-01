@@ -3,6 +3,7 @@ git clone https://user:$GITHUB_TOKEN@github.com/IndicoDataSolutions/indico-readm
 cd indico-readme
 git config --global user.email "engineering@indico.io"
 git config --global user.name "cat-automation"
+git checkout meghan/cat-814
 git checkout -b docs-version-$TAG
 
 mkdir -p markdown
