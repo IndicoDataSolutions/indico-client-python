@@ -2,7 +2,7 @@ import json
 import time
 from functools import partial
 from operator import eq, ne
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
 from indico.errors import IndicoInputError, IndicoTimeoutError
@@ -24,6 +24,7 @@ class ListSubmissions(PagedRequest):
         limit (int, default=1000): Maximum number of Submissions to return
         orderBy (str, default="ID"): Submission attribute to filter by
         desc: (bool, default=True): List in descending order
+        after: (int): Submission id after which to start paginating; when unsupplied, pagination starts from the first Submission.
 
     Returns:
         List[Submission]: All the found Submission objects
@@ -39,7 +40,6 @@ class ListSubmissions(PagedRequest):
             $orderBy: SUBMISSION_COLUMN_ENUM,
             $desc: Boolean,
             $after: Int
-
         ){
             submissions(
                 submissionIds: $submissionIds,
@@ -49,7 +49,6 @@ class ListSubmissions(PagedRequest):
                 orderBy: $orderBy,
                 desc: $desc,
                 after: $after
-
             ){
                 submissions {
                     id
@@ -83,12 +82,13 @@ class ListSubmissions(PagedRequest):
     def __init__(
         self,
         *,
-        submission_ids: List[int] = None,
-        workflow_ids: List[int] = None,
-        filters: Union[Dict, SubmissionFilter] = None,
+        submission_ids: Optional[List[int]] = None,
+        workflow_ids: Optional[List[int]] = None,
+        filters: Optional[Union[Dict, SubmissionFilter]] = None,
         limit: int = 1000,
         order_by: str = "ID",
         desc: bool = True,
+        after: Optional[int] = None,
     ):
         super().__init__(
             self.query,
@@ -99,6 +99,7 @@ class ListSubmissions(PagedRequest):
                 "limit": limit,
                 "orderBy": order_by,
                 "desc": desc,
+                "after": after,
             },
         )
 
@@ -437,7 +438,7 @@ class RetrySubmission(GraphQLRequest):
         submission_ids (List[int]): the given submission ids to retry.
     Options:
 
-    Raises: 
+    Raises:
         IndicoInputError
 
     """

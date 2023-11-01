@@ -69,7 +69,8 @@ class PagedRequest(GraphQLRequest):
     """
 
     def __init__(self, query: str, variables: Dict[str, Any] = None):
-        variables["after"] = None
+        if "after" not in variables:
+            variables["after"] = None
         self.has_next_page = True
         super().__init__(query, variables=variables)
 
