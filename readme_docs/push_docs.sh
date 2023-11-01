@@ -4,7 +4,8 @@ cd indico-readme
 git config --global user.email "engineering@indico.io"
 git config --global user.name "cat-automation"
 git checkout -b docs-version-$TAG
-mkdir markdown
+
+mkdir -p markdown
 cp -r $DOCS_PATH ./markdown/$LANGUAGE
 bash add_frontmatter_yaml.sh
 
