@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Object Detection &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,11 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,16 +28,12 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            Indico Python Client
-              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -104,8 +99,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Object Detection</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Object Detection</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/object-detection.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -116,9 +111,9 @@
            <div itemprop="articleBody">
              
   <section id="object-detection">
-<h1>Object Detection<a class="headerlink" href="#object-detection" title="Permalink to this heading"></a></h1>
+<h1>Object Detection<a class="headerlink" href="#object-detection" title="Permalink to this headline"></a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
 <p>Using the Indico platform, you can train models to be able to detect whether an element
 is present in an image and its location (a process referred to as ‘Object Detection’).</p>
 <p>For now, you can’t label object detection models within the Indico platfrom. Instead, you should
@@ -142,7 +137,7 @@ in your image.</p>
 from Oxford University: <a class="reference external" href="http://www.robots.ox.ac.uk/~vgg/software/via/">http://www.robots.ox.ac.uk/~vgg/software/via/</a>.</p>
 </section>
 <section id="uploading-your-dataset-and-training-your-model">
-<h2>Uploading your Dataset and Training your Model<a class="headerlink" href="#uploading-your-dataset-and-training-your-model" title="Permalink to this heading"></a></h2>
+<h2>Uploading your Dataset and Training your Model<a class="headerlink" href="#uploading-your-dataset-and-training-your-model" title="Permalink to this headline"></a></h2>
 <p>With your object detection labels in a CSV alongside either the URL to each image or the local
 path to the image on your computer, you can create your dataset and workflow via the API:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">indico.queries</span> <span class="kn">import</span> <span class="n">CreateDataset</span>
@@ -192,7 +187,7 @@ we created above:</p>
 by the platform and represents the location of your images after they’ve been uploaded by Indico.</p>
 </section>
 <section id="predict-with-your-object-detection-model">
-<h2>Predict with your Object Detection Model<a class="headerlink" href="#predict-with-your-object-detection-model" title="Permalink to this heading"></a></h2>
+<h2>Predict with your Object Detection Model<a class="headerlink" href="#predict-with-your-object-detection-model" title="Permalink to this headline"></a></h2>
 <p>To get predictions from your model, you must first upload the images you want to predict on and then
 pass them to the model, for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>

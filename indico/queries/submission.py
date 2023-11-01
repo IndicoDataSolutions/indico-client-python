@@ -191,7 +191,7 @@ class WaitForSubmissions(RequestChain):
         }
     """
 
-    def __init__(self, submission_ids: List[int], timeout: int = 60):
+    def __init__(self, submission_ids: List[int], timeout: Union[int, float] = 60):
         if not submission_ids:
             raise IndicoInputError("Please provide submission ids")
 
@@ -289,7 +289,7 @@ class SubmissionResult(RequestChain):
             Defaults to any status other than `PROCESSING`
         wait (bool, optional): Wait until the submission is `check_status`
             and wait for the result file to be generated. Defaults to False
-        timeout (int, optional): Maximum number of seconds to wait before
+        timeout (int or float, optional): Maximum number of seconds to wait before
             timing out. Ignored if not `wait`. Defaults to 30
 
     Returns:
@@ -310,7 +310,7 @@ class SubmissionResult(RequestChain):
         submission: Union[int, Submission],
         check_status: str = None,
         wait: bool = False,
-        timeout: int = 30,
+        timeout: Union[int, float] = 30,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id

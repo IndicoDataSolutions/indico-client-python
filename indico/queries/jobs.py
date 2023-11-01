@@ -52,7 +52,7 @@ class JobStatus(RequestChain):
     Args:
         id (int): id of the job to query for status.
         wait (bool, optional): Wait for the job to complete? Default is True
-        timeout (int, optional): Timeout after this many seconds.
+        timeout (float or int, optional): Timeout after this many seconds.
             Ignored if not `wait`. Defaults to None
 
     Returns:

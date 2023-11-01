@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Metrics Types &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,11 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,16 +28,12 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            Indico Python Client
-              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -78,64 +73,7 @@
 <li class="toctree-l1"><a class="reference internal" href="jobs-type.html">Jobs Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">User Metrics Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.AppRoles"><code class="docutils literal notranslate"><span class="pre">AppRoles</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.AppRoles.role"><code class="docutils literal notranslate"><span class="pre">AppRoles.role</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.AppRoles.count"><code class="docutils literal notranslate"><span class="pre">AppRoles.count</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.UserDatasets"><code class="docutils literal notranslate"><span class="pre">UserDatasets</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserDatasets.dataset_id"><code class="docutils literal notranslate"><span class="pre">UserDatasets.dataset_id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserDatasets.role"><code class="docutils literal notranslate"><span class="pre">UserDatasets.role</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.UserSummaryCounts"><code class="docutils literal notranslate"><span class="pre">UserSummaryCounts</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSummaryCounts.enabled"><code class="docutils literal notranslate"><span class="pre">UserSummaryCounts.enabled</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSummaryCounts.disabled"><code class="docutils literal notranslate"><span class="pre">UserSummaryCounts.disabled</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot"><code class="docutils literal notranslate"><span class="pre">UserSnapshot</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot.id"><code class="docutils literal notranslate"><span class="pre">UserSnapshot.id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot.name"><code class="docutils literal notranslate"><span class="pre">UserSnapshot.name</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot.email"><code class="docutils literal notranslate"><span class="pre">UserSnapshot.email</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot.created_at"><code class="docutils literal notranslate"><span class="pre">UserSnapshot.created_at</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot.enabled"><code class="docutils literal notranslate"><span class="pre">UserSnapshot.enabled</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot.roles"><code class="docutils literal notranslate"><span class="pre">UserSnapshot.roles</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSnapshot.datasets"><code class="docutils literal notranslate"><span class="pre">UserSnapshot.datasets</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.UserSummary"><code class="docutils literal notranslate"><span class="pre">UserSummary</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSummary.users"><code class="docutils literal notranslate"><span class="pre">UserSummary.users</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserSummary.app_roles"><code class="docutils literal notranslate"><span class="pre">UserSummary.app_roles</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.DatasetRole"><code class="docutils literal notranslate"><span class="pre">DatasetRole</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.DatasetRole.dataset_id"><code class="docutils literal notranslate"><span class="pre">DatasetRole.dataset_id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.DatasetRole.role"><code class="docutils literal notranslate"><span class="pre">DatasetRole.role</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog"><code class="docutils literal notranslate"><span class="pre">UserChangelog</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.id"><code class="docutils literal notranslate"><span class="pre">UserChangelog.id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.date"><code class="docutils literal notranslate"><span class="pre">UserChangelog.date</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.user_id"><code class="docutils literal notranslate"><span class="pre">UserChangelog.user_id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.user_email"><code class="docutils literal notranslate"><span class="pre">UserChangelog.user_email</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.updated_by"><code class="docutils literal notranslate"><span class="pre">UserChangelog.updated_by</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.updater_email"><code class="docutils literal notranslate"><span class="pre">UserChangelog.updater_email</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.previously_enabled"><code class="docutils literal notranslate"><span class="pre">UserChangelog.previously_enabled</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.enabled"><code class="docutils literal notranslate"><span class="pre">UserChangelog.enabled</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.previous_roles"><code class="docutils literal notranslate"><span class="pre">UserChangelog.previous_roles</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.roles"><code class="docutils literal notranslate"><span class="pre">UserChangelog.roles</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.previous_datasets"><code class="docutils literal notranslate"><span class="pre">UserChangelog.previous_datasets</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.datasets"><code class="docutils literal notranslate"><span class="pre">UserChangelog.datasets</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelog.changes_made"><code class="docutils literal notranslate"><span class="pre">UserChangelog.changes_made</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#indico.types.user_metrics.UserChangelogReport"><code class="docutils literal notranslate"><span class="pre">UserChangelogReport</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#indico.types.user_metrics.UserChangelogReport.job_id"><code class="docutils literal notranslate"><span class="pre">UserChangelogReport.job_id</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="blueprint-types.html">Blueprint Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-types.html">Workflow Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
@@ -156,8 +94,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">User Metrics Types</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>User Metrics Types</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/user-metrics-types.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -168,7 +106,7 @@
            <div itemprop="articleBody">
              
   <section id="module-indico.types.user_metrics">
-<span id="user-metrics-types"></span><h1>User Metrics Types<a class="headerlink" href="#module-indico.types.user_metrics" title="Permalink to this heading"></a></h1>
+<span id="user-metrics-types"></span><h1>User Metrics Types<a class="headerlink" href="#module-indico.types.user_metrics" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="indico.types.user_metrics.AppRoles">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.types.user_metrics.</span></span><span class="sig-name descname"><span class="pre">AppRoles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.types.user_metrics.AppRoles" title="Permalink to this definition"></a></dt>
@@ -178,7 +116,7 @@
 <span class="sig-name descname"><span class="pre">role</span></span><a class="headerlink" href="#indico.types.user_metrics.AppRoles.role" title="Permalink to this definition"></a></dt>
 <dd><p>A role name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -189,7 +127,7 @@
 <span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#indico.types.user_metrics.AppRoles.count" title="Permalink to this definition"></a></dt>
 <dd><p>Count of how many users have said role.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -206,7 +144,7 @@
 <span class="sig-name descname"><span class="pre">dataset_id</span></span><a class="headerlink" href="#indico.types.user_metrics.UserDatasets.dataset_id" title="Permalink to this definition"></a></dt>
 <dd><p>The id of a particular dataset</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -217,7 +155,7 @@
 <span class="sig-name descname"><span class="pre">role</span></span><a class="headerlink" href="#indico.types.user_metrics.UserDatasets.role" title="Permalink to this definition"></a></dt>
 <dd><p>A dataset assigned to said dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -234,7 +172,7 @@
 <span class="sig-name descname"><span class="pre">enabled</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSummaryCounts.enabled" title="Permalink to this definition"></a></dt>
 <dd><p>How many user accounts are enabled.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -245,7 +183,7 @@
 <span class="sig-name descname"><span class="pre">disabled</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSummaryCounts.disabled" title="Permalink to this definition"></a></dt>
 <dd><p>How many user accounts are disabled.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -262,7 +200,7 @@
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot.id" title="Permalink to this definition"></a></dt>
 <dd><p>The user’s id.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -273,7 +211,7 @@
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot.name" title="Permalink to this definition"></a></dt>
 <dd><p>The user’s name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -284,7 +222,7 @@
 <span class="sig-name descname"><span class="pre">email</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot.email" title="Permalink to this definition"></a></dt>
 <dd><p>The user’s email.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -295,7 +233,7 @@
 <span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot.created_at" title="Permalink to this definition"></a></dt>
 <dd><p>Time of creation.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -306,7 +244,7 @@
 <span class="sig-name descname"><span class="pre">enabled</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot.enabled" title="Permalink to this definition"></a></dt>
 <dd><p>True if user account is enabled.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -317,7 +255,7 @@
 <span class="sig-name descname"><span class="pre">roles</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot.roles" title="Permalink to this definition"></a></dt>
 <dd><p>List of roles assigned to this user.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
@@ -328,7 +266,7 @@
 <span class="sig-name descname"><span class="pre">datasets</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSnapshot.datasets" title="Permalink to this definition"></a></dt>
 <dd><p>List of datasets this user can access.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="#indico.types.user_metrics.UserDatasets" title="indico.types.user_metrics.UserDatasets">UserDatasets</a>]</p>
 </dd>
 </dl>
@@ -345,7 +283,7 @@
 <span class="sig-name descname"><span class="pre">users</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSummary.users" title="Permalink to this definition"></a></dt>
 <dd><p>Counts of enabled/disabled users.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>UserSummarycounts</p>
 </dd>
 </dl>
@@ -356,7 +294,7 @@
 <span class="sig-name descname"><span class="pre">app_roles</span></span><a class="headerlink" href="#indico.types.user_metrics.UserSummary.app_roles" title="Permalink to this definition"></a></dt>
 <dd><p>List of all available user roles.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="#indico.types.user_metrics.AppRoles" title="indico.types.user_metrics.AppRoles">AppRoles</a>]</p>
 </dd>
 </dl>
@@ -373,7 +311,7 @@
 <span class="sig-name descname"><span class="pre">dataset_id</span></span><a class="headerlink" href="#indico.types.user_metrics.DatasetRole.dataset_id" title="Permalink to this definition"></a></dt>
 <dd><p>Id of a particular dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -384,7 +322,7 @@
 <span class="sig-name descname"><span class="pre">role</span></span><a class="headerlink" href="#indico.types.user_metrics.DatasetRole.role" title="Permalink to this definition"></a></dt>
 <dd><p>Role name which has access to this dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -401,7 +339,7 @@
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.id" title="Permalink to this definition"></a></dt>
 <dd><p>Id of the log entry</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -412,7 +350,7 @@
 <span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.date" title="Permalink to this definition"></a></dt>
 <dd><p>Time of long entry.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>datetime</p>
 </dd>
 </dl>
@@ -423,7 +361,7 @@
 <span class="sig-name descname"><span class="pre">user_id</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.user_id" title="Permalink to this definition"></a></dt>
 <dd><p>Id of the user whose attributes were changed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -434,7 +372,7 @@
 <span class="sig-name descname"><span class="pre">user_email</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.user_email" title="Permalink to this definition"></a></dt>
 <dd><p>Email of the user whose attributes were changed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -445,7 +383,7 @@
 <span class="sig-name descname"><span class="pre">updated_by</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.updated_by" title="Permalink to this definition"></a></dt>
 <dd><p>Id of the account which made the change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>id</p>
 </dd>
 </dl>
@@ -456,7 +394,7 @@
 <span class="sig-name descname"><span class="pre">updater_email</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.updater_email" title="Permalink to this definition"></a></dt>
 <dd><p>Email of the account which made the change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -467,7 +405,7 @@
 <span class="sig-name descname"><span class="pre">previously_enabled</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.previously_enabled" title="Permalink to this definition"></a></dt>
 <dd><p>True if this account was enabled prior to change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -478,7 +416,7 @@
 <span class="sig-name descname"><span class="pre">enabled</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.enabled" title="Permalink to this definition"></a></dt>
 <dd><p>True if account is enabled after the change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -489,7 +427,7 @@
 <span class="sig-name descname"><span class="pre">previous_roles</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.previous_roles" title="Permalink to this definition"></a></dt>
 <dd><p>Roles assigned prior to the change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
@@ -500,7 +438,7 @@
 <span class="sig-name descname"><span class="pre">roles</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.roles" title="Permalink to this definition"></a></dt>
 <dd><p>Roles assigned after the change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
@@ -511,7 +449,7 @@
 <span class="sig-name descname"><span class="pre">previous_datasets</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.previous_datasets" title="Permalink to this definition"></a></dt>
 <dd><p>List of dataset/role mappings prior to the change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="#indico.types.user_metrics.DatasetRole" title="indico.types.user_metrics.DatasetRole">DatasetRole</a>]</p>
 </dd>
 </dl>
@@ -522,7 +460,7 @@
 <span class="sig-name descname"><span class="pre">datasets</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.datasets" title="Permalink to this definition"></a></dt>
 <dd><p>List of dataset/role mappings after the change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="#indico.types.user_metrics.DatasetRole" title="indico.types.user_metrics.DatasetRole">DatasetRole</a>]</p>
 </dd>
 </dl>
@@ -533,7 +471,7 @@
 <span class="sig-name descname"><span class="pre">changes_made</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelog.changes_made" title="Permalink to this definition"></a></dt>
 <dd><p>A list of changed made.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
@@ -550,7 +488,7 @@
 <span class="sig-name descname"><span class="pre">job_id</span></span><a class="headerlink" href="#indico.types.user_metrics.UserChangelogReport.job_id" title="Permalink to this definition"></a></dt>
 <dd><p>The job id. Use for fetching JobStatus.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>

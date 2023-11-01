@@ -1,5 +1,5 @@
 import re
-import signal
+from typing import Union
 import time
 from indico.errors import IndicoTimeoutError
 
@@ -21,7 +21,7 @@ def snake_to_cc(string: str):
 
 
 class Timer:
-    def __init__(self, timeout: int):
+    def __init__(self, timeout: Union[int, float]):
         self.timeout = timeout
         self.start = time.time()
         self.elapsed = 0

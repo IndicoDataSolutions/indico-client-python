@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Exports &mdash; Indico Python Client 3.1.0 documentation</title>
@@ -12,11 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ff68d3e4"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,16 +28,12 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            Indico Python Client
-              <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> Indico Python Client
+            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -99,8 +94,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Exports</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Exports</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/exports.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -110,8 +105,66 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="exports">
-<h1>Exports<a class="headerlink" href="#exports" title="Permalink to this heading"></a></h1>
+  <section id="module-indico.queries.export">
+<span id="exports"></span><h1>Exports<a class="headerlink" href="#module-indico.queries.export" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.export.GetExport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.export.</span></span><span class="sig-name descname"><span class="pre">GetExport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">export_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.export.GetExport" title="Permalink to this definition"></a></dt>
+<dd><p>Get information on an Export job</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>export_id</strong> (<em>int</em>) – Id of an Export</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Export object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.export.DownloadExport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.export.</span></span><span class="sig-name descname"><span class="pre">DownloadExport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">export_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.export.DownloadExport" title="Permalink to this definition"></a></dt>
+<dd><p>Download an export from an Indico storage url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>export</strong> (<em>Export</em>) – Export object</p></li>
+<li><p><strong>export_id</strong> (<em>int</em>) – Export id</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pandas csv of the export</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndicoRequestError if the Export job is not complete</strong><strong> or </strong><strong>failed</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="indico.queries.export.CreateExport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">indico.queries.export.</span></span><span class="sig-name descname"><span class="pre">CreateExport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frozen_labelset_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combine_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ALL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#indico.queries.export.CreateExport" title="Permalink to this definition"></a></dt>
+<dd><p>Create an export job for a dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_id</strong> (<em>int</em>) – Dataset to create the export for</p></li>
+<li><p><strong>labelset_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – (int): Labelset column id to export</p></li>
+<li><p><strong>column_ids</strong> (<em>List</em><em>(</em><em>int</em><em>)</em>) – Data column ids to export</p></li>
+<li><p><strong>model_ids</strong> (<em>List</em><em>(</em><em>int</em><em>)</em>) – Model ids to include predictions from</p></li>
+<li><p><strong>frozen_labelset_ids</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – (List(int)): frozen labelset ids to limit examples by</p></li>
+<li><p><strong>combine_labels</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">LabelResolutionStrategy</span></code>) – (LabelResolutionStrategy): One row per example, combine labels from multiple labels into a single row</p></li>
+<li><p><strong>file_info</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool): Include datafile information</p></li>
+<li><p><strong>anonymous</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool): Anonymize user information</p></li>
+<li><p><strong>wait</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (bool): Wait for the export to complete. Default is True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Export object</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
