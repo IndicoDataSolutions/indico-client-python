@@ -24,7 +24,7 @@ class ListSubmissions(PagedRequest):
         limit (int, default=1000): Maximum number of Submissions to return
         orderBy (str, default="ID"): Submission attribute to filter by
         desc: (bool, default=True): List in descending order
-        after: (int): Submission id after which to start paginating; when unsupplied, pagination starts from the first Submission.
+        after: (int): The index of a Submission in the aggregated filtered list after which to start paginating; when unsupplied, pagination starts from the first Submission.
 
     Returns:
         List[Submission]: All the found Submission objects
