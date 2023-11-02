@@ -77,8 +77,11 @@ class PagedRequest(GraphQLRequest):
     def process_response(self, response):
         response = super().process_response(response)
         _pg = next(iter(response.values()))["pageInfo"]
-        self.has_next_page = _pg["hasNextPage"]
-        self.variables["after"] = _pg["endCursor"] if self.has_next_page else None
+        # if limit isn't set, both of the following are None
+        self.has_next_page = bool(_pg["hasNextPage"])
+        # if limit is greater than the aggregate count, the
+        # endCursor is just the aggregate count
+        self.variables["after"] = _pg["endCursor"]
         return response
 
 
