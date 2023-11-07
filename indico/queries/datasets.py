@@ -4,7 +4,7 @@ import json
 import jsons
 import tempfile
 from pathlib import Path
-from typing import List
+from typing import List, Union, Dict, Optional
 
 import pandas as pd
 import deprecation
@@ -14,6 +14,7 @@ from indico.client.request import (
     GraphQLRequest,
     HTTPMethod,
     HTTPRequest,
+    PagedRequest,
     RequestChain,
 )
 from indico.errors import IndicoNotFound, IndicoInputError
@@ -25,9 +26,10 @@ from indico.types.dataset import (
     ReadApiOcrOptionsInput,
     OcrInputLanguage,
 )
+from indico.filters import DatasetFilter
 
 
-class ListDatasets(GraphQLRequest):
+class ListDatasets(PagedRequest):
     """
     List all of your datasets
 
@@ -42,21 +44,52 @@ class ListDatasets(GraphQLRequest):
     """
 
     query = """
-        query ListDatasets($limit: Int){
-            datasetsPage(limit: $limit) {
+        query ListDatasets(
+            $filters: DatasetFilter,
+            $limit: Int,
+            $orderBy: DATASET_COLUMN_ENUM,
+            $desc: Boolean,
+            $after: Int
+        ){
+            datasetsPage(
+                filters: $filters,
+                limit: $limit
+                orderBy: $orderBy,
+                desc: $desc,
+                after: $after
+            ) {
                 datasets {
                     id
                     name
                     rowCount
                 }
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
             }
         }
     """
 
-    def __init__(self, *, limit: int = 100):
-        super().__init__(self.query, variables={"limit": limit})
+    def __init__(
+        self,
+        *,
+        filters: Optional[Union[Dict, DatasetFilter]] = None,
+        limit: int = 100,
+        order_by: str = "ID",
+        desc: bool = False,
+    ):
+        super().__init__(
+            self.query,
+            variables={
+                "filters": filters,
+                "limit": limit,
+                "orderBy": order_by,
+                "desc": desc,
+            },
+        )
 
-    def process_response(self, response) -> Dataset:
+    def process_response(self, response) -> List[Dataset]:
         response = super().process_response(response)
         return [Dataset(**dataset) for dataset in response["datasetsPage"]["datasets"]]
 
@@ -255,7 +288,9 @@ class CreateDataset(RequestChain):
             omnipage_ocr_options=self.omnipage_ocr_options,
             ocr_engine=self.ocr_engine,
         )
-        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata, autoprocess=True)
+        yield _AddFiles(
+            dataset_id=self.previous.id, metadata=file_metadata, autoprocess=True
+        )
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
         debouncer = Debouncer()
@@ -466,7 +501,9 @@ class AddDatasetFiles(RequestChain):
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             debouncer = Debouncer()
-            while not all(f.status in self.expected_statuses for f in self.previous.files):
+            while not all(
+                f.status in self.expected_statuses for f in self.previous.files
+            ):
                 yield GetDatasetFileStatus(id=self.previous.id)
                 debouncer.backoff()
 
@@ -517,8 +554,10 @@ class _ProcessCSV(GraphQLRequest):
     def process_response(self, response):
         return Dataset(**super().process_response(response)["addDataCsv"])
 
-@deprecation.deprecated(deprecated_in="5.3",
-                        details="Use AddFiles wtih autoprocess=True instead")
+
+@deprecation.deprecated(
+    deprecated_in="5.3", details="Use AddFiles wtih autoprocess=True instead"
+)
 class ProcessFiles(RequestChain):
     """
     Process files associated with a dataset and add corresponding data to the dataset
@@ -557,8 +596,10 @@ class ProcessFiles(RequestChain):
                 yield GetDatasetFileStatus(id=self.dataset_id)
                 debouncer.backoff()
 
-@deprecation.deprecated(deprecated_in="5.3",
-                        details="Use AddFiles wtih autoprocess=True instead")
+
+@deprecation.deprecated(
+    deprecated_in="5.3", details="Use AddFiles wtih autoprocess=True instead"
+)
 class ProcessCSV(RequestChain):
     """
     Process CSV associated with a dataset and add corresponding data to the dataset
@@ -597,6 +638,7 @@ class GetAvailableOcrEngines(GraphQLRequest):
     """
     Fetches and lists the available OCR engines
     """
+
     query = """query{
         ocrOptions {
             engines{
@@ -611,6 +653,7 @@ class GetAvailableOcrEngines(GraphQLRequest):
     def process_response(self, response):
         engines = super().process_response(response)["ocrOptions"]["engines"]
         return [OcrEngine[e["name"]] for e in engines]
+
 
 class GetOcrEngineLanguageCodes(GraphQLRequest):
     """
@@ -631,7 +674,6 @@ class GetOcrEngineLanguageCodes(GraphQLRequest):
             }
         }
     }"""
-
 
     def __init__(self, engine: OcrEngine):
         self.engine = engine

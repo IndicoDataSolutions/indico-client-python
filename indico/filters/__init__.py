@@ -28,6 +28,22 @@ class Filter(dict):
         self.update(and_(kwargs) if len(kwargs) > 1 else kwargs)
 
 
+class DatasetFilter(Filter):
+    """
+    Create a Filter when querying for Datasets via datasetsPage.
+
+    Args:
+        name (str): dataset name by which to filter
+    Returns:
+        dict containing query filter parameters
+    """
+
+    __options__ = ("name",)
+
+    def __init__(self, name: str):
+        super().__init__(name=name)
+
+
 class SubmissionReviewFilter(Filter):
     __options__ = ("rejected", "created_by", "review_type")
 
@@ -164,7 +180,6 @@ class DocumentReportFilter(Filter):
         updated_at_start_date: datetime = None,
         updated_at_end_date: datetime = None,
     ):
-
         kwargs = {"workflowId": workflow_id, "id": submission_id, "status": status}
         if created_at_end_date and not created_at_start_date:
             raise IndicoInputError("Must specify created_at_start_date")
@@ -175,7 +190,6 @@ class DocumentReportFilter(Filter):
                 if created_at_end_date is not None
                 else datetime.datetime.now().strftime("%Y-%m-%d"),
             }
-
 
         if updated_at_end_date and not updated_at_start_date:
             raise IndicoInputError("Must specify updated_at_start_date")
