@@ -1,7 +1,7 @@
 import time
 import json
+from indico.filters import DatasetFilter
 import pytest
-import unittest
 import pandas as pd
 from pathlib import Path
 import os
@@ -15,7 +15,6 @@ from indico.queries.datasets import (
     CreateEmptyDataset,
     AddFiles,
     ProcessFiles,
-    ProcessCSV,
 )
 from indico.queries.export import CreateExport, DownloadExport
 from indico.types.dataset import (
@@ -26,7 +25,6 @@ from indico.types.dataset import (
     ReadApiOcrOptionsInput,
 )
 from indico.errors import IndicoRequestError
-from tests.integration.data.datasets import airlines_dataset
 
 
 def test_create_dataset(indico):
@@ -76,6 +74,16 @@ def test_list_datasets(indico, airlines_dataset):
     assert isinstance(datasets, list)
     assert len(datasets) == 1
     assert type(datasets[0]) == Dataset
+
+
+def test_list_datasets_filtered(indico, airlines_dataset):
+    client = IndicoClient()
+    datasets = client.call(
+        ListDatasets(filters=DatasetFilter(name=f"{time.time()}_bananas"))
+    )
+
+    assert isinstance(datasets, list)
+    assert len(datasets) == 0
 
 
 def test_images(indico):
