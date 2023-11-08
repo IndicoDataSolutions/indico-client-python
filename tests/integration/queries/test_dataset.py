@@ -85,6 +85,16 @@ def test_list_datasets_filtered(indico, airlines_dataset):
     assert isinstance(datasets, list)
     assert len(datasets) == 0
 
+    # happy path
+    datasets = client.call(
+        ListDatasets(filters=DatasetFilter(name=airlines_dataset.name))
+    )
+
+    assert isinstance(datasets, list)
+    assert len(datasets) == 1
+    assert type(datasets[0]) == Dataset
+    assert datasets[0].name == airlines_dataset.name
+
 
 def test_images(indico):
     client = IndicoClient()
