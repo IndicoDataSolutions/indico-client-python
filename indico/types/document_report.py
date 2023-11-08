@@ -6,8 +6,7 @@ from indico.types import SubmissionFile
 
 class DocumentReport(BaseType):
     """
-    A Document report about the associated input files.
-
+    A report about a submission
 
     """
     dataset_id: int

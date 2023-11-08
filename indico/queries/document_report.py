@@ -14,9 +14,7 @@ class _DocumentReportList(BaseType):
 
 class GetDocumentReport(PagedRequest):
     """
-    Query to generate a Document Report.
-    Generates a paged request and paged response.
-    See examples for a sample query.
+    Query to generate a Document Report, otherwise known as a log of past submissions.
     """
 
     query = """

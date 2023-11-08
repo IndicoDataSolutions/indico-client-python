@@ -2,6 +2,7 @@
 Setup for indico apis
 """
 import versioneer
+from pathlib import Path
 from setuptools import setup, find_packages
 
 setup(
@@ -11,7 +12,7 @@ setup(
     packages=find_packages(exclude=["tests"]),
     description="""A Python Wrapper for indico app API.""",
     license="MIT License (See LICENSE)",
-    long_description=open("README.rst").read(),
+    long_description=open(Path(__file__).parent.absolute() / "README.rst").read(),
     url="https://github.com/IndicoDataSolutions/indico-client-python",
     author="indico",
     author_email="engineering@indico.io",

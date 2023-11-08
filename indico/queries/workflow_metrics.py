@@ -16,12 +16,8 @@ class _TopWorkflowMetric(BaseType):
 
 class GetWorkflowMetrics(GraphQLRequest):
     """
-    Requests detailed workflow metric data.
-    Includes daily and total submission counts,
-    Review queue counts, and Straight through processing details.
-    Query can be configured to include only specific metrics
-    by passing in one of WorkflowOptions for SUBMISSIONS,
-    REVIEW, or STRAIGHT_THROUGH_PROCESSING.
+    Requests detailed workflow metric data, including daily and total submission counts, review queue counts, and straight through processing details.
+    Query can be configured to include only specific metrics by passing in one of WorkflowOptions for SUBMISSIONS, REVIEW, or STRAIGHT_THROUGH_PROCESSING.
 
     Args:
         options (List[WorkflowMetricsOptions]): specific metrics to return.

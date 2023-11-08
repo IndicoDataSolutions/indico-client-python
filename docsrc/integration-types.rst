@@ -1,6 +1,6 @@
-**********
+*****************
 Integration Types
-**********
+*****************
 
 .. automodule:: indico.types.integration
 .. autoclass:: indico.types.integration.IntegrationType

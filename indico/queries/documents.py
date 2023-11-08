@@ -49,8 +49,6 @@ class DocumentExtraction(RequestChain):
     Returns:
         Job object
 
-    Raises:
-
     Notes:
         DocumentExtraction is extremely configurable. Four preset configurations are provided:
 
@@ -66,14 +64,6 @@ class DocumentExtraction(RequestChain):
 
         For more information, please reference the Indico knowledgebase article on OCR:
         https://docs.indicodata.ai/articles/documentation-publication/ocr
-
-    Example:
-
-        Call DocumentExtraction and wait for the result::
-
-            job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
-            job = client.call(JobStatus(id=job[0].id, wait=True))
-            extracted_data = client.call(RetrieveStorageObject(job.result))
     """
 
     def __init__(
