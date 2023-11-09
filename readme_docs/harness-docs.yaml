@@ -23,7 +23,7 @@ pipeline:
                     repo: harbor.devops.indico.io/indico/indico-client-python
                     tags:
                       - <+codebase.commitSha>
-                    dockerfile: readme_docs/docs.Dockerfile
+                    dockerfile: readme_docs/Dockerfile
           platform:
             os: Linux
             arch: Amd64
@@ -75,7 +75,7 @@ pipeline:
                         paths: []
                     outputVariables: []
                     envVariables:
-                      GITHUB_TOKEN: <+secrets.getValue("readmeghpat")>
+                      GITHUB_TOKEN: <+secrets.getValue("account.indicomachineuser_github_token")>
                       TAG: <+codebase.commitSha>
                       LANGUAGE: python
                       README_API_KEY: <+secrets.getValue("meghanhickeyreadmepat")>
