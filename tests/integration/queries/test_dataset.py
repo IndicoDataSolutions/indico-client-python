@@ -25,6 +25,7 @@ from indico.types.dataset import (
     ReadApiOcrOptionsInput,
 )
 from indico.errors import IndicoRequestError
+from tests.integration.data.datasets import airlines_dataset  # noqa: F401
 
 
 def test_create_dataset(indico):
