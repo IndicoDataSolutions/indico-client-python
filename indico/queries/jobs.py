@@ -51,8 +51,8 @@ class JobStatus(RequestChain):
     query the status of an asynchronous job in the Indico Platform.
 
     Args:
-        id (int): id of the job to query for status.
-        wait (bool, optional): Wait for the job to complete? Default is True
+        id (int): ID of the job to query for status.
+        wait (bool, optional): Whether to ait for the job to complete. Default is True
         timeout (float or int, optional): Timeout after this many seconds.
             Ignored if not `wait`. Defaults to None
 

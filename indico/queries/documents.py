@@ -43,7 +43,7 @@ class DocumentExtraction(RequestChain):
     Args:
         files= (List[str]): Pathnames of one or more files to OCR
         json_config (dict or JSON str): Configuration settings for OCR. See Notes below.
-        upload_batch_size (int): size of batches for document upload if uploading many documents
+        upload_batch_size (int): Size of batches for document upload if uploading many documents
         ocr_engine (str): Denotes which ocr engine to use. Defaults to OMNIPAGE.
 
     Returns:

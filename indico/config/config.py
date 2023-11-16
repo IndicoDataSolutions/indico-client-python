@@ -14,8 +14,8 @@ class IndicoConfig:
         host= (str, optional): Indico Platform hostname (eg mycluster.indico.io )
         api_token_path= (str, optional): Path to the Indico API token file indico_api_token.txt. Defaults to user's home directory. Ignored if api_token is provided.
         api_token= (str, optional): The actual text of the API Token. Takes precedence over api_token_path
-        verify_ssl= (bool, optional): Verify the host's SSL certificate? Default=True
-        requests_params= (dict, optional): Dictionary of requests.Session parameters to set
+        verify_ssl= (bool, optional): Whether to verify the host's SSL certificate. Default=True
+        requests_params= (dict, optional): Dictionary of requests. Session parameters to set
 
     Returns:
         IndicoConfig object
