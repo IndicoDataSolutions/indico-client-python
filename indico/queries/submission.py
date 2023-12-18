@@ -57,6 +57,14 @@ class ListSubmissions(PagedRequest):
                     datasetId
                     workflowId
                     status
+                    inputFiles {
+                        id
+                        filename
+                        filepath
+                        filetype
+                        fileSize
+                        numPages
+                    }
                     inputFile
                     inputFilename
                     resultFile
@@ -128,6 +136,14 @@ class GetSubmission(GraphQLRequest):
                 datasetId
                 workflowId
                 status
+                inputFiles {
+                    id
+                    filename
+                    filepath
+                    filetype
+                    fileSize
+                    numPages
+                }
                 inputFile
                 inputFilename
                 resultFile
@@ -171,6 +187,14 @@ class WaitForSubmissions(RequestChain):
                     datasetId
                     workflowId
                     status
+                    inputFiles {
+                        id
+                        filename
+                        filepath
+                        filetype
+                        fileSize
+                        numPages
+                    }
                     inputFile
                     inputFilename
                     resultFile
@@ -211,6 +235,7 @@ class WaitForSubmissions(RequestChain):
             if all(self.status_check(s.status) for s in self.previous):
                 break
 
+
 class UpdateSubmission(GraphQLRequest):
     """
     Update the retrieval status of a Submission by id
@@ -230,6 +255,14 @@ class UpdateSubmission(GraphQLRequest):
                 datasetId
                 workflowId
                 status
+                inputFiles {
+                    id
+                    filename
+                    filepath
+                    filetype
+                    fileSize
+                    numPages
+                }
                 inputFile
                 inputFilename
                 resultFile

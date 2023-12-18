@@ -10,16 +10,18 @@ class SubmissionFile(BaseType):
 
     Attributes:
         id (int): The Submission file id
-        filepath (str): URL of the input datafile within the Indico Platform.
-        filename (str): Name of the original file
         submission_id (int): The parent Submission id
+        filename (str): Name of the original file
+        filepath (str): URL of the input datafile within the Indico Platform.
+        filetype (str): The file type of the original file; most likely, this is "PDF".
         file_size (int): Size of file, in bytes
         num_pages (int): Number of pages in file
     """
 
     id: int
-    filepath: str
-    filename: str
     submission_id: int
+    filename: str
+    filepath: str
+    filetype: str
     file_size: int
     num_pages: int
