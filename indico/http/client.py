@@ -1,3 +1,4 @@
+import asyncio
 import aiohttp
 import http.cookiejar
 import logging
@@ -196,13 +197,12 @@ class HTTPClient:
         return content
 
 
-
-
 class AIOHTTPClient(HTTPClient):
     """
     Beta client with a minimal set of features that can execute
     requests using the aiohttp library
     """
+
     def __init__(self, config: Optional[IndicoConfig] = None):
         """
         Config options specific to aiohttp
@@ -240,7 +240,45 @@ class AIOHTTPClient(HTTPClient):
             )
         )
 
-    @aioretry(aiohttp.ClientConnectionError)
+    @contextmanager
+    def _handle_files(self, req_kwargs):
+        files = []
+        file_args = []
+        dup_counts = {}
+        for filepath in req_kwargs.pop("files", []) or []:
+            data = aiohttp.FormData()
+            path = Path(filepath)
+            fd = path.open("rb")
+            files.append(fd)
+            # follow the convention of adding (n) after a duplicate filename
+            if path.stem in dup_counts:
+                data.add_field(
+                    "file", fd, filename=path.stem + f"({dup_counts[path.stem]})"
+                )
+                dup_counts[path.stem] += 1
+            else:
+                data.add_field("file", fd, filename=path.stem)
+                dup_counts[path.stem] = 1
+            file_args.append(data)
+
+        for filename, stream in (req_kwargs.pop("streams", {}) or {}).items():
+            # similar operation as above.
+            files.append(stream)
+            data = aiohttp.FormData()
+            if filename in dup_counts:
+                data.add_field("file", stream, filename=filename + f"({dup_counts[filename]})")
+                dup_counts[filename] += 1
+            else:
+                data.add_field("file", stream, filename=filename)
+                dup_counts[filename] = 1
+            file_args.append(data)
+
+        yield file_args
+
+        if files:
+            [f.close() for f in files]
+
+    @aioretry((aiohttp.ClientConnectionError, aiohttp.ServerDisconnectedError))
     async def _make_request(
         self,
         method: str,
@@ -255,50 +293,61 @@ class AIOHTTPClient(HTTPClient):
         json: bool = ".json" in Path(path).suffixes
         decompress: bool = Path(path).suffix == ".gz"
 
-        async with getattr(self.request_session, method)(
-            f"{self.base_url}{path}",
-            headers=headers,
-            verify_ssl=self.config.verify_ssl,
-            **request_kwargs,
-        ) as response:
-
-            # If auth expired refresh
-            if response.status == 401 and not _refreshed:
-                await self.get_short_lived_access_token()
-                return await self._make_request(
-                    method, path, headers, _refreshed=True, **request_kwargs
-                )
-            elif response.status == 401 and _refreshed:
-                raise IndicoAuthenticationFailed()
-
-            if response.status == 503 and "Retry-After" in response.headers:
-                raise IndicoHibernationError(
-                    after=response.headers.get("Retry-After")
-                )
-
-            if response.status >= 500:
-                raise IndicoRequestError(
-                    code=response.status_code,
-                    error=response.reason,
-                    extras=repr(response.content),
-                )
-
-            content = await aio_deserialize(
-                response, force_json=json, force_decompress=decompress
-            )
-
-            if response.status >= 400:
-                if isinstance(content, dict):
-                    error = (
-                        f"{content.pop('error_type', 'Unknown Error')}, "
-                        f"{content.pop('message', '')}"
+        with self._handle_files(request_kwargs) as file_args:
+            if file_args:
+                resps = await asyncio.gather(
+                    *(
+                        self._make_request(
+                            method, path, headers, **request_kwargs, data=data
+                        )
+                        for data in file_args
                     )
-                    extras = content
-                else:
-                    error = content
-                    extras = None
-
-                raise IndicoRequestError(
-                    error=error, code=response.status_code, extras=extras
                 )
-            return content
+                return [resp for resp_set in resps for resp in resp_set]
+            async with getattr(self.request_session, method)(
+                f"{self.base_url}{path}",
+                headers=headers,
+                verify_ssl=self.config.verify_ssl,
+                **request_kwargs,
+            ) as response:
+
+                # If auth expired refresh
+                if response.status == 401 and not _refreshed:
+                    await self.get_short_lived_access_token()
+                    return await self._make_request(
+                        method, path, headers, _refreshed=True, **request_kwargs
+                    )
+                elif response.status == 401 and _refreshed:
+                    raise IndicoAuthenticationFailed()
+
+                if response.status == 503 and "Retry-After" in response.headers:
+                    raise IndicoHibernationError(
+                        after=response.headers.get("Retry-After")
+                    )
+
+                if response.status >= 500:
+                    raise IndicoRequestError(
+                        code=response.status_code,
+                        error=response.reason,
+                        extras=repr(response.content),
+                    )
+
+                content = await aio_deserialize(
+                    response, force_json=json, force_decompress=decompress
+                )
+
+                if response.status >= 400:
+                    if isinstance(content, dict):
+                        error = (
+                            f"{content.pop('error_type', 'Unknown Error')}, "
+                            f"{content.pop('message', '')}"
+                        )
+                        extras = content
+                    else:
+                        error = content
+                        extras = None
+
+                    raise IndicoRequestError(
+                        error=error, code=response.status_code, extras=extras
+                    )
+                return content
