@@ -1,4 +1,4 @@
-FROM python:3.10.4
+FROM python:3.10.13
 
 ENV INDICO_HOST="dev-ci.us-east-2.indico-dev.indico.io"
 
