@@ -28,5 +28,6 @@ setup(
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
         "deprecation>=2.1.0",
         "jsons",
+        "aiohttp[speedups]"
     ],
 )

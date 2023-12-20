@@ -1,16 +1,22 @@
+import aiohttp
 import http.cookiejar
 import logging
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 import requests
 from indico.client.request import HTTPRequest
 from indico.config import IndicoConfig
-from indico.errors import IndicoAuthenticationFailed, IndicoRequestError, IndicoHibernationError
-from indico.http.serialization import deserialize
+from indico.errors import (
+    IndicoAuthenticationFailed,
+    IndicoRequestError,
+    IndicoHibernationError,
+)
+from indico.http.serialization import deserialize, aio_deserialize
 from requests import Response
+from .retry import aioretry
 
 logger = logging.getLogger(__file__)
 
@@ -128,12 +134,12 @@ class HTTPClient:
             [f.close() for f in files]
 
     def _make_request(
-            self,
-            method: str,
-            path: str,
-            headers: dict = None,
-            _refreshed=False,
-            **request_kwargs,
+        self,
+        method: str,
+        path: str,
+        headers: dict = None,
+        _refreshed=False,
+        **request_kwargs,
     ):
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
@@ -143,7 +149,9 @@ class HTTPClient:
                 f"{self.base_url}{path}",
                 headers=headers,
                 stream=True,
-                verify=False if not self.config.verify_ssl or not self.request_session.verify else True,
+                verify=False
+                if not self.config.verify_ssl or not self.request_session.verify
+                else True,
                 **new_kwargs,
             )
 
@@ -159,8 +167,8 @@ class HTTPClient:
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
 
-        if response.status_code == 503 and 'Retry-After' in response.headers:
-            raise IndicoHibernationError(after=response.headers.get('Retry-After'))
+        if response.status_code == 503 and "Retry-After" in response.headers:
+            raise IndicoHibernationError(after=response.headers.get("Retry-After"))
 
         if response.status_code >= 500:
             raise IndicoRequestError(
@@ -186,3 +194,111 @@ class HTTPClient:
                 error=error, code=response.status_code, extras=extras
             )
         return content
+
+
+
+
+class AIOHTTPClient(HTTPClient):
+    """
+    Beta client with a minimal set of features that can execute
+    requests using the aiohttp library
+    """
+    def __init__(self, config: Optional[IndicoConfig] = None):
+        """
+        Config options specific to aiohttp
+        unsafe - allows interacting with IP urls
+        """
+        # TODO: validate extras are installed with aiohttp
+        self.config = config or IndicoConfig()
+        self.base_url = f"{self.config.protocol}://{self.config.host}"
+        unsafe = config.verify_ssl
+
+        self.request_session = aiohttp.ClientSession()
+        self.request_session.cookie_jar._unsafe = unsafe
+        if config and isinstance(config.requests_params, dict):
+            for param in config.requests_params.keys():
+                setattr(self.request_session, param, config.requests_params[param])
+
+    async def post(self, *args, json: Union[dict, list] = None, **kwargs):
+        return await self._make_request("post", *args, json=json, **kwargs)
+
+    async def get(self, *args, params: dict = None, **kwargs):
+        return await self._make_request("post", *args, params=params, **kwargs)
+
+    async def get_short_lived_access_token(self):
+        r = await self.post(
+            "/auth/users/refresh_token",
+            headers={"Authorization": f"Bearer {self.config.api_token}"},
+            _refreshed=True,
+        )
+        return r
+
+    async def execute_request(self, request: HTTPRequest):
+        return request.process_response(
+            await self._make_request(
+                method=request.method.value.lower(), path=request.path, **request.kwargs
+            )
+        )
+
+    @aioretry(aiohttp.ClientConnectionError)
+    async def _make_request(
+        self,
+        method: str,
+        path: str,
+        headers: dict = None,
+        _refreshed=False,
+        **request_kwargs,
+    ):
+        logger.debug(
+            f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
+        )
+        json: bool = ".json" in Path(path).suffixes
+        decompress: bool = Path(path).suffix == ".gz"
+
+        async with getattr(self.request_session, method)(
+            f"{self.base_url}{path}",
+            headers=headers,
+            verify_ssl=self.config.verify_ssl,
+            **request_kwargs,
+        ) as response:
+
+            # If auth expired refresh
+            if response.status == 401 and not _refreshed:
+                await self.get_short_lived_access_token()
+                return await self._make_request(
+                    method, path, headers, _refreshed=True, **request_kwargs
+                )
+            elif response.status == 401 and _refreshed:
+                raise IndicoAuthenticationFailed()
+
+            if response.status == 503 and "Retry-After" in response.headers:
+                raise IndicoHibernationError(
+                    after=response.headers.get("Retry-After")
+                )
+
+            if response.status >= 500:
+                raise IndicoRequestError(
+                    code=response.status_code,
+                    error=response.reason,
+                    extras=repr(response.content),
+                )
+
+            content = await aio_deserialize(
+                response, force_json=json, force_decompress=decompress
+            )
+
+            if response.status >= 400:
+                if isinstance(content, dict):
+                    error = (
+                        f"{content.pop('error_type', 'Unknown Error')}, "
+                        f"{content.pop('message', '')}"
+                    )
+                    extras = content
+                else:
+                    error = content
+                    extras = None
+
+                raise IndicoRequestError(
+                    error=error, code=response.status_code, extras=extras
+                )
+            return content
