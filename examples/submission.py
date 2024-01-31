@@ -61,7 +61,7 @@ submissions = client.call(
         workflow_id=workflow_id, urls=["https://my_url.com/img.png"]
     )
 )
-submission = submission[0]
+submission = submissions[0]
 
 result_url = client.call(SubmissionResult(submission.id, wait=True))
 result = client.call(RetrieveStorageObject(result_url.result))
