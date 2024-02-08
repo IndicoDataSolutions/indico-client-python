@@ -44,6 +44,26 @@ def deserialize(response, force_json=False, force_decompress=False):
             content_type, charset, content.decode("ascii", "ignore")
         )
 
+async def aio_deserialize(response, force_json=False, force_decompress=False):
+    content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
+    content = await response.read()
+
+    if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
+        content = gzip.decompress(io.BytesIO(content).get_value())
+
+    charset = params.get("charset", "utf-8")
+
+    # For storage object for example where the content is json based on url ending
+    if force_json:
+        content_type = "application/json"
+
+    try:
+        return _SERIALIZATION_FNS[content_type](content, charset)
+    except Exception:
+        logger.debug(traceback.format_exc())
+        raise IndicoDecodingError(
+            content_type, charset, content.decode("ascii", "ignore")
+        )
 
 def raw_bytes(content, *args, **kwargs):
     return content
