@@ -1,5 +1,5 @@
 **********
-Jobs Types
+Job Types
 **********
 
 .. automodule:: indico.types.jobs

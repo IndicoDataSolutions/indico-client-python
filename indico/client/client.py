@@ -57,7 +57,7 @@ class IndicoClient:
             request (GraphQLRequest or RequestChain): GraphQL request to send to the Indico Platform
 
         Returns:
-            Response appropriate to the class of the provided request parameter. Often JSON but not always.
+            Response appropriate to the class of the provided request parameter. Often JSON, but not always.
 
         Raises:
             IndicoRequestError: With errors in processing the request

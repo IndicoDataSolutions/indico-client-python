@@ -25,9 +25,6 @@ class GetModelGroup(RequestChain):
 
     Returns:
         ModelGroup object
-
-    Raises:
-
     """
 
     def __init__(self, id: int, wait: bool = False):
@@ -53,9 +50,6 @@ class _GetModelGroup(GraphQLRequest):
 
     Returns:
         ModelGroup object
-
-    Raises:
-
     """
 
     query = """
@@ -99,9 +93,6 @@ class GetTrainingModelWithProgress(GraphQLRequest):
 
     Returns:
         Model object with percent_complete field
-
-    Raises:
-
     """
 
     query = """
@@ -147,9 +138,6 @@ class GetModelGroupSelectedModelStatus(GraphQLRequest):
 
     Returns:
         status (str): CREATED, TRAINING, COMPLETE or FAILED
-
-    Raises:
-
     """
 
     query = """
@@ -195,9 +183,6 @@ class CreateModelGroup(RequestChain):
 
     Returns:
         ModelGroup object
-
-    Raises:
-
     """
 
     def __init__(
@@ -330,9 +315,6 @@ class ModelGroupPredict(RequestChain):
 
     Returns:
         Job associated with this model group predict task
-
-    Raises:
-
     """
 
     def __init__(

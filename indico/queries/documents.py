@@ -43,13 +43,11 @@ class DocumentExtraction(RequestChain):
     Args:
         files= (List[str]): Pathnames of one or more files to OCR
         json_config (dict or JSON str): Configuration settings for OCR. See Notes below.
-        upload_batch_size (int): size of batches for document upload if uploading many documents
+        upload_batch_size (int): Size of batches for document upload if uploading many documents
         ocr_engine (str): Denotes which ocr engine to use. Defaults to OMNIPAGE.
 
     Returns:
         Job object
-
-    Raises:
 
     Notes:
         DocumentExtraction is extremely configurable. Four preset configurations are provided:
@@ -66,14 +64,6 @@ class DocumentExtraction(RequestChain):
 
         For more information, please reference the Indico knowledgebase article on OCR:
         https://docs.indicodata.ai/articles/documentation-publication/ocr
-
-    Example:
-
-        Call DocumentExtraction and wait for the result::
-
-            job = client.call(DocumentExtraction(files=[src_path], json_config='{"preset_config": "legacy"}'))
-            job = client.call(JobStatus(id=job[0].id, wait=True))
-            extracted_data = client.call(RetrieveStorageObject(job.result))
     """
 
     def __init__(

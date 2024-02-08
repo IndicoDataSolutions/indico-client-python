@@ -166,14 +166,14 @@ class CreateExport(RequestChain):
 
     Args:
         dataset_id (int): Dataset to create the export for
-        labelset_id: (int): Labelset column id to export
+        labelset_id (int): Labelset column id to export
         column_ids (List(int)): Data column ids to export
         model_ids (List(int)): Model ids to include predictions from
         frozen_labelset_ids: (List(int)): frozen labelset ids to limit examples by
-        combine_labels: (LabelResolutionStrategy): One row per example, combine labels from multiple labels into a single row
-        file_info: (bool): Include datafile information
-        anonymous: (bool): Anonymize user information
-        wait: (bool): Wait for the export to complete. Default is True
+        combine_labels (LabelResolutionStrategy): One row per example, combine labels from multiple labels into a single row
+        file_info (bool): Include datafile information
+        anonymous (bool): Anonymize user information
+        wait (bool): Wait for the export to complete. Default is True
 
     Returns:
         Export object

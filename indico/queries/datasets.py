@@ -36,9 +36,6 @@ class ListDatasets(GraphQLRequest):
 
     Returns:
         List[Dataset]
-
-    Raises:
-
     """
 
     query = """
@@ -70,9 +67,6 @@ class GetDataset(GraphQLRequest):
 
     Returns:
         Dataset object
-
-    Raises:
-
     """
 
     query = """
@@ -114,9 +108,6 @@ class GetDatasetFileStatus(GetDataset):
 
     Returns:
         status (str): DOWNLOADED or FAILED
-
-    Raises:
-
     """
 
     query = """
@@ -150,9 +141,6 @@ class GetDatasetStatus(GraphQLRequest):
 
     Returns:
         status (str): COMPLETE or FAILED
-
-    Raises:
-
     """
 
     query = """
@@ -184,9 +172,6 @@ class CreateDataset(RequestChain):
 
     Returns:
         Dataset object
-
-    Raises:
-        IndicoError
 
     """
 
@@ -279,10 +264,6 @@ class RemoveDatasetFile(GraphQLRequest):
 
     Returns:
         Dataset object
-
-    Raises:
-        IndicoError
-
     """
 
     query = """
@@ -320,9 +301,6 @@ class DeleteDataset(GraphQLRequest):
 
     Returns:
         success (bool): The success of the operation
-
-    Raises:
-
     """
 
     query = """
@@ -425,9 +403,6 @@ class AddDatasetFiles(RequestChain):
 
     Returns:
         Dataset
-
-    Raises:
-
     """
 
     previous = None
@@ -531,9 +506,6 @@ class ProcessFiles(RequestChain):
 
     Returns:
         Dataset
-
-    Raises:
-
     """
 
     def __init__(
@@ -571,9 +543,6 @@ class ProcessCSV(RequestChain):
 
     Returns:
         Dataset
-
-    Raises:
-
     """
 
     def __init__(self, dataset_id: int, datafile_ids: List[int], wait: bool = True):

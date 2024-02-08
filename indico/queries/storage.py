@@ -52,7 +52,7 @@ class UploadDocument(HTTPRequest):
             (any class that inherits BufferedIOBase is acceptable).
 
     Returns:
-        files: storage objects to be use for further processing requests E.G. Document extraction (implicitly called)
+        files: Storage object to be used for further processing requests (e.g., document extraction).
     """
 
     def __init__(self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None):
@@ -89,7 +89,7 @@ class UploadBatched(RequestChain):
         request_cls (HTTPRequest): Type of upload request: UploadDocument or UploadImage
 
     Returns:
-        files: storage objects for further processing, e.g. Document extraction or dataset creation
+        files: storage objects for further processing (e.g., document extraction or dataset creation)
     """
 
     def __init__(
@@ -118,7 +118,7 @@ class CreateStorageURLs(UploadDocument):
         files (str): list of filepaths to upload
 
     Returns:
-        urls: list of storage urls to be use for further processing requests (e.g. FormExtraction)
+        urls: list of storage urls to be use for further processing requests (e.g., form extraction)
     """
 
     def process_response(self, uploaded_files: List[dict]) -> List[str]:

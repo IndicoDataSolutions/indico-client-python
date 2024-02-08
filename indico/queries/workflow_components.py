@@ -180,7 +180,7 @@ class AddLinkClassificationComponent(RequestChain):
         workflow_id(int): the workflow id.
         after_component_id(int): the component this component follows.
         model_group_id(int): the model group to source classes from.
-        filtered_classes(List[List[str]]): sets of classes to filter, ie: [["A"], ["A","B"]]
+        filtered_classes(List[List[str]]): sets of classes to filter, i.e., [["A"], ["A","B"]]
         labels(str): decides if to use "actual" or "predicted" labels.
     """
 
