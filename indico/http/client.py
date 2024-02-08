@@ -16,7 +16,6 @@ from indico.errors import (
     IndicoHibernationError,
 )
 from indico.http.serialization import deserialize, aio_deserialize
-from requests import Response
 from .retry import aioretry
 
 logger = logging.getLogger(__file__)
@@ -208,7 +207,6 @@ class AIOHTTPClient(HTTPClient):
         Config options specific to aiohttp
         unsafe - allows interacting with IP urls
         """
-        # TODO: validate extras are installed with aiohttp
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
         unsafe = config.verify_ssl
@@ -251,9 +249,12 @@ class AIOHTTPClient(HTTPClient):
             fd = path.open("rb")
             files.append(fd)
             # follow the convention of adding (n) after a duplicate filename
+            _add_suffix = f".{path.suffix}" if path.suffix else ""
             if path.stem in dup_counts:
                 data.add_field(
-                    "file", fd, filename=path.stem + f"({dup_counts[path.stem]})"
+                    "file",
+                    fd,
+                    filename=path.stem + f"({dup_counts[path.stem]})" + _add_suffix,
                 )
                 dup_counts[path.stem] += 1
             else:
@@ -266,7 +267,11 @@ class AIOHTTPClient(HTTPClient):
             files.append(stream)
             data = aiohttp.FormData()
             if filename in dup_counts:
-                data.add_field("file", stream, filename=filename + f"({dup_counts[filename]})")
+                data.add_field(
+                    "file",
+                    stream,
+                    filename=filename + f"({dup_counts[filename]})" + _add_suffix,
+                )
                 dup_counts[filename] += 1
             else:
                 data.add_field("file", stream, filename=filename)
