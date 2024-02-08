@@ -4,6 +4,7 @@ from typing import Union, Optional
 import urllib3
 
 from indico.config import IndicoConfig
+from indico.errors import IndicoError
 from indico.http.client import HTTPClient, AIOHTTPClient
 from indico.client.request import (
     HTTPRequest,
@@ -153,7 +154,7 @@ class AsyncIndicoClient:
 
     async def get_ipa_version(self):
         if not self._created:
-            raise Exception("Please .create() your client")
+            raise IndicoError("Please .create() your client")
         return (
             await self._http.execute_request(
                 GraphQLRequest("query getIPAVersion {ipaVersion}")
@@ -174,7 +175,7 @@ class AsyncIndicoClient:
             IndicoRequestError: With errors in processing the request
         """
         if not self._created:
-            raise Exception("Please .create() your client")
+            raise IndicoError("Please .create() your client")
 
         if isinstance(request, RequestChain):
             return await self._handle_request_chain(request)
@@ -191,7 +192,7 @@ class AsyncIndicoClient:
                 print("Submission", s)
         """
         if not self._created:
-            raise Exception("Please .create() your client")
+            raise IndicoError("Please .create() your client")
         while request.has_next_page:
             r = await self._http.execute_request(request)
             yield r

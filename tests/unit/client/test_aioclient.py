@@ -3,6 +3,7 @@ import pytest
 
 from indico.client import AsyncIndicoClient, HTTPRequest, HTTPMethod, GraphQLRequest
 from indico.config import IndicoConfig
+from indico.errors import IndicoError
 
 pytestmark = pytest.mark.asyncio(scope="module")
 
@@ -57,6 +58,12 @@ async def test_client_basic_http_request(indico_request, auth, indico_test_confi
         )
         assert response == {"test": True}
 
+async def test_client_creation_error_handling(indico_test_config):
+    client = AsyncIndicoClient()
+    with pytest.raises(IndicoError):
+        await client.call(
+            HTTPRequest(method=HTTPMethod.GET, path="/users/details")
+        )
 
 async def test_client_graphql_text_request(indico_request, auth, indico_test_config):
     client = await AsyncIndicoClient(config=indico_test_config).create()

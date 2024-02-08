@@ -209,10 +209,8 @@ class AIOHTTPClient(HTTPClient):
         """
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
-        unsafe = config.verify_ssl
 
         self.request_session = aiohttp.ClientSession()
-        self.request_session.cookie_jar._unsafe = unsafe
         if config and isinstance(config.requests_params, dict):
             for param in config.requests_params.keys():
                 setattr(self.request_session, param, config.requests_params[param])
