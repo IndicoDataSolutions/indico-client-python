@@ -35,9 +35,9 @@ def retry(
 def aioretry(
     ExceptionTypes: t.Type[Exception],
     tries: int = 3,
-    delay: int | tuple[int, int] = 1,
+    delay: t.Union[int, t.Tuple[int, int]] = 1,
     backoff: int = 2,
-    condition: t.Callable[[Exception], bool] | None = None,
+    condition: t.Optional[t.Callable[[Exception], bool]] = None,
 ) -> t.Callable:
     """
     Retry with exponential backoff
