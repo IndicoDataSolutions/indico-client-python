@@ -1,3 +1,3 @@
 Environment Variable,Description
-INDICO_HOST,Hostname for your Indico Platform. app.indico.io. by default but likely different for your install.
+INDICO_HOST,Hostname for your Indico Platform. try.indico.io. by default but likely different for your install.
 INDICO_API_TOKEN_PATH,Full path to your indico_api_token.txt file. The Python Client Library will look for the token file in your home directory by default.

@@ -91,5 +91,5 @@ Python Classes to generate the most often used queries for you. You can find the
 in the Reference section of the Client Libreary Docs.
 
 
-.. _user dashboard: https://app.indico.io/auth/user
+.. _user dashboard: https://try.indico.io/auth/user
 .. _How to GraphQL: https://www.howtographql.com/
