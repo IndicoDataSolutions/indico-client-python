@@ -358,7 +358,7 @@ class SubmitReview(GraphQLRequest):
         submission_id (int): Id of submission to submit reviewEnabled for
 
     Options:
-        changes (dict or list): changes to make to raw predictions
+        changes (dict, list, or JSONString): changes to make to raw predictions
 
         rejected (boolean): reject the predictions and place the submission
             in the review queue. Must be True if $changes not provided
@@ -395,7 +395,7 @@ class SubmitReview(GraphQLRequest):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
             raise IndicoInputError("Must provide changes or reject=True")
-        elif changes and (isinstance(changes, dict) or isinstance(changes, list)):
+        elif changes and isinstance(changes, (dict, list)):
             changes = json.dumps(changes)
         _vars = {
             "submissionId": submission_id,
