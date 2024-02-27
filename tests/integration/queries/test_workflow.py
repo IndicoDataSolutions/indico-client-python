@@ -372,7 +372,7 @@ def test_auto_review_enabled_in_get_workflow_response(
 
 
 @pytest.mark.parametrize("force_complete", [None, True])
-def test_workflow_submission_auto_review(
+def test_workflow_submission_auto_review_v1(
     indico,
     force_complete,
     org_annotate_dataset,
@@ -391,7 +391,7 @@ def test_workflow_submission_auto_review(
 
     _file = str(Path(__file__).parents[1]) + "/data/org-sample.pdf"
 
-    sub_ids = client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file]))
+    sub_ids = client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file], result_version="ONE"))
     subs = client.call(WaitForSubmissions(sub_ids, timeout=120))
     sub = subs[0]
     assert sub.status == "PENDING_AUTO_REVIEW"
@@ -408,7 +408,53 @@ def test_workflow_submission_auto_review(
     )
     job = client.call(JobStatus(job.id))
     submission = client.call(WaitForSubmissions([sub.id]))[0]
-    assert submission.status == "COMPLETE" if force_complete else "PENDING_REVIEW"
+    assert submission.status == "COMPLETE" if force_complete else submission.status == "PENDING_REVIEW"
+
+
+@pytest.mark.parametrize("force_complete", [None, True])
+def test_workflow_submission_auto_review_v3_result(
+    indico,
+    force_complete,
+    org_annotate_dataset,
+    org_annotate_workflow,
+    org_annotate_model_group,
+):
+
+    client = IndicoClient()
+
+    wf = client.call(
+        UpdateWorkflowSettings(
+            org_annotate_workflow.id, enable_review=True, enable_auto_review=True
+        )
+    )
+    assert wf.review_enabled and wf.auto_review_enabled
+
+    _file = str(Path(__file__).parents[1]) + "/data/org-sample.pdf"
+
+    sub_ids = client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file], result_version="THREE"))
+    subs = client.call(WaitForSubmissions(sub_ids, timeout=120))
+    sub = subs[0]
+    assert sub.status == "PENDING_AUTO_REVIEW" or sub.status == "COMPLETE" # sub status will be set to COMPLETE if v3 is not supported
+    if sub.status == "PENDING_AUTO_REVIEW":
+        raw_result = client.call(RetrieveStorageObject(sub.result_file))
+        changes = raw_result["submission_results"]
+        assert isinstance(changes, list)
+        for change in changes:
+            # use original values
+            change["model_results"] = change["model_results"]["ORIGINAL"]
+            change["component_results"] = change["component_results"]["ORIGINAL"]
+            for model, preds in change["model_results"].items():
+                if isinstance(preds, dict):
+                    preds["accepted"] = True
+                elif isinstance(preds, list):
+                    for pred in preds:
+                        pred["accepted"] = True
+        job = client.call(
+            SubmitReview(sub.id, changes=changes, force_complete=force_complete)
+        )
+        job = client.call(JobStatus(job.id))
+        submission = client.call(WaitForSubmissions([sub.id]))[0]
+        assert submission.status == "COMPLETE" if force_complete else submission.status == "PENDING_REVIEW"
 
 
 def test_list_workflow_submission_rejected(org_annotate_dataset):

@@ -211,6 +211,7 @@ class WaitForSubmissions(RequestChain):
             if all(self.status_check(s.status) for s in self.previous):
                 break
 
+
 class UpdateSubmission(GraphQLRequest):
     """
     Update the retrieval status of a Submission by id
@@ -357,7 +358,7 @@ class SubmitReview(GraphQLRequest):
         submission_id (int): Id of submission to submit reviewEnabled for
 
     Options:
-        changes (dict or JSONString): changes to make to raw predictions
+        changes (dict or list): changes to make to raw predictions
 
         rejected (boolean): reject the predictions and place the submission
             in the review queue. Must be True if $changes not provided
@@ -387,14 +388,14 @@ class SubmitReview(GraphQLRequest):
     def __init__(
         self,
         submission: Union[int, Submission],
-        changes: Dict = None,
+        changes: Dict | List = None,
         rejected: bool = False,
         force_complete: bool = None,
     ):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
             raise IndicoInputError("Must provide changes or reject=True")
-        elif changes and isinstance(changes, dict):
+        elif changes and (isinstance(changes, dict) or isinstance(changes, list)):
             changes = json.dumps(changes)
         _vars = {
             "submissionId": submission_id,
