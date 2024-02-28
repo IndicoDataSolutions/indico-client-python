@@ -1,4 +1,5 @@
 from indico.types import BaseType, List
+
 from . import SubmissionFile
 
 VALID_SUBMISSION_STATUSES = [
@@ -30,6 +31,7 @@ class SubmissionRetries(BaseType):
         retry_errors (str): Errors encountered on this retry.
         submission_id (int): The ID of the submission being retried.
     """
+
     id: int
     previous_errors: str
     previous_status: str
@@ -60,6 +62,7 @@ class SubmissionReviews(BaseType):
     review_type: str
     notes: str
 
+
 class Submission(BaseType):
     f"""
     A Submission in the Indico Platform.
@@ -85,6 +88,7 @@ class Submission(BaseType):
         deleted (bool): Whether the submission result has been deleted from the server
         errors (str): Any errors raised while processing the submission
         retries (List[SubmissionRetries]): If requested, information about previous retries of this submission.
+        review_in_progress (bool): True if the submission is being actively reviewed
     """
 
     id: int
@@ -100,3 +104,4 @@ class Submission(BaseType):
     errors: str
     retries: List[SubmissionRetries]
     reviews: List[SubmissionReviews]
+    review_in_progress: bool

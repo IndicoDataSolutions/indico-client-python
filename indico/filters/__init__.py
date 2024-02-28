@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, List, Mapping
 
 from indico.errors import IndicoInputError
 
@@ -43,33 +43,67 @@ class SubmissionReviewFilter(Filter):
         super().__init__(**kwargs)
 
 
+class DateRangeFilter(dict):
+
+    def __init__(self, filter_from: str = None, filter_to: str = None):
+        kwargs = {"from": filter_from, "to": filter_to}
+        self.update(kwargs)
+
+
 class SubmissionFilter(Filter):
     """
     Create a Filter when querying for WorkflowSubmissions.
 
     Args:
+        file_type (list): submissions with a file type in this list. Options:
+            [CSV, PDF, EXCEL, DOC, DOCX, PPT, PPTX, PNG, JPG, TIFF, TXT, RTF, XLS, XLSX, UNKNOWN, MSG, EML]
         input_filename (str): submissions with input file names containing this string
         status (str): submissions in this status. Options:
             [PROCESSING, PENDING_REVIEW, PENDING_ADMIN_REVIEW, COMPLETE, FAILED]
-        retrieved(bool): Filter submissions on the retrieved flag
+        retrieved (bool): submissions that have been retrieved (True) or not (False)
+        reviews (SubmissionReviewFilter): submissions whose completed reviews match this review filter
+        review_in_progress (bool): submissions where a review is in progress (True) or not (False)
+        files_deleted (bool): submissions that have had their internal files removed (True) or not (False)
+        created_at (datetime): submissions created during given time range
+        updated_at (datetime): submissions updated during given time range
     Returns:
         dict containing query filter parameters
     """
 
-    __options__ = ("input_filename", "status", "retrieved")
+    __options__ = (
+        "file_type",
+        "input_filename",
+        "status",
+        "retrieved",
+        "reviews",
+        "review_in_progress",
+        "files_deleted",
+        "created_at",
+        "updated_at",
+    )
 
     def __init__(
         self,
+        file_type: List[str] = None,
         input_filename: str = None,
         status: str = None,
         retrieved: bool = None,
         reviews: SubmissionReviewFilter = None,
+        review_in_progress: bool = None,
+        files_deleted: bool = None,
+        created_at: DateRangeFilter = None,
+        updated_at: DateRangeFilter = None,
     ):
         kwargs = {
+            "filetype": file_type,
             "inputFilename": input_filename,
             "status": status.upper() if status else status,
             "retrieved": retrieved,
             "reviews": reviews,
+            "reviewInProgress": review_in_progress,
+            "filesDeleted": files_deleted,
+            "createdAt": created_at,
+            "updatedAt": updated_at,
         }
 
         super().__init__(**kwargs)
@@ -171,19 +205,22 @@ class DocumentReportFilter(Filter):
         if created_at_start_date:
             kwargs["createdAt"] = {
                 "from": created_at_start_date.strftime("%Y-%m-%d"),
-                "to": created_at_end_date.strftime("%Y-%m-%d")
-                if created_at_end_date is not None
-                else datetime.datetime.now().strftime("%Y-%m-%d"),
+                "to": (
+                    created_at_end_date.strftime("%Y-%m-%d")
+                    if created_at_end_date is not None
+                    else datetime.datetime.now().strftime("%Y-%m-%d")
+                ),
             }
-
 
         if updated_at_end_date and not updated_at_start_date:
             raise IndicoInputError("Must specify updated_at_start_date")
         if updated_at_start_date is not None:
             kwargs["updatedAt"] = {
                 "from": updated_at_start_date.strftime("%Y-%m-%d"),
-                "to": updated_at_end_date.strftime("%Y-%m-%d")
-                if updated_at_end_date is not None
-                else datetime.datetime.now().strftime("%Y-%m-%d"),
+                "to": (
+                    updated_at_end_date.strftime("%Y-%m-%d")
+                    if updated_at_end_date is not None
+                    else datetime.datetime.now().strftime("%Y-%m-%d")
+                ),
             }
         super().__init__(**kwargs)

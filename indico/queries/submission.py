@@ -72,6 +72,7 @@ class ListSubmissions(PagedRequest):
                         reviewType
                         notes
                     }
+                    reviewInProgress
                 }
                 pageInfo {
                     endCursor
