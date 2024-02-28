@@ -1,7 +1,7 @@
 import os
 from indico import IndicoClient, IndicoConfig
 
-# Will connect to https://app.indico.io
+# Will connect to https://try.indico.io
 client = IndicoClient()
 
 # Environment variables override defaults
