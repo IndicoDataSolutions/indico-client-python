@@ -14,7 +14,7 @@ from indico.queries import (
 
 # Create an Indico API client
 my_config = IndicoConfig(
-    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+    host="try.indico.io", api_token_path="./path/to/indico_api_token.txt"
 )
 client = IndicoClient(config=my_config)
 
@@ -61,7 +61,7 @@ submissions = client.call(
         workflow_id=workflow_id, urls=["https://my_url.com/img.png"]
     )
 )
-submission = submission[0]
+submission = submissions[0]
 
 result_url = client.call(SubmissionResult(submission.id, wait=True))
 result = client.call(RetrieveStorageObject(result_url.result))

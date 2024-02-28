@@ -148,7 +148,7 @@ class PredictionMetric(BaseType):
 
 class DailyPredictionMetric(PredictionMetric):
     """
-    The total number of model-generated predictions for specified workflow, for this date.
+    The total number of model-generated predictions for specified workflow for this date.
     Attributes:
         date(str): the date of the prediction.
         num_preds(int): the total number of model-generated predictions.
@@ -174,7 +174,7 @@ class StpMetric(BaseType):
 
     Attributes:
         review_numerator(int): The number of human accepted model predictions.
-        auto_review_numerator(int): The nymber of human accepted auto review labels.
+        auto_review_numerator(int): The number of human accepted auto review labels.
         review_denom(int): Total of user supplied labels and model predictions.
         auto_review_denom(int) Total of user supplied labels and auto review labels.
         review_stp_pct(float): Percent of human accepted model predictions. Present if auto review is disabled.
@@ -194,7 +194,7 @@ class DailyStpMetric(StpMetric):
 
     Attributes:
         review_numerator(int): The number of human accepted model predictions.
-        auto_review_numerator(int): The nymber of human accepted auto review labels.
+        auto_review_numerator(int): The number of human accepted auto review labels.
         review_denom(int): Total of user supplied labels and model predictions.
         auto_review_denom(int) Total of user supplied labels and auto review labels.
         review_stp_pct(float): Percent of human accepted model predictions. Present if auto review is disabled.

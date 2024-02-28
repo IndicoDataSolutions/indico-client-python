@@ -1,20 +1,20 @@
 **********************
-Common GraphQL Queries 
+Common GraphQL Queries
 **********************
 
-Most of the Python client library is built around GraphQL queries to the Indico API. Importantly, 
-the library makes sure that these queries are properly formatted and parameterized and, when they aren't, 
+Most of the Python client library is built around GraphQL queries to the Indico API. Importantly,
+the library makes sure that these queries are properly formatted and parameterized and, when they aren't,
 provides informative error messages and handles some common problems. Therefore, we **strongly recommend for
-most use cases that you use the client library**. However, if you would still like to work 
+most use cases that you use the client library**. However, if you would still like to work
 directly with GraphQL, many of the most common queries are provided below along with the variables required.
 
-If you are unable to find a query you'd like to use from below, you can also find many queries in the 
-python library's source code (e.g. you can find queries related to Workflows `here 
+If you are unable to find a query you'd like to use from below, you can also find many queries in the
+python library's source code (e.g. you can find queries related to Workflows `here
 <https://github.com/IndicoDataSolutions/indico-client-python/blob/master/indico/queries/workflow.py>`_).
 
-Note: users can be assigned GraphQL access w/in the Indico IPA by an administrator to access 
-https://app.indico.io/graph/api/graphql (or equivalent w/ your company's base domain in place of 
-app.indico.io). From here, you can test queries as well as see the full schema of available variables. 
+Note: users can be assigned GraphQL access w/in the Indico IPA by an administrator to access
+https://try.indico.io/graph/api/graphql (or equivalent w/ your company's base domain in place of
+try.indico.io). From here, you can test queries as well as see the full schema of available variables.
 
 
 **Job Status** (w/ result)::
@@ -32,7 +32,7 @@ Variables (the job's ID, looks like example below):
 {"id": "3e50f5e6-70c5-424e-9064-9fba12b5ba17"}
 
 
-**List Datasets**:: 
+**List Datasets**::
 
     query ListDatasets($limit: Int){
         datasetsPage(limit: $limit) {
@@ -48,7 +48,7 @@ Variables
 {"limit": 100} # Number of datasets to return
 
 
-**Get Datasets** and **Delete Dataset**:: 
+**Get Datasets** and **Delete Dataset**::
 
     query GetDataset($id: Int) {
             dataset(id: $id) {
@@ -84,7 +84,7 @@ Variables
 
     mutation CreateDataset($metadata: JSONString!) {
         newDataset(metadataList: $metadata) {
-            id    
+            id
             status
         }
     }
@@ -141,7 +141,7 @@ Variables
     }
 
 Variables
-In the query above, replace <QUERY_ARGS> with modelId and the text to predict on like: 
+In the query above, replace <QUERY_ARGS> with modelId and the text to predict on like:
 "$modelId: 342,$data: ['example text', 'more text']"
 
 And replace <MODEL_PREDICT_ARGS> with predcition options as a json string, like:

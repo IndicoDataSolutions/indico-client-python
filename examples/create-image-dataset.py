@@ -2,7 +2,7 @@
 Creating an Image Dataset from Local PNGs/JPGs
 
 There are two ways two create a data of PNGs/JPGs depending on whether the images are
-stored locally on your computer or at a publicly accessible URL. The code snippet 
+stored locally on your computer or at a publicly accessible URL. The code snippet
 below shows you what to do if the images are on your computer.
 """
 
@@ -12,7 +12,7 @@ import pandas as pd
 
 # Create an Indico API client
 my_config = IndicoConfig(
-    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+    host="try.indico.io", api_token_path="./path/to/indico_api_token.txt"
 )
 client = IndicoClient(config=my_config)
 

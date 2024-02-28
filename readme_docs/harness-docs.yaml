@@ -1,0 +1,90 @@
+pipeline:
+  name: Generate Python Docs
+  identifier: Generate_Python_Docs
+  projectIdentifier: IPA_Release
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Build Docs Container
+        identifier: Build_Docs_Container
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: BuildAndPushDockerRegistry_1
+                  identifier: BuildAndPushDockerRegistry_1
+                  spec:
+                    connectorRef: account.harbor
+                    repo: harbor.devops.indico.io/indico/indico-client-python
+                    tags:
+                      - <+codebase.commitSha>
+                    dockerfile: readme_docs/Dockerfile
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+    - stage:
+        name: Build Python Docs
+        identifier: Build_Python_Docs
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Container
+                  name: PR To Readme
+                  identifier: PR_To_Readme
+                  spec:
+                    connectorRef: account.harbor
+                    image: harbor.devops.indico.io/indico/indico-client-python:<+codebase.commitSha>
+                    command: |-
+                      cd /indico-client
+                      chmod +x ./readme_docs/build_docs.sh
+                      ./readme_docs/build_docs.sh
+                      cp -r ./markdown $DOCS_PATH
+                      chmod +x ./readme_docs/push_docs.sh
+                      ./readme_docs/push_docs.sh
+                    shell: Sh
+                    infrastructure:
+                      type: KubernetesDirect
+                      spec:
+                        connectorRef: account.Dev_Cluster
+                        namespace: default
+                        resources:
+                          limits:
+                            cpu: "0.5"
+                            memory: 500Mi
+                        annotations: {}
+                        labels: {}
+                        containerSecurityContext:
+                          capabilities:
+                            drop: []
+                            add: []
+                        nodeSelector: {}
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths: []
+                    outputVariables: []
+                    envVariables:
+                      GITHUB_TOKEN: <+secrets.getValue("account.indicomachineuser_github_token")>
+                      TAG: <+codebase.commitSha>
+                      LANGUAGE: python
+                      README_API_KEY: <+secrets.getValue("meghanhickeyreadmepat")>
+                      DOCS_PATH: /harness/python
+                  timeout: 1m 30s
+        tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Indico
+        repoName: indico-client-python
+        build: <+input>
