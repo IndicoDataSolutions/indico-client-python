@@ -1,6 +1,8 @@
+import datetime
+
 from indico.types import BaseType, List
 
-from . import SubmissionFile
+from . import SubmissionFile, OutputFile
 
 VALID_SUBMISSION_STATUSES = [
     "COMPLETE",
@@ -95,12 +97,21 @@ class Submission(BaseType):
     dataset_id: int
     workflow_id: int
     status: str
+    created_at: datetime
+    updated_at: datetime
+    created_by: int
+    updated_by: int
+    completed_at: datetime
+    files_deleted: bool
     input_files: List[SubmissionFile]
     input_file: str
     input_filename: str
     result_file: str
+    output_files: List[OutputFile]
     retrieved: bool
-    deleted: bool
+    auto_review: SubmissionReviews | None
+    auto_review_loaded: bool
+    ocr_engine: str
     errors: str
     retries: List[SubmissionRetries]
     reviews: List[SubmissionReviews]

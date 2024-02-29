@@ -33,52 +33,95 @@ class ListSubmissions(PagedRequest):
 
     query = """
         query ListSubmissions(
-            $submissionIds: [Int],
-            $workflowIds: [Int],
-            $filters: SubmissionFilter,
-            $limit: Int,
-            $orderBy: SUBMISSION_COLUMN_ENUM,
-            $desc: Boolean,
+            $submissionIds: [Int]
+            $workflowIds: [Int]
+            $filters: SubmissionFilter
+            $limit: Int
+            $orderBy: SUBMISSION_COLUMN_ENUM
+            $desc: Boolean
             $after: Int
-
-        ){
+            ) {
             submissions(
-                submissionIds: $submissionIds,
-                workflowIds: $workflowIds,
-                filters: $filters,
+                submissionIds: $submissionIds
+                workflowIds: $workflowIds
+                filters: $filters
                 limit: $limit
-                orderBy: $orderBy,
-                desc: $desc,
+                orderBy: $orderBy
+                desc: $desc
                 after: $after
-
-            ){
+            ) {
                 submissions {
+                id
+                datasetId
+                workflowId
+                status
+                createdAt
+                updatedAt
+                createdBy
+                updatedBy
+                completedAt
+                errors
+                filesDeleted
+                inputFiles {
                     id
-                    datasetId
-                    workflowId
-                    status
-                    inputFile
-                    inputFilename
-                    resultFile
-                    deleted
-                    retrieved
-                    errors
-                    reviews {
-                        id
-                        createdAt
-                        createdBy
-                        completedAt
-                        rejected
-                        reviewType
-                        notes
-                    }
-                    reviewInProgress
+                    filepath
+                    filename
+                    filetype
+                    submissionId
+                    fileSize
+                    numPages
+                }
+                inputFile
+                inputFilename
+                resultFile
+                outputFiles {
+                    id
+                    filepath
+                    submissionId
+                    componentId
+                    createdAt
+                }
+                retrieved
+                autoReview {
+                    id
+                    submissionId
+                    createdAt
+                    createdBy
+                    startedAt
+                    completedAt
+                    rejected
+                    reviewType
+                    notes
+                    changes
+                }
+                retries {
+                    id
+                    submissionId
+                    previousErrors
+                    previousStatus
+                    retryErrors
+                }
+                AutoReviewLoaded
+                ocrEngine
+                reviews {
+                    id
+                    submissionId
+                    createdAt
+                    createdBy
+                    startedAt
+                    completedAt
+                    rejected
+                    reviewType
+                    notes
+                    changes
+                }
+                reviewInProgress
                 }
                 pageInfo {
-                    startCursor
-                    endCursor
-                    hasNextPage
-                    aggregateCount
+                startCursor
+                endCursor
+                hasNextPage
+                aggregateCount
                 }
             }
         }

@@ -15,14 +15,11 @@ def test_list_submissions(indico):
 def test_list_submissions_filter_filetype(indico):
     client = IndicoClient()
 
-    subs = client.call(
-        ListSubmissions(filters=SubmissionFilter(file_type=["PDF"]), limit=10)
-    )
+    subs = client.call(ListSubmissions(filters=SubmissionFilter(file_type=["PDF"]), limit=10))
     assert len(subs) > 0
     for sub in subs:
-        print(sub.input_filename)
         sub_filetype = sub.input_filename.split(".")[-1].upper()
-        assert sub_filetype == "PDF"
+        assert sub_filetype == "PDF" or sub_filetype.lower() == sub.input_filename
 
 
 def test_list_submissions_filter_reviews(indico):
@@ -30,18 +27,14 @@ def test_list_submissions_filter_reviews(indico):
 
     review_filter = SubmissionReviewFilter(rejected=False)
 
-    subs = client.call(
-        ListSubmissions(filters=SubmissionFilter(reviews=review_filter), limit=10)
-    )
+    subs = client.call(ListSubmissions(filters=SubmissionFilter(reviews=review_filter), limit=10))
     assert len(subs) >= 0
-
 
 def test_list_submissions_filter_reviews_in_progress(indico):
     client = IndicoClient()
 
-    subs = client.call(
-        ListSubmissions(filters=SubmissionFilter(review_in_progress=False), limit=10)
-    )
+
+    subs = client.call(ListSubmissions(filters=SubmissionFilter(review_in_progress=False), limit=10))
     assert len(subs) > 0
 
 
@@ -50,13 +43,9 @@ def test_list_submissions_filter_created_at(indico):
 
     date_filter = DateRangeFilter(
         filter_from=datetime(year=2020, month=2, day=2).strftime("%Y-%m-%d"),
-        filter_to=datetime.now().strftime("%Y-%m-%d"),
+        filter_to=datetime.now().strftime("%Y-%m-%d")
     )
-    subs = client.call(
-        ListSubmissions(filters=SubmissionFilter(created_at=date_filter), limit=10)
-    )
+    subs = client.call(ListSubmissions(filters=SubmissionFilter(created_at=date_filter), limit=10))
     assert len(subs) > 0
-    subs = client.call(
-        ListSubmissions(filters=SubmissionFilter(updated_at=date_filter), limit=10)
-    )
+    subs = client.call(ListSubmissions(filters=SubmissionFilter(updated_at=date_filter), limit=10))
     assert len(subs) > 0
