@@ -75,8 +75,10 @@ class ListSubmissions(PagedRequest):
                     reviewInProgress
                 }
                 pageInfo {
+                    startCursor
                     endCursor
                     hasNextPage
+                    aggregateCount
                 }
             }
         }
