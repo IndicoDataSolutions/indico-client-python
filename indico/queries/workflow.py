@@ -5,7 +5,7 @@ import tempfile
 
 from indico.client.request import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoError, IndicoInputError
-from indico.queries.storage import UploadDocument
+from indico.queries.storage import UploadDocument, UploadBatched
 from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS
 from indico.types.utils import cc_to_snake, snake_to_cc
 
@@ -58,9 +58,9 @@ class ListWorkflows(GraphQLRequest):
                                         id
                                       }
                                 }
-                            
+
                         }
-                
+
                     }
                   componentLinks{
                     id
@@ -69,7 +69,7 @@ class ListWorkflows(GraphQLRequest):
                     filters{
                       classes
                     }
-                    
+
                   }
                 }
             }
@@ -292,7 +292,7 @@ class WorkflowSubmission(RequestChain):
                 {SUBMISSION_RESULT_VERSIONS}
             If bundle is enabled, this must be version TWO or later.
         streams (Dict[str, io.BufferedIOBase]): List of filename keys mapped to streams
-            for upload. Similar to files but mutually exclusive with files. 
+            for upload. Similar to files but mutually exclusive with files.
             Can take for example: io.BufferedReader, io.BinaryIO, or io.BytesIO.
         text (str, optional): text to submit. Note: submission may still go through OCR.
 
@@ -346,7 +346,7 @@ class WorkflowSubmission(RequestChain):
 
     def requests(self):
         if self.files:
-            yield UploadDocument(files=self.files)
+            yield UploadBatched(files=self.files, batch_size=10)
             yield _WorkflowSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
@@ -507,12 +507,12 @@ class CreateWorkflow(GraphQLRequest):
                         componentType
                         reviewable
                         filteredClasses
-                        
+
                         ... on ModelGroupComponent {
                             taskType
                             modelType
                         }
-                
+
                     }
                   componentLinks{
                     id
@@ -521,7 +521,7 @@ class CreateWorkflow(GraphQLRequest):
                     filters {
                       classes
                     }
-                    
+
                   }
                 }
     }
@@ -543,14 +543,14 @@ class CreateWorkflow(GraphQLRequest):
 
 class DeleteWorkflow(GraphQLRequest):
     """
-    Mutation to delete workflow given workflow id. Note that this operation includes deleting 
+    Mutation to delete workflow given workflow id. Note that this operation includes deleting
     all components and models associated with this workflow.
 
     Args:
         workflow_id(int): id of workflow to delete
     """
 
-    query = """        
+    query = """
         mutation deleteWorkflow($workflowId: Int!){
             deleteWorkflow(workflowId: $workflowId){
                 success
