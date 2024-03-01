@@ -1,12 +1,12 @@
 import io
 import json
-from typing import List, Union, Dict
 import tempfile
+from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, Debouncer
+from indico.client.request import Debouncer, GraphQLRequest, RequestChain
 from indico.errors import IndicoError, IndicoInputError
-from indico.queries.storage import UploadDocument, UploadBatched
-from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS
+from indico.queries.storage import UploadBatched, UploadDocument
+from indico.types import SUBMISSION_RESULT_VERSIONS, Job, Submission, Workflow
 from indico.types.utils import cc_to_snake, snake_to_cc
 
 
@@ -318,7 +318,7 @@ class WorkflowSubmission(RequestChain):
         result_version: str = None,
         streams: Dict[str, io.BufferedIOBase] = None,
         text: str = "",
-        batch_size=10,
+        batch_size: int = 10,
     ):
         self.workflow_id = workflow_id
         self.files = files
