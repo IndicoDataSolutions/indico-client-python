@@ -1,12 +1,12 @@
 import io
 import json
-from typing import List, Union, Dict
 import tempfile
+from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, Debouncer
+from indico.client.request import Debouncer, GraphQLRequest, RequestChain
 from indico.errors import IndicoError, IndicoInputError
-from indico.queries.storage import UploadDocument
-from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS
+from indico.queries.storage import UploadBatched, UploadDocument
+from indico.types import SUBMISSION_RESULT_VERSIONS, Job, Submission, Workflow
 from indico.types.utils import cc_to_snake, snake_to_cc
 
 
@@ -58,9 +58,9 @@ class ListWorkflows(GraphQLRequest):
                                         id
                                       }
                                 }
-                            
+
                         }
-                
+
                     }
                   componentLinks{
                     id
@@ -69,7 +69,7 @@ class ListWorkflows(GraphQLRequest):
                     filters{
                       classes
                     }
-                    
+
                   }
                 }
             }
@@ -77,12 +77,19 @@ class ListWorkflows(GraphQLRequest):
     """
 
     def __init__(
-            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None, limit=100
+        self,
+        *,
+        dataset_ids: List[int] = None,
+        workflow_ids: List[int] = None,
+        limit=100,
     ):
         super().__init__(
             self.query,
-            variables={"datasetIds": dataset_ids,
-                       "workflowIds": workflow_ids, "limit": limit},
+            variables={
+                "datasetIds": dataset_ids,
+                "workflowIds": workflow_ids,
+                "limit": limit,
+            },
         )
 
     def process_response(self, response) -> List[Workflow]:
@@ -129,8 +136,7 @@ class _ToggleReview(GraphQLRequest):
         query = query.replace("<TOGGLE>", self.toggle)
         super().__init__(
             query,
-            variables={"workflowId": workflow_id,
-                       "reviewState": enable_review},
+            variables={"workflowId": workflow_id, "reviewState": enable_review},
         )
 
     def process_response(self, response) -> Workflow:
@@ -158,13 +164,12 @@ class UpdateWorkflowSettings(RequestChain):
     """
 
     def __init__(
-            self,
-            workflow: Union[Workflow, int],
-            enable_review: bool = None,
-            enable_auto_review: bool = None,
+        self,
+        workflow: Union[Workflow, int],
+        enable_review: bool = None,
+        enable_auto_review: bool = None,
     ):
-        self.workflow_id = workflow.id if isinstance(
-            workflow, Workflow) else workflow
+        self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
         if enable_review is None and enable_auto_review is None:
             raise IndicoInputError("Must provide at least one review option")
 
@@ -223,9 +228,9 @@ class _WorkflowSubmission(GraphQLRequest):
     }
 
     def __init__(
-            self,
-            detailed_response: bool,
-            **kwargs,
+        self,
+        detailed_response: bool,
+        **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
 
@@ -247,8 +252,7 @@ class _WorkflowSubmission(GraphQLRequest):
         args = [
             _arg for _arg in self.mutation_args.keys() if kwargs.get(cc_to_snake(_arg))
         ]
-        signature = ",".join(
-            f"${_arg}: {self.mutation_args[_arg]}" for _arg in args)
+        signature = ",".join(f"${_arg}: {self.mutation_args[_arg]}" for _arg in args)
         args = ",".join(f"{_arg}: ${_arg}" for _arg in args)
 
         super().__init__(
@@ -263,8 +267,7 @@ class _WorkflowSubmission(GraphQLRequest):
         if "submissions" in response:
             return [Submission(**s) for s in response["submissions"]]
         if not response["submissionIds"]:
-            raise IndicoError(
-                f"Failed to submit to workflow {self.workflow_id}")
+            raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
         else:
             return response["submissionIds"]
         return [Job(id=job_id) for job_id in response["jobIds"]]
@@ -292,9 +295,10 @@ class WorkflowSubmission(RequestChain):
                 {SUBMISSION_RESULT_VERSIONS}
             If bundle is enabled, this must be version TWO or later.
         streams (Dict[str, io.BufferedIOBase]): List of filename keys mapped to streams
-            for upload. Similar to files but mutually exclusive with files. 
+            for upload. Similar to files but mutually exclusive with files.
             Can take for example: io.BufferedReader, io.BinaryIO, or io.BytesIO.
         text (str, optional): text to submit. Note: submission may still go through OCR.
+        batch_size (int, optional): If submitting files, specifies the amount of files to submit in a single batch. Defaults to 10. A call with a batch exceeding 500mb total will fail with an error.
 
     Returns:
         List[int]: If `submission`, these will be submission ids.
@@ -305,15 +309,16 @@ class WorkflowSubmission(RequestChain):
     detailed_response = False
 
     def __init__(
-            self,
-            workflow_id: int,
-            files: List[str] = None,
-            urls: List[str] = None,
-            submission: bool = True,
-            bundle: bool = False,
-            result_version: str = None,
-            streams: Dict[str, io.BufferedIOBase] = None,
-            text: str = ""
+        self,
+        workflow_id: int,
+        files: List[str] = None,
+        urls: List[str] = None,
+        submission: bool = True,
+        bundle: bool = False,
+        result_version: str = None,
+        streams: Dict[str, io.BufferedIOBase] = None,
+        text: str = "",
+        batch_size: int = 10,
     ):
         self.workflow_id = workflow_id
         self.files = files
@@ -328,25 +333,29 @@ class WorkflowSubmission(RequestChain):
         else:
             self.streams = None
         self.text = text
+        self.batch_size = batch_size
         if not submission:
-            raise IndicoInputError(
-                "This option is deprecated and no longer supported.")
+            raise IndicoInputError("This option is deprecated and no longer supported.")
         if not self.files and not self.urls and not self.has_streams and not self.text:
             raise IndicoInputError(
-                "One of 'files', 'streams', 'urls', or 'text' must be specified")
+                "One of 'files', 'streams', 'urls', or 'text' must be specified"
+            )
         elif (self.files or self.urls or self.text) and self.has_streams:
             raise IndicoInputError(
-                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified.")
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified."
+            )
         elif (self.files or self.text) and self.urls:
             raise IndicoInputError(
-                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified")
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified"
+            )
         elif self.files and self.text:
             raise IndicoInputError(
-                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified")
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified"
+            )
 
     def requests(self):
         if self.files:
-            yield UploadDocument(files=self.files)
+            yield UploadBatched(files=self.files, batch_size=self.batch_size)
             yield _WorkflowSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
@@ -372,7 +381,7 @@ class WorkflowSubmission(RequestChain):
                 result_version=self.result_version,
             )
         elif self.text:
-            temp = tempfile.NamedTemporaryFile(mode='w+', suffix='.txt')
+            temp = tempfile.NamedTemporaryFile(mode="w+", suffix=".txt")
             try:
                 temp.write(self.text)
                 temp.seek(0)
@@ -412,12 +421,12 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
     detailed_response = True
 
     def __init__(
-            self,
-            workflow_id: int,
-            files: List[str] = None,
-            urls: List[str] = None,
-            bundle: bool = False,
-            result_version: str = None,
+        self,
+        workflow_id: int,
+        files: List[str] = None,
+        urls: List[str] = None,
+        bundle: bool = False,
+        result_version: str = None,
     ):
         super().__init__(
             workflow_id,
@@ -493,6 +502,7 @@ class CreateWorkflow(GraphQLRequest):
         name(str): name for the workflow
 
     """
+
     query = """  mutation createWorkflow($datasetId: Int!, $name: String!) {
     createWorkflow(datasetId: $datasetId, name: $name) {
            workflow {
@@ -507,12 +517,12 @@ class CreateWorkflow(GraphQLRequest):
                         componentType
                         reviewable
                         filteredClasses
-                        
+
                         ... on ModelGroupComponent {
                             taskType
                             modelType
                         }
-                
+
                     }
                   componentLinks{
                     id
@@ -521,7 +531,7 @@ class CreateWorkflow(GraphQLRequest):
                     filters {
                       classes
                     }
-                    
+
                   }
                 }
     }
@@ -531,8 +541,7 @@ class CreateWorkflow(GraphQLRequest):
     def __init__(self, dataset_id: int, name: str):
         super().__init__(
             self.query,
-            variables={"datasetId": dataset_id,
-                       "name": name},
+            variables={"datasetId": dataset_id, "name": name},
         )
 
     def process_response(self, response) -> Workflow:
@@ -543,14 +552,14 @@ class CreateWorkflow(GraphQLRequest):
 
 class DeleteWorkflow(GraphQLRequest):
     """
-    Mutation to delete workflow given workflow id. Note that this operation includes deleting 
+    Mutation to delete workflow given workflow id. Note that this operation includes deleting
     all components and models associated with this workflow.
 
     Args:
         workflow_id(int): id of workflow to delete
     """
 
-    query = """        
+    query = """
         mutation deleteWorkflow($workflowId: Int!){
             deleteWorkflow(workflowId: $workflowId){
                 success
