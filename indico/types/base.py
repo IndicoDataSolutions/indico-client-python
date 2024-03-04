@@ -44,7 +44,7 @@ class BaseType:
             k = cc_to_snake(k)
             if k in attrs:
                 attr_type = attrs[k]
-                if inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
+                if v is not None and inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
                     v = attrs[k](**v)
 
                 if attr_type == JSONType:

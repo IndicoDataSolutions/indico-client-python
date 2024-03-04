@@ -1,5 +1,5 @@
 import datetime
-
+from typing import Optional
 from indico.types import BaseType, List
 
 from . import SubmissionFile, OutputFile
@@ -109,7 +109,7 @@ class Submission(BaseType):
     result_file: str
     output_files: List[OutputFile]
     retrieved: bool
-    auto_review: SubmissionReviews | None
+    auto_review: SubmissionReviews
     auto_review_loaded: bool
     ocr_engine: str
     errors: str
