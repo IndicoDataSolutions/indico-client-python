@@ -1,3 +1,4 @@
+import pytest
 from datetime import datetime
 
 from indico.client import IndicoClient, IndicoConfig
@@ -20,6 +21,21 @@ def test_list_submissions_filter_filetype(indico):
     for sub in subs:
         sub_filetype = sub.input_filename.split(".")[-1].upper()
         assert sub_filetype == "PDF" or sub_filetype.lower() == sub.input_filename
+
+
+@pytest.mark.parametrize(
+    "_input_filename, _should_contain",
+    [
+        ("pdf", True),
+        ("randomstring", False)
+    ],
+)
+def test_list_submissions_filter_filename(indico, _input_filename, _should_contain):
+    client = IndicoClient()
+
+    subs = client.call(ListSubmissions(filters=SubmissionFilter(input_filename=_input_filename), limit=10))
+    for sub in subs:
+        assert (_input_filename in sub.input_filename) == _should_contain
 
 
 def test_list_submissions_filter_reviews(indico):
