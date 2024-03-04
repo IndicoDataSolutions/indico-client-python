@@ -92,7 +92,6 @@ class ListSubmissions(PagedRequest):
                     rejected
                     reviewType
                     notes
-                    changes
                 }
                 retries {
                     id
@@ -101,8 +100,6 @@ class ListSubmissions(PagedRequest):
                     previousStatus
                     retryErrors
                 }
-                AutoReviewLoaded
-                ocrEngine
                 reviews {
                     id
                     submissionId
@@ -113,7 +110,6 @@ class ListSubmissions(PagedRequest):
                     rejected
                     reviewType
                     notes
-                    changes
                 }
                 reviewInProgress
                 }

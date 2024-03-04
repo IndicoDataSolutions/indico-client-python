@@ -90,14 +90,12 @@ class Submission(BaseType):
         files_deleted (bool): Submission files have been deleted (True) or not deleted (False) from file store
         input_files (List[SubmissionFile]): The SubmissionFiles for the Submission
         input_file (str): URL of the first input datafile within the Indico Platform.
-        input_filename (str): Name of the first original file
+        input_filename (str): URL of the latest result file for this submission
         result_file (str): URL of the result datafile within the Indico Platform
         output_files (List[OutputFile]): List of output files from submission
         retrieved (bool): Whether the submission has been retrieved by a user
             This flag is set manually by users.
         auto_review (SubmissionReview): Latest auto review for submission
-        auto_review_loaded (bool): Internal field for review load
-        ocr_engine (str): OCR engine used for submission
         errors (str): Any errors raised while processing the submission
         retries (List[SubmissionRetries]): If requested, information about previous retries of this submission.
         reviews (List[SubmissionReview]): Completed reviews of this submission, without changes
@@ -121,8 +119,6 @@ class Submission(BaseType):
     output_files: List[OutputFile]
     retrieved: bool
     auto_review: SubmissionReview
-    auto_review_loaded: bool
-    ocr_engine: str
     errors: str
     retries: List[SubmissionRetries]
     reviews: List[SubmissionReview]
