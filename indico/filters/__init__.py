@@ -60,6 +60,12 @@ class SubmissionReviewFilter(Filter):
 
 
 class DateRangeFilter(dict):
+    """
+    Create a Filter when querying for Submissions within a certain date range
+    Args:
+        filter_from (str): A valid string representation of a datetime for start date to filter
+        filter_to (str): A valid string representation of a datetime for end date to filter
+    """
 
     def __init__(self, filter_from: str = None, filter_to: str = None):
         kwargs = {"from": filter_from, "to": filter_to}
@@ -80,8 +86,8 @@ class SubmissionFilter(Filter):
         reviews (SubmissionReviewFilter): submissions whose completed reviews match this review filter
         review_in_progress (bool): submissions where a review is in progress (True) or not (False)
         files_deleted (bool): submissions that have had their internal files removed (True) or not (False)
-        created_at (datetime): submissions created during given time range
-        updated_at (datetime): submissions updated during given time range
+        created_at (DateRangeFilter): submissions created during given time range
+        updated_at (DateRangeFilter): submissions updated during given time range
     Returns:
         dict containing query filter parameters
     """
