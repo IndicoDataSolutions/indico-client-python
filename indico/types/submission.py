@@ -90,8 +90,8 @@ class Submission(BaseType):
         files_deleted (bool): Submission files have been deleted (True) or not deleted (False) from file store
         input_files (List[SubmissionFile]): The SubmissionFiles for the Submission
         input_file (str): URL of the first input datafile within the Indico Platform.
-        input_filename (str): URL of the latest result file for this submission
-        result_file (str): URL of the result datafile within the Indico Platform
+        input_filename (str): Name of the first original file
+        result_file (str): URL of the latest result file for this submission
         output_files (List[OutputFile]): List of output files from submission
         retrieved (bool): Whether the submission has been retrieved by a user
             This flag is set manually by users.
