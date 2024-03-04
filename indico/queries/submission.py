@@ -174,6 +174,14 @@ class GetSubmission(GraphQLRequest):
                 datasetId
                 workflowId
                 status
+                inputFiles {
+                    id
+                    filename
+                    filepath
+                    filetype
+                    fileSize
+                    numPages
+                }
                 inputFile
                 inputFilename
                 resultFile
@@ -217,6 +225,14 @@ class WaitForSubmissions(RequestChain):
                     datasetId
                     workflowId
                     status
+                    inputFiles {
+                        id
+                        filename
+                        filepath
+                        filetype
+                        fileSize
+                        numPages
+                    }
                     inputFile
                     inputFilename
                     resultFile
@@ -277,6 +293,14 @@ class UpdateSubmission(GraphQLRequest):
                 datasetId
                 workflowId
                 status
+                inputFiles {
+                    id
+                    filename
+                    filepath
+                    filetype
+                    fileSize
+                    numPages
+                }
                 inputFile
                 inputFilename
                 resultFile
