@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from indico.client import IndicoClient
+from indico.client import IndicoClient, IndicoConfig
 from indico.filters import DateRangeFilter, SubmissionFilter, SubmissionReviewFilter
 from indico.queries import ListSubmissions
 
@@ -32,7 +32,6 @@ def test_list_submissions_filter_reviews(indico):
 
 def test_list_submissions_filter_reviews_in_progress(indico):
     client = IndicoClient()
-
 
     subs = client.call(ListSubmissions(filters=SubmissionFilter(review_in_progress=False), limit=10))
     assert len(subs) > 0
