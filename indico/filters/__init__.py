@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Iterable, List, Mapping
+from typing import Any, Iterable, List, Mapping, Union
 
 from indico.errors import IndicoInputError
 
@@ -48,7 +48,10 @@ class SubmissionReviewFilter(Filter):
     __options__ = ("rejected", "created_by", "review_type")
 
     def __init__(
-        self, rejected: bool = None, created_by: int = None, review_type: str = None
+        self,
+        rejected: Union[bool, None] = None,
+        created_by: Union[int, None] = None,
+        review_type: Union[str, None] = None,
     ):
         kwargs = {
             "rejected": rejected,
@@ -67,7 +70,9 @@ class DateRangeFilter(dict):
         filter_to (str): A valid string representation of a datetime for end date to filter
     """
 
-    def __init__(self, filter_from: str = None, filter_to: str = None):
+    def __init__(
+        self, filter_from: Union[str, None] = None, filter_to: Union[str, None] = None
+    ):
         kwargs = {"from": filter_from, "to": filter_to}
         self.update(kwargs)
 
@@ -106,15 +111,15 @@ class SubmissionFilter(Filter):
 
     def __init__(
         self,
-        file_type: List[str] = None,
-        input_filename: str = None,
-        status: str = None,
-        retrieved: bool = None,
-        reviews: SubmissionReviewFilter = None,
-        review_in_progress: bool = None,
-        files_deleted: bool = None,
-        created_at: DateRangeFilter = None,
-        updated_at: DateRangeFilter = None,
+        file_type: Union[List[str], None] = None,
+        input_filename: Union[str, None] = None,
+        status: Union[str, None] = None,
+        retrieved: Union[bool, None] = None,
+        reviews: Union[SubmissionReviewFilter, None] = None,
+        review_in_progress: Union[bool, None] = None,
+        files_deleted: Union[bool, None] = None,
+        created_at: Union[DateRangeFilter, None] = None,
+        updated_at: Union[DateRangeFilter, None] = None,
     ):
         kwargs = {
             "filetype": file_type,
@@ -150,10 +155,10 @@ class ModelGroupExampleFilter(Filter):
 
     def __init__(
         self,
-        file_name: str = None,
-        partial: bool = None,
-        status: str = None,
-        text_search: str = None,
+        file_name: Union[str, None] = None,
+        partial: Union[bool, None] = None,
+        status: Union[str, None] = None,
+        text_search: Union[str, None] = None,
     ):
         kwargs = {
             "fileName": file_name,
@@ -178,7 +183,9 @@ class UserMetricsFilter(Filter):
 
     __options__ = ("user_id", "user_email")
 
-    def __init__(self, user_id: int = None, user_email: str = None):
+    def __init__(
+        self, user_id: Union[int, None] = None, user_email: Union[str, None] = None
+    ):
         kwargs = {"userId": user_id, "userEmail": user_email}
 
         super().__init__(**kwargs)
@@ -212,13 +219,13 @@ class DocumentReportFilter(Filter):
 
     def __init__(
         self,
-        submission_id: int = None,
-        workflow_id: int = None,
-        status: str = None,
-        created_at_start_date: datetime = None,
-        created_at_end_date: datetime = None,
-        updated_at_start_date: datetime = None,
-        updated_at_end_date: datetime = None,
+        submission_id: Union[int, None] = None,
+        workflow_id: Union[int, None] = None,
+        status: Union[str, None] = None,
+        created_at_start_date: Union[datetime.datetime, None] = None,
+        created_at_end_date: Union[datetime.datetime, None] = None,
+        updated_at_start_date: Union[datetime.datetime, None] = None,
+        updated_at_end_date: Union[datetime.datetime, None] = None,
     ):
         kwargs = {"workflowId": workflow_id, "id": submission_id, "status": status}
         if created_at_end_date and not created_at_start_date:
