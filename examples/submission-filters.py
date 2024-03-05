@@ -39,6 +39,7 @@ List all submissions that are created and updated within a certain date range
 """
 date_filter = DateRangeFilter(filter_from="2022-01-01", filter_to="2023-01-01")
 sub_filter = SubmissionFilter(created_at=date_filter, updated_at=date_filter)
+submissions = client.call(ListSubmissions(filters=sub_filter))
 
 """
 Example 5
