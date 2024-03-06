@@ -497,9 +497,7 @@ class GetReviews(GraphQLRequest):
     Options:
 
     Returns:
-        A list of Review objects
-    Raises:
-        IndicoInputError
+        A list of Review objects with changes
     """
 
     query = """
@@ -524,9 +522,6 @@ class GetReviews(GraphQLRequest):
     """
 
     def __init__(self, submission_id: int):
-        if submission_id is None:
-            raise IndicoInputError("You must specify a valid submission id")
-
         super().__init__(self.query, variables={"submissionId": submission_id})
 
     def process_response(self, response) -> List[SubmissionReviewFull]:
