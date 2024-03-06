@@ -525,11 +525,11 @@ class GetReviews(GraphQLRequest):
 
     def __init__(self, submission_id: int):
         if submission_id is None:
-            raise IndicoInputError("You must specify a review id")
+            raise IndicoInputError("You must specify a valid submission id")
 
         super().__init__(self.query, variables={"submissionId": submission_id})
 
-    def process_response(self, response) -> List[Submission]:
+    def process_response(self, response) -> List[SubmissionReviewFull]:
         return [
             SubmissionReviewFull(**review) for review in super().process_response(response)["submission"]["reviews"]
         ]
