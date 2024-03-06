@@ -3,7 +3,8 @@ from datetime import datetime
 
 from indico.client import IndicoClient, IndicoConfig
 from indico.filters import DateRangeFilter, SubmissionFilter, SubmissionReviewFilter
-from indico.queries import ListSubmissions
+from indico.queries import ListSubmissions, GetReviews
+from indico.types import SubmissionReviewFull
 
 
 def test_list_submissions(indico):
@@ -64,3 +65,14 @@ def test_list_submissions_filter_created_at(indico):
     assert len(subs) > 0
     subs = client.call(ListSubmissions(filters=SubmissionFilter(updated_at=date_filter), limit=10))
     assert len(subs) > 0
+
+
+def test_get_reviews(indico):
+    client = IndicoClient()
+
+    subs = client.call(ListSubmissions(limit=10))
+    assert len(subs) > 0
+    for sub in subs:
+        reviews = client.call(GetReviews(sub.id))
+        for review in reviews:
+            assert (isinstance(review, SubmissionReviewFull))
