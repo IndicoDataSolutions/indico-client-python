@@ -8,7 +8,7 @@ from indico.client.request import GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
-from indico.types import Job, Submission
+from indico.types import Job, Submission, SubmissionReviewFull
 from indico.types.submission import VALID_SUBMISSION_STATUSES
 from indico.types.utils import Timer
 
@@ -486,6 +486,48 @@ class SubmitReview(GraphQLRequest):
     def process_response(self, response) -> Job:
         response = super().process_response(response)["submitAutoReview"]
         return Job(id=response["jobId"])
+
+
+class GetReviews(GraphQLRequest):
+    """
+    Given a submission Id, return all the full Review objects back with changes
+
+    Args:
+        submission_id (int): Id of submission to submit reviewEnabled for
+    Options:
+
+    Returns:
+        A list of Review objects with changes
+    """
+
+    query = """
+    query GetReview($submissionId: Int!)
+    {
+        submission(id: $submissionId) {
+            id
+            reviews {
+                id
+                submissionId
+                createdAt
+                createdBy
+                startedAt
+                completedAt
+                rejected
+                reviewType
+                notes
+                changes
+            }
+        }
+    }
+    """
+
+    def __init__(self, submission_id: int):
+        super().__init__(self.query, variables={"submissionId": submission_id})
+
+    def process_response(self, response) -> List[SubmissionReviewFull]:
+        return [
+            SubmissionReviewFull(**review) for review in super().process_response(response)["submission"]["reviews"]
+        ]
 
 
 class RetrySubmission(GraphQLRequest):

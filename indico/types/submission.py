@@ -65,6 +65,31 @@ class SubmissionReview(BaseType):
     review_type: str
     notes: str
 
+class SubmissionReviewFull(BaseType):
+    f"""
+    Information about a submission's Reviews. Includes changes
+
+    Attributes:
+        id (int): The ID of the review.
+        submission_id (int): The ID of the submission that is being reviewed.
+        created_at (str): Timestamp of when the document was checked out
+        created_by (int): The ID of the User who submitted the review.
+        completed_at (str): Timestamp of when the review was submitted.
+        rejected (bool): Whether a submission has been rejected.
+        review_type (str): Type of review. One of {VALID_REVIEW_TYPES}
+        notes (str): Rejection reasons provided by user.
+        changes (dict): Changes for this review.
+    """
+    id: int
+    submission_id: int
+    created_at: str
+    created_by: int
+    completed_at: str
+    rejected: bool
+    review_type: str
+    notes: str
+    changes: dict
+
 
 class Submission(BaseType):
     f"""
