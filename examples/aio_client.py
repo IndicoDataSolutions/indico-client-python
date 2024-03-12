@@ -17,28 +17,12 @@ config = IndicoConfig(host="try.indico.io")
 
 async def example_with_client():
     """
-    RECOMMENDED: use the client context manager to handle creation
+    Use the client context manager to handle creation
     and cleanup
     """
     async with AsyncIndicoClient(config=config) as client:
         print(await client.get_ipa_version())
         await example_1(client)
-
-
-async def example_basic_client():
-    """Manage creation and cleanup of the client yourself"""
-
-    # The .create() is required!
-    client = await AsyncIndicoClient(config=config).create()
-
-    # Note this is the equivalent to calling
-    #   client = AsyncIndicoClient(config=config)
-    #   await client.create()
-
-    print(await client.get_ipa_version())
-    await example_1(client)
-
-    await client.cleanup()
 
 
 """
