@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from typing import Union, Optional
-import urllib3
-import time
 import asyncio
+import time
+from typing import Optional, Union
+
+import urllib3
+
+from indico.client.request import (
+    GraphQLRequest,
+    HTTPRequest,
+    PagedRequest,
+    RequestChain,
+)
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
-from indico.http.client import HTTPClient, AIOHTTPClient
-from indico.client.request import (
-    HTTPRequest,
-    RequestChain,
-    PagedRequest,
-    GraphQLRequest,
-)
+from indico.http.client import AIOHTTPClient, HTTPClient
 
 
 class IndicoClient:
