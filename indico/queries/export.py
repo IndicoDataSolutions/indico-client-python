@@ -1,6 +1,6 @@
 import pandas as pd
 import io
-from typing import List, Union
+from typing import List, Tuple
 
 from indico.client import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoNotFound, IndicoRequestError
@@ -54,7 +54,7 @@ class _CreateExport(GraphQLRequest):
         frozen_labelset_ids: List[int] = None,
         combine_labels: LabelResolutionStrategy = LabelResolutionStrategy.ALL.name,
         file_info: bool = None,
-        anonymoous: bool = None,
+        anonymous: bool = None,
     ):
         super().__init__(
             self.query,
@@ -66,7 +66,7 @@ class _CreateExport(GraphQLRequest):
                 "frozenLabelsetIds": frozen_labelset_ids,
                 "combineLabels": combine_labels,
                 "fileInfo": file_info,
-                "anonymous": anonymoous,
+                "anonymous": anonymous,
             },
         )
 
@@ -193,6 +193,7 @@ class CreateExport(RequestChain):
         file_info: bool = False,
         anonymous: bool = False,
         wait: bool = True,
+        max_wait_time: Tuple[int, float] = 5
     ):
         self.dataset_id = dataset_id
         self.labelset_id = labelset_id
@@ -203,6 +204,7 @@ class CreateExport(RequestChain):
         self.file_info = file_info
         self.anonymous = anonymous
         self.wait = wait
+        self.max_wait_time = max_wait_time
         super().__init__()
 
     def requests(self):
@@ -214,12 +216,11 @@ class CreateExport(RequestChain):
             frozen_labelset_ids=self.frozen_labelset_ids,
             combine_labels=self.combine_labels,
             file_info=self.file_info,
-            anonymoous=self.anonymous,
+            anonymous=self.anonymous,
         )
-        debouncer = Debouncer()
         if self.wait is True:
             while self.previous.status not in ["COMPLETE", "FAILED"]:
                 yield GetExport(self.previous.id)
-                yield debouncer.backoff()
+                yield Debouncer(max_timeout=self.max_wait_time)
 
         yield GetExport(self.previous.id)

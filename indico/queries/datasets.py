@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import json
-import jsons
 import tempfile
 from pathlib import Path
-from typing import List, Union, Dict, Optional
+from typing import Dict, List, Optional, Tuple, Union
 
-import pandas as pd
 import deprecation
+import jsons
+import pandas as pd
 
 from indico.client.request import (
     Debouncer,
@@ -17,16 +17,16 @@ from indico.client.request import (
     PagedRequest,
     RequestChain,
 )
-from indico.errors import IndicoNotFound, IndicoInputError
+from indico.errors import IndicoInputError, IndicoNotFound
+from indico.filters import DatasetFilter
 from indico.queries.storage import UploadBatched, UploadImages
 from indico.types.dataset import (
     Dataset,
     OcrEngine,
+    OcrInputLanguage,
     OmnipageOcrOptionsInput,
     ReadApiOcrOptionsInput,
-    OcrInputLanguage,
 )
-from indico.filters import DatasetFilter
 
 
 class ListDatasets(PagedRequest):
@@ -215,6 +215,7 @@ class CreateDataset(RequestChain):
         name: str,
         files: List[str],
         wait: bool = True,
+        max_wait_time: Tuple[int, float] = 5,
         dataset_type: str = "TEXT",
         from_local_images: bool = False,
         image_filename_col: str = "filename",
@@ -226,6 +227,7 @@ class CreateDataset(RequestChain):
         self.files = files
         self.name = name
         self.wait = wait
+        self.max_wait_time = max_wait_time
         self.dataset_type = dataset_type
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
@@ -278,13 +280,12 @@ class CreateDataset(RequestChain):
         )
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
-        debouncer = Debouncer()
         if self.wait is True:
             while not all(
                 [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
             ):
                 yield GetDatasetFileStatus(id=dataset_id)
-                yield debouncer.backoff()
+                yield Debouncer(max_timeout=self.max_wait_time)
         yield GetDataset(id=dataset_id)
 
 
@@ -552,21 +553,22 @@ class ProcessFiles(RequestChain):
         dataset_id: int,
         datafile_ids: List[int],
         wait: bool = True,
+        max_wait_time: Tuple[int, float] = 5
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
         self.wait = wait
+        self.max_wait_time = max_wait_time
 
     def requests(self):
         yield _ProcessFiles(self.dataset_id, self.datafile_ids)
-        debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             while not all(
                 f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
-                yield debouncer.backoff()
+                yield Debouncer(max_timeout=self.max_wait_time)
 
 
 @deprecation.deprecated(
