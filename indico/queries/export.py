@@ -13,7 +13,7 @@ class _CreateExport(GraphQLRequest):
         mutation CreateExport(
             $datasetId: Int!,
             $labelsetId: Int!,
-            $columnIds: [Int], 
+            $columnIds: [Int],
             $modelIds: [Int],
             $frozenLabelsetIds: [Int],
             $combineLabels: LabelResolutionStrategy,
@@ -93,7 +93,7 @@ class GetExport(GraphQLRequest):
                 exports {
                 id
                 datasetId
-                name 
+                name
                 status
                 columnIds
                 labelsetId
@@ -220,6 +220,6 @@ class CreateExport(RequestChain):
         if self.wait is True:
             while self.previous.status not in ["COMPLETE", "FAILED"]:
                 yield GetExport(self.previous.id)
-                debouncer.backoff()
+                yield debouncer.backoff()
 
         yield GetExport(self.previous.id)

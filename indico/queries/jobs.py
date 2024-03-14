@@ -91,6 +91,6 @@ class JobStatus(RequestChain):
                 if self.timeout is not None:
                     timer = Timer(self.timeout)
                     timer.check()
-                time.sleep(self.request_interval)
+                yield self.request_interval
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)

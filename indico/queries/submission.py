@@ -403,7 +403,7 @@ class SubmissionResult(RequestChain):
             while not self.status_check(self.previous.status):
                 timer.check()
                 yield GetSubmission(self.submission_id)
-                time.sleep(1)
+                yield 1
             if not self.status_check(self.previous.status):
                 raise IndicoTimeoutError(timer.elapsed)
         elif not self.status_check(self.previous.status):

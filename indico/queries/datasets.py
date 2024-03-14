@@ -284,7 +284,7 @@ class CreateDataset(RequestChain):
                 [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
             ):
                 yield GetDatasetFileStatus(id=dataset_id)
-                debouncer.backoff()
+                yield debouncer.backoff()
         yield GetDataset(id=dataset_id)
 
 
@@ -566,7 +566,7 @@ class ProcessFiles(RequestChain):
                 f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
-                debouncer.backoff()
+                yield debouncer.backoff()
 
 
 @deprecation.deprecated(

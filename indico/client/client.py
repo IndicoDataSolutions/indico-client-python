@@ -2,7 +2,8 @@
 
 from typing import Union, Optional
 import urllib3
-
+import time
+import asyncio
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
 from indico.http.client import HTTPClient, AIOHTTPClient
@@ -41,13 +42,15 @@ class IndicoClient:
     def _handle_request_chain(self, chain: RequestChain):
         response = None
         for request in chain.requests():
+            print(request)
             if isinstance(request, HTTPRequest):
                 response = self._http.execute_request(request)
                 chain.previous = response
             elif isinstance(request, RequestChain):
                 response = self._handle_request_chain(request)
                 chain.previous = response
-
+            elif isinstance(request, (float, int)):
+                time.sleep(request)
         if chain.result:
             return chain.result
         return response
@@ -141,13 +144,15 @@ class AsyncIndicoClient:
     async def _handle_request_chain(self, chain: RequestChain):
         response = None
         for request in chain.requests():
+            print(request)
             if isinstance(request, HTTPRequest):
                 response = await self._http.execute_request(request)
                 chain.previous = response
             elif isinstance(request, RequestChain):
                 response = await self._handle_request_chain(request)
                 chain.previous = response
-
+            elif isinstance(request, (float, int)):
+                asyncio.sleep(request)
         if chain.result:
             return chain.result
         return response

@@ -94,9 +94,9 @@ class Debouncer:
         self.timeout = 0
         self.max_timeout = max_timeout or 5  # prevent None and 0
 
-    def backoff(self):
+    def backoff(self) -> int:
         self.increment_timeout()
-        time.sleep(self.timeout)
+        return self.timeout
 
     def increment_timeout(self):
         if self.timeout < self.max_timeout:
