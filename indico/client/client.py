@@ -14,6 +14,7 @@ from indico.client.request import (
 )
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
+from indico.client.request import Debouncer
 from indico.http.client import AIOHTTPClient, HTTPClient
 
 
@@ -50,8 +51,8 @@ class IndicoClient:
             elif isinstance(request, RequestChain):
                 response = self._handle_request_chain(request)
                 chain.previous = response
-            elif isinstance(request, (float, int)):
-                time.sleep(request)
+            elif isinstance(request, Debouncer):
+                time.sleep(request.backoff())
         if chain.result:
             return chain.result
         return response
@@ -151,8 +152,8 @@ class AsyncIndicoClient:
             elif isinstance(request, RequestChain):
                 response = await self._handle_request_chain(request)
                 chain.previous = response
-            elif isinstance(request, (float, int)):
-                asyncio.sleep(request)
+            elif isinstance(request, Debouncer):
+                await asyncio.sleep(request.backoff())
         if chain.result:
             return chain.result
         return response

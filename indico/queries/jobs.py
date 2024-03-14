@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import time
+from typing import Tuple
 
-from indico.client.request import GraphQLRequest, RequestChain
+from indico.client.request import Debouncer, GraphQLRequest, RequestChain
 from indico.types.jobs import Job
 from indico.types.utils import Timer
+
 
 class _JobStatus(GraphQLRequest):
     query = """
@@ -67,11 +68,17 @@ class JobStatus(RequestChain):
 
     previous: Job = None
 
-    def __init__(self, id: str, wait: bool = True, request_interval=0.2, timeout=None):
+    def __init__(
+        self,
+        id: str,
+        wait: bool = True,
+        timeout: Tuple[int, float] = None,
+        max_wait_time: Tuple[int, float] = 5,
+    ):
         self.id = id
         self.wait = wait
-        self.request_interval = request_interval
         self.timeout = timeout
+        self.max_wait_time = max_wait_time
 
     def requests(self):
         yield _JobStatus(id=self.id)
@@ -91,6 +98,6 @@ class JobStatus(RequestChain):
                 if self.timeout is not None:
                     timer = Timer(self.timeout)
                     timer.check()
-                yield self.request_interval
+                yield Debouncer(max_timeout=self.max_wait_time)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)

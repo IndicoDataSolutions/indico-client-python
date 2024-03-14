@@ -1,7 +1,7 @@
-from typing import Dict, Any
 from enum import Enum
+from typing import Any, Dict, Tuple
+
 from indico.errors import IndicoRequestError
-import time
 
 
 class HTTPMethod(Enum):
@@ -90,11 +90,11 @@ class RequestChain:
 
 
 class Debouncer:
-    def __init__(self, max_timeout: int = 5):
+    def __init__(self, max_timeout: Tuple[int, float] = 5):
         self.timeout = 0
         self.max_timeout = max_timeout or 5  # prevent None and 0
 
-    def backoff(self) -> int:
+    def backoff(self) -> Tuple[int, float]:
         self.increment_timeout()
         return self.timeout
 
