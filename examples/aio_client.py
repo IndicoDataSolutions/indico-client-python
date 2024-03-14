@@ -47,4 +47,4 @@ async def example_1(client):
 
 if __name__ == "__main__":
     # How to run a Python script using async
-    asyncio.run(example_with_client)
+    asyncio.run(example_with_client())
