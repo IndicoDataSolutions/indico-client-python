@@ -1,7 +1,7 @@
 import json
 from functools import partial
 from operator import eq, ne
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Union
 
 from indico.client.request import Debouncer, GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
@@ -378,7 +378,7 @@ class SubmissionResult(RequestChain):
         check_status: str = None,
         wait: bool = False,
         timeout: Union[int, float] = 30,
-        max_wait_time: Tuple[int, float] = 5,
+        max_wait_time: Union[int, float] = 5,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id

@@ -1,6 +1,7 @@
 import pandas as pd
 import io
 from typing import List, Union
+import warnings
 
 from indico.client import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoNotFound, IndicoRequestError
@@ -54,8 +55,15 @@ class _CreateExport(GraphQLRequest):
         frozen_labelset_ids: List[int] = None,
         combine_labels: LabelResolutionStrategy = LabelResolutionStrategy.ALL.name,
         file_info: bool = None,
+        anonymoous: bool = None,
         anonymous: bool = None,
     ):
+        if anonymoous:
+            warnings.warn("Argument anonymoous is deprecated and will be removed in future versions. Use argument anonymous instead.")
+            if anonymous:
+                raise IndicoRequestError("Cannot use both anonymoous and anonymous.")
+            else:
+                anonymous = anonymoous
         super().__init__(
             self.query,
             variables={
