@@ -52,7 +52,7 @@ class JobStatus(RequestChain):
 
     Args:
         id (int): ID of the job to query for status.
-        wait (bool, optional): Whether to ait for the job to complete. Default is True
+        wait (bool, optional): Whether to wait for the job to complete. Defaults to True.
         timeout (float or int, optional): Timeout after this many seconds.
             Ignored if not `wait`. Defaults to None.
         max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
@@ -82,6 +82,7 @@ class JobStatus(RequestChain):
     def requests(self):
         yield _JobStatus(id=self.id)
         if self.wait:
+            timer = None
             if self.timeout is not None:
                 timer = Timer(self.timeout)
             # Check status of job until done if wait == True
@@ -96,7 +97,7 @@ class JobStatus(RequestChain):
                     "RETRY",
                 ]
             ):
-                if self.timeout is not None:
+                if timer:
                     timer.check()
                 yield Debouncer(max_timeout=self.timeout)
                 yield _JobStatus(id=self.id)
