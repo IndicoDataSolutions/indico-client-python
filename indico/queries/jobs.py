@@ -53,9 +53,9 @@ class JobStatus(RequestChain):
     Args:
         id (int): ID of the job to query for status.
         wait (bool, optional): Whether to wait for the job to complete. Defaults to True.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 0.2.
         timeout (float or int, optional): Timeout after this many seconds.
             Ignored if not `wait`. Defaults to None.
-        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 0.2.
 
     Returns:
         Job: With the job result available in a result attribute. Note that the result
