@@ -357,7 +357,7 @@ class SubmissionResult(RequestChain):
             and wait for the result file to be generated. Defaults to False
         timeout (int or float, optional): Maximum number of seconds to wait before
             timing out. Ignored if not `wait`. Defaults to 30
-        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
     Returns:
         Job: A Job that can be watched for results
@@ -378,14 +378,14 @@ class SubmissionResult(RequestChain):
         check_status: str = None,
         wait: bool = False,
         timeout: Union[int, float] = 30,
-        max_wait_time: Union[int, float] = 5,
+        request_interval: Union[int, float] = 5,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id
         )
         self.wait = wait
         self.timeout = timeout
-        self.max_wait_time = max_wait_time
+        self.request_interval = request_interval
         if check_status and check_status.upper() not in VALID_SUBMISSION_STATUSES:
             raise IndicoInputError(
                 f"{check_status} is not one of valid submission statuses: "
@@ -405,7 +405,7 @@ class SubmissionResult(RequestChain):
             while not self.status_check(self.previous.status):
                 timer.check()
                 yield GetSubmission(self.submission_id)
-                yield Debouncer(max_timeout=self.max_wait_time)
+                yield Debouncer(max_timeout=self.request_interval)
             if not self.status_check(self.previous.status):
                 raise IndicoTimeoutError(timer.elapsed)
         elif not self.status_check(self.previous.status):

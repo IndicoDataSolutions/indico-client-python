@@ -19,25 +19,25 @@ class GetModelGroup(RequestChain):
     Args:
         id (int): model group id to query
         wait (bool, optional): Wait until the Model Group status is FAILED, COMPLETE, or NOT_ENOUGH_DATA. Defaults to False.
-        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
     Returns:
         ModelGroup object
     """
 
     def __init__(
-        self, id: int, wait: bool = False, max_wait_time: Union[int, float] = 5
+        self, id: int, wait: bool = False, request_interval: Union[int, float] = 5
     ):
         self.id = id
         self.wait = wait
-        self.max_wait_time = max_wait_time
+        self.request_interval = request_interval
 
     def requests(self):
         if self.wait:
             req = GetModelGroupSelectedModelStatus(id=self.id)
             yield req
             while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
-                yield Debouncer(max_timeout=self.max_wait_time)
+                yield Debouncer(max_timeout=self.request_interval)
                 yield req
         yield _GetModelGroup(id=self.id)
 
@@ -197,7 +197,7 @@ class CreateModelGroup(RequestChain):
         wait: bool = False,
         model_training_options: dict = None,
         model_type: str = None,
-        max_wait_time: Union[int, float] = 5,
+        request_interval: Union[int, float] = 5,
     ):
         self.name = name
         self.dataset_id = dataset_id
@@ -208,7 +208,7 @@ class CreateModelGroup(RequestChain):
         self.model_type = model_type
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
-        self.max_wait_time = max_wait_time
+        self.request_interval = request_interval
 
     def requests(self):
         yield AddModelGroupComponent(
@@ -228,7 +228,7 @@ class CreateModelGroup(RequestChain):
             req = GetModelGroupSelectedModelStatus(id=model_group_id)
             yield req
             while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
-                yield Debouncer(max_timeout=self.max_wait_time)
+                yield Debouncer(max_timeout=self.request_interval)
                 yield req
 
         yield _GetModelGroup(id=model_group_id)

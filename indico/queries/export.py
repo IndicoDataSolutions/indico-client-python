@@ -1,12 +1,13 @@
-import pandas as pd
 import io
-from typing import List, Union
 import warnings
+from typing import List, Union
 
-from indico.client import GraphQLRequest, RequestChain, Debouncer
+import pandas as pd
+
+from indico.client import Debouncer, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound, IndicoRequestError
-from indico.types.export import LabelResolutionStrategy, Export
 from indico.queries.storage import RetrieveStorageObject
+from indico.types.export import Export, LabelResolutionStrategy
 
 
 class _CreateExport(GraphQLRequest):
@@ -59,7 +60,9 @@ class _CreateExport(GraphQLRequest):
         anonymous: bool = None,
     ):
         if anonymoous:
-            warnings.warn("Argument anonymoous is deprecated and will be removed in future versions. Use argument anonymous instead.")
+            warnings.warn(
+                "Argument anonymoous is deprecated and will be removed in future versions. Use argument anonymous instead."
+            )
             if anonymous:
                 raise IndicoRequestError("Cannot use both anonymoous and anonymous.")
             else:
@@ -182,7 +185,7 @@ class CreateExport(RequestChain):
         file_info (bool, optional): Include datafile information. Defaults to False.
         anonymous (bool, optional): Anonymize user information. Defaults to False.
         wait (bool, optional): Wait for the export to complete. Defaults to True.
-        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
     Returns:
         Export object
@@ -202,7 +205,7 @@ class CreateExport(RequestChain):
         file_info: bool = False,
         anonymous: bool = False,
         wait: bool = True,
-        max_wait_time: Union[int, float] = 5
+        request_interval: Union[int, float] = 5,
     ):
         self.dataset_id = dataset_id
         self.labelset_id = labelset_id
@@ -213,7 +216,7 @@ class CreateExport(RequestChain):
         self.file_info = file_info
         self.anonymous = anonymous
         self.wait = wait
-        self.max_wait_time = max_wait_time
+        self.request_interval = request_interval
         super().__init__()
 
     def requests(self):
@@ -230,6 +233,6 @@ class CreateExport(RequestChain):
         if self.wait is True:
             while self.previous.status not in ["COMPLETE", "FAILED"]:
                 yield GetExport(self.previous.id)
-                yield Debouncer(max_timeout=self.max_wait_time)
+                yield Debouncer(max_timeout=self.request_interval)
 
         yield GetExport(self.previous.id)
