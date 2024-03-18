@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Tuple
+from typing import Dict, List, Union
 
 import deprecation
 
@@ -18,13 +18,15 @@ class GetModelGroup(RequestChain):
 
     Args:
         id (int): model group id to query
+        wait (bool, optional): Wait until the Model Group status is FAILED, COMPLETE, or NOT_ENOUGH_DATA. Defaults to False.
+        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
     Returns:
         ModelGroup object
     """
 
     def __init__(
-        self, id: int, wait: bool = False, max_wait_time: Tuple[int, float] = 5
+        self, id: int, wait: bool = False, max_wait_time: Union[int, float] = 5
     ):
         self.id = id
         self.wait = wait
@@ -195,7 +197,7 @@ class CreateModelGroup(RequestChain):
         wait: bool = False,
         model_training_options: dict = None,
         model_type: str = None,
-        max_wait_time: Tuple[int, float] = 5,
+        max_wait_time: Union[int, float] = 5,
     ):
         self.name = name
         self.dataset_id = dataset_id

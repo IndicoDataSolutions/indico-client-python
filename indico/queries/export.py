@@ -1,6 +1,6 @@
 import pandas as pd
 import io
-from typing import List, Tuple
+from typing import List, Union
 
 from indico.client import GraphQLRequest, RequestChain, Debouncer
 from indico.errors import IndicoNotFound, IndicoRequestError
@@ -165,15 +165,16 @@ class CreateExport(RequestChain):
     Create an export job for a dataset.
 
     Args:
-        dataset_id (int): Dataset to create the export for
-        labelset_id (int): Labelset column id to export
-        column_ids (List(int)): Data column ids to export
-        model_ids (List(int)): Model ids to include predictions from
-        frozen_labelset_ids: (List(int)): frozen labelset ids to limit examples by
-        combine_labels (LabelResolutionStrategy): One row per example, combine labels from multiple labels into a single row
-        file_info (bool): Include datafile information
-        anonymous (bool): Anonymize user information
-        wait (bool): Wait for the export to complete. Default is True
+        dataset_id (int): Dataset to create the export for.
+        labelset_id (int): Labelset column id to export.
+        column_ids (List(int), optional): Data column ids to export. Defaults to None.
+        model_ids (List(int), optional): Model ids to include predictions from. Defaults to None.
+        frozen_labelset_ids: (List(int), optional): frozen labelset ids to limit examples by. Defaults to None.
+        combine_labels (LabelResolutionStrategy, optional): One row per example, combine labels from multiple labels into a single row. Defaults to 'all'.
+        file_info (bool, optional): Include datafile information. Defaults to False.
+        anonymous (bool, optional): Anonymize user information. Defaults to False.
+        wait (bool, optional): Wait for the export to complete. Defaults to True.
+        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
     Returns:
         Export object
@@ -193,7 +194,7 @@ class CreateExport(RequestChain):
         file_info: bool = False,
         anonymous: bool = False,
         wait: bool = True,
-        max_wait_time: Tuple[int, float] = 5
+        max_wait_time: Union[int, float] = 5
     ):
         self.dataset_id = dataset_id
         self.labelset_id = labelset_id

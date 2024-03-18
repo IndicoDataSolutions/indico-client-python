@@ -196,12 +196,17 @@ class CreateDataset(RequestChain):
     Create a dataset and upload the associated files.
 
     Args:
-        name (str): Name of the dataset
-        files (List[str]): List of pathnames to the dataset files
-
-    Options:
-        dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
-        wait (bool, default=True): Wait for the dataset to upload and finish
+        name (str): Name of the dataset.
+        files (List[str]): List of path names to the dataset files.
+        wait (bool, optional): Wait for the dataset to upload and finish. Defaults to True.
+        dataset_type (str, optional): Type of dataset to create [TEXT, DOCUMENT, IMAGE]. Defaults to TEXT.
+        from_local_images (bool, optional): Flag whether files are local images or not. Defaults to False.
+        image_filename_col (str, optional): Image filename column. Defaults to 'filename'.
+        batch_size (int, optional): Size of file batch to upload at a time. Defaults to 20.
+        ocr_engine (OcrEngine, optional): Specify an OCR engine [OMNIPAGE, READAPI, READAPI_V2, READAPI_TABLES_V1]. Defaults to None.
+        omnipage_ocr_options (OmnipageOcrOptionsInput, optional): If using Omnipage, specify Omnipage OCR options. Defaults to None.
+        read_api_ocr_options: (ReadApiOcrOptionsInput, optional): If using ReadAPI, specify ReadAPI OCR options. Defaults to None.
+        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
     Returns:
         Dataset object
@@ -215,7 +220,6 @@ class CreateDataset(RequestChain):
         name: str,
         files: List[str],
         wait: bool = True,
-        max_wait_time: Tuple[int, float] = 5,
         dataset_type: str = "TEXT",
         from_local_images: bool = False,
         image_filename_col: str = "filename",
@@ -223,11 +227,11 @@ class CreateDataset(RequestChain):
         ocr_engine: OcrEngine = None,
         omnipage_ocr_options: OmnipageOcrOptionsInput = None,
         read_api_ocr_options: ReadApiOcrOptionsInput = None,
+        max_wait_time: Union[int, float] = 5,
     ):
         self.files = files
         self.name = name
         self.wait = wait
-        self.max_wait_time = max_wait_time
         self.dataset_type = dataset_type
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
@@ -235,6 +239,7 @@ class CreateDataset(RequestChain):
         self.ocr_engine = ocr_engine
         self.omnipage_ocr_options = omnipage_ocr_options
         self.read_api_ocr_options = read_api_ocr_options
+        self.max_wait_time = max_wait_time
         if omnipage_ocr_options is not None and read_api_ocr_options is not None:
             raise IndicoInputError(
                 "Must supply either omnipage or readapi options but not both."
@@ -539,9 +544,10 @@ class ProcessFiles(RequestChain):
     Process files associated with a dataset and add corresponding data to the dataset
 
     Args:
-        dataset_id (int): ID of the dataset
-        datafile_ids (List[str]): IDs of the datafiles to process
-        wait (bool): Block while polling for status of files
+        dataset_id (int): ID of the dataset.
+        datafile_ids (List[str]): IDs of the datafiles to process.
+        wait (bool, optional): Block while polling for status of files. Defaults to True.
+        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
 
     Returns:
@@ -553,7 +559,7 @@ class ProcessFiles(RequestChain):
         dataset_id: int,
         datafile_ids: List[int],
         wait: bool = True,
-        max_wait_time: Tuple[int, float] = 5
+        max_wait_time: Union[int, float] = 5
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids

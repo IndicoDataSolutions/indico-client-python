@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Tuple
+from typing import Union
 
 from indico.client.request import Debouncer, GraphQLRequest, RequestChain
 from indico.types.jobs import Job
@@ -54,7 +54,8 @@ class JobStatus(RequestChain):
         id (int): ID of the job to query for status.
         wait (bool, optional): Whether to ait for the job to complete. Default is True
         timeout (float or int, optional): Timeout after this many seconds.
-            Ignored if not `wait`. Defaults to None
+            Ignored if not `wait`. Defaults to None.
+        max_wait_time (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
 
     Returns:
         Job: With the job result available in a result attribute. Note that the result
@@ -72,17 +73,17 @@ class JobStatus(RequestChain):
         self,
         id: str,
         wait: bool = True,
-        timeout: Tuple[int, float] = None,
-        max_wait_time: Tuple[int, float] = 5,
+        timeout: Union[int, float] = None,
     ):
         self.id = id
         self.wait = wait
         self.timeout = timeout
-        self.max_wait_time = max_wait_time
 
     def requests(self):
         yield _JobStatus(id=self.id)
         if self.wait:
+            if self.timeout is not None:
+                timer = Timer(self.timeout)
             # Check status of job until done if wait == True
             while not (
                 (self.previous.status in ["SUCCESS"] and self.previous.ready)
@@ -96,8 +97,7 @@ class JobStatus(RequestChain):
                 ]
             ):
                 if self.timeout is not None:
-                    timer = Timer(self.timeout)
                     timer.check()
-                yield Debouncer(max_timeout=self.max_wait_time)
+                yield Debouncer(max_timeout=self.timeout)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
