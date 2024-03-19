@@ -357,7 +357,7 @@ class SubmissionResult(RequestChain):
             and wait for the result file to be generated. Defaults to False
         timeout (int or float, optional): Maximum number of seconds to wait before
             timing out. Ignored if not `wait`. Defaults to 30
-        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Job: A Job that can be watched for results

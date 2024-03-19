@@ -206,7 +206,7 @@ class CreateDataset(RequestChain):
         ocr_engine (OcrEngine, optional): Specify an OCR engine [OMNIPAGE, READAPI, READAPI_V2, READAPI_TABLES_V1]. Defaults to None.
         omnipage_ocr_options (OmnipageOcrOptionsInput, optional): If using Omnipage, specify Omnipage OCR options. Defaults to None.
         read_api_ocr_options: (ReadApiOcrOptionsInput, optional): If using ReadAPI, specify ReadAPI OCR options. Defaults to None.
-        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Dataset object
@@ -547,7 +547,7 @@ class ProcessFiles(RequestChain):
         dataset_id (int): ID of the dataset.
         datafile_ids (List[str]): IDs of the datafiles to process.
         wait (bool, optional): Block while polling for status of files. Defaults to True.
-        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
 
     Returns:
@@ -559,7 +559,7 @@ class ProcessFiles(RequestChain):
         dataset_id: int,
         datafile_ids: List[int],
         wait: bool = True,
-        request_interval: Union[int, float] = 5
+        request_interval: Union[int, float] = 5,
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids

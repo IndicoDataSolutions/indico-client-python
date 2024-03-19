@@ -185,7 +185,7 @@ class CreateExport(RequestChain):
         file_info (bool, optional): Include datafile information. Defaults to False.
         anonymous (bool, optional): Anonymize user information. Defaults to False.
         wait (bool, optional): Wait for the export to complete. Defaults to True.
-        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Export object

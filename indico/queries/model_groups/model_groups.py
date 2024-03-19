@@ -19,7 +19,7 @@ class GetModelGroup(RequestChain):
     Args:
         id (int): model group id to query
         wait (bool, optional): Wait until the Model Group status is FAILED, COMPLETE, or NOT_ENOUGH_DATA. Defaults to False.
-        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         ModelGroup object
