@@ -7,7 +7,7 @@ from indico.queries.datasets import CreateDataset, GetDataset
 from indico.client.request import (
     GraphQLRequest,
     RequestChain,
-    Debouncer,
+    Delay,
 )
 from indico.queries import AddModelGroupComponent
 from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, Workflow, ModelTaskType
@@ -322,9 +322,8 @@ class CreateQuestionaire(RequestChain):
         ).model_group.questionnaire_id
         yield GetQuestionnaire(questionaire_id)
         status = self.previous.questions_status
-        debouncer = Debouncer()
         while status == "STARTED":
-            debouncer.backoff()
+            yield Delay()
             yield GetQuestionnaire(questionaire_id)
             status = self.previous.questions_status
 

@@ -89,15 +89,6 @@ class RequestChain:
         pass
 
 
-class Debouncer:
-    def __init__(self, max_timeout: Union[int, float] = 5):
-        self.timeout = 0
-        self.max_timeout = max_timeout or 5  # prevent None and 0
-
-    def backoff(self) -> Union[int, float]:
-        self.increment_timeout()
-        return self.timeout
-
-    def increment_timeout(self):
-        if self.timeout < self.max_timeout:
-            self.timeout += 1
+class Delay:
+    def __init__(self, seconds: Union[int, float] = 2):
+        self.seconds = seconds

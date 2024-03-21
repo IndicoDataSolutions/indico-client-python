@@ -4,7 +4,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from indico.client import Debouncer, GraphQLRequest, RequestChain
+from indico.client import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound, IndicoRequestError
 from indico.queries.storage import RetrieveStorageObject
 from indico.types.export import Export, LabelResolutionStrategy
@@ -233,6 +233,6 @@ class CreateExport(RequestChain):
         if self.wait is True:
             while self.previous.status not in ["COMPLETE", "FAILED"]:
                 yield GetExport(self.previous.id)
-                yield Debouncer(max_timeout=self.request_interval)
+                yield Delay(seconds=self.request_interval)
 
         yield GetExport(self.previous.id)

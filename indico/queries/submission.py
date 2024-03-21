@@ -3,7 +3,7 @@ from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import Debouncer, GraphQLRequest, PagedRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
@@ -405,7 +405,7 @@ class SubmissionResult(RequestChain):
             while not self.status_check(self.previous.status):
                 timer.check()
                 yield GetSubmission(self.submission_id)
-                yield Debouncer(max_timeout=self.request_interval)
+                yield Delay(seconds=self.request_interval)
             if not self.status_check(self.previous.status):
                 raise IndicoTimeoutError(timer.elapsed)
         elif not self.status_check(self.previous.status):

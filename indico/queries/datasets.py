@@ -10,7 +10,7 @@ import jsons
 import pandas as pd
 
 from indico.client.request import (
-    Debouncer,
+    Delay,
     GraphQLRequest,
     HTTPMethod,
     HTTPRequest,
@@ -290,7 +290,7 @@ class CreateDataset(RequestChain):
                 [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
             ):
                 yield GetDatasetFileStatus(id=dataset_id)
-                yield Debouncer(max_timeout=self.request_interval)
+                yield Delay(seconds=self.request_interval)
         yield GetDataset(id=dataset_id)
 
 
@@ -481,12 +481,11 @@ class AddDatasetFiles(RequestChain):
         )
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
-            debouncer = Debouncer()
             while not all(
                 f.status in self.expected_statuses for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.previous.id)
-                debouncer.backoff()
+                yield Delay()
 
 
 # Alias for backwards compatibility
@@ -574,7 +573,7 @@ class ProcessFiles(RequestChain):
                 f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
-                yield Debouncer(max_timeout=self.request_interval)
+                yield Delay(seconds=self.request_interval)
 
 
 @deprecation.deprecated(
@@ -601,14 +600,13 @@ class ProcessCSV(RequestChain):
 
     def requests(self):
         yield _ProcessCSV(self.dataset_id, self.datafile_ids)
-        debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             while not all(
                 f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
-                debouncer.backoff()
+                yield Delay()
 
 
 class GetAvailableOcrEngines(GraphQLRequest):

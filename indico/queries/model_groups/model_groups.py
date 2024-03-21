@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 
 import deprecation
 
-from indico.client.request import Debouncer, GraphQLRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound
 from indico.queries.workflow_components import AddModelGroupComponent
 from indico.types.jobs import Job
@@ -37,7 +37,7 @@ class GetModelGroup(RequestChain):
             req = GetModelGroupSelectedModelStatus(id=self.id)
             yield req
             while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
-                yield Debouncer(max_timeout=self.request_interval)
+                yield Delay(seconds=self.request_interval)
                 yield req
         yield _GetModelGroup(id=self.id)
 
@@ -228,7 +228,7 @@ class CreateModelGroup(RequestChain):
             req = GetModelGroupSelectedModelStatus(id=model_group_id)
             yield req
             while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
-                yield Debouncer(max_timeout=self.request_interval)
+                yield Delay(seconds=self.request_interval)
                 yield req
 
         yield _GetModelGroup(id=model_group_id)

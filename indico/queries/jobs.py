@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Union
 
-from indico.client.request import Debouncer, GraphQLRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.types.jobs import Job
 from indico.types.utils import Timer
 
@@ -101,6 +101,6 @@ class JobStatus(RequestChain):
             ):
                 if timer:
                     timer.check()
-                yield Debouncer(max_timeout=self.request_interval)
+                yield Delay(seconds=self.request_interval)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)

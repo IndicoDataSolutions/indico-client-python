@@ -3,7 +3,7 @@ import json
 import tempfile
 from typing import Dict, List, Union
 
-from indico.client.request import Debouncer, GraphQLRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoError, IndicoInputError
 from indico.queries.storage import UploadBatched, UploadDocument
 from indico.types import SUBMISSION_RESULT_VERSIONS, Job, Submission, Workflow
@@ -486,11 +486,9 @@ class AddDataToWorkflow(RequestChain):
         yield _AddDataToWorkflow(self.workflow_id)
 
         if self.wait:
-            debouncer = Debouncer()
-
             while self.previous.status != "COMPLETE":
                 yield GetWorkflow(workflow_id=self.workflow_id)
-                debouncer.backoff()
+                yield Delay()
 
 
 class CreateWorkflow(GraphQLRequest):
