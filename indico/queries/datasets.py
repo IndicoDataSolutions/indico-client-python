@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
 
 import json
-import jsons
 import tempfile
 from pathlib import Path
-from typing import List, Union, Dict, Optional
+from typing import Dict, List, Optional, Union
 
-import pandas as pd
 import deprecation
+import jsons
+import pandas as pd
 
 from indico.client.request import (
-    Debouncer,
+    Delay,
     GraphQLRequest,
     HTTPMethod,
     HTTPRequest,
     PagedRequest,
     RequestChain,
 )
-from indico.errors import IndicoNotFound, IndicoInputError
+from indico.errors import IndicoInputError, IndicoNotFound
+from indico.filters import DatasetFilter
 from indico.queries.storage import UploadBatched, UploadImages
 from indico.types.dataset import (
     Dataset,
     OcrEngine,
+    OcrInputLanguage,
     OmnipageOcrOptionsInput,
     ReadApiOcrOptionsInput,
-    OcrInputLanguage,
 )
-from indico.filters import DatasetFilter
 
 
 class ListDatasets(PagedRequest):
@@ -196,12 +196,17 @@ class CreateDataset(RequestChain):
     Create a dataset and upload the associated files.
 
     Args:
-        name (str): Name of the dataset
-        files (List[str]): List of pathnames to the dataset files
-
-    Options:
-        dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
-        wait (bool, default=True): Wait for the dataset to upload and finish
+        name (str): Name of the dataset.
+        files (List[str]): List of path names to the dataset files.
+        wait (bool, optional): Wait for the dataset to upload and finish. Defaults to True.
+        dataset_type (str, optional): Type of dataset to create [TEXT, DOCUMENT, IMAGE]. Defaults to TEXT.
+        from_local_images (bool, optional): Flag whether files are local images or not. Defaults to False.
+        image_filename_col (str, optional): Image filename column. Defaults to 'filename'.
+        batch_size (int, optional): Size of file batch to upload at a time. Defaults to 20.
+        ocr_engine (OcrEngine, optional): Specify an OCR engine [OMNIPAGE, READAPI, READAPI_V2, READAPI_TABLES_V1]. Defaults to None.
+        omnipage_ocr_options (OmnipageOcrOptionsInput, optional): If using Omnipage, specify Omnipage OCR options. Defaults to None.
+        read_api_ocr_options: (ReadApiOcrOptionsInput, optional): If using ReadAPI, specify ReadAPI OCR options. Defaults to None.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Dataset object
@@ -222,6 +227,7 @@ class CreateDataset(RequestChain):
         ocr_engine: OcrEngine = None,
         omnipage_ocr_options: OmnipageOcrOptionsInput = None,
         read_api_ocr_options: ReadApiOcrOptionsInput = None,
+        request_interval: Union[int, float] = 5,
     ):
         self.files = files
         self.name = name
@@ -233,6 +239,7 @@ class CreateDataset(RequestChain):
         self.ocr_engine = ocr_engine
         self.omnipage_ocr_options = omnipage_ocr_options
         self.read_api_ocr_options = read_api_ocr_options
+        self.request_interval = request_interval
         if omnipage_ocr_options is not None and read_api_ocr_options is not None:
             raise IndicoInputError(
                 "Must supply either omnipage or readapi options but not both."
@@ -278,13 +285,12 @@ class CreateDataset(RequestChain):
         )
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
-        debouncer = Debouncer()
         if self.wait is True:
             while not all(
                 [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
             ):
                 yield GetDatasetFileStatus(id=dataset_id)
-                debouncer.backoff()
+                yield Delay(seconds=self.request_interval)
         yield GetDataset(id=dataset_id)
 
 
@@ -475,12 +481,11 @@ class AddDatasetFiles(RequestChain):
         )
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
-            debouncer = Debouncer()
             while not all(
                 f.status in self.expected_statuses for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.previous.id)
-                debouncer.backoff()
+                yield Delay()
 
 
 # Alias for backwards compatibility
@@ -538,9 +543,10 @@ class ProcessFiles(RequestChain):
     Process files associated with a dataset and add corresponding data to the dataset
 
     Args:
-        dataset_id (int): ID of the dataset
-        datafile_ids (List[str]): IDs of the datafiles to process
-        wait (bool): Block while polling for status of files
+        dataset_id (int): ID of the dataset.
+        datafile_ids (List[str]): IDs of the datafiles to process.
+        wait (bool, optional): Block while polling for status of files. Defaults to True.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
 
     Returns:
@@ -552,21 +558,22 @@ class ProcessFiles(RequestChain):
         dataset_id: int,
         datafile_ids: List[int],
         wait: bool = True,
+        request_interval: Union[int, float] = 5,
     ):
         self.dataset_id = dataset_id
         self.datafile_ids = datafile_ids
         self.wait = wait
+        self.request_interval = request_interval
 
     def requests(self):
         yield _ProcessFiles(self.dataset_id, self.datafile_ids)
-        debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             while not all(
                 f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
-                debouncer.backoff()
+                yield Delay(seconds=self.request_interval)
 
 
 @deprecation.deprecated(
@@ -593,14 +600,13 @@ class ProcessCSV(RequestChain):
 
     def requests(self):
         yield _ProcessCSV(self.dataset_id, self.datafile_ids)
-        debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             while not all(
                 f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
             ):
                 yield GetDatasetFileStatus(id=self.dataset_id)
-                debouncer.backoff()
+                yield Delay()
 
 
 class GetAvailableOcrEngines(GraphQLRequest):

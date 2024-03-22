@@ -1,10 +1,9 @@
 import json
-import time
 from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, PagedRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
@@ -358,6 +357,7 @@ class SubmissionResult(RequestChain):
             and wait for the result file to be generated. Defaults to False
         timeout (int or float, optional): Maximum number of seconds to wait before
             timing out. Ignored if not `wait`. Defaults to 30
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Job: A Job that can be watched for results
@@ -378,12 +378,14 @@ class SubmissionResult(RequestChain):
         check_status: str = None,
         wait: bool = False,
         timeout: Union[int, float] = 30,
+        request_interval: Union[int, float] = 5,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id
         )
         self.wait = wait
         self.timeout = timeout
+        self.request_interval = request_interval
         if check_status and check_status.upper() not in VALID_SUBMISSION_STATUSES:
             raise IndicoInputError(
                 f"{check_status} is not one of valid submission statuses: "
@@ -403,7 +405,7 @@ class SubmissionResult(RequestChain):
             while not self.status_check(self.previous.status):
                 timer.check()
                 yield GetSubmission(self.submission_id)
-                time.sleep(1)
+                yield Delay(seconds=self.request_interval)
             if not self.status_check(self.previous.status):
                 raise IndicoTimeoutError(timer.elapsed)
         elif not self.status_check(self.previous.status):
@@ -526,7 +528,8 @@ class GetReviews(GraphQLRequest):
 
     def process_response(self, response) -> List[SubmissionReviewFull]:
         return [
-            SubmissionReviewFull(**review) for review in super().process_response(response)["submission"]["reviews"]
+            SubmissionReviewFull(**review)
+            for review in super().process_response(response)["submission"]["reviews"]
         ]
 
 

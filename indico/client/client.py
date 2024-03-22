@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from typing import Union, Optional
+import asyncio
+import time
+from typing import Optional, Union
+
 import urllib3
 
+from indico.client.request import (
+    GraphQLRequest,
+    HTTPRequest,
+    PagedRequest,
+    RequestChain,
+)
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
-from indico.http.client import HTTPClient, AIOHTTPClient
-from indico.client.request import (
-    HTTPRequest,
-    RequestChain,
-    PagedRequest,
-    GraphQLRequest,
-)
+from indico.client.request import Delay
+from indico.http.client import AIOHTTPClient, HTTPClient
 
 
 class IndicoClient:
@@ -47,7 +51,8 @@ class IndicoClient:
             elif isinstance(request, RequestChain):
                 response = self._handle_request_chain(request)
                 chain.previous = response
-
+            elif isinstance(request, Delay):
+                time.sleep(request.seconds)
         if chain.result:
             return chain.result
         return response
@@ -147,7 +152,8 @@ class AsyncIndicoClient:
             elif isinstance(request, RequestChain):
                 response = await self._handle_request_chain(request)
                 chain.previous = response
-
+            elif isinstance(request, Delay):
+                await asyncio.sleep(request.seconds)
         if chain.result:
             return chain.result
         return response

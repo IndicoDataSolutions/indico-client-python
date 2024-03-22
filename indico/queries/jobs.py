@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import time
+from typing import Union
 
-from indico.client.request import GraphQLRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.types.jobs import Job
 from indico.types.utils import Timer
+
 
 class _JobStatus(GraphQLRequest):
     query = """
@@ -51,9 +52,10 @@ class JobStatus(RequestChain):
 
     Args:
         id (int): ID of the job to query for status.
-        wait (bool, optional): Whether to ait for the job to complete. Default is True
+        wait (bool, optional): Whether to wait for the job to complete. Defaults to True.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 0.2.
         timeout (float or int, optional): Timeout after this many seconds.
-            Ignored if not `wait`. Defaults to None
+            Ignored if not `wait`. Defaults to None.
 
     Returns:
         Job: With the job result available in a result attribute. Note that the result
@@ -67,7 +69,13 @@ class JobStatus(RequestChain):
 
     previous: Job = None
 
-    def __init__(self, id: str, wait: bool = True, request_interval=0.2, timeout=None):
+    def __init__(
+        self,
+        id: str,
+        wait: bool = True,
+        request_interval: Union[int, float] = 0.2,
+        timeout: Union[int, float] = None,
+    ):
         self.id = id
         self.wait = wait
         self.request_interval = request_interval
@@ -76,6 +84,9 @@ class JobStatus(RequestChain):
     def requests(self):
         yield _JobStatus(id=self.id)
         if self.wait:
+            timer = None
+            if self.timeout is not None:
+                timer = Timer(self.timeout)
             # Check status of job until done if wait == True
             while not (
                 (self.previous.status in ["SUCCESS"] and self.previous.ready)
@@ -88,9 +99,8 @@ class JobStatus(RequestChain):
                     "RETRY",
                 ]
             ):
-                if self.timeout is not None:
-                    timer = Timer(self.timeout)
+                if timer:
                     timer.check()
-                time.sleep(self.request_interval)
+                yield Delay(seconds=self.request_interval)
                 yield _JobStatus(id=self.id)
             yield _JobStatusWithResult(id=self.id)
