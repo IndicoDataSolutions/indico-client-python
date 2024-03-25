@@ -1,42 +1,43 @@
-import pytest
-import time
-import os
 import json
+import os
+import time
 from pathlib import Path
+
+import pytest
+
 from indico.client import IndicoClient
+from indico.errors import IndicoRequestError
+from indico.queries.jobs import JobStatus
 from indico.queries.model_groups import (
-    GetModelGroup,
     CreateModelGroup,
-    ModelGroupPredict,
+    GetModelGroup,
     GetTrainingModelWithProgress,
-    LoadModel,
+    ModelGroupPredict,
 )
 from indico.queries.model_groups.metrics import (
     AnnotationModelGroupMetrics,
-    ObjectDetectionMetrics,
     GetModelGroupMetrics,
+    ObjectDetectionMetrics,
 )
-from indico.queries.storage import UploadDocument, URL_PREFIX
-from indico.queries.jobs import JobStatus
+from indico.queries.storage import URL_PREFIX, UploadDocument
 from indico.types import Workflow
 from indico.types.dataset import Dataset
-from indico.types.model_group import ModelGroup
 from indico.types.model import Model, TrainingProgress
+from indico.types.model_group import ModelGroup
+
 from ..data.datasets import (
     airlines_dataset,
-    too_small_dataset,
-    too_small_workflow,
     airlines_model_group,
+    airlines_workflow,
     cats_dogs_image_dataset,
     cats_dogs_image_workflow,
     cats_dogs_modelgroup,
+    org_annotate_dataset,
     org_annotate_model_group,
     org_annotate_workflow,
-    org_annotate_dataset,
-    cats_dogs_image_workflow,
-    airlines_workflow,
+    too_small_dataset,
+    too_small_workflow,
 )
-from indico.errors import IndicoRequestError
 
 
 def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workflow):
@@ -221,18 +222,6 @@ def test_object_detection_predict(indico, cats_dogs_modelgroup):
 
     assert result.status != "FAILURE"
     assert len(result.result) == 5
-
-
-def test_load_model(indico, airlines_dataset, airlines_model_group):
-    client = IndicoClient()
-
-    status = client.call(
-        LoadModel(
-            model_id=airlines_model_group.selected_model.id,
-        )
-    )
-
-    assert status == "ready"
 
 
 def test_annotation_metrics(

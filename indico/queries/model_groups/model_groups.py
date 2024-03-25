@@ -234,37 +234,6 @@ class CreateModelGroup(RequestChain):
         yield _GetModelGroup(id=model_group_id)
 
 
-@deprecation.deprecated(
-    deprecated_in="6.0", details="Removed from platform. This call is a no-op."
-)
-class LoadModel(GraphQLRequest):
-    """
-    Load model into system cache (implicit in ModelGroupPredict unless load=False)
-
-    Args:
-        model_id= (int): selected model id use for predictions
-
-    Returns:
-        Status "ready" if loaded
-    Raises:
-        IndicoError if model fails to load after retries
-    """
-
-    query = """
-        mutation ModelLoad($modelId: Int!) {
-            modelLoad(modelId: $modelId) {
-                status
-            }
-        }
-    """
-
-    def __init__(self, model_id: int):
-        super().__init__(self.query, variables={"modelId": model_id})
-
-    def process_response(self, response):
-        return "ready"
-
-
 class _ModelGroupPredict(GraphQLRequest):
     query = """
         mutation ModelGroupPredict(<QUERY_ARGS>) {
