@@ -9,7 +9,7 @@ from indico.client import IndicoClient
 from indico.errors import IndicoRequestError
 from indico.queries.jobs import JobStatus
 from indico.queries.model_groups import (
-    CreateModelGroup,
+    AddModelGroupComponent,
     GetModelGroup,
     GetTrainingModelWithProgress,
     ModelGroupPredict,
@@ -40,25 +40,6 @@ from ..data.datasets import (
 )
 
 
-def test_create_model_group(airlines_dataset: Dataset, airlines_workflow: Workflow):
-    client = IndicoClient()
-
-    name = f"TestCreateModelGroup-{int(time.time())}"
-    after_component = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION")
-    mg: ModelGroup = client.call(
-        CreateModelGroup(
-            name=name,
-            workflow_id=airlines_workflow.id,
-            dataset_id=airlines_dataset.id,
-            after_component_id=after_component.id,
-            source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
-            labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
-        )
-    )
-
-    assert mg.name == name
-
-
 def test_get_missing_model_group(indico):
     client = IndicoClient()
 
@@ -80,68 +61,20 @@ def test_create_object_detection(
         "test_size": 0.2,
         "use_small_model": False,
     }
-
+    after_component_id = cats_dogs_image_workflow.component_by_type("INPUT_IMAGE").id
     mg: ModelGroup = client.call(
-        CreateModelGroup(
+        AddModelGroupComponent(
             name=name,
-            workflow_id=cats_dogs_image_workflow.id,
-            after_component_id=cats_dogs_image_workflow.component_by_type(
-                "INPUT_IMAGE"
-            ).id,
             dataset_id=cats_dogs_image_dataset.id,
+            after_component_id=after_component_id,
             source_column_id=cats_dogs_image_dataset.datacolumn_by_name("urls").id,
-            labelset_id=cats_dogs_image_dataset.labelset_by_name("label").id,
+            labelset_column_id=cats_dogs_image_dataset.labelset_by_name("label").id,
+            workflow_id=cats_dogs_image_workflow.id,
             model_training_options=model_training_options,
         )
     )
 
-    assert mg.name == name
-
-
-def test_create_model_group_with_wait(
-    indico, airlines_dataset: Dataset, airlines_workflow: Workflow
-):
-    client = IndicoClient()
-
-    name = f"TestCreateModelGroup-{int(time.time())}"
-    after_component = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
-    mg: ModelGroup = client.call(
-        CreateModelGroup(
-            name=name,
-            dataset_id=airlines_dataset.id,
-            source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
-            labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
-            wait=True,
-            workflow_id=airlines_workflow.id,
-            after_component_id=after_component,
-        )
-    )
-
-    assert mg.name == name
-    assert mg.selected_model.status == "COMPLETE"
-
-
-def test_create_model_group_with_wait_not_enough_data(
-    indico, too_small_dataset: Dataset, too_small_workflow: Workflow
-):
-    client = IndicoClient()
-
-    name = f"TestCreateModelGroup-{int(time.time())}"
-    after_component_id = too_small_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
-    mg: ModelGroup = client.call(
-        CreateModelGroup(
-            name=name,
-            workflow_id=too_small_workflow.id,
-            dataset_id=too_small_dataset.id,
-            source_column_id=too_small_dataset.datacolumn_by_name("Text").id,
-            labelset_id=too_small_dataset.labelset_by_name("Target_1").id,
-            after_component_id=after_component_id,
-            wait=True,
-        )
-    )
-
-    assert mg.name == name
-    assert mg.selected_model.status == "NOT_ENOUGH_DATA"
+    assert mg.model_group_by_name(name) is not None
 
 
 def test_model_group_progress(
@@ -152,18 +85,17 @@ def test_model_group_progress(
     name = f"TestCreateModelGroup-{int(time.time())}"
     after_component_id = airlines_workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     mg: ModelGroup = client.call(
-        CreateModelGroup(
+        AddModelGroupComponent(
             name=name,
-            workflow_id=airlines_workflow.id,
             dataset_id=airlines_dataset.id,
-            source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
-            labelset_id=airlines_dataset.labelset_by_name("Target_1").id,
-            wait=False,
             after_component_id=after_component_id,
+            source_column_id=airlines_dataset.datacolumn_by_name("Text").id,
+            labelset_column_id=airlines_dataset.labelset_by_name("Target_1").id,
+            workflow_id=airlines_workflow.id,
         )
     )
     time.sleep(1)
-    model: Model = client.call((GetTrainingModelWithProgress(id=mg.id)))
+    model: Model = client.call((GetTrainingModelWithProgress(id=mg.model_group_by_name(name).id)))
 
     assert type(model) == Model
     assert model.status in ["CREATING", "TRAINING", "COMPLETE"]
