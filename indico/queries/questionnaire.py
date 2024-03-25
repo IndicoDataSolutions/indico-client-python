@@ -1,20 +1,20 @@
 import json
-from typing import List, Any, Optional
+from typing import Any, List, Optional
+
 import deprecation
 
-from indico.queries.datasets import CreateDataset, GetDataset
-
-from indico.client.request import (
-    GraphQLRequest,
-    RequestChain,
-    Delay,
-)
+from indico.client.request import Delay, GraphQLRequest, RequestChain
+from indico.errors import IndicoError, IndicoInputError, IndicoNotFound
 from indico.queries import AddModelGroupComponent
-from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, Workflow, ModelTaskType
-
-from indico.types.questionnaire import Questionnaire, Example
+from indico.queries.datasets import CreateDataset, GetDataset
+from indico.types import (
+    ModelTaskType,
+    NewLabelsetArguments,
+    NewQuestionnaireArguments,
+    Workflow,
+)
 from indico.types.dataset import Dataset
-from indico.errors import IndicoNotFound, IndicoInputError, IndicoError
+from indico.types.questionnaire import Example, Questionnaire
 
 
 class AddLabels(GraphQLRequest):
@@ -48,7 +48,7 @@ class AddLabels(GraphQLRequest):
         labelset_id: int,
         labels: List[dict],
         model_group_id: int = None,
-        dataset_id: int = None
+        dataset_id: int = None,
     ):
         super().__init__(
             query=self.query,
@@ -173,88 +173,6 @@ class GetQuestionnaire(GraphQLRequest):
         if not questionnaire_list or not questionnaire_list[0]:
             raise IndicoError("Cannot find questionnaire")
         return Questionnaire(**questionnaire_list[0])
-
-
-@deprecation.deprecated(
-    deprecated_in="5.0", details="Use AddModelGroupComponent instead"
-)
-class _CreateQuestionaire(GraphQLRequest):
-    """
-    Creates the questionnaire (teach task) for a dataset.
-
-    Args:
-        name (str): The name of the questionnaire.
-        dataset_id (int): The id of the dataset to create the questionnaire from.
-        source_column_id (int): The id of the source column to create a questionnaire from.
-        targets (List[str]): The classes for the dataset.
-        task_type (str): The type of the task to create.
-        data_type (str): The type of the source data.
-
-    Returns:
-        Questionnaire
-
-    """
-
-    query = """
-        mutation(
-            $name: String!,
-            $dataset_id: Int!,
-            $questions: [QuestionInput]!,
-            $source_col_id: Int!,
-            $data_type: DataType!,
-        ) {
-            createQuestionnaire (
-                datasetId: $dataset_id,
-                dataType: $data_type,
-                name: $name,
-                numLabelersRequired: 1,
-                questions: $questions,
-                sourceColumnId: $source_col_id,
-                instructions: ""
-            ) {
-                id
-                questionsStatus
-                numTotalExamples
-            }
-        }
-    """
-
-    def __init__(
-        self,
-        name: str,
-        dataset_id: int,
-        source_column_id: int,
-        targets: List[str],
-        task_type: str,
-        data_type: str,
-    ):
-        questions = [
-            {
-                "type": task_type,
-                "targets": targets,
-                "keywords": [],
-                "text": name,
-            }
-        ]
-        super().__init__(
-            query=self.query,
-            variables={
-                "name": name,
-                "dataset_id": dataset_id,
-                "questions": questions,
-                "source_col_id": source_column_id,
-                "data_type": data_type,
-            },
-        )
-
-    def process_response(self, response):
-        try:
-            questionnaire = Questionnaire(
-                **super().process_response(response)["createQuestionnaire"]
-            )
-        except IndexError:
-            raise IndicoNotFound("Failed to create Questionnaire")
-        return questionnaire
 
 
 @deprecation.deprecated(
