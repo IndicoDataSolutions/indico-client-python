@@ -26,9 +26,9 @@ from indico.queries import (
     CreateDataset,
     DeleteWorkflow,
 )
-from indico.queries.questionnaire import CreateQuestionaire, GetQuestionnaire
+from indico.queries.questionnaire import GetQuestionnaire
 from indico.queries.workflow_components import _AddWorkflowComponent
-from indico.types import ModelGroup
+from indico.types import ModelGroup, ModelTaskType, NewLabelsetArguments
 from indico.types.submission import Submission
 
 from ..data.datasets import *  # noqa
@@ -496,13 +496,26 @@ def _new_dataset_for_updating(client):
     )
     wf = client.call(workflowreq)
 
+    after_component_id = workflowreq.component_by_type("INPUT_OCR_EXTRACTION").id
+    source_col_id = dataset.datacolumn_by_name("text").id
+    classifier_name = f"CreateDatasetTeach-test-{int(time.time())}"
+
+    new_labelset_args = {
+        "datacolumn_id": source_col_id,
+        "name": classifier_name,
+        "num_labelers_required": 1,
+        "task_type": ModelTaskType.CLASSIFICATION,
+        "target_names": ["A", "B", "C"],
+    }
+
     questionnaire = client.call(
-        CreateQuestionaire(
-            name=f"CreateDatasetTeach-test-{int(time.time())}",
+        AddModelGroupComponent(
+            name=classifier_name,
             dataset_id=dataset.id,
-            targets=["A", "B", "C"],
-            workflow_id=wf.id,
-            after_component_id=wf.component_by_type("INPUT_OCR_EXTRACTION").id,
+            workflow_id=workflowreq.id,
+            new_labelset_args=NewLabelsetArguments(**new_labelset_args),
+            source_column_id=source_col_id,
+            after_component_id=after_component_id,
         )
     )
 
