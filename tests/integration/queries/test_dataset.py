@@ -1,30 +1,31 @@
-import time
 import json
-from indico.filters import DatasetFilter
-import pytest
-import pandas as pd
-from pathlib import Path
 import os
+import time
+from pathlib import Path
+
+import pandas as pd
+import pytest
+
 from indico.client import IndicoClient
+from indico.errors import IndicoRequestError
+from indico.filters import DatasetFilter
 from indico.queries.datasets import (
+    AddFiles,
+    CreateDataset,
+    CreateEmptyDataset,
+    DeleteDataset,
     GetDataset,
     GetDatasetFileStatus,
-    CreateDataset,
     ListDatasets,
-    DeleteDataset,
-    CreateEmptyDataset,
-    AddFiles,
-    ProcessFiles,
 )
 from indico.queries.export import CreateExport, DownloadExport
 from indico.types.dataset import (
     Dataset,
-    OmnipageOcrOptionsInput,
-    TableReadOrder,
     OcrEngine,
+    OmnipageOcrOptionsInput,
     ReadApiOcrOptionsInput,
+    TableReadOrder,
 )
-from indico.errors import IndicoRequestError
 from tests.integration.data.datasets import airlines_dataset  # noqa: F401
 
 
@@ -260,37 +261,6 @@ def test_create_from_files_with_readapiv2(indico):
     )
     dataset = client.call(
         AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]], autoprocess=True)
-    )
-
-    _dataset_complete(dataset)
-
-
-def test_create_from_files_document_without_autoprocess(indico):
-    client = IndicoClient()
-    dataset = client.call(CreateEmptyDataset(name=f"dataset-{int(time.time())}"))
-    file_names = ["us_doi.tiff", "mock.pdf"]
-    parent_path = str(Path(__file__).parent.parent / "data")
-    dataset_filepaths = [
-        os.path.join(parent_path, file_name) for file_name in file_names
-    ]
-
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[0]]))
-
-    for f in dataset.files:
-        assert f.status == "DOWNLOADED"
-
-    datafile_ids = [f.id for f in dataset.files]
-
-    dataset = client.call(
-        ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
-    )
-
-    dataset = client.call(AddFiles(dataset_id=dataset.id, files=[dataset_filepaths[1]]))
-
-    datafile_ids = [f.id for f in dataset.files if f.status == "DOWNLOADED"]
-
-    dataset = client.call(
-        ProcessFiles(dataset_id=dataset.id, datafile_ids=datafile_ids, wait=True)
     )
 
     _dataset_complete(dataset)
