@@ -88,14 +88,14 @@ def test_create_questionnaire_labeled(indico):
         string: json.loads(label) for string, label in zip(csv["text"], csv["labels"])
     }
     classifier_name = f"CreateDatasetTeach-test-{int(time.time())}"
+    targets = list(set(t["label"] for sample in data.values() for t in sample))
     new_labelset_args = {
         "datacolumn_id": source_col_id,
         "name": classifier_name,
         "num_labelers_required": 1,
         "task_type": ModelTaskType.CLASSIFICATION,
-        "target_names": ["A", "B", "C"],
+        "target_names": targets,
     }
-    targets = list(set(t["label"] for sample in data.values() for t in sample))
 
     response = client.call(
         AddModelGroupComponent(
