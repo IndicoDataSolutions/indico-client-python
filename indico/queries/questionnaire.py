@@ -183,6 +183,6 @@ class GetQuestionnaire(RequestChain):
     def requests(self):
         yield _GetQuestionnaire(questionnaire_id=self.questionnaire_id)
         if self.wait:
-            while self.previous.questions_status != "COMPLETE":
+            while self.previous.questions_status == "STARTED":
                 yield _GetQuestionnaire(questionnaire_id=self.questionnaire_id)
                 yield Delay()
