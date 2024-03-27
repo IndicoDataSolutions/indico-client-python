@@ -550,8 +550,6 @@ def _new_dataset_for_updating(client):
             ).model_group.questionnaire_id
         )
     )
-    while questionnaire.questions_status == "STARTED":
-        questionnaire = client.call(GetQuestionnaire(questionnaire.id))
 
     # add data to dataset and process
     dataset = client.call(
@@ -571,8 +569,6 @@ def test_add_data_to_workflow_wait(indico):
 
     q2 = client.call(GetQuestionnaire(q1.id))
 
-    while q2.questions_status == "STARTED":
-        q2 = client.call(GetQuestionnaire(q2.id))
     # the total num available should double, since we re-add the same data
     assert q1.num_total_examples * 2 == q2.num_total_examples
 
