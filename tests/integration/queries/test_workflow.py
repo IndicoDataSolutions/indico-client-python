@@ -1,14 +1,18 @@
 import os
-from datetime import datetime
-from indico.queries.workflow import GetWorkflow
-import pytest
-from pathlib import Path
 import time
+from datetime import datetime
+from pathlib import Path
+
+import pytest
 
 from indico.client import IndicoClient
 from indico.errors import IndicoError, IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter, SubmissionReviewFilter
 from indico.queries import (
+    AddDataToWorkflow,
+    AddFiles,
+    CreateDataset,
+    DeleteWorkflow,
     GetSubmission,
     JobStatus,
     ListSubmissions,
@@ -21,14 +25,11 @@ from indico.queries import (
     WaitForSubmissions,
     WorkflowSubmission,
     WorkflowSubmissionDetailed,
-    AddDataToWorkflow,
-    AddFiles,
-    CreateDataset,
-    DeleteWorkflow,
 )
-from indico.queries.questionnaire import CreateQuestionaire, GetQuestionnaire
+from indico.queries.questionnaire import GetQuestionnaire
+from indico.queries.workflow import GetWorkflow
 from indico.queries.workflow_components import _AddWorkflowComponent
-from indico.types import ModelGroup
+from indico.types import ModelGroup, ModelTaskType, NewLabelsetArguments
 from indico.types.submission import Submission
 
 from ..data.datasets import *  # noqa
@@ -274,13 +275,13 @@ def test_workflow_submission_timeout(
         start = time.time()
         client.call(WaitForSubmissions(submission_id, timeout=1))
         end = time.time()
-        assert(end - start >= 1 and end - start < 2)
+        assert end - start >= 1 and end - start < 2
 
     with pytest.raises(IndicoTimeoutError):
         start = time.time()
         client.call(SubmissionResult(submission_id, "COMPLETE", wait=True, timeout=1))
         end = time.time()
-        assert(end - start >= 1 and end - start < 2)
+        assert end - start >= 1 and end - start < 2
 
 
 def test_list_workflow_submission_retrieved(
@@ -391,7 +392,9 @@ def test_workflow_submission_auto_review_v1(
 
     _file = str(Path(__file__).parents[1]) + "/data/org-sample.pdf"
 
-    sub_ids = client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file], result_version="ONE"))
+    sub_ids = client.call(
+        WorkflowSubmission(workflow_id=wf.id, files=[_file], result_version="ONE")
+    )
     subs = client.call(WaitForSubmissions(sub_ids, timeout=120))
     sub = subs[0]
     assert sub.status == "PENDING_AUTO_REVIEW"
@@ -408,7 +411,11 @@ def test_workflow_submission_auto_review_v1(
     )
     job = client.call(JobStatus(job.id))
     submission = client.call(WaitForSubmissions([sub.id]))[0]
-    assert submission.status == "COMPLETE" if force_complete else submission.status == "PENDING_REVIEW"
+    assert (
+        submission.status == "COMPLETE"
+        if force_complete
+        else submission.status == "PENDING_REVIEW"
+    )
 
 
 @pytest.mark.parametrize("force_complete", [None, True])
@@ -431,10 +438,14 @@ def test_workflow_submission_auto_review_v3_result(
 
     _file = str(Path(__file__).parents[1]) + "/data/org-sample.pdf"
 
-    sub_ids = client.call(WorkflowSubmission(workflow_id=wf.id, files=[_file], result_version="THREE"))
+    sub_ids = client.call(
+        WorkflowSubmission(workflow_id=wf.id, files=[_file], result_version="THREE")
+    )
     subs = client.call(WaitForSubmissions(sub_ids, timeout=120))
     sub = subs[0]
-    assert sub.status == "PENDING_AUTO_REVIEW" or sub.status == "COMPLETE" # sub status will be set to COMPLETE if v3 is not supported
+    assert (
+        sub.status == "PENDING_AUTO_REVIEW" or sub.status == "COMPLETE"
+    )  # sub status will be set to COMPLETE if v3 is not supported
     if sub.status == "PENDING_AUTO_REVIEW":
         raw_result = client.call(RetrieveStorageObject(sub.result_file))
         changes = raw_result["submission_results"]
@@ -454,7 +465,11 @@ def test_workflow_submission_auto_review_v3_result(
         )
         job = client.call(JobStatus(job.id))
         submission = client.call(WaitForSubmissions([sub.id]))[0]
-        assert submission.status == "COMPLETE" if force_complete else submission.status == "PENDING_REVIEW"
+        assert (
+            submission.status == "COMPLETE"
+            if force_complete
+            else submission.status == "PENDING_REVIEW"
+        )
 
 
 def test_list_workflow_submission_rejected(org_annotate_dataset):
@@ -496,13 +511,26 @@ def _new_dataset_for_updating(client):
     )
     wf = client.call(workflowreq)
 
+    after_component_id = wf.component_by_type("INPUT_OCR_EXTRACTION").id
+    source_col_id = dataset.datacolumn_by_name("Text").id
+    classifier_name = f"CreateDatasetTeach-test-{int(time.time())}"
+
+    new_labelset_args = {
+        "datacolumn_id": source_col_id,
+        "name": classifier_name,
+        "num_labelers_required": 1,
+        "task_type": ModelTaskType.CLASSIFICATION,
+        "target_names": ["A", "B", "C"],
+    }
+
     questionnaire = client.call(
-        CreateQuestionaire(
-            name=f"CreateDatasetTeach-test-{int(time.time())}",
+        AddModelGroupComponent(
+            name=classifier_name,
             dataset_id=dataset.id,
-            targets=["A", "B", "C"],
             workflow_id=wf.id,
-            after_component_id=wf.component_by_type("INPUT_OCR_EXTRACTION").id,
+            new_labelset_args=NewLabelsetArguments(**new_labelset_args),
+            source_column_id=source_col_id,
+            after_component_id=after_component_id,
         )
     )
 
@@ -515,12 +543,22 @@ def _new_dataset_for_updating(client):
         )
     )
 
+    questionnaire = client.call(
+        GetQuestionnaire(
+            questionnaire.model_group_by_name(
+                classifier_name
+            ).model_group.questionnaire_id
+        )
+    )
+    while questionnaire.questions_status == "STARTED":
+        questionnaire = client.call(GetQuestionnaire(questionnaire.id))
+
     # add data to dataset and process
     dataset = client.call(
         AddFiles(dataset_id=dataset.id, files=[airline_csv], autoprocess=True)
     )
-
     assert dataset.status == "COMPLETE"
+
     return dataset, wf, questionnaire
 
 
@@ -532,7 +570,10 @@ def test_add_data_to_workflow_wait(indico):
     assert wf.status == "COMPLETE"
 
     q2 = client.call(GetQuestionnaire(q1.id))
-    # the total num avaliable should double, since we re-add the same data
+
+    while q2.questions_status == "STARTED":
+        q2 = client.call(GetQuestionnaire(q2.id))
+    # the total num available should double, since we re-add the same data
     assert q1.num_total_examples * 2 == q2.num_total_examples
 
 

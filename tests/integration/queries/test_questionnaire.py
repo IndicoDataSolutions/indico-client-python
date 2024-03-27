@@ -1,23 +1,21 @@
-import time
-import pytest
-import typing as t
 import json
+import time
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from indico.client import IndicoClient
-from indico.queries import CreateWorkflow
+from indico.errors import IndicoError
+from indico.queries import AddModelGroupComponent, CreateWorkflow
 from indico.queries.datasets import CreateDataset, GetDataset
 from indico.queries.questionnaire import (
-    CreateQuestionaire,
+    AddLabels,
     GetQuestionnaire,
     GetQuestionnaireExamples,
-    AddLabels,
 )
-from indico.errors import IndicoError
-from indico.types import Workflow
-from indico.types.questionnaire import Questionnaire, Example, TargetName
+from indico.types import ModelTaskType, NewLabelsetArguments, Workflow
+from indico.types.questionnaire import Example, Questionnaire
 
 
 @pytest.fixture
@@ -35,21 +33,38 @@ def unlabeled_questionnaire(indico):
         )
     )
     after_component_id = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
+    source_col_id = dataset.datacolumn_by_name("text").id
+    classifier_name = f"CreateDatasetTeach-test-{int(time.time())}"
+
+    new_labelset_args = {
+        "datacolumn_id": source_col_id,
+        "name": classifier_name,
+        "num_labelers_required": 1,
+        "task_type": ModelTaskType.CLASSIFICATION,
+        "target_names": ["A", "B", "C"],
+    }
 
     questionnaire = client.call(
-        CreateQuestionaire(
-            name=f"CreateDatasetTeach-test-{int(time.time())}",
+        AddModelGroupComponent(
+            name=classifier_name,
             dataset_id=dataset.id,
-            targets=["A", "B", "C"],
             workflow_id=workflow.id,
+            new_labelset_args=NewLabelsetArguments(**new_labelset_args),
+            source_column_id=source_col_id,
             after_component_id=after_component_id,
         )
     )
-    return {"dataset": dataset, "questionnaire": questionnaire}
+    questionnaire_id = questionnaire.model_group_by_name(
+        classifier_name
+    ).model_group.questionnaire_id
+    return {
+        "dataset": dataset,
+        "questionnaire_id": questionnaire_id,
+    }
 
 
 def test_create_questionnaire_no_labels(unlabeled_questionnaire):
-    assert isinstance(unlabeled_questionnaire["questionnaire"], Questionnaire)
+    assert isinstance(unlabeled_questionnaire["questionnaire_id"], int)
 
 
 def test_create_questionnaire_labeled(indico):
@@ -66,25 +81,34 @@ def test_create_questionnaire_labeled(indico):
             name=f"CreateWorkflow-test{int(time.time())}", dataset_id=dataset.id
         )
     )
-    after_component = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
+    source_col_id = dataset.datacolumn_by_name("text").id
+    after_component_id = workflow.component_by_type("INPUT_OCR_EXTRACTION").id
     csv = pd.read_csv(csv_path)
     data = {
         string: json.loads(label) for string, label in zip(csv["text"], csv["labels"])
     }
+    classifier_name = f"CreateDatasetTeach-test-{int(time.time())}"
     targets = list(set(t["label"] for sample in data.values() for t in sample))
+    new_labelset_args = {
+        "datacolumn_id": source_col_id,
+        "name": classifier_name,
+        "num_labelers_required": 1,
+        "task_type": ModelTaskType.CLASSIFICATION,
+        "target_names": targets,
+    }
 
     response = client.call(
-        CreateQuestionaire(
-            name=f"CreateDatasetTeach-test-{int(time.time())}",
+        AddModelGroupComponent(
+            name=classifier_name,
             dataset_id=dataset.id,
-            target_lookup=data,
-            targets=targets,
             workflow_id=workflow.id,
-            after_component_id=after_component,
+            new_labelset_args=NewLabelsetArguments(**new_labelset_args),
+            source_column_id=source_col_id,
+            after_component_id=after_component_id,
         )
     )
 
-    assert isinstance(response, Questionnaire)
+    assert isinstance(response, Workflow)
 
 
 def test_get_nonexistent_questionnaire(indico):
@@ -96,10 +120,10 @@ def test_get_nonexistent_questionnaire(indico):
 def test_get_questionnaire(indico, unlabeled_questionnaire):
     client = IndicoClient()
     response = client.call(
-        GetQuestionnaire(unlabeled_questionnaire["questionnaire"].id)
+        GetQuestionnaire(unlabeled_questionnaire["questionnaire_id"])
     )
     assert isinstance(response, Questionnaire)
-    assert response.id == unlabeled_questionnaire["questionnaire"].id
+    assert response.id == unlabeled_questionnaire["questionnaire_id"]
     assert not response.odl
     assert response.num_total_examples == 3
     assert response.num_fully_labeled == 0
@@ -109,7 +133,7 @@ def test_get_examples(indico, unlabeled_questionnaire):
     client = IndicoClient()
     examples = client.call(
         GetQuestionnaireExamples(
-            questionnaire_id=unlabeled_questionnaire["questionnaire"].id, num_examples=3
+            questionnaire_id=unlabeled_questionnaire["questionnaire_id"], num_examples=3
         )
     )
     assert len(examples) == 3
@@ -123,12 +147,12 @@ def test_get_examples(indico, unlabeled_questionnaire):
 def test_add_labels(indico, unlabeled_questionnaire):
     client = IndicoClient()
     questionnaire = client.call(
-        GetQuestionnaire(questionnaire_id=unlabeled_questionnaire["questionnaire"].id)
+        GetQuestionnaire(questionnaire_id=unlabeled_questionnaire["questionnaire_id"])
     )
     targets = questionnaire.question.labelset.target_names
     example = client.call(
         GetQuestionnaireExamples(
-            questionnaire_id=unlabeled_questionnaire["questionnaire"].id, num_examples=1
+            questionnaire_id=unlabeled_questionnaire["questionnaire_id"], num_examples=1
         )
     )
     targets = [
@@ -155,7 +179,7 @@ def test_add_labels(indico, unlabeled_questionnaire):
         )
     )
     questionnaire = client.call(
-        GetQuestionnaire(unlabeled_questionnaire["questionnaire"].id)
+        GetQuestionnaire(unlabeled_questionnaire["questionnaire_id"])
     )
     assert questionnaire.num_total_examples == 3
     assert questionnaire.num_fully_labeled == 1
