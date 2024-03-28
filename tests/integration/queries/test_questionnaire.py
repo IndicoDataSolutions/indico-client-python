@@ -1,5 +1,6 @@
 import json
 import time
+
 from pathlib import Path
 
 import pandas as pd
@@ -7,6 +8,7 @@ import pytest
 
 from indico.client import IndicoClient
 from indico.errors import IndicoError
+
 from indico.queries import AddModelGroupComponent, CreateWorkflow
 from indico.queries.datasets import CreateDataset, GetDataset
 from indico.queries.questionnaire import (

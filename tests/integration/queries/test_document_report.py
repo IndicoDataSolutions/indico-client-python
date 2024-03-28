@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import List
 
 from indico import IndicoClient
+from indico.filters import DocumentReportFilter
 from indico.queries.document_report import GetDocumentReport
 from indico.types.document_report import DocumentReport
-from indico.filters import DocumentReportFilter
 
 
 def test_fetch_docs(indico):

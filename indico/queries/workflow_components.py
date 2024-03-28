@@ -107,7 +107,6 @@ class AddLinkedLabelComponent(RequestChain):
         groups: List[LinkedLabelGroup],
         after_component_link_id: int = None,
     ):
-
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
         self.after_component_link_id = after_component_link_id
@@ -316,7 +315,6 @@ class AddModelGroupComponent(GraphQLRequest):
         model_training_options: str = None,
         model_type: str = None,
     ):
-
         if labelset_column_id is not None and new_labelset_args is not None:
             raise IndicoInputError(
                 "Cannot define both labelset_column_id and new_labelset_args, must be one "

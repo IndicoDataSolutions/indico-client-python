@@ -44,6 +44,7 @@ def deserialize(response, force_json=False, force_decompress=False):
             content_type, charset, content.decode("ascii", "ignore")
         )
 
+
 async def aio_deserialize(response, force_json=False, force_decompress=False):
     content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
     content = await response.read()
@@ -64,6 +65,7 @@ async def aio_deserialize(response, force_json=False, force_decompress=False):
         raise IndicoDecodingError(
             content_type, charset, content.decode("ascii", "ignore")
         )
+
 
 def raw_bytes(content, *args, **kwargs):
     return content

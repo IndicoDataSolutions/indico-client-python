@@ -1,8 +1,9 @@
-from indico.client.request import GraphQLRequest, RequestChain
-from indico.types.model_metrics import SequenceMetrics
-from indico.queries.model_groups import GetModelGroup
-from indico.errors import IndicoRequestError
 import json
+
+from indico.client.request import GraphQLRequest, RequestChain
+from indico.errors import IndicoRequestError
+from indico.queries.model_groups import GetModelGroup
+from indico.types.model_metrics import SequenceMetrics
 
 
 class AnnotationModelGroupMetrics(GraphQLRequest):

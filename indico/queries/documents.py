@@ -3,13 +3,12 @@
 import json
 from typing import List
 
-from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod, HTTPRequest
+from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
+from indico.queries.storage import UploadBatched, UploadDocument
 from indico.types.jobs import Job
-from indico.queries.storage import UploadDocument, UploadBatched
 
 
 class _DocumentExtraction(GraphQLRequest):
-
     query = """
         mutation($files: [FileInput], $jsonConfig: JSONString, $ocrEngine: OCREngine) {
             documentExtraction(files: $files, jsonConfig: $jsonConfig, ocrEngine: $ocrEngine) {
@@ -22,7 +21,12 @@ class _DocumentExtraction(GraphQLRequest):
         if json_config and type(json_config) == dict:
             json_config = json.dumps(json_config)
         super().__init__(
-            query=self.query, variables={"files": files, "jsonConfig": json_config, "ocrEngine": ocr_engine}
+            query=self.query,
+            variables={
+                "files": files,
+                "jsonConfig": json_config,
+                "ocrEngine": ocr_engine,
+            },
         )
 
     def process_response(self, response):
@@ -67,7 +71,11 @@ class DocumentExtraction(RequestChain):
     """
 
     def __init__(
-        self, files: List[str], json_config: dict = None, upload_batch_size: int = None, ocr_engine: str = "OMNIPAGE"
+        self,
+        files: List[str],
+        json_config: dict = None,
+        upload_batch_size: int = None,
+        ocr_engine: str = "OMNIPAGE",
     ):
         self.files = files
         self.json_config = json_config
@@ -83,4 +91,8 @@ class DocumentExtraction(RequestChain):
             )
         else:
             yield UploadDocument(files=self.files)
-        yield _DocumentExtraction(files=self.previous, json_config=self.json_config, ocr_engine=self.ocr_engine)
+        yield _DocumentExtraction(
+            files=self.previous,
+            json_config=self.json_config,
+            ocr_engine=self.ocr_engine,
+        )

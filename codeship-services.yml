@@ -21,4 +21,3 @@ indico-client-deploy:
     - env.encrypted
   volumes:
     - .:/indico-client
-
