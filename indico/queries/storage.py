@@ -1,9 +1,9 @@
 import io
 import json
-from typing import List, Dict
-from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
-from indico.errors import IndicoRequestError, IndicoInputError
+from typing import Dict, List
 
+from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
+from indico.errors import IndicoInputError, IndicoRequestError
 
 URL_PREFIX = "indico-file:///storage"
 

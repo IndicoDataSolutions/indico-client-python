@@ -1,7 +1,6 @@
 from typing import List
 
-from indico.types import BaseType
-from indico.types import SubmissionFile
+from indico.types import BaseType, SubmissionFile
 
 
 class DocumentReport(BaseType):

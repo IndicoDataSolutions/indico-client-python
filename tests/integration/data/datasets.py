@@ -1,19 +1,21 @@
 import os
-import pytest
 import time
 from pathlib import Path
+
+import pytest
+
 from indico.client import IndicoClient
 from indico.queries import (
+    AddExchangeIntegration,
+    AddModelGroupComponent,
     CreateDataset,
     CreateWorkflow,
-    AddModelGroupComponent,
     GetModelGroup,
-    AddExchangeIntegration,
-    StartIntegration,
     GetWorkflow,
+    StartIntegration,
 )
 from indico.queries.workflow_components import _AddWorkflowComponent
-from indico.types import ModelGroup, Dataset, Workflow, Integration
+from indico.types import Dataset, Integration, ModelGroup, Workflow
 
 PUBLIC_URL = "https://github.com/IndicoDataSolutions/indico-client-python/raw/master/tests/integration/data/"
 

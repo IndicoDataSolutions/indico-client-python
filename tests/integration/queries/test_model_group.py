@@ -26,20 +26,6 @@ from indico.types.dataset import Dataset
 from indico.types.model import Model, ModelOptions, TrainingProgress
 from indico.types.model_group import ModelGroup
 
-from ..data.datasets import (
-    airlines_dataset,
-    airlines_model_group,
-    airlines_workflow,
-    cats_dogs_image_dataset,
-    cats_dogs_image_workflow,
-    cats_dogs_modelgroup,
-    org_annotate_dataset,
-    org_annotate_model_group,
-    org_annotate_workflow,
-    too_small_dataset,
-    too_small_workflow,
-)
-
 
 def test_get_missing_model_group(indico):
     client = IndicoClient()

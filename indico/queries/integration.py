@@ -1,5 +1,6 @@
-import jsons
 from typing import List
+
+import jsons
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError

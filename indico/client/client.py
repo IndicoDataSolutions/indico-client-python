@@ -7,6 +7,7 @@ from typing import Optional, Union
 import urllib3
 
 from indico.client.request import (
+    Delay,
     GraphQLRequest,
     HTTPRequest,
     PagedRequest,
@@ -14,7 +15,6 @@ from indico.client.request import (
 )
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
-from indico.client.request import Delay
 from indico.http.client import AIOHTTPClient, HTTPClient
 
 

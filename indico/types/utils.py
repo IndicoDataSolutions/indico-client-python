@@ -1,6 +1,7 @@
 import re
-from typing import Union
 import time
+from typing import Union
+
 from indico.errors import IndicoTimeoutError
 
 _cc_to_snake_re = re.compile(r"(?<!^)(?=[A-Z])")

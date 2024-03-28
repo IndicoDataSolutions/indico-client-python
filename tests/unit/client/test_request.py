@@ -1,7 +1,9 @@
+from datetime import datetime
+
 import pytest
 
-from indico.client.request import HTTPMethod, HTTPRequest, GraphQLRequest
-from datetime import datetime
+from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest
+
 
 
 def test_http_request_properties():

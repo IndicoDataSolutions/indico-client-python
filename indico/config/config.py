@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 from pathlib import Path
+
 from indico.errors import IndicoInvalidConfigSetting
 
 

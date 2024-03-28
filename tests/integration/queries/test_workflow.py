@@ -26,7 +26,9 @@ from indico.queries import (
     WorkflowSubmission,
     WorkflowSubmissionDetailed,
 )
+
 from indico.queries.questionnaire import GetQuestionnaire
+
 from indico.queries.workflow import GetWorkflow
 from indico.queries.workflow_components import _AddWorkflowComponent
 from indico.types import ModelGroup, ModelTaskType, NewLabelsetArguments

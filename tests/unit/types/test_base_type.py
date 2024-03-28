@@ -1,6 +1,8 @@
-from typing import List
-from indico.types.base import BaseType, JSONType
 from datetime import datetime
+from typing import List
+
+from indico.types.base import BaseType, JSONType
+
 
 
 def test_setting_attributes_from_dict():

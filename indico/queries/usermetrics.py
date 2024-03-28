@@ -1,17 +1,14 @@
 import datetime
-from typing import List, Union, Dict
+from typing import Dict, List, Union
 
-from indico.client.request import (
-    GraphQLRequest,
-    PagedRequest,
-)
+from indico.client.request import GraphQLRequest, PagedRequest
 from indico.filters import UserMetricsFilter
 from indico.types import BaseType
 from indico.types.user_metrics import (
-    UserSummary,
-    UserSnapshot,
     UserChangelog,
     UserChangelogReport,
+    UserSnapshot,
+    UserSummary,
 )
 
 
@@ -90,7 +87,7 @@ class GetUserSnapshots(PagedRequest):
         datasetId
         role
       }
-      
+
     }
     pageInfo{
       startCursor

@@ -3,9 +3,9 @@
 import json
 from typing import List
 
-from indico.client.request import RequestChain, GraphQLRequest, HTTPMethod, HTTPRequest
+from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
+from indico.queries.storage import UploadBatched, UploadDocument
 from indico.types.jobs import Job
-from indico.queries.storage import UploadDocument, UploadBatched
 
 
 class _DocumentExtraction(GraphQLRequest):

@@ -1,8 +1,8 @@
 import unittest.mock
+
 import pytest
 
-
-from indico.client import IndicoClient, HTTPRequest, HTTPMethod, GraphQLRequest
+from indico.client import GraphQLRequest, HTTPMethod, HTTPRequest, IndicoClient
 from indico.config import IndicoConfig
 
 

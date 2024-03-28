@@ -1,6 +1,7 @@
 from enum import Enum
-from indico.types.base import BaseType
 from typing import List
+
+from indico.types.base import BaseType
 
 
 class WorkflowMetricsOptions(Enum):

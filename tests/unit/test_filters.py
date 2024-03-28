@@ -1,8 +1,9 @@
-import pytest
 from datetime import datetime
 
+import pytest
+
 from indico.errors import IndicoInputError
-from indico.filters import Filter, SubmissionFilter, and_, or_, DocumentReportFilter
+from indico.filters import DocumentReportFilter, Filter, SubmissionFilter, and_, or_
 
 
 def test_filter():

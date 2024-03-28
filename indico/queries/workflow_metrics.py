@@ -1,9 +1,10 @@
 from datetime import datetime
-from indico.errors import IndicoInputError
-from indico.client.request import GraphQLRequest
-from indico.types import BaseType
-from indico.types.workflow_metrics import WorkflowMetricsOptions, WorkflowMetrics
 from typing import List
+
+from indico.client.request import GraphQLRequest
+from indico.errors import IndicoInputError
+from indico.types import BaseType
+from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
 
 
 class _WorkflowMetric(BaseType):
@@ -30,7 +31,7 @@ class GetWorkflowMetrics(GraphQLRequest):
     __MAP_WORKFLOW_KEYS = {
         WorkflowMetricsOptions.SUBMISSIONS: """
         firstSubmittedDate
-               submissions {               
+               submissions {
                   aggregate {
                     submitted
                     completed
@@ -99,7 +100,7 @@ class GetWorkflowMetrics(GraphQLRequest):
                       reviewDenom
                       autoReviewDenom
                       reviewStpPct
-                      autoReviewStpPct                    
+                      autoReviewStpPct
                     }
                     daily {
                       date
@@ -116,7 +117,7 @@ class GetWorkflowMetrics(GraphQLRequest):
                 """,
         WorkflowMetricsOptions.TIME_ON_TASK: """
                timeOnTask {
-                  aggregate { 
+                  aggregate {
                     avgMinsPerDoc
                     avgMinsPerDocReview
                     avgMinsPerDocExceptions

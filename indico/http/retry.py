@@ -1,9 +1,8 @@
 import asyncio
-from random import randint
 import time
 import typing as t
 from functools import wraps
-
+from random import randint
 
 def retry(
     ExceptionTypes: t.Type[Exception], tries: int = 3, delay: int = 1, backoff: int = 2

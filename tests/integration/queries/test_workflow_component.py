@@ -2,18 +2,16 @@ import time
 
 import pytest
 
-from indico.client import GraphQLRequest, IndicoClient
+from indico.client import IndicoClient
 from indico.queries import (
+    AddLinkClassificationComponent,
+    AddModelGroupComponent,
+    AddStaticModelComponent,
     CreateWorkflow,
     DeleteWorkflowComponent,
     GetDataset,
     GetWorkflow,
     JobStatus,
-)
-from indico.queries import (
-    AddLinkClassificationComponent,
-    AddModelGroupComponent,
-    AddStaticModelComponent,
     ProcessStaticModelExport,
     UploadStaticModelExport,
 )

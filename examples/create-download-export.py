@@ -1,7 +1,7 @@
-from indico import IndicoClient, IndicoConfig
-from indico.queries import GetDataset, CreateExport, DownloadExport
 import pandas as pd
 
+from indico import IndicoClient, IndicoConfig
+from indico.queries import CreateExport, DownloadExport, GetDataset
 
 """Example 1: Create export from dataset and download as csv"""
 
