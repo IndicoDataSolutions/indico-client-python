@@ -1,19 +1,7 @@
-import json
-from typing import Any, List, Optional
-
-import deprecation
+from typing import List, Optional
 
 from indico.client.request import Delay, GraphQLRequest, RequestChain
-from indico.errors import IndicoError, IndicoInputError, IndicoNotFound
-from indico.queries import AddModelGroupComponent
-from indico.queries.datasets import CreateDataset, GetDataset
-from indico.types import (
-    ModelTaskType,
-    NewLabelsetArguments,
-    NewQuestionnaireArguments,
-    Workflow,
-)
-from indico.types.dataset import Dataset
+from indico.errors import IndicoError, IndicoNotFound
 from indico.types.questionnaire import Example, Questionnaire
 
 
@@ -22,9 +10,9 @@ class AddLabels(GraphQLRequest):
     Add labels to an existing labelset.
 
     Args:
-        dataset_id (int): Deprecated - The id of the dataset to add labels to.
         labelset_id (int): The id of the labelset to add labels to.
         labels (List(dict)): A list of dicts containing rowIndex and target fields for the data points to add.
+        model_group_id (int, optional): The id of the model group to add labels to.
 
     Raises:
         IndicoInputError if the length of targets and row_index are not equal
@@ -48,7 +36,6 @@ class AddLabels(GraphQLRequest):
         labelset_id: int,
         labels: List[dict],
         model_group_id: int = None,
-        dataset_id: int = None,
     ):
         super().__init__(
             query=self.query,
@@ -123,7 +110,7 @@ class GetQuestionnaireExamples(GraphQLRequest):
         return examples
 
 
-class GetQuestionnaire(GraphQLRequest):
+class _GetQuestionnaire(GraphQLRequest):
     """
     Gets a questionnaire from an ID.
 
@@ -173,3 +160,29 @@ class GetQuestionnaire(GraphQLRequest):
         if not questionnaire_list or not questionnaire_list[0]:
             raise IndicoError("Cannot find questionnaire")
         return Questionnaire(**questionnaire_list[0])
+
+
+class GetQuestionnaire(RequestChain):
+    """
+    Gets a questionnaire from an ID.
+
+    Args:
+        questionaire_id (int): The id of the questionnaire to get examples from.
+        wait (bool, optional): Wait for the questionnaire to reach a COMPLETE status. Defaults to True.
+
+    Returns:
+        Questionnaire object
+    """
+
+    previous = None
+
+    def __init__(self, questionnaire_id: int, wait: bool = True):
+        self.questionnaire_id = questionnaire_id
+        self.wait = wait
+
+    def requests(self):
+        yield _GetQuestionnaire(questionnaire_id=self.questionnaire_id)
+        if self.wait:
+            while self.previous.questions_status == "STARTED":
+                yield _GetQuestionnaire(questionnaire_id=self.questionnaire_id)
+                yield Delay()
