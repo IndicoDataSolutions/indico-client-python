@@ -1,21 +1,21 @@
 from indico import IndicoClient, IndicoConfig
 from indico.queries import (
-    JobStatus,
-    RetrieveStorageObject,
-    WorkflowSubmission,
+    AddLinkClassificationComponent,
+    AddLinkedLabelComponent,
+    AddModelGroupComponent,
     CreateWorkflow,
     GetDataset,
-    ListWorkflows,
-    AddModelGroupComponent,
     GetWorkflow,
-    AddLinkedLabelComponent,
-    AddLinkClassificationComponent,
+    JobStatus,
+    ListWorkflows,
+    RetrieveStorageObject,
+    WorkflowSubmission,
 )
 from indico.types import (
-    NewLabelsetArguments,
-    ModelTaskType,
     LinkedLabelGroup,
     LinkedLabelStrategy,
+    ModelTaskType,
+    NewLabelsetArguments,
 )
 
 # Use your dataset's id to call its associated workflow

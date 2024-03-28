@@ -1,6 +1,7 @@
 """
 Handles deserialization / decoding of responses
 """
+
 import gzip
 import io
 import json
@@ -42,6 +43,7 @@ def deserialize(response, force_json=False, force_decompress=False):
             content_type, charset, content.decode("ascii", "ignore")
         )
 
+
 async def aio_deserialize(response, force_json=False, force_decompress=False):
     content_type, params = parse_header(response.headers.get("Content-Type"))
     content = await response.read()
@@ -63,10 +65,12 @@ async def aio_deserialize(response, force_json=False, force_decompress=False):
             content_type, charset, content.decode("ascii", "ignore")
         )
 
+
 def parse_header(header: str) -> tuple[str, dict[str, str]]:
     email = EmailMessage()
     email["Content-Type"] = header
     return email.get_content_type(), email["Content-Type"].params
+
 
 def raw_bytes(content, *args, **kwargs):
     return content

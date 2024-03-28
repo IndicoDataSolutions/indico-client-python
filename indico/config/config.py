@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 from pathlib import Path
+
 from indico.errors import IndicoInvalidConfigSetting
 
 
@@ -34,7 +34,6 @@ class IndicoConfig:
     _disable_cookie_domain: bool = False
 
     def __init__(self, **kwargs):
-
         self.host: str = os.getenv("INDICO_HOST")
         self.protocol: str = os.getenv("INDICO_PROTOCOL", "https")
         self.serializer: str = os.getenv("INDICO_SERIALIZER", "msgpack")

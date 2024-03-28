@@ -1,13 +1,16 @@
-import pytest
 import json
+import re
 from unittest import mock
+
+import pytest
+
 from indico.client import IndicoClient
-from indico.types.dataset import Dataset
-from indico.types.export import Export
 from indico.errors import IndicoRequestError
 from indico.queries.export import CreateExport, DownloadExport
+from indico.types.dataset import Dataset
+from indico.types.export import Export
+
 from ..data.datasets import airlines_dataset
-import re
 
 
 def test_create_and_download_export(airlines_dataset: Dataset):

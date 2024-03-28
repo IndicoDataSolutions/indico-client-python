@@ -1,6 +1,6 @@
 from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
+from indico.client.request import GraphQLRequest, PagedRequest, RequestChain
 from indico.filters import ModelGroupExampleFilter
 from indico.types import Example, model_group
 
@@ -37,9 +37,9 @@ class ListModelGroupExamples(PagedRequest):
                             endCursor
                             hasNextPage
                         }
-                    }  
+                    }
                 }
-            }                
+            }
         }
     """
 

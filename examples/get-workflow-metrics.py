@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import List
+
 import pandas as pd
-from indico import IndicoConfig, IndicoClient
+
+from indico import IndicoClient, IndicoConfig
 from indico.queries import ListWorkflows
 from indico.queries.workflow_metrics import GetWorkflowMetrics
 from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions

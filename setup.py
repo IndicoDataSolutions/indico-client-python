@@ -1,9 +1,11 @@
 """
 Setup for indico apis
 """
-import versioneer
 from pathlib import Path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
+
+import versioneer
 
 setup(
     name="indico-client",
@@ -23,7 +25,7 @@ setup(
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
         "deprecation>=2.1.0",
         "jsons",
-        "aiohttp[speedups]"
+        "aiohttp[speedups]",
     ],
     extras_require={
         "all": [
