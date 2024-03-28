@@ -1,14 +1,15 @@
 import unittest.mock
+
 import pytest
 
-
-from indico.client import IndicoClient, HTTPRequest, HTTPMethod, GraphQLRequest
+from indico.client import GraphQLRequest, HTTPMethod, HTTPRequest, IndicoClient
 from indico.config import IndicoConfig
 
 
 @pytest.fixture(scope="function")
 def indico_test_config():
     return IndicoConfig(protocol="mock", host="mock")
+
 
 @pytest.fixture(scope="function")
 def indico_request(requests_mock, indico_test_config):
@@ -70,8 +71,13 @@ def test_client_verify_true_request(indico_request, auth, indico_test_config):
 
 
 def test_client_verify_false_request(indico_request, auth, indico_test_config):
-    client = IndicoClient(IndicoConfig(verify_ssl=False, host=indico_test_config.host,
-                                       protocol=indico_test_config.protocol))
+    client = IndicoClient(
+        IndicoConfig(
+            verify_ssl=False,
+            host=indico_test_config.host,
+            protocol=indico_test_config.protocol,
+        )
+    )
     indico_request(
         "post",
         "/graph/api/graphql",
@@ -89,8 +95,13 @@ def test_client_verify_false_request(indico_request, auth, indico_test_config):
 
 
 def test_client_requests_params(indico_request, auth, indico_test_config):
-    client = IndicoClient(IndicoConfig(requests_params={"verify": False}, host=indico_test_config.host,
-                                       protocol=indico_test_config.protocol))
+    client = IndicoClient(
+        IndicoConfig(
+            requests_params={"verify": False},
+            host=indico_test_config.host,
+            protocol=indico_test_config.protocol,
+        )
+    )
     indico_request(
         "post",
         "/graph/api/graphql",
@@ -104,6 +115,7 @@ def test_client_requests_params(indico_request, auth, indico_test_config):
         )
     )
     assert response == {"datasets": []}
+
 
 def test_client_get_ipa_version(indico_request, auth, indico_test_config):
     client = IndicoClient(config=indico_test_config)

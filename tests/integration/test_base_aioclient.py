@@ -1,9 +1,8 @@
 import pytest
 
 from indico.client import AsyncIndicoClient, IndicoConfig
-from indico.client.request import HTTPRequest, HTTPMethod, GraphQLRequest
+from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest
 from indico.errors import IndicoAuthenticationFailed
-
 
 pytestmark = pytest.mark.asyncio(scope="module")
 

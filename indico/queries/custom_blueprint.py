@@ -2,8 +2,8 @@ import typing as t
 
 from indico import GraphQLRequest
 from indico.errors import IndicoInputError
-from indico.types.workflow import ComponentFamily
 from indico.types.custom_blueprint import TaskBlueprint
+from indico.types.workflow import ComponentFamily
 
 SUPPORTED_CUSTOM_COMPONENT_FAMILIES = [
     ComponentFamily.OUTPUT,

@@ -53,9 +53,16 @@ class GetDocumentReport(PagedRequest):
         """
 
     def __init__(
-        self, filters: Union[dict, DocumentReportFilter] = None, limit: int = None, all_submissions = False
+        self,
+        filters: Union[dict, DocumentReportFilter] = None,
+        limit: int = None,
+        all_submissions=False,
     ):
-        variables = {"filters": filters, "limit": limit, "allSubmissions": all_submissions}
+        variables = {
+            "filters": filters,
+            "limit": limit,
+            "allSubmissions": all_submissions,
+        }
         super().__init__(self.query, variables=variables)
 
     def process_response(self, response):

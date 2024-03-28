@@ -1,10 +1,10 @@
-import pytest_asyncio
 import time
 from pathlib import Path
+
+import pytest_asyncio
+
 from indico.client import AsyncIndicoClient
-from indico.queries import (
-    CreateDataset,
-)
+from indico.queries import CreateDataset
 
 
 @pytest_asyncio.fixture(scope="module")

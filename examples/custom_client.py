@@ -1,4 +1,5 @@
 import os
+
 from indico import IndicoClient, IndicoConfig
 
 # Will connect to https://try.indico.io

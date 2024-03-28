@@ -3,9 +3,9 @@ from pathlib import Path
 import pytest
 
 from indico.client import IndicoClient
-from indico.queries import JobStatus, DocumentExtraction
-from indico.types.jobs import Job
 from indico.errors import IndicoTimeoutError
+from indico.queries import DocumentExtraction, JobStatus
+from indico.types.jobs import Job
 
 
 def test_job_wait_on_success(indico):

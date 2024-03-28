@@ -1,5 +1,6 @@
-import jsons
 from typing import List
+
+import jsons
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
@@ -121,7 +122,7 @@ class PauseIntegration(GraphQLRequest):
     Args:
         integration_id(int): id of the integration to pause
     """
-    
+
     query = """
         mutation PauseIntegration($integrationId: Int!){
             pauseWorkflowIntegration(integrationId: $integrationId){
@@ -129,7 +130,7 @@ class PauseIntegration(GraphQLRequest):
         }
     }
     """
-    
+
     def __init__(self, integration_id: int):
         super().__init__(
             self.query,

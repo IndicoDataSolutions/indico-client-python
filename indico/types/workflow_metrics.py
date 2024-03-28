@@ -1,6 +1,7 @@
 from enum import Enum
-from indico.types.base import BaseType
 from typing import List
+
+from indico.types.base import BaseType
 
 
 class WorkflowMetricsOptions(Enum):
@@ -13,6 +14,7 @@ class WorkflowMetricsOptions(Enum):
         STRAIGHT_THROUGH_PROCESSING: Generates StraightThroughProcessing metrics in the response.
         TIME_ON_TASK: Average time spent by reviewers on documents.
     """
+
     SUBMISSIONS = 1
     REVIEW = 2
     STRAIGHT_THROUGH_PROCESSING = 3
@@ -31,6 +33,7 @@ class TimeOnTaskMetric(BaseType):
         avg_min_per_doc_exceptions(float): Average amount of minutes reviewers spend on ducments for this workflow in
             the exceptions queue.
     """
+
     avg_mins_per_doc: float
     avg_mins_per_doc_review: float
     avg_min_per_doc_exceptions: float
@@ -39,7 +42,7 @@ class TimeOnTaskMetric(BaseType):
 class DailyTimeOnTaskMetric(TimeOnTaskMetric):
     """
     Daily time on task metrics.
-    
+
     Attributes:
         avg_mins_per_doc(float): Average amount of minutes reviewers spend on documents in this workflow
             across review and exceptions queue.
@@ -49,6 +52,7 @@ class DailyTimeOnTaskMetric(TimeOnTaskMetric):
             the exceptions queue.
         date(str): Date.
     """
+
     date: str
 
 
@@ -60,6 +64,7 @@ class TimeOnTaskMetrics(BaseType):
         aggregate(TimeOnTaskMetric): Aggregate level time on task metrics.
         daily(List[DailyTimeOnTaskMetric): Daily level time on task metrics.
     """
+
     aggregate: TimeOnTaskMetric
     daily: List[DailyTimeOnTaskMetric]
 
@@ -77,6 +82,7 @@ class SubmissionMetric(BaseType):
         rejected_in_review(int): Number of items rejected in the exceptions queue.
         date(str): Date.
     """
+
     submitted: int
     completed: int
     completed_in_review: int
@@ -98,6 +104,7 @@ class DailySubmissionMetric(SubmissionMetric):
         rejected_in_review(int): Number of items rejected in the exceptions queue.
         date(str): Date.
     """
+
     date: str
 
 
@@ -109,6 +116,7 @@ class SubmissionMetrics(BaseType):
         aggregate(SubmissionMetric): Aggregate level submission metrics.
         daily(List[SubmissionMetric]): Daily submission metrics.
     """
+
     aggregate: SubmissionMetric
     daily: List[DailySubmissionMetric]
 
@@ -122,6 +130,7 @@ class DailyQueueMetric(BaseType):
         hours_on_queue(float): Cumulative hours items wait on queue for review.
         avg_age_in_queue(float): Average cumulative age of items waiting in review queues.
     """
+
     date: str
     subs_on_queue: int
     hours_on_queue: float
@@ -134,6 +143,7 @@ class QueueMetrics(BaseType):
     Attributes:
         daily_cumulative(List[DailyQueueMetric]): list of cumulative queue metrics per day
     """
+
     daily_cumulative: List[DailyQueueMetric]
 
 
@@ -143,6 +153,7 @@ class PredictionMetric(BaseType):
     Attributes:
         num_preds(int): the total number of model-generated predictions.
     """
+
     num_preds: int
 
 
@@ -153,6 +164,7 @@ class DailyPredictionMetric(PredictionMetric):
         date(str): the date of the prediction.
         num_preds(int): the total number of model-generated predictions.
     """
+
     date: str
 
 
@@ -164,6 +176,7 @@ class PredictionMetrics(BaseType):
         aggregate(PredictionMetric): Total number of predictions generated for this workflow.
         daily(List[PredictionMetrics]): Number of predictions generated per-date.
     """
+
     aggregate: PredictionMetric
     daily: List[PredictionMetric]
 
@@ -180,6 +193,7 @@ class StpMetric(BaseType):
         review_stp_pct(float): Percent of human accepted model predictions. Present if auto review is disabled.
         auto_review_stp_pct(float): Percent of auto review labels accepted. Present if auto review is enabled.
     """
+
     review_numerator: int
     auto_review_numerator: int
     review_denom: int
@@ -201,6 +215,7 @@ class DailyStpMetric(StpMetric):
         auto_review_stp_pct(float): Percent of auto review labels accepted. Present if auto review is enabled.
         date(str): The date these metrics are applicable.
     """
+
     date: str
 
 
@@ -213,6 +228,7 @@ class ClassStpMetrics(BaseType):
         aggregate(StpMetric): Aggregate level metrics about this class.
         daily(List[DailyStpMetric]): Per-date STP metrics for this class.
     """
+
     class_name: str
     aggregate: StpMetric
     daily: List[DailyStpMetric]
@@ -229,6 +245,7 @@ class ModelStpMetrics(BaseType):
         daily(List[DailyStpMetric]): Daily STP metrics for the model.
         class_metrics(List[ClassStpMetrics]): Metrics per model class.
     """
+
     model_group_id: int
     name: str
     aggregate: StpMetric
@@ -243,6 +260,7 @@ class WorkflowStpMetrics(BaseType):
     Attributes:
         daily(List[DailyStpMetric]): List of daily metrics.
     """
+
     daily: List[DailyStpMetric]
 
 
@@ -254,6 +272,7 @@ class StraightThroughProcessing(BaseType):
         workflow(WorkflowStpMetrics): Daily aggregate workflow level STP metrics.
         model(List[ModelStpMetrics]): Model STP metrics (including class STP).
     """
+
     workflow: WorkflowStpMetrics
     model: List[ModelStpMetrics]
 
@@ -272,6 +291,7 @@ class WorkflowMetrics(BaseType):
         first_submitted_date(str): The earliest date of submission to this workflow.
 
     """
+
     workflow_id: int
     time_on_task: TimeOnTaskMetrics
     submissions: SubmissionMetrics

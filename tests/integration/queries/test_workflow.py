@@ -26,7 +26,9 @@ from indico.queries import (
     WorkflowSubmission,
     WorkflowSubmissionDetailed,
 )
+
 from indico.queries.questionnaire import GetQuestionnaire
+
 from indico.queries.workflow import GetWorkflow
 from indico.queries.workflow_components import _AddWorkflowComponent
 from indico.types import ModelGroup, ModelTaskType, NewLabelsetArguments
@@ -380,7 +382,6 @@ def test_workflow_submission_auto_review_v1(
     org_annotate_workflow,
     org_annotate_model_group,
 ):
-
     client = IndicoClient()
 
     wf = client.call(
@@ -426,7 +427,6 @@ def test_workflow_submission_auto_review_v3_result(
     org_annotate_workflow,
     org_annotate_model_group,
 ):
-
     client = IndicoClient()
 
     wf = client.call(
