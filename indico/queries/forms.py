@@ -1,13 +1,12 @@
-from typing import List
 from pathlib import Path
+from typing import List
 
-from indico.client.request import RequestChain, GraphQLRequest
-from indico.queries.storage import UploadBatched, UploadDocument
+from indico.client.request import GraphQLRequest, RequestChain
 from indico.queries.jobs import Job
+from indico.queries.storage import UploadBatched, UploadDocument
 
 
 class _FormPreprocessing(GraphQLRequest):
-
     query = """
         mutation($files: [FileInput]) {
             activeFormFields(

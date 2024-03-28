@@ -1,21 +1,23 @@
 import asyncio
-import aiohttp
 import http.cookiejar
 import logging
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import Union, Optional
+from typing import Optional, Union
 
+import aiohttp
 import requests
+
 from indico.client.request import HTTPRequest
 from indico.config import IndicoConfig
 from indico.errors import (
     IndicoAuthenticationFailed,
-    IndicoRequestError,
     IndicoHibernationError,
+    IndicoRequestError,
 )
-from indico.http.serialization import deserialize, aio_deserialize
+from indico.http.serialization import aio_deserialize, deserialize
+
 from .retry import aioretry
 
 logger = logging.getLogger(__file__)
@@ -87,7 +89,6 @@ class HTTPClient:
 
     @contextmanager
     def _handle_files(self, req_kwargs):
-
         streams = None
         # deepcopying buffers is not supported
         # so, remove "streams" before the deepcopy.
@@ -313,7 +314,6 @@ class AIOHTTPClient(HTTPClient):
                 verify_ssl=self.config.verify_ssl,
                 **request_kwargs,
             ) as response:
-
                 # If auth expired refresh
                 if response.status == 401 and not _refreshed:
                     await self.get_short_lived_access_token()

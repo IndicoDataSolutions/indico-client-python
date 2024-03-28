@@ -1,11 +1,8 @@
 import json
 from typing import Any, Dict, List, Optional, Union
 
-import deprecation
-
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound
-from indico.queries.workflow_components import AddModelGroupComponent
 from indico.types.jobs import Job
 from indico.types.model import Model, ModelOptions
 from indico.types.model_group import ModelGroup
@@ -232,7 +229,6 @@ class ModelGroupPredict(RequestChain):
         self.predict_options = predict_options
 
     def requests(self):
-
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
         )

@@ -1,6 +1,7 @@
 import re
-from typing import Union
 import time
+from typing import Union
+
 from indico.errors import IndicoTimeoutError
 
 _cc_to_snake_re = re.compile(r"(?<!^)(?=[A-Z])")
@@ -17,7 +18,6 @@ def _camel(match):
 
 def snake_to_cc(string: str):
     return re.sub(_snake_to_cc_re, _camel, string, 0)
-
 
 
 class Timer:

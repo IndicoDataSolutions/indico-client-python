@@ -5,7 +5,7 @@ from typing import List, Union
 import pandas as pd
 
 from indico.client import Delay, GraphQLRequest, RequestChain
-from indico.errors import IndicoNotFound, IndicoRequestError
+from indico.errors import IndicoRequestError
 from indico.queries.storage import RetrieveStorageObject
 from indico.types.export import Export, LabelResolutionStrategy
 

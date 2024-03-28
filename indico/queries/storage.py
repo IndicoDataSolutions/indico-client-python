@@ -1,9 +1,9 @@
 import io
 import json
-from typing import List, Dict
-from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
-from indico.errors import IndicoRequestError, IndicoInputError
+from typing import Dict, List
 
+from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
+from indico.errors import IndicoInputError, IndicoRequestError
 
 URL_PREFIX = "indico-file:///storage"
 
@@ -55,12 +55,17 @@ class UploadDocument(HTTPRequest):
         files: Storage object to be used for further processing requests (e.g., document extraction).
     """
 
-    def __init__(self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None):
-
-        if (files is None and streams is None) or (files is not None and streams is not None):
+    def __init__(
+        self, files: List[str] = None, streams: Dict[str, io.BufferedIOBase] = None
+    ):
+        if (files is None and streams is None) or (
+            files is not None and streams is not None
+        ):
             raise IndicoInputError("Must define one of files or streams, but not both.")
 
-        super().__init__(HTTPMethod.POST, "/storage/files/store", files=files, streams=streams)
+        super().__init__(
+            HTTPMethod.POST, "/storage/files/store", files=files, streams=streams
+        )
 
     def process_response(self, uploaded_files: List[dict]):
         files = [

@@ -1,9 +1,8 @@
 import asyncio
-from random import randint
 import time
 import typing as t
 from functools import wraps
-
+from random import randint
 
 
 def retry(
@@ -31,6 +30,7 @@ def retry(
         return retry_fn
 
     return retry_decorator
+
 
 def aioretry(
     ExceptionTypes: t.Type[Exception],

@@ -1,6 +1,8 @@
-from typing import List
-from indico.types.base import BaseType, JSONType
 from datetime import datetime
+from typing import List
+
+from indico.types.base import BaseType, JSONType
+
 
 def test_setting_attributes_from_dict():
     class A(BaseType):
@@ -35,6 +37,7 @@ def test_nested_list_base_type():
     assert x.id == 1
     assert x.a[0].id == 2
 
+
 def test_nested_empty_list_base_type():
     class A(BaseType):
         id: int
@@ -59,9 +62,7 @@ def test_nested_list_simple_type():
     assert x.a[0] == "this is meta"
 
 
-
 def test_nested_empty_list_simple_type():
-
     class B(BaseType):
         id: int
         a: List[str]
@@ -93,6 +94,6 @@ def test_timestamp_to_datetime_field():
     class A(BaseType):
         created_at: datetime
 
-    x = A(**{"createdAt": '1590169591.582852'})
+    x = A(**{"createdAt": "1590169591.582852"})
 
     assert x.created_at == datetime.fromtimestamp(1590169591.582852)

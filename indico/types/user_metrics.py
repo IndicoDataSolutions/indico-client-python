@@ -1,27 +1,29 @@
 import datetime
+from typing import List
 
 from indico.types.base import BaseType
-from typing import List
 
 
 class AppRoles(BaseType):
     """Info about roles. Name and how many users have this role.
-    
+
     Attributes:
         role (str): A role name
         count (int): Count of how many users have said role.
     """
+
     role: str
     count: int
 
 
 class UserDatasets(BaseType):
     """Dataset Id and roles assigned to user in that dataset.
-    
+
     Attributes:
         dataset_id (int): The id of a particular dataset
         role (str): A dataset assigned to said dataset.
     """
+
     dataset_id: int
     role: str
 
@@ -34,13 +36,14 @@ class UserSummaryCounts(BaseType):
         enabled (int): How many user accounts are enabled.
         disabled (int): How many user accounts are disabled.
     """
+
     enabled: int
     disabled: int
 
 
 class UserSnapshot(BaseType):
     """Individual information about a user and their dataset access
-    
+
     Attributes:
         id (int): The user's id.
         name (str): The user's name.
@@ -50,6 +53,7 @@ class UserSnapshot(BaseType):
         roles (List[str]): List of roles assigned to this user.
         datasets (List[UserDatasets]): List of datasets this user can access.
     """
+
     id: int
     name: str
     email: str
@@ -61,29 +65,31 @@ class UserSnapshot(BaseType):
 
 class UserSummary(BaseType):
     """Summary data on users and app roles
-    
+
     Attributes:
         users (UserSummarycounts): Counts of enabled/disabled users.
         app_roles (List[AppRoles]): List of all available user roles.
     """
+
     users: UserSummaryCounts
     app_roles: List[AppRoles]
 
 
 class DatasetRole(BaseType):
     """Dataset role information
-    
+
     Attributes:
         dataset_id (int): Id of a particular dataset.
         role (str): Role name which has access to this dataset.
     """
+
     dataset_id: int
     role: str
 
 
 class UserChangelog(BaseType):
     """Log entry of a change made to a user's permission
-    
+
     Attributes:
         id (str): Id of the log entry
         date (datetime): Time of long entry.
@@ -100,6 +106,7 @@ class UserChangelog(BaseType):
         changes_made (List[str]): A list of changed made.
 
     """
+
     id: str
     date: datetime
     user_id: int
@@ -117,8 +124,9 @@ class UserChangelog(BaseType):
 
 class UserChangelogReport(BaseType):
     """Job id of a request for a changelog report file for download
-    
+
     Attributes:
         job_id (str): The job id. Use for fetching JobStatus.
     """
+
     job_id: str

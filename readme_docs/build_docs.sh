@@ -16,6 +16,6 @@ for filename in $(find . -maxdepth 1 -type f); do
     if [[ $filename == *"-types.md" ]]; then
         mv $filename ./types
     elif [[ $filename != *"/types.md"  ]] && [[ $filename != *"/classes.md"  ]] && [[ $filename != *"/index.md"  ]] ; then
-        mv $filename ./classes 
+        mv $filename ./classes
     fi
 done

@@ -1,4 +1,5 @@
 import logging
+
 from indico._version import get_versions
 
 logging.basicConfig()
