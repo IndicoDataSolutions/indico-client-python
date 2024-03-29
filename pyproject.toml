@@ -1,0 +1,6 @@
+[tool.isort]
+known_first_party = ["indico"]
+
+[tool.mypy]
+strict = true
+packages = "indico"
