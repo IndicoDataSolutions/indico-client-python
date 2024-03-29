@@ -1,5 +1,6 @@
 [tool.isort]
 known_first_party = ["indico"]
+profile = "black"
 
 [tool.mypy]
 strict = true
