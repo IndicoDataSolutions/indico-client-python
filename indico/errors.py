@@ -1,20 +1,22 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any
+    from typing import Any, Dict, Optional, Union
 
 
 class IndicoError(Exception):
-    pass
+    """Base exception for known error modes"""
 
 
 class IndicoRequestError(IndicoError):
-    def __init__(self, error: str, code: int, extras: dict[str, "Any"] | None = None):
+    def __init__(
+        self, error: str, code: int, extras: "Optional[Dict[str, Any]]" = None
+    ):
         super().__init__(f"Status: {code}, Error: {error}\n\tExtras: {extras}")
 
 
 class IndicoTimeoutError(IndicoError):
-    def __init__(self, duration: int | float):
+    def __init__(self, duration: "Union[int, float]"):
         super().__init__(f"Request timed out after {duration:0.3f} seconds.")
 
 
