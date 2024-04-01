@@ -13,6 +13,7 @@ from indico.queries.model_groups import (
     GetModelGroup,
     GetTrainingModelWithProgress,
     ModelGroupPredict,
+    UpdateModelGroupSettings,
 )
 from indico.queries.model_groups.metrics import (
     AnnotationModelGroupMetrics,
@@ -95,7 +96,9 @@ def test_model_group_progress(
         )
     )
     time.sleep(1)
-    model: Model = client.call((GetTrainingModelWithProgress(id=mg.model_group_by_name(name).id)))
+    model: Model = client.call(
+        (GetTrainingModelWithProgress(id=mg.model_group_by_name(name).id))
+    )
 
     assert type(model) == Model
     assert model.status in ["CREATING", "TRAINING", "COMPLETE"]
@@ -206,3 +209,17 @@ def check_annotation_metrics(result):
     assert isinstance(result.model_level_metrics[0].macro_f1, float)
     assert isinstance(result.model_level_metrics[0].weighted_f1, float)
     assert result.retrain_for_metrics is False
+
+
+def test_update_model_group_settings(
+    indico, org_annotate_model_group
+):
+    client = IndicoClient()
+    model_training_options = {
+        "use_autolabeled_data" : True,
+        "use_partial_data" : True
+    }
+    result = client.call(
+        UpdateModelGroupSettings(model_group_id=org_annotate_model_group.id, model_training_options=model_training_options)
+    )
+    assert json.loads(result.model_training_options) == {'use_autolabeled_data': True, 'use_partial_data': True}

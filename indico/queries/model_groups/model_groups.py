@@ -7,7 +7,7 @@ from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound
 from indico.queries.workflow_components import AddModelGroupComponent
 from indico.types.jobs import Job
-from indico.types.model import Model
+from indico.types.model import Model, ModelOptions
 from indico.types.model_group import ModelGroup
 from indico.types.utils import cc_to_snake
 
@@ -235,4 +235,51 @@ class ModelGroupPredict(RequestChain):
 
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
+        )
+
+
+class UpdateModelGroupSettings(GraphQLRequest):
+    """
+    Updates an existing model group component in the platform.
+
+    Args:
+        model_group_id (int): the id of the model group to update settings
+        model_training_options (dict): model training options to use when training model
+    """
+
+    query = """
+        mutation updateModelGroup($modelGroupId: Int!, $modelTrainingOptions: JSONString) {
+            updateModelGroupSettings(
+                modelGroupId: $modelGroupId
+                modelTrainingOptions: $modelTrainingOptions
+            ) {
+                modelOptions {
+                    id
+                    modelTrainingOptions
+                }
+            }
+        }
+    """
+
+    def __init__(
+        self,
+        model_group_id: int,
+        model_training_options: dict = None,
+    ):
+        if model_training_options:
+            model_training_options = json.dumps(model_training_options)
+
+        super().__init__(
+            self.query,
+            variables={
+                "modelGroupId": model_group_id,
+                "modelTrainingOptions": model_training_options,
+            },
+        )
+
+    def process_response(self, response):
+        return ModelOptions(
+            **super().process_response(response)["updateModelGroupSettings"][
+                "modelOptions"
+            ]
         )

@@ -29,3 +29,16 @@ class Model(BaseType):
     id: int
     status: str
     training_progress: TrainingProgress
+
+
+class ModelOptions(BaseType):
+    """
+    Model Options in the Indico Platform.
+
+    Attributes:
+        id (int): The model options id
+        model_training_options (str): JSONString representation of the model training options specified
+    """
+
+    id: int
+    model_training_options: str
