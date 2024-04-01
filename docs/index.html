@@ -28,7 +28,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search"  style="background: linear-gradient(to right top,#2c4658,#2f5f76,#2b7992,#2094ad,#04b1c6)" >
             <a href="#" class="icon icon-home"> Indico Python Client
-            <img src="_static/logo-white.png" class="logo" alt="Logo"/>
+            <img src="_static/logo-blue-bkgd.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -41,14 +41,10 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto-review.html">Auto Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
@@ -66,7 +62,10 @@
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blueprints.html">Blueprints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dataset-type.html">Dataset Types</a></li>
@@ -74,8 +73,11 @@
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blueprint-types.html">Blueprint Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-types.html">Workflow Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration-types.html">Integration Types</a></li>
 </ul>
 
         </div>
@@ -103,6 +105,7 @@
            <div itemprop="articleBody">
              
   <section id="indicoio-python-client-library">
+<h1>Note: As of February 1st this documentation will no longer be updated. Please <a href="https://developer.indicodata.ai/">click here</a> for our new documentation.</h1>
 <h1>indicoio Python Client Library<a class="headerlink" href="#indicoio-python-client-library" title="Permalink to this headline"></a></h1>
 <section id="user-guide">
 <h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline"></a></h2>
@@ -110,14 +113,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Key Concepts and Terminology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract-intro.html">OCR With DocumentExtraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="docextract_settings.html">DocumentExtraction Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_predictions.html">Generating Model Predictions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-intro.html">Workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="review-intro.html">Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auto-review.html">Auto Review</a></li>
 <li class="toctree-l1"><a class="reference internal" href="object-detection.html">Object Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migration.html">Migrating Client Library Scripts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 </div>
@@ -141,7 +140,10 @@
 <li class="toctree-l1"><a class="reference internal" href="graphql_queries.html">Common GraphQL Queries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_metrics.html">User Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics.html">Workflow Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow_components.html">Workflow Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blueprints.html">Blueprints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report.html">Document Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration.html">Integration</a></li>
 </ul>
 </div>
 <p><strong>Types</strong></p>
@@ -152,8 +154,11 @@
 <li class="toctree-l1"><a class="reference internal" href="model-group-type.html">Model Group Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model-type.html">Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user-metrics-types.html">User Metrics Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blueprint-types.html">Blueprint Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow-types.html">Workflow Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow-metrics-types.html">Workflow Metrics Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="document_report_types.html">Document Report Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="integration-types.html">Integration Types</a></li>
 </ul>
 </div>
 </section>

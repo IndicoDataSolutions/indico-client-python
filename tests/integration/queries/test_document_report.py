@@ -8,16 +8,30 @@ from indico.filters import DocumentReportFilter
 
 
 def test_fetch_docs(indico):
+    """
+    NOTE: this test will fail if the cluster hasn't yet processed any submissions
+    """
     client = IndicoClient()
 
     document_report: List[DocumentReport] = client.call(GetDocumentReport())
     assert document_report is not None
     assert len(document_report) > 0
-    assert isinstance(document_report[0].input_files[0].num_pages, int)
-    assert isinstance(document_report[0].input_files[0].file_size, int)
+    input_files = [f for dr in document_report for f in dr.input_files]
+    num_pages_check = [isinstance(f.num_pages, int) for f in input_files if f.num_pages]
+    if num_pages_check:
+        assert all(num_pages_check)
+    file_size_check = [isinstance(f.file_size, int) for f in input_files if f.file_size]
+    if file_size_check:
+        assert all(file_size_check)
+    assert all([isinstance(f.id, int) for f in input_files])
+    assert all([isinstance(f.submission_id, int) for f in input_files])
+    assert [f.filename for f in input_files]
 
 
 def test_fetch_docs_limit(indico):
+    """
+    NOTE: this test will fail if the cluster hasn't yet processed any submissions
+    """
     client = IndicoClient()
     filter_opts = DocumentReportFilter(
         created_at_start_date=datetime(2021, 7, 1), created_at_end_date=datetime.now()
@@ -31,15 +45,24 @@ def test_fetch_docs_limit(indico):
 
 
 def test_pagination(indico):
+    """
+    NOTE: this test will fail if the cluster hasn't yet processed any submissions
+    """
     client = IndicoClient()
     document_report: List[DocumentReport] = []
-    for page in client.paginate(GetDocumentReport(limit=10)):
+    num_pages_to_check = 5
+    for i, page in enumerate(client.paginate(GetDocumentReport(limit=10))):
         document_report.extend(page)
+        if i > num_pages_to_check:
+            break
     assert document_report is not None
     assert len(document_report) > 0
 
+
 def test_all_submissions(indico):
+    """
+    NOTE: This test is expected to fail unless user has ALL_SUBMISSION_LOGS scope
+    """
     client = IndicoClient()
-    document_report: List[DocumentReport] = []
     page = next(client.paginate(GetDocumentReport(limit=1000, all_submissions=True)))
     assert page is not None

@@ -1,7 +1,6 @@
 from indico import IndicoClient, IndicoConfig
 from indico.filters import SubmissionFilter, or_
 from indico.queries import (
-    GenerateSubmissionResult,
     JobStatus,
     ListSubmissions,
     RetrieveStorageObject,
@@ -15,7 +14,7 @@ from indico.queries import (
 
 # Create an Indico API client
 my_config = IndicoConfig(
-    host="app.indico.io", api_token_path="./path/to/indico_api_token.txt"
+    host="try.indico.io", api_token_path="./path/to/indico_api_token.txt"
 )
 client = IndicoClient(config=my_config)
 
@@ -31,34 +30,26 @@ Then mark the submission has having been retrieved
 submission_ids = client.call(
     WorkflowSubmission(workflow_id=workflow_id, files=["./path_to_doc.pdf"])
 )
-submission_id = submission_ids[0]
 
-result_url = client.call(SubmissionResult(submission_id, wait=True))
-result = client.call(RetrieveStorageObject(result_url.result))
+job = client.call(SubmissionResult(submission_ids[0], wait=True))
+result = client.call(RetrieveStorageObject(job.result))
 print(result)
-
-client.call(UpdateSubmission(submission_id, retrieved=True))
+client.call(UpdateSubmission(submission_ids[0], retrieved=True))
 
 """
 Example 2
 List all submissions that are COMPLETE or FAILED
-Generate submission results for these
-Delay gathering the results until required
+Retrieve submission results for all COMPLETE and check errors on any FAILED
 """
 sub_filter = or_(SubmissionFilter(status="COMPLETE"), SubmissionFilter(status="FAILED"))
 submissions = client.call(ListSubmissions(filters=sub_filter))
 
-result_files = {
-    submission: client.call(GenerateSubmissionResult(submission))
-    for submission in submissions
-}
-
-# Do other fun things...
-
-for submission, result_file_job in result_files.items():
-    result_url = client.call(JobStatus(id=result_file_job.id, wait=True))
-    result = client.call(RetrieveStorageObject(result_url.result))
-    print(f"Submission {submission.id} has result:\n{result}")
+for submission in submissions:
+    if submission.status == "COMPLETE":
+        result = client.call(RetrieveStorageObject(submission.result_file))
+        print(f"Submission {submission.id} has result:\n{result}")
+    else:
+        print(f"Submission {submission.id} failed:\n{submission.errors}")
 
 
 """
@@ -70,7 +61,7 @@ submissions = client.call(
         workflow_id=workflow_id, urls=["https://my_url.com/img.png"]
     )
 )
-submission = submission[0]
+submission = submissions[0]
 
 result_url = client.call(SubmissionResult(submission.id, wait=True))
 result = client.call(RetrieveStorageObject(result_url.result))
@@ -89,7 +80,6 @@ submission_ids = client.call(
 )
 submissions = client.call(WaitForSubmissions(submission_ids))
 submission = submissions[0]
-raw_result = client.call(RetrieveStorageObject(submission.result_file))
 raw_result = client.call(RetrieveStorageObject(submission.result_file))
 changes = raw_result["results"]["document"]["results"]
 rejected = False
@@ -112,6 +102,7 @@ Use the client paginator to retrieve all PROCESSING submissions
 Without the paginator, the hard limit is 1000
 """
 sub_filter = SubmissionFilter(status="PROCESSING")
-for submission in client.paginate(ListSubmissions(filters=sub_filter)):
-    print(f"Submission {submission.id}")
-    # do other cool things
+for submission_page in client.paginate(ListSubmissions(filters=sub_filter)):
+    for submission in submission_page:
+        print(f"Submission {submission.id}")
+        # do other cool things

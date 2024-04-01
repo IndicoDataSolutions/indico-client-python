@@ -1,11 +1,12 @@
 import io
 import json
-from typing import List, Union, Dict
+import tempfile
+from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, Debouncer
+from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoError, IndicoInputError
-from indico.queries.storage import UploadDocument
-from indico.types import Job, Submission, Workflow, SUBMISSION_RESULT_VERSIONS
+from indico.queries.storage import UploadBatched, UploadDocument
+from indico.types import SUBMISSION_RESULT_VERSIONS, Job, Submission, Workflow
 from indico.types.utils import cc_to_snake, snake_to_cc
 
 
@@ -32,6 +33,7 @@ class ListWorkflows(GraphQLRequest):
                     autoReviewEnabled
                     createdAt
                     createdBy
+                    submissionRunnable
                 components {
                         id
                         componentType
@@ -51,13 +53,14 @@ class ListWorkflows(GraphQLRequest):
                                       name
                                       taskType
                                       questionnaireId
+                                      classNames
                                       selectedModel{
                                         id
                                       }
                                 }
-                            
+
                         }
-                
+
                     }
                   componentLinks{
                     id
@@ -66,7 +69,7 @@ class ListWorkflows(GraphQLRequest):
                     filters{
                       classes
                     }
-                    
+
                   }
                 }
             }
@@ -74,11 +77,19 @@ class ListWorkflows(GraphQLRequest):
     """
 
     def __init__(
-            self, *, dataset_ids: List[int] = None, workflow_ids: List[int] = None, limit = 100
+        self,
+        *,
+        dataset_ids: List[int] = None,
+        workflow_ids: List[int] = None,
+        limit=100,
     ):
         super().__init__(
             self.query,
-            variables={"datasetIds": dataset_ids, "workflowIds": workflow_ids, "limit": limit},
+            variables={
+                "datasetIds": dataset_ids,
+                "workflowIds": workflow_ids,
+                "limit": limit,
+            },
         )
 
     def process_response(self, response) -> List[Workflow]:
@@ -153,10 +164,10 @@ class UpdateWorkflowSettings(RequestChain):
     """
 
     def __init__(
-            self,
-            workflow: Union[Workflow, int],
-            enable_review: bool = None,
-            enable_auto_review: bool = None,
+        self,
+        workflow: Union[Workflow, int],
+        enable_review: bool = None,
+        enable_auto_review: bool = None,
     ):
         self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
         if enable_review is None and enable_auto_review is None:
@@ -217,9 +228,9 @@ class _WorkflowSubmission(GraphQLRequest):
     }
 
     def __init__(
-            self,
-            detailed_response: bool,
-            **kwargs,
+        self,
+        detailed_response: bool,
+        **kwargs,
     ):
         self.workflow_id = kwargs["workflow_id"]
 
@@ -271,7 +282,7 @@ class _WorkflowUrlSubmission(_WorkflowSubmission):
 class WorkflowSubmission(RequestChain):
     f"""
     Submit files to a workflow for processing.
-    One of `files` or `urls` is required.
+    One of `files`, `urls`, `stream`, or `text` is required.
 
     Args:
         workflow_id (int): Id of workflow to submit files to
@@ -284,8 +295,10 @@ class WorkflowSubmission(RequestChain):
                 {SUBMISSION_RESULT_VERSIONS}
             If bundle is enabled, this must be version TWO or later.
         streams (Dict[str, io.BufferedIOBase]): List of filename keys mapped to streams
-            for upload. Similar to files but mutually exclusive with files. 
+            for upload. Similar to files but mutually exclusive with files.
             Can take for example: io.BufferedReader, io.BinaryIO, or io.BytesIO.
+        text (str, optional): text to submit. Note: submission may still go through OCR.
+        batch_size (int, optional): If submitting files, specifies the amount of files to submit in a single batch. Defaults to 10. A call with a batch exceeding 500mb total will fail with an error.
 
     Returns:
         List[int]: If `submission`, these will be submission ids.
@@ -296,14 +309,16 @@ class WorkflowSubmission(RequestChain):
     detailed_response = False
 
     def __init__(
-            self,
-            workflow_id: int,
-            files: List[str] = None,
-            urls: List[str] = None,
-            submission: bool = True,
-            bundle: bool = False,
-            result_version: str = None,
-            streams: Dict[str, io.BufferedIOBase] = None
+        self,
+        workflow_id: int,
+        files: List[str] = None,
+        urls: List[str] = None,
+        submission: bool = True,
+        bundle: bool = False,
+        result_version: str = None,
+        streams: Dict[str, io.BufferedIOBase] = None,
+        text: str = "",
+        batch_size: int = 10,
     ):
         self.workflow_id = workflow_id
         self.files = files
@@ -317,18 +332,30 @@ class WorkflowSubmission(RequestChain):
             self.has_streams = True
         else:
             self.streams = None
+        self.text = text
+        self.batch_size = batch_size
         if not submission:
             raise IndicoInputError("This option is deprecated and no longer supported.")
-        if not self.files and not self.urls and not self.has_streams:
-            raise IndicoInputError("One of 'files', 'streams', or 'urls' must be specified")
-        elif self.files and self.has_streams:
-            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified.")
-        elif (self.files or self.has_streams) and self.urls:
-            raise IndicoInputError("Only one of 'files' or 'streams' or 'urls' may be specified")
+        if not self.files and not self.urls and not self.has_streams and not self.text:
+            raise IndicoInputError(
+                "One of 'files', 'streams', 'urls', or 'text' must be specified"
+            )
+        elif (self.files or self.urls or self.text) and self.has_streams:
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified."
+            )
+        elif (self.files or self.text) and self.urls:
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified"
+            )
+        elif self.files and self.text:
+            raise IndicoInputError(
+                "Only one of 'files' or 'streams', 'urls', or 'text' may be specified"
+            )
 
     def requests(self):
         if self.files:
-            yield UploadDocument(files=self.files)
+            yield UploadBatched(files=self.files, batch_size=self.batch_size)
             yield _WorkflowSubmission(
                 self.detailed_response,
                 workflow_id=self.workflow_id,
@@ -353,6 +380,21 @@ class WorkflowSubmission(RequestChain):
                 bundle=self.bundle,
                 result_version=self.result_version,
             )
+        elif self.text:
+            temp = tempfile.NamedTemporaryFile(mode="w+", suffix=".txt")
+            try:
+                temp.write(self.text)
+                temp.seek(0)
+                yield UploadDocument(files=[temp.name])
+                yield _WorkflowSubmission(
+                    self.detailed_response,
+                    workflow_id=self.workflow_id,
+                    files=self.previous,
+                    bundle=self.bundle,
+                    result_version=self.result_version,
+                )
+            finally:
+                temp.close()
 
 
 class WorkflowSubmissionDetailed(WorkflowSubmission):
@@ -379,12 +421,12 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
     detailed_response = True
 
     def __init__(
-            self,
-            workflow_id: int,
-            files: List[str] = None,
-            urls: List[str] = None,
-            bundle: bool = False,
-            result_version: str = None,
+        self,
+        workflow_id: int,
+        files: List[str] = None,
+        urls: List[str] = None,
+        bundle: bool = False,
+        result_version: str = None,
     ):
         super().__init__(
             workflow_id,
@@ -444,11 +486,9 @@ class AddDataToWorkflow(RequestChain):
         yield _AddDataToWorkflow(self.workflow_id)
 
         if self.wait:
-            debouncer = Debouncer()
-
             while self.previous.status != "COMPLETE":
                 yield GetWorkflow(workflow_id=self.workflow_id)
-                debouncer.backoff()
+                yield Delay()
 
 
 class CreateWorkflow(GraphQLRequest):
@@ -460,6 +500,7 @@ class CreateWorkflow(GraphQLRequest):
         name(str): name for the workflow
 
     """
+
     query = """  mutation createWorkflow($datasetId: Int!, $name: String!) {
     createWorkflow(datasetId: $datasetId, name: $name) {
            workflow {
@@ -468,26 +509,27 @@ class CreateWorkflow(GraphQLRequest):
                     status
                     reviewEnabled
                     autoReviewEnabled
+                    submissionRunnable
                 components {
                         id
                         componentType
                         reviewable
                         filteredClasses
-                        
+
                         ... on ModelGroupComponent {
                             taskType
                             modelType
                         }
-                
+
                     }
                   componentLinks{
                     id
                     headComponentId
                     tailComponentId
-                    filters{
+                    filters {
                       classes
                     }
-                    
+
                   }
                 }
     }
@@ -497,8 +539,7 @@ class CreateWorkflow(GraphQLRequest):
     def __init__(self, dataset_id: int, name: str):
         super().__init__(
             self.query,
-            variables={"datasetId": dataset_id,
-                       "name": name},
+            variables={"datasetId": dataset_id, "name": name},
         )
 
     def process_response(self, response) -> Workflow:
@@ -506,3 +547,26 @@ class CreateWorkflow(GraphQLRequest):
             **super().process_response(response)["createWorkflow"]["workflow"]
         )
 
+
+class DeleteWorkflow(GraphQLRequest):
+    """
+    Mutation to delete workflow given workflow id. Note that this operation includes deleting
+    all components and models associated with this workflow.
+
+    Args:
+        workflow_id(int): id of workflow to delete
+    """
+
+    query = """
+        mutation deleteWorkflow($workflowId: Int!){
+            deleteWorkflow(workflowId: $workflowId){
+                success
+            }
+        }
+    """
+
+    def __init__(self, workflow_id: int):
+        super().__init__(self.query, variables={"workflowId": workflow_id})
+
+    def process_response(self, response) -> bool:
+        return super().process_response(response)["deleteWorkflow"]["success"]

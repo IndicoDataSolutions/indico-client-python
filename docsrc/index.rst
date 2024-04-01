@@ -1,24 +1,6 @@
 ******************************
-indicoio Python Client Library
+Indico Python Client Library
 ******************************
-
-User Guide
-==========
-
-.. toctree::
-    :maxdepth: 1
-
-    intro
-    concepts
-    docextract-intro
-    docextract_settings
-    model_predictions
-    workflow-intro
-    review-intro
-    auto-review
-    object-detection
-    migration
-    examples
 
 Reference
 =========
@@ -28,31 +10,36 @@ Reference
 .. toctree::
     :maxdepth: 2
 
+    blueprints
     config
     client
-    docextract
     datasets
-    model_groups
-    jobs
-    submissions
-    storage
-    workflow
+    docextract
+    document-report
     exports
     filters
-    graphql_queries
-    user_metrics
+    integration
+    model-groups
+    jobs
+    storage
+    submissions
+    user-metrics
+    workflow
+    workflow-components
     workflow-metrics
-    document_report
 
 **Types**
 
 .. toctree::
     :maxdepth: 2
 
-    dataset-type
-    jobs-type
-    model-group-type
-    model-type
+    blueprint-types
+    dataset-types
+    document-report-types
+    integration-types
+    job-types
+    model-group-types
+    model-types
     user-metrics-types
+    workflow-types
     workflow-metrics-types
-    document_report_types

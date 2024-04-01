@@ -28,6 +28,7 @@ class ModelGroup(BaseType):
     selected_model: Model
     task_type: str
     questionnaire_id: int
+    class_names: List[str]
 
 
 class ModelTaskType(Enum):
@@ -35,6 +36,10 @@ class ModelTaskType(Enum):
     CLASSIFICATION = 1
     FORM_EXTRACTION = 2
     OBJECT_DETECTION = 3
+    CLASSIFICATION_MULTIPLE = 4
+    REGRESSION = 5
+    ANNOTATION = 6
+    CLASSIFICATION_UNBUNDLING = 7
 
 
 class ModelType(Enum):

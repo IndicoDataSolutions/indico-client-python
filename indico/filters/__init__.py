@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, List, Mapping, Union
 
 from indico.errors import IndicoInputError
 
@@ -27,10 +27,32 @@ class Filter(dict):
             raise IndicoInputError(f"One of {self.__options__} must be specified")
         self.update(and_(kwargs) if len(kwargs) > 1 else kwargs)
 
+
+class DatasetFilter(Filter):
+    """
+    Create a Filter when querying for Datasets via datasetsPage.
+
+    Args:
+        name (str): dataset name by which to filter
+    Returns:
+        dict containing query filter parameters
+    """
+
+    __options__ = ("name",)
+
+    def __init__(self, name: str):
+        super().__init__(name=name)
+
+
 class SubmissionReviewFilter(Filter):
     __options__ = ("rejected", "created_by", "review_type")
-    
-    def __init__(self, rejected: bool = None, created_by: int = None, review_type: str = None):
+
+    def __init__(
+        self,
+        rejected: Union[bool, None] = None,
+        created_by: Union[int, None] = None,
+        review_type: Union[str, None] = None,
+    ):
         kwargs = {
             "rejected": rejected,
             "createdBy": created_by,
@@ -39,34 +61,111 @@ class SubmissionReviewFilter(Filter):
 
         super().__init__(**kwargs)
 
+
+class DateRangeFilter(dict):
+    """
+    Create a Filter when querying for Submissions within a certain date range
+    Args:
+        filter_from (str): A valid string representation of a datetime for start date to filter
+        filter_to (str): A valid string representation of a datetime for end date to filter
+    """
+
+    def __init__(
+        self, filter_from: Union[str, None] = None, filter_to: Union[str, None] = None
+    ):
+        kwargs = {"from": filter_from, "to": filter_to}
+        self.update(kwargs)
+
+
 class SubmissionFilter(Filter):
     """
     Create a Filter when querying for WorkflowSubmissions.
 
     Args:
+        file_type (list): submissions with a file type in this list. Options:
+            [CSV, PDF, EXCEL, DOC, DOCX, PPT, PPTX, PNG, JPG, TIFF, TXT, RTF, XLS, XLSX, UNKNOWN, MSG, EML]
         input_filename (str): submissions with input file names containing this string
         status (str): submissions in this status. Options:
             [PROCESSING, PENDING_REVIEW, PENDING_ADMIN_REVIEW, COMPLETE, FAILED]
-        retrieved(bool): Filter submissions on the retrieved flag
+        retrieved (bool): submissions that have been retrieved (True) or not (False)
+        reviews (SubmissionReviewFilter): submissions whose completed reviews match this review filter
+        review_in_progress (bool): submissions where a review is in progress (True) or not (False)
+        files_deleted (bool): submissions that have had their internal files removed (True) or not (False)
+        created_at (DateRangeFilter): submissions created during given time range
+        updated_at (DateRangeFilter): submissions updated during given time range
     Returns:
         dict containing query filter parameters
     """
 
-    __options__ = ("input_filename", "status", "retrieved")
+    __options__ = (
+        "file_type",
+        "input_filename",
+        "status",
+        "retrieved",
+        "reviews",
+        "review_in_progress",
+        "files_deleted",
+        "created_at",
+        "updated_at",
+    )
 
     def __init__(
-        self, 
-        input_filename: str = None, 
-        status: str = None, 
-        retrieved: bool = None, 
-        reviews: SubmissionReviewFilter = None
+        self,
+        file_type: Union[List[str], None] = None,
+        input_filename: Union[str, None] = None,
+        status: Union[str, None] = None,
+        retrieved: Union[bool, None] = None,
+        reviews: Union[SubmissionReviewFilter, None] = None,
+        review_in_progress: Union[bool, None] = None,
+        files_deleted: Union[bool, None] = None,
+        created_at: Union[DateRangeFilter, None] = None,
+        updated_at: Union[DateRangeFilter, None] = None,
     ):
         kwargs = {
+            "filetype": file_type,
             "inputFilename": input_filename,
             "status": status.upper() if status else status,
             "retrieved": retrieved,
             "reviews": reviews,
+            "reviewInProgress": review_in_progress,
+            "filesDeleted": files_deleted,
+            "createdAt": created_at,
+            "updatedAt": updated_at,
         }
+
+        super().__init__(**kwargs)
+
+
+class ModelGroupExampleFilter(Filter):
+    """
+    Create a Filter when querying for examples associated with model groups.
+
+    Args:
+        file_name (str): examples with input file names containing this string
+        partial (bool): examples that are or are not partially labeled
+        status (str): submissions in this status. Options:
+            [COMPLETE, INCOMPLETE]
+        text_search (bool): examples that contain this substring in their text
+    Returns:
+        dict containing query filter parameters
+    """
+
+    # TODO: extend to support full filter list
+    __options__ = ("file_name", "partial", "status", "text_search")
+
+    def __init__(
+        self,
+        file_name: Union[str, None] = None,
+        partial: Union[bool, None] = None,
+        status: Union[str, None] = None,
+        text_search: Union[str, None] = None,
+    ):
+        kwargs = {
+            "fileName": file_name,
+            "partial": partial,
+            "textSearch": text_search,
+        }
+        kwargs["status"] = status.upper() if status else None
 
         super().__init__(**kwargs)
 
@@ -81,15 +180,16 @@ class UserMetricsFilter(Filter):
     Returns:
         dict containing query filter parameters
     """
+
     __options__ = ("user_id", "user_email")
 
-    def __init__(self, user_id: int = None, user_email: str = None):
-        kwargs = {
-            "userId": user_id,
-            "userEmail": user_email
-        }
+    def __init__(
+        self, user_id: Union[int, None] = None, user_email: Union[str, None] = None
+    ):
+        kwargs = {"userId": user_id, "userEmail": user_email}
 
         super().__init__(**kwargs)
+
 
 class DocumentReportFilter(Filter):
     """
@@ -101,34 +201,54 @@ class DocumentReportFilter(Filter):
         status (str): submission status
         created_at_start_date (datetime): earliest creation date
         created_at_end_date (datetime): latest creation date
-        updated_at_start_date (datetime): earliest update ddate
+        updated_at_start_date (datetime): earliest update date
         updated_at_end_date (datetime): latest update date
     Returns:
         dict containing query filter parameters
     """
-    __options__ = ("workflow_id", "submission_id", "status", "created_at_start_date", "created_at_end_date",
-                   "updated_at_start_date", "updated_at_end_date")
 
-    def __init__(self, submission_id: int = None, workflow_id: int = None, status: str = None, created_at_start_date: datetime = None,
-                 created_at_end_date: datetime = None,
-                 updated_at_start_date: datetime = None, updated_at_end_date: datetime = None
-                 ):
+    __options__ = (
+        "workflow_id",
+        "submission_id",
+        "status",
+        "created_at_start_date",
+        "created_at_end_date",
+        "updated_at_start_date",
+        "updated_at_end_date",
+    )
 
-        kwargs = {
-            "workflowId": workflow_id,
-            "id": submission_id,
-            "status": status
-
-
-        }
-        if created_at_start_date is not None and created_at_end_date is not None:
+    def __init__(
+        self,
+        submission_id: Union[int, None] = None,
+        workflow_id: Union[int, None] = None,
+        status: Union[str, None] = None,
+        created_at_start_date: Union[datetime.datetime, None] = None,
+        created_at_end_date: Union[datetime.datetime, None] = None,
+        updated_at_start_date: Union[datetime.datetime, None] = None,
+        updated_at_end_date: Union[datetime.datetime, None] = None,
+    ):
+        kwargs = {"workflowId": workflow_id, "id": submission_id, "status": status}
+        if created_at_end_date and not created_at_start_date:
+            raise IndicoInputError("Must specify created_at_start_date")
+        if created_at_start_date:
             kwargs["createdAt"] = {
-                "from": created_at_start_date.strftime('%Y-%m-%d') if created_at_start_date is not None else "",
-                "to": created_at_end_date.strftime('%Y-%m-%d') if created_at_end_date is not None else "",
+                "from": created_at_start_date.strftime("%Y-%m-%d"),
+                "to": (
+                    created_at_end_date.strftime("%Y-%m-%d")
+                    if created_at_end_date is not None
+                    else datetime.datetime.now().strftime("%Y-%m-%d")
+                ),
             }
-        if updated_at_start_date is not None and updated_at_end_date is not None:
+
+        if updated_at_end_date and not updated_at_start_date:
+            raise IndicoInputError("Must specify updated_at_start_date")
+        if updated_at_start_date is not None:
             kwargs["updatedAt"] = {
-                "from": updated_at_start_date.strftime('%Y-%m-%d') if updated_at_start_date is not None else "",
-                "to": updated_at_end_date.strftime('%Y-%m-%d') if updated_at_end_date is not None else "",
+                "from": updated_at_start_date.strftime("%Y-%m-%d"),
+                "to": (
+                    updated_at_end_date.strftime("%Y-%m-%d")
+                    if updated_at_end_date is not None
+                    else datetime.datetime.now().strftime("%Y-%m-%d")
+                ),
             }
         super().__init__(**kwargs)

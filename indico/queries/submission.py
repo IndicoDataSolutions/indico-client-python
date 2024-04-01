@@ -1,15 +1,15 @@
 import json
-import time
 from functools import partial
 from operator import eq, ne
 from typing import Dict, List, Union
 
-from indico.client.request import GraphQLRequest, RequestChain, PagedRequest
+from indico.client.request import Delay, GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
-from indico.types import Job, Submission
+from indico.types import Job, Submission, SubmissionReviewFull
 from indico.types.submission import VALID_SUBMISSION_STATUSES
+from indico.types.utils import Timer
 
 
 class ListSubmissions(PagedRequest):
@@ -32,49 +32,91 @@ class ListSubmissions(PagedRequest):
 
     query = """
         query ListSubmissions(
-            $submissionIds: [Int],
-            $workflowIds: [Int],
-            $filters: SubmissionFilter,
-            $limit: Int,
-            $orderBy: SUBMISSION_COLUMN_ENUM,
-            $desc: Boolean,
+            $submissionIds: [Int]
+            $workflowIds: [Int]
+            $filters: SubmissionFilter
+            $limit: Int
+            $orderBy: SUBMISSION_COLUMN_ENUM
+            $desc: Boolean
             $after: Int
-
-        ){
+            ) {
             submissions(
-                submissionIds: $submissionIds,
-                workflowIds: $workflowIds,
-                filters: $filters,
+                submissionIds: $submissionIds
+                workflowIds: $workflowIds
+                filters: $filters
                 limit: $limit
-                orderBy: $orderBy,
-                desc: $desc,
+                orderBy: $orderBy
+                desc: $desc
                 after: $after
-
-            ){
+            ) {
                 submissions {
+                id
+                datasetId
+                workflowId
+                status
+                createdAt
+                updatedAt
+                createdBy
+                updatedBy
+                completedAt
+                errors
+                filesDeleted
+                inputFiles {
                     id
-                    datasetId
-                    workflowId
-                    status
-                    inputFile
-                    inputFilename
-                    resultFile
-                    deleted
-                    retrieved
-                    errors
-                    reviews {
-                        id
-                        createdAt
-                        createdBy
-                        completedAt
-                        rejected
-                        reviewType
-                        notes
-                    }
+                    filepath
+                    filename
+                    filetype
+                    submissionId
+                    fileSize
+                    numPages
+                }
+                inputFile
+                inputFilename
+                resultFile
+                outputFiles {
+                    id
+                    filepath
+                    submissionId
+                    componentId
+                    createdAt
+                }
+                retrieved
+                autoReview {
+                    id
+                    submissionId
+                    createdAt
+                    createdBy
+                    startedAt
+                    completedAt
+                    rejected
+                    reviewType
+                    notes
+                }
+                retries {
+                    id
+                    submissionId
+                    previousErrors
+                    previousStatus
+                    retryErrors
+                }
+                reviews {
+                    id
+                    submissionId
+                    createdAt
+                    createdBy
+                    startedAt
+                    completedAt
+                    rejected
+                    reviewType
+                    notes
+                }
+                reviewInProgress
                 }
                 pageInfo {
-                    endCursor
-                    hasNextPage
+                startCursor
+                endCursor
+                hasNextPage
+                aggregateCount
                 }
             }
         }
@@ -127,6 +169,14 @@ class GetSubmission(GraphQLRequest):
                 datasetId
                 workflowId
                 status
+                inputFiles {
+                    id
+                    filename
+                    filepath
+                    filetype
+                    fileSize
+                    numPages
+                }
                 inputFile
                 inputFilename
                 resultFile
@@ -170,6 +220,14 @@ class WaitForSubmissions(RequestChain):
                     datasetId
                     workflowId
                     status
+                    inputFiles {
+                        id
+                        filename
+                        filepath
+                        filetype
+                        fileSize
+                        numPages
+                    }
                     inputFile
                     inputFilename
                     resultFile
@@ -202,17 +260,13 @@ class WaitForSubmissions(RequestChain):
         )
 
     def requests(self) -> List[Submission]:
-        yield self.status_getter()
-        curr_time = 0
-        while (
-            not all(self.status_check(s.status) for s in self.previous)
-            and curr_time <= self.timeout
-        ):
+        timer = Timer(self.timeout)
+
+        while True:
+            timer.check()
             yield self.status_getter()
-            time.sleep(1)
-            curr_time += 1
-        if not all(self.status_check(s.status) for s in self.previous):
-            raise IndicoTimeoutError(curr_time)
+            if all(self.status_check(s.status) for s in self.previous):
+                break
 
 
 class UpdateSubmission(GraphQLRequest):
@@ -234,6 +288,14 @@ class UpdateSubmission(GraphQLRequest):
                 datasetId
                 workflowId
                 status
+                inputFiles {
+                    id
+                    filename
+                    filepath
+                    filetype
+                    fileSize
+                    numPages
+                }
                 inputFile
                 inputFilename
                 resultFile
@@ -295,6 +357,7 @@ class SubmissionResult(RequestChain):
             and wait for the result file to be generated. Defaults to False
         timeout (int or float, optional): Maximum number of seconds to wait before
             timing out. Ignored if not `wait`. Defaults to 30
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Job: A Job that can be watched for results
@@ -315,12 +378,14 @@ class SubmissionResult(RequestChain):
         check_status: str = None,
         wait: bool = False,
         timeout: Union[int, float] = 30,
+        request_interval: Union[int, float] = 5,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id
         )
         self.wait = wait
         self.timeout = timeout
+        self.request_interval = request_interval
         if check_status and check_status.upper() not in VALID_SUBMISSION_STATUSES:
             raise IndicoInputError(
                 f"{check_status} is not one of valid submission statuses: "
@@ -333,18 +398,16 @@ class SubmissionResult(RequestChain):
         )
 
     def requests(self) -> Union[Job, str]:
+        timer = Timer(self.timeout)
+        timer.check()
         yield GetSubmission(self.submission_id)
         if self.wait:
-            curr_time = 0
-            while (
-                not self.status_check(self.previous.status)
-                and curr_time <= self.timeout
-            ):
+            while not self.status_check(self.previous.status):
+                timer.check()
                 yield GetSubmission(self.submission_id)
-                time.sleep(1)
-                curr_time += 1
+                yield Delay(seconds=self.request_interval)
             if not self.status_check(self.previous.status):
-                raise IndicoTimeoutError(curr_time)
+                raise IndicoTimeoutError(timer.elapsed)
         elif not self.status_check(self.previous.status):
             raise IndicoInputError(
                 f"Submission {self.submission_id} does not meet status requirements"
@@ -363,7 +426,7 @@ class SubmitReview(GraphQLRequest):
         submission_id (int): Id of submission to submit reviewEnabled for
 
     Options:
-        changes (dict or JSONString): changes to make to raw predictions
+        changes (dict, list, or JSONString): changes to make to raw predictions
 
         rejected (boolean): reject the predictions and place the submission
             in the review queue. Must be True if $changes not provided
@@ -393,14 +456,14 @@ class SubmitReview(GraphQLRequest):
     def __init__(
         self,
         submission: Union[int, Submission],
-        changes: Dict = None,
+        changes: Dict | List = None,
         rejected: bool = False,
         force_complete: bool = None,
     ):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
             raise IndicoInputError("Must provide changes or reject=True")
-        elif changes and isinstance(changes, dict):
+        elif changes and isinstance(changes, (dict, list)):
             changes = json.dumps(changes)
         _vars = {
             "submissionId": submission_id,
@@ -427,6 +490,49 @@ class SubmitReview(GraphQLRequest):
         return Job(id=response["jobId"])
 
 
+class GetReviews(GraphQLRequest):
+    """
+    Given a submission Id, return all the full Review objects back with changes
+
+    Args:
+        submission_id (int): Id of submission to submit reviewEnabled for
+    Options:
+
+    Returns:
+        A list of Review objects with changes
+    """
+
+    query = """
+    query GetReview($submissionId: Int!)
+    {
+        submission(id: $submissionId) {
+            id
+            reviews {
+                id
+                submissionId
+                createdAt
+                createdBy
+                startedAt
+                completedAt
+                rejected
+                reviewType
+                notes
+                changes
+            }
+        }
+    }
+    """
+
+    def __init__(self, submission_id: int):
+        super().__init__(self.query, variables={"submissionId": submission_id})
+
+    def process_response(self, response) -> List[SubmissionReviewFull]:
+        return [
+            SubmissionReviewFull(**review)
+            for review in super().process_response(response)["submission"]["reviews"]
+        ]
+
+
 class RetrySubmission(GraphQLRequest):
     """
     Given a list of submission ids, retry those failed submissions.
@@ -437,7 +543,7 @@ class RetrySubmission(GraphQLRequest):
         submission_ids (List[int]): the given submission ids to retry.
     Options:
 
-    Raises: 
+    Raises:
         IndicoInputError
 
     """

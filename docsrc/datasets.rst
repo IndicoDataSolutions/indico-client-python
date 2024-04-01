@@ -8,3 +8,5 @@ Datasets
 .. autoclass:: indico.queries.datasets.GetDatasetFileStatus
 .. autoclass:: indico.queries.datasets.ListDatasets
 .. autoclass:: indico.queries.datasets.DeleteDataset
+.. autoclass:: indico.queries.datasets.AddDatasetFiles
+.. autoclass:: indico.queries.datasets.RemoveDatasetFile

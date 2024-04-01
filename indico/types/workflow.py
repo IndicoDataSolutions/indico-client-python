@@ -11,6 +11,7 @@ class WorkflowComponent(BaseType):
     or predicting with a model group.
 
     """
+
     id: int
     component_type: str
     task_type: str
@@ -26,6 +27,7 @@ class WorkflowComponentLinks(BaseType):
     """
     Represents a link between two components.
     """
+
     id: int
     head_component_id: int
     tail_component_id: int
@@ -35,6 +37,7 @@ class Workflow(BaseType):
     """
     Represents a Workflow in the Indico Data Platform.
     """
+
     id: int
     name: str
     status: str
@@ -44,19 +47,27 @@ class Workflow(BaseType):
     component_links: List[WorkflowComponentLinks]
     created_by: int
     created_at: datetime
-    
+    submission_runnable: bool
+
     def component_by_type(self, component_type: str) -> WorkflowComponent:
         """
         Returns first component available of type specified.
         """
-        return next(component for component in self.components if component.component_type == component_type)
+        return next(
+            component
+            for component in self.components
+            if component.component_type == component_type
+        )
 
     def model_group_by_name(self, name: str) -> WorkflowComponent:
         """
         Returns first model group component of name specified.
         """
-        return next(component for component in self.components if hasattr(component, "model_group")
-                    and component.model_group.name == name)
+        return next(
+            component
+            for component in self.components
+            if hasattr(component, "model_group") and component.model_group.name == name
+        )
 
 
 class LinkedLabelStrategy(Enum):
@@ -65,8 +76,22 @@ class LinkedLabelStrategy(Enum):
 
 
 class LinkedLabelGroup:
-    def __init__(self, name: str, strategy: LinkedLabelStrategy, class_ids: List[int], strategy_settings: dict):
+    def __init__(
+        self,
+        name: str,
+        strategy: LinkedLabelStrategy,
+        class_ids: List[int],
+        strategy_settings: dict,
+    ):
         self.name = name
         self.strategy = strategy
         self.class_ids = class_ids
         self.strategy_settings = strategy_settings
+
+
+class ComponentFamily(Enum):
+    MODEL = 0,
+    FILTER = 1,
+    TRANSFORMER = 2,
+    REVIEW = 3,
+    OUTPUT = 4

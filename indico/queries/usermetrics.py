@@ -26,9 +26,7 @@ class _PagedUserChangelog(BaseType):
 
 class GetUserSummary(GraphQLRequest):
     """
-    Requests summary level information per-date of users in the app.
-    Includes enabled/disabled user counts, names of roles,
-    and number of users assigned to that role.
+    Requests summary-level information of users in the app on a specific date.
 
     Args:
         date (datetime): specific day to summarize.
@@ -62,10 +60,10 @@ query GetUserSummary($date: Date){
 class GetUserSnapshots(PagedRequest):
     """
 
-    Requests per-date detailed information about app users.
+    Requests paged detailed information about app users on a specific date.
 
     Args:
-        filters (UserMetricsFilter): filter the query based on UserSnapshotFilter criteria.
+        filters (UserMetricsFilter): filter the query based on UserMetricsFilter criteria.
         date (datetime): specific day to query.
         limit (int): limit how many come back per query or per page.
     """
@@ -110,7 +108,7 @@ class GetUserSnapshots(PagedRequest):
 class GetUserChangelog(PagedRequest):
     """
 
-        Requests per-date detailed information about app users.
+        Gets paged detailed information about app users.
 
         Args:
             filters (UserSnapshotFilter): filter the query based on UserMetricsFilter criteria.
@@ -159,7 +157,7 @@ class GetUserChangelog(PagedRequest):
 class GenerateChangelogReport(GraphQLRequest):
     """
 
-        Requests per-date detailed information about app users.
+        Creates a job to generate a report of detailed information about app users
         
         Args:
             filters (UserSnapshotFilter): filter the query based on UserMetricsFilter criteria.

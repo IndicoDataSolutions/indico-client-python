@@ -1,19 +1,15 @@
 import json
-from time import sleep
-from typing import List, Dict
+from typing import Dict, List, Union
 
 import deprecation
 
-from indico.client.request import GraphQLRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, RequestChain
+from indico.errors import IndicoNotFound
 from indico.queries.workflow_components import AddModelGroupComponent
-from indico.types import Workflow
-from indico.types.model_group import ModelGroup, NewLabelsetArguments, \
-    NewQuestionnaireArguments
-from indico.types.model import Model
 from indico.types.jobs import Job
+from indico.types.model import Model
+from indico.types.model_group import ModelGroup
 from indico.types.utils import cc_to_snake
-
-from indico.errors import IndicoNotFound, IndicoError, IndicoInputError
 
 
 class GetModelGroup(RequestChain):
@@ -22,26 +18,28 @@ class GetModelGroup(RequestChain):
 
     Args:
         id (int): model group id to query
+        wait (bool, optional): Wait until the Model Group status is FAILED, COMPLETE, or NOT_ENOUGH_DATA. Defaults to False.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         ModelGroup object
-
-    Raises:
-
     """
 
-    def __init__(self, id: int, wait: bool = False):
+    def __init__(
+        self, id: int, wait: bool = False, request_interval: Union[int, float] = 5
+    ):
         self.id = id
         self.wait = wait
+        self.request_interval = request_interval
 
     def requests(self):
         if self.wait:
             req = GetModelGroupSelectedModelStatus(id=self.id)
             yield req
             while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
-                sleep(1)
+                yield Delay(seconds=self.request_interval)
                 yield req
-            yield _GetModelGroup(id=self.id)
+        yield _GetModelGroup(id=self.id)
 
 
 class _GetModelGroup(GraphQLRequest):
@@ -53,9 +51,6 @@ class _GetModelGroup(GraphQLRequest):
 
     Returns:
         ModelGroup object
-
-    Raises:
-
     """
 
     query = """
@@ -99,9 +94,6 @@ class GetTrainingModelWithProgress(GraphQLRequest):
 
     Returns:
         Model object with percent_complete field
-
-    Raises:
-
     """
 
     query = """
@@ -137,7 +129,6 @@ class GetTrainingModelWithProgress(GraphQLRequest):
         return Model(**last)
 
 
-
 class GetModelGroupSelectedModelStatus(GraphQLRequest):
     """
     Get the status string of the selected model for the given model group id
@@ -147,9 +138,6 @@ class GetModelGroupSelectedModelStatus(GraphQLRequest):
 
     Returns:
         status (str): CREATED, TRAINING, COMPLETE or FAILED
-
-    Raises:
-
     """
 
     query = """
@@ -174,105 +162,6 @@ class GetModelGroupSelectedModelStatus(GraphQLRequest):
             **super().process_response(response)["modelGroups"]["modelGroups"][0]
         )
         return mg.selected_model.status
-
-
-@deprecation.deprecated(deprecated_in="5.0",
-                        details="Use AddModelGroupComponent instead")
-class CreateModelGroup(RequestChain):
-    """
-    Create a new model group and train a model
-
-    Args:
-        name (str): Name of the new model group
-        dataset_id (int): id of the dataset that this model group is based upon
-        source_column_id (int): id of the source column to use in training this model group. Usually the id of source text or images.
-        labelset_id (int): id of the labelset (labeled data) to use in training this model group
-        wait (bool): Wait for this model group to finish training. Default is False
-        after_component_id (int): The workflow component that precedes this model group.
-        workflow_id: The workflow associated with this model group.
-        model_training_options (dict): Additional options for training. If the model_type is FINETUNE, this can include the base_model, which should be one of "default", "roberta", "small", "multilingual", "fast", "textcnn", or "fasttextcnn".
-        model_type (str): The model type to use, defaults to the default model type for the dataset type. Valid options are "ENSEMBLE", "TFIDF_LR", "TFIDF_GBT", "STANDARD", "FINETUNE", "OBJECT_DETECTION", "RATIONALIZED", "FORM_EXTRACTION", and "DOCUMENT".
-
-    Returns:
-        ModelGroup object
-
-    Raises:
-
-    """
-
-    def __init__(
-            self,
-            name: str,
-            dataset_id: int,
-            source_column_id: int,
-            labelset_id: int,
-            workflow_id: int,
-            after_component_id: int,
-            wait: bool = False,
-            model_training_options: dict = None,
-            model_type: str = None
-    ):
-        self.name = name
-        self.dataset_id = dataset_id
-        self.source_column_id = source_column_id
-        self.labelset_id = labelset_id
-        self.wait = wait
-        self.model_training_options = model_training_options
-        self.model_type = model_type
-        self.workflow_id = workflow_id
-        self.after_component_id = after_component_id
-
-    def requests(self):
-        yield AddModelGroupComponent(
-            name=self.name,
-            dataset_id=self.dataset_id,
-            source_column_id=self.source_column_id,
-            labelset_column_id=self.labelset_id,
-            model_training_options=self.model_training_options,
-            model_type=self.model_type,
-            workflow_id=self.workflow_id,
-            after_component_id=self.after_component_id
-
-        )
-
-        mg = self.previous.model_group_by_name(self.name)
-        model_group_id = mg.model_group.id
-        if self.wait:
-            req = GetModelGroupSelectedModelStatus(id=model_group_id)
-            yield req
-            while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
-                sleep(1)
-                yield req
-
-        yield _GetModelGroup(id=model_group_id)
-
-
-class LoadModel(GraphQLRequest):
-    """
-    Load model into system cache (implicit in ModelGroupPredict unless load=False)
-
-    Args:
-        model_id= (int): selected model id use for predictions
-
-    Returns:
-        Status "ready" if loaded
-    Raises:
-        IndicoError if model fails to load after retries
-    """
-
-    query = """
-        mutation ModelLoad($modelId: Int!) {
-            modelLoad(modelId: $modelId) {
-                status
-            }
-        }
-    """
-
-    def __init__(self, model_id: int):
-        super().__init__(self.query, variables={"modelId": model_id})
-
-    def process_response(self, response):
-        return super().process_response(response)["modelLoad"]["status"]
 
 
 class _ModelGroupPredict(GraphQLRequest):
@@ -329,37 +218,21 @@ class ModelGroupPredict(RequestChain):
 
     Returns:
         Job associated with this model group predict task
-
-    Raises:
-
     """
 
     def __init__(
-            self,
-            model_id: int,
-            data: List[str],
-            load: bool = True,
-            predict_options: Dict = None,
+        self,
+        model_id: int,
+        data: List[str],
+        load: bool = True,
+        predict_options: Dict = None,
     ):
         self.model_id = model_id
         self.data = data
-        self.load = load
         self.predict_options = predict_options
 
     def requests(self):
-        retries = 0
-        if self.load:
-            while retries < 3 and self.previous != "ready":
-                retries += 1
-                yield LoadModel(self.model_id)
-                if retries > 0:
-                    sleep(1)
-            if self.previous != "ready":
-                raise IndicoError(
-                    f"Model {self.model_id} failed to load status {self.previous}"
-                )
 
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
         )
-

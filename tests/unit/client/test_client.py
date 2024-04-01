@@ -1,14 +1,19 @@
 import unittest.mock
 import pytest
 
+
 from indico.client import IndicoClient, HTTPRequest, HTTPMethod, GraphQLRequest
 from indico.config import IndicoConfig
 
 
 @pytest.fixture(scope="function")
-def indico_request(requests_mock):
+def indico_test_config():
+    return IndicoConfig(protocol="mock", host="mock")
+
+@pytest.fixture(scope="function")
+def indico_request(requests_mock, indico_test_config):
     def new_request_mock(method, path, *args, **kwargs):
-        config = IndicoConfig()
+        config = indico_test_config
         url = f"{config.protocol}://{config.host}" + path
         getattr(requests_mock, method)(
             url, *args, **kwargs, headers={"Content-Type": "application/json"}
@@ -26,18 +31,17 @@ def auth(indico_request):
     )
 
 
-def test_client_basic_http_request(indico_request, auth):
-    client = IndicoClient()
+def test_client_basic_http_request(indico_request, auth, indico_test_config):
+    client = IndicoClient(config=indico_test_config)
 
     indico_request("get", "/users/details", json={"test": True})
     response = client.call(HTTPRequest(method=HTTPMethod.GET, path="/users/details"))
     assert response == {"test": True}
 
 
-def test_client_graphql_text_request(indico_request, auth):
-    client = IndicoClient()
+def test_client_graphql_text_request(indico_request, auth, indico_test_config):
+    client = IndicoClient(config=indico_test_config)
     indico_request("post", "/graph/api/graphql", json={"data": {"datasets": []}})
-
     response = client.call(
         GraphQLRequest(
             query="query list_datasets($ids: List(Int)) { datasets(ids: $ids) { id } }",
@@ -47,8 +51,8 @@ def test_client_graphql_text_request(indico_request, auth):
     assert response == {"datasets": []}
 
 
-def test_client_verify_true_request(indico_request, auth):
-    client = IndicoClient()
+def test_client_verify_true_request(indico_request, auth, indico_test_config):
+    client = IndicoClient(indico_test_config)
     indico_request(
         "post",
         "/graph/api/graphql",
@@ -65,8 +69,9 @@ def test_client_verify_true_request(indico_request, auth):
     assert response == {"datasets": []}
 
 
-def test_client_verify_false_request(indico_request, auth):
-    client = IndicoClient(IndicoConfig(verify_ssl=False))
+def test_client_verify_false_request(indico_request, auth, indico_test_config):
+    client = IndicoClient(IndicoConfig(verify_ssl=False, host=indico_test_config.host,
+                                       protocol=indico_test_config.protocol))
     indico_request(
         "post",
         "/graph/api/graphql",
@@ -83,15 +88,15 @@ def test_client_verify_false_request(indico_request, auth):
     assert response == {"datasets": []}
 
 
-def test_client_requests_params(indico_request, auth):
-    client = IndicoClient(IndicoConfig(requests_params={"verify": False}))
+def test_client_requests_params(indico_request, auth, indico_test_config):
+    client = IndicoClient(IndicoConfig(requests_params={"verify": False}, host=indico_test_config.host,
+                                       protocol=indico_test_config.protocol))
     indico_request(
         "post",
         "/graph/api/graphql",
         additional_matcher=lambda r: not r.verify,
         json={"data": {"datasets": []}},
     )
-
     response = client.call(
         GraphQLRequest(
             query="query list_datasets($ids: List(Int)) { datasets(ids: $ids) { id } }",
@@ -100,8 +105,8 @@ def test_client_requests_params(indico_request, auth):
     )
     assert response == {"datasets": []}
 
-def test_client_get_ipa_version(indico_request, auth):
-    client = IndicoClient()
+def test_client_get_ipa_version(indico_request, auth, indico_test_config):
+    client = IndicoClient(config=indico_test_config)
     indico_request(
         "post",
         "/graph/api/graphql",

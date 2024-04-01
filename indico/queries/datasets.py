@@ -1,25 +1,35 @@
 # -*- coding: utf-8 -*-
 
 import json
-import jsons
 import tempfile
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Optional, Union
 
+import deprecation
+import jsons
 import pandas as pd
+
 from indico.client.request import (
-    Debouncer,
+    Delay,
     GraphQLRequest,
     HTTPMethod,
     HTTPRequest,
+    PagedRequest,
     RequestChain,
 )
-from indico.errors import IndicoNotFound, IndicoInputError
+from indico.errors import IndicoInputError, IndicoNotFound
+from indico.filters import DatasetFilter
 from indico.queries.storage import UploadBatched, UploadImages
-from indico.types.dataset import Dataset, OcrEngine, OmnipageOcrOptionsInput, ReadApiOcrOptionsInput, OcrInputLanguage
+from indico.types.dataset import (
+    Dataset,
+    OcrEngine,
+    OcrInputLanguage,
+    OmnipageOcrOptionsInput,
+    ReadApiOcrOptionsInput,
+)
 
 
-class ListDatasets(GraphQLRequest):
+class ListDatasets(PagedRequest):
     """
     List all of your datasets
 
@@ -28,27 +38,55 @@ class ListDatasets(GraphQLRequest):
 
     Returns:
         List[Dataset]
-
-    Raises:
-
     """
 
     query = """
-        query ListDatasets($limit: Int){
-            datasetsPage(limit: $limit) {
+        query ListDatasets(
+            $filters: DatasetFilter,
+            $limit: Int,
+            $orderBy: DATASET_COLUMN_ENUM,
+            $desc: Boolean,
+            $after: Int
+        ){
+            datasetsPage(
+                filters: $filters,
+                limit: $limit
+                orderBy: $orderBy,
+                desc: $desc,
+                after: $after
+            ) {
                 datasets {
                     id
                     name
                     rowCount
                 }
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
             }
         }
     """
 
-    def __init__(self, *, limit: int = 100):
-        super().__init__(self.query, variables={"limit": limit})
+    def __init__(
+        self,
+        *,
+        filters: Optional[Union[Dict, DatasetFilter]] = None,
+        limit: int = 100,
+        order_by: str = "ID",
+        desc: bool = False,
+    ):
+        super().__init__(
+            self.query,
+            variables={
+                "filters": filters,
+                "limit": limit,
+                "orderBy": order_by,
+                "desc": desc,
+            },
+        )
 
-    def process_response(self, response) -> Dataset:
+    def process_response(self, response) -> List[Dataset]:
         response = super().process_response(response)
         return [Dataset(**dataset) for dataset in response["datasetsPage"]["datasets"]]
 
@@ -62,9 +100,6 @@ class GetDataset(GraphQLRequest):
 
     Returns:
         Dataset object
-
-    Raises:
-
     """
 
     query = """
@@ -106,9 +141,6 @@ class GetDatasetFileStatus(GetDataset):
 
     Returns:
         status (str): DOWNLOADED or FAILED
-
-    Raises:
-
     """
 
     query = """
@@ -142,9 +174,6 @@ class GetDatasetStatus(GraphQLRequest):
 
     Returns:
         status (str): COMPLETE or FAILED
-
-    Raises:
-
     """
 
     query = """
@@ -165,37 +194,40 @@ class GetDatasetStatus(GraphQLRequest):
 class CreateDataset(RequestChain):
     """
     Create a dataset and upload the associated files.
-    
-    Args:
-        name (str): Name of the dataset
-        files (List[str]): List of pathnames to the dataset files
 
-    Options:
-        dataset_type (str): Type of dataset to create [TEXT, DOCUMENT, IMAGE]
-        wait (bool, default=True): Wait for the dataset to upload and finish
+    Args:
+        name (str): Name of the dataset.
+        files (List[str]): List of path names to the dataset files.
+        wait (bool, optional): Wait for the dataset to upload and finish. Defaults to True.
+        dataset_type (str, optional): Type of dataset to create [TEXT, DOCUMENT, IMAGE]. Defaults to TEXT.
+        from_local_images (bool, optional): Flag whether files are local images or not. Defaults to False.
+        image_filename_col (str, optional): Image filename column. Defaults to 'filename'.
+        batch_size (int, optional): Size of file batch to upload at a time. Defaults to 20.
+        ocr_engine (OcrEngine, optional): Specify an OCR engine [OMNIPAGE, READAPI, READAPI_V2, READAPI_TABLES_V1]. Defaults to None.
+        omnipage_ocr_options (OmnipageOcrOptionsInput, optional): If using Omnipage, specify Omnipage OCR options. Defaults to None.
+        read_api_ocr_options: (ReadApiOcrOptionsInput, optional): If using ReadAPI, specify ReadAPI OCR options. Defaults to None.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Dataset object
-
-    Raises:
-        IndicoError
 
     """
 
     previous = None
 
     def __init__(
-            self,
-            name: str,
-            files: List[str],
-            wait: bool = True,
-            dataset_type: str = "TEXT",
-            from_local_images: bool = False,
-            image_filename_col: str = "filename",
-            batch_size: int = 20,
-            ocr_engine: OcrEngine = None,
-            omnipage_ocr_options: OmnipageOcrOptionsInput = None,
-            read_api_ocr_options: ReadApiOcrOptionsInput = None
+        self,
+        name: str,
+        files: List[str],
+        wait: bool = True,
+        dataset_type: str = "TEXT",
+        from_local_images: bool = False,
+        image_filename_col: str = "filename",
+        batch_size: int = 20,
+        ocr_engine: OcrEngine = None,
+        omnipage_ocr_options: OmnipageOcrOptionsInput = None,
+        read_api_ocr_options: ReadApiOcrOptionsInput = None,
+        request_interval: Union[int, float] = 5,
     ):
         self.files = files
         self.name = name
@@ -204,8 +236,14 @@ class CreateDataset(RequestChain):
         self.from_local_images = from_local_images
         self.image_filename_col = image_filename_col
         self.batch_size = batch_size
+        self.ocr_engine = ocr_engine
+        self.omnipage_ocr_options = omnipage_ocr_options
+        self.read_api_ocr_options = read_api_ocr_options
+        self.request_interval = request_interval
         if omnipage_ocr_options is not None and read_api_ocr_options is not None:
-            raise IndicoInputError("Must supply either omnipage or readapi options but not both.")
+            raise IndicoInputError(
+                "Must supply either omnipage or readapi options but not both."
+            )
         super().__init__()
 
     def requests(self):
@@ -235,32 +273,57 @@ class CreateDataset(RequestChain):
                 request_cls=_UploadDatasetFiles,
             )
         file_metadata = self.previous
-        yield CreateEmptyDataset(name=self.name, dataset_type=self.dataset_type)
-        yield _AddFiles(dataset_id=self.previous.id, metadata=file_metadata)
+        yield CreateEmptyDataset(
+            name=self.name,
+            dataset_type=self.dataset_type,
+            readapi_ocr_options=self.read_api_ocr_options,
+            omnipage_ocr_options=self.omnipage_ocr_options,
+            ocr_engine=self.ocr_engine,
+        )
+        yield _AddFiles(
+            dataset_id=self.previous.id, metadata=file_metadata, autoprocess=True
+        )
         dataset_id = self.previous.id
         yield GetDatasetFileStatus(id=dataset_id)
-        debouncer = Debouncer()
-        while not all(
-                f.status in ["DOWNLOADED", "FAILED"] for f in self.previous.files
-        ):
-            yield GetDatasetFileStatus(id=self.previous.id)
-            debouncer.backoff()
-        csv_files = [f.id for f in self.previous.files if f.file_type == "CSV"]
-        non_csv_files = [f.id for f in self.previous.files if f.file_type != "CSV"]
-
-        if csv_files:
-            yield _ProcessCSV(dataset_id=dataset_id, datafile_ids=csv_files)
-        elif non_csv_files:
-            yield _ProcessFiles(dataset_id=dataset_id, datafile_ids=non_csv_files)
-        yield GetDatasetFileStatus(id=dataset_id)
-        debouncer = Debouncer()
         if self.wait is True:
             while not all(
-                    [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
+                [f.status in ["PROCESSED", "FAILED"] for f in self.previous.files]
             ):
                 yield GetDatasetFileStatus(id=dataset_id)
-                debouncer.backoff()
+                yield Delay(seconds=self.request_interval)
         yield GetDataset(id=dataset_id)
+
+
+class RemoveDatasetFile(GraphQLRequest):
+    """
+    Remove a file from a dataset by ID.  To retrieve a list of files in a dataset,
+    see `GetDatasetFileStatus`.
+
+    Args:
+        dataset_id (int): Dataset ID
+        file_id (int): Datafile ID (returned by GetDatasetFileStatus)
+
+    Returns:
+        Dataset object
+    """
+
+    query = """
+        mutation RemoveFile($datasetId: Int!, $fileId: Int!){
+            deleteDatasetFile(datasetId: $datasetId, fileId: $fileId) {
+                id
+                status
+            }
+        }
+    """
+
+    def __init__(self, dataset_id: int, file_id: int):
+        super().__init__(
+            self.query,
+            variables={"datasetId": dataset_id, "fileId": file_id},
+        )
+
+    def process_response(self, response):
+        return Dataset(**super().process_response(response)["deleteDatasetFile"])
 
 
 class _UploadDatasetFiles(HTTPRequest):
@@ -279,9 +342,6 @@ class DeleteDataset(GraphQLRequest):
 
     Returns:
         success (bool): The success of the operation
-
-    Raises:
-
     """
 
     query = """
@@ -309,9 +369,14 @@ class CreateEmptyDataset(GraphQLRequest):
     }
     """
 
-    def __init__(self, name: str, dataset_type: str = None, ocr_engine: OcrEngine = None,
-                 omnipage_ocr_options: OmnipageOcrOptionsInput = None,
-                 readapi_ocr_options: ReadApiOcrOptionsInput = None):
+    def __init__(
+        self,
+        name: str,
+        dataset_type: str = None,
+        ocr_engine: OcrEngine = None,
+        omnipage_ocr_options: OmnipageOcrOptionsInput = None,
+        readapi_ocr_options: ReadApiOcrOptionsInput = None,
+    ):
         if not dataset_type:
             dataset_type = "TEXT"
         config = None
@@ -320,13 +385,20 @@ class CreateEmptyDataset(GraphQLRequest):
                 "ocrOptions": {
                     "ocrEngine": ocr_engine.name,
                     "omnipageOptions": omnipage_ocr_options,
-                    "readapiOptions": readapi_ocr_options
+                    "readapiOptions": readapi_ocr_options,
                 }
             }
         super().__init__(
-            self.query, variables={"name": name, "datasetType": dataset_type,
-                                   "config": jsons.dump(config, key_transformer=jsons.KEY_TRANSFORMER_CAMELCASE,
-                                                        strip_nulls=True)}
+            self.query,
+            variables={
+                "name": name,
+                "datasetType": dataset_type,
+                "config": jsons.dump(
+                    config,
+                    key_transformer=jsons.KEY_TRANSFORMER_CAMELCASE,
+                    strip_nulls=True,
+                ),
+            },
         )
 
     def process_response(self, response):
@@ -335,56 +407,65 @@ class CreateEmptyDataset(GraphQLRequest):
 
 class _AddFiles(GraphQLRequest):
     query = """
-    mutation AddFiles($datasetId: Int!, $metadata: JSONString!){
-        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata) {
+    mutation AddFiles($datasetId: Int!, $metadata: JSONString!, $autoprocess: Boolean){
+        addDatasetFiles(datasetId: $datasetId, metadataList: $metadata, autoprocess: $autoprocess) {
             id
             status
         }
     }
     """
 
-    def __init__(self, dataset_id: int, metadata: List[str]):
+    def __init__(self, dataset_id: int, metadata: List[str], autoprocess: bool):
         super().__init__(
             self.query,
-            variables={"datasetId": dataset_id, "metadata": json.dumps(metadata)},
+            variables={
+                "datasetId": dataset_id,
+                "metadata": json.dumps(metadata),
+                "autoprocess": autoprocess,
+            },
         )
 
     def process_response(self, response):
         return Dataset(**super().process_response(response)["addDatasetFiles"])
 
 
-class AddFiles(RequestChain):
+class AddDatasetFiles(RequestChain):
     """
-    Add files to a dataset
+    Add files to a dataset.
 
     Args:
         dataset_id (int): ID of the dataset
         files (List[str]): List of pathnames to the dataset files
 
     Options:
+        autoprocess (bool, default=False): Automatically process new dataset files
         wait (bool, default=True): Block while polling for status of files
         batch_size (int, default=20): Batch size for uploading files
 
     Returns:
         Dataset
-
-    Raises:
-
     """
 
     previous = None
 
     def __init__(
-            self,
-            dataset_id: int,
-            files: List[str],
-            wait: bool = True,
-            batch_size: int = 20,
+        self,
+        dataset_id: int,
+        files: List[str],
+        autoprocess: bool = False,
+        wait: bool = True,
+        batch_size: int = 20,
     ):
         self.dataset_id = dataset_id
         self.files = files
         self.wait = wait
         self.batch_size = batch_size
+        self.autoprocess = autoprocess
+        self.expected_statuses = (
+            {"FAILED", "PROCESSED"}
+            if autoprocess
+            else {"DOWNLOADED", "FAILED", "PROCESSED"}
+        )
         super().__init__()
 
     def requests(self):
@@ -393,131 +474,43 @@ class AddFiles(RequestChain):
             batch_size=self.batch_size,
             request_cls=_UploadDatasetFiles,
         )
-        yield _AddFiles(dataset_id=self.dataset_id, metadata=self.previous)
-        yield GetDatasetFileStatus(id=self.dataset_id)
-        debouncer = Debouncer()
-        while not all(
-                f.status in ["DOWNLOADED", "FAILED", "PROCESSED"]
-                for f in self.previous.files
-        ):
-            yield GetDatasetFileStatus(id=self.previous.id)
-            debouncer.backoff()
-
-
-class _ProcessFiles(GraphQLRequest):
-    query = """
-    mutation (
-        $datasetId: Int!,
-        $datafileIds: [Int]) {
-        addDataFiles(
-          datasetId: $datasetId,
-          datafileIds: $datafileIds) {
-            id
-            name
-        }
-    }
-    """
-
-    def __init__(self, dataset_id: int, datafile_ids: List[int]):
-        super().__init__(
-            self.query,
-            variables={"datasetId": dataset_id, "datafileIds": datafile_ids},
+        yield _AddFiles(
+            dataset_id=self.dataset_id,
+            metadata=self.previous,
+            autoprocess=self.autoprocess,
         )
-
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["addDataFiles"])
-
-
-class _ProcessCSV(GraphQLRequest):
-    query = """
-    mutation ($datasetId: Int!, $datafileIds: [Int]) {
-        addDataCsv(datasetId: $datasetId, datafileIds: $datafileIds) {
-            id
-            name
-        }
-    }
-    """
-
-    def __init__(self, dataset_id: int, datafile_ids: List[int]):
-        super().__init__(
-            self.query, variables={"datasetId": dataset_id, "datafileIds": datafile_ids}
-        )
-
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["addDataCsv"])
-
-
-class ProcessFiles(RequestChain):
-    """
-    Process files associated with a dataset and add corresponding data to the dataset
-
-    Args:
-        dataset_id (int): ID of the dataset
-        datafile_ids (List[str]): IDs of the datafiles to process
-        wait (bool): Block while polling for status of files
-
-
-    Returns:
-        Dataset
-
-    Raises:
-
-    """
-
-    def __init__(
-            self,
-            dataset_id: int,
-            datafile_ids: List[int],
-            wait: bool = True,
-    ):
-        self.dataset_id = dataset_id
-        self.datafile_ids = datafile_ids
-        self.wait = wait
-
-    def requests(self):
-        yield _ProcessFiles(self.dataset_id, self.datafile_ids)
-        debouncer = Debouncer()
         yield GetDatasetFileStatus(id=self.dataset_id)
         if self.wait:
             while not all(
-                    f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
+                f.status in self.expected_statuses for f in self.previous.files
             ):
-                yield GetDatasetFileStatus(id=self.dataset_id)
-                debouncer.backoff()
+                yield GetDatasetFileStatus(id=self.previous.id)
+                yield Delay()
 
 
-class ProcessCSV(RequestChain):
+# Alias for backwards compatibility
+AddFiles = AddDatasetFiles
+
+
+class GetAvailableOcrEngines(GraphQLRequest):
     """
-    Process CSV associated with a dataset and add corresponding data to the dataset
-
-    Args:
-        dataset_id (int): ID of the dataset
-        datafile_ids (List[str]): IDs of the CSV datafiles to process
-    Options:
-        wait (bool, default=True): Block while polling for status of files
-
-    Returns:
-        Dataset
-
-    Raises:
-
+    Fetches and lists the available OCR engines
     """
 
-    def __init__(self, dataset_id: int, datafile_ids: List[int], wait: bool = True):
-        self.dataset_id = dataset_id
-        self.datafile_ids = datafile_ids
-        self.wait = wait
+    query = """query{
+        ocrOptions {
+            engines{
+                name
+            }
+        }
+    }"""
 
-    def requests(self):
-        yield _ProcessCSV(self.dataset_id, self.datafile_ids)
-        debouncer = Debouncer()
-        yield GetDatasetFileStatus(id=self.dataset_id)
-        if self.wait:
-            while not all(
-                    f.status in ["PROCESSED", "FAILED"] for f in self.previous.files
-            ):
-                yield GetDatasetFileStatus(id=self.dataset_id)
-                debouncer.backoff()
+    def __init__(self):
+        super().__init__(self.query)
+
+    def process_response(self, response):
+        engines = super().process_response(response)["ocrOptions"]["engines"]
+        return [OcrEngine[e["name"]] for e in engines]
 
 
 class GetOcrEngineLanguageCodes(GraphQLRequest):
@@ -527,6 +520,7 @@ class GetOcrEngineLanguageCodes(GraphQLRequest):
     Args:
         ocr_engine(OcrEngine): The engine to fetch for.
     """
+
     query = """query{
         ocrOptions {
             engines{
@@ -545,5 +539,7 @@ class GetOcrEngineLanguageCodes(GraphQLRequest):
 
     def process_response(self, response):
         data = super().process_response(response)["ocrOptions"]["engines"]
-        engine_laguages = next(x["languages"] for x in data if x["name"] == self.engine.name)
+        engine_laguages = next(
+            x["languages"] for x in data if x["name"] == self.engine.name
+        )
         return [OcrInputLanguage(**option) for option in engine_laguages]

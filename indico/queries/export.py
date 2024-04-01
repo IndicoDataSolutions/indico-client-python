@@ -1,11 +1,13 @@
-import pandas as pd
 import io
+import warnings
 from typing import List, Union
 
-from indico.client import GraphQLRequest, RequestChain, Debouncer
+import pandas as pd
+
+from indico.client import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound, IndicoRequestError
-from indico.types.export import LabelResolutionStrategy, Export
 from indico.queries.storage import RetrieveStorageObject
+from indico.types.export import Export, LabelResolutionStrategy
 
 
 class _CreateExport(GraphQLRequest):
@@ -13,7 +15,7 @@ class _CreateExport(GraphQLRequest):
         mutation CreateExport(
             $datasetId: Int!,
             $labelsetId: Int!,
-            $columnIds: [Int], 
+            $columnIds: [Int],
             $modelIds: [Int],
             $frozenLabelsetIds: [Int],
             $combineLabels: LabelResolutionStrategy,
@@ -55,7 +57,16 @@ class _CreateExport(GraphQLRequest):
         combine_labels: LabelResolutionStrategy = LabelResolutionStrategy.ALL.name,
         file_info: bool = None,
         anonymoous: bool = None,
+        anonymous: bool = None,
     ):
+        if anonymoous:
+            warnings.warn(
+                "Argument anonymoous is deprecated and will be removed in future versions. Use argument anonymous instead."
+            )
+            if anonymous:
+                raise IndicoRequestError("Cannot use both anonymoous and anonymous.")
+            else:
+                anonymous = anonymoous
         super().__init__(
             self.query,
             variables={
@@ -66,7 +77,7 @@ class _CreateExport(GraphQLRequest):
                 "frozenLabelsetIds": frozen_labelset_ids,
                 "combineLabels": combine_labels,
                 "fileInfo": file_info,
-                "anonymous": anonymoous,
+                "anonymous": anonymous,
             },
         )
 
@@ -93,7 +104,7 @@ class GetExport(GraphQLRequest):
                 exports {
                 id
                 datasetId
-                name 
+                name
                 status
                 columnIds
                 labelsetId
@@ -165,15 +176,16 @@ class CreateExport(RequestChain):
     Create an export job for a dataset.
 
     Args:
-        dataset_id (int): Dataset to create the export for
-        labelset_id: (int): Labelset column id to export
-        column_ids (List(int)): Data column ids to export
-        model_ids (List(int)): Model ids to include predictions from
-        frozen_labelset_ids: (List(int)): frozen labelset ids to limit examples by
-        combine_labels: (LabelResolutionStrategy): One row per example, combine labels from multiple labels into a single row
-        file_info: (bool): Include datafile information
-        anonymous: (bool): Anonymize user information
-        wait: (bool): Wait for the export to complete. Default is True
+        dataset_id (int): Dataset to create the export for.
+        labelset_id (int): Labelset column id to export.
+        column_ids (List(int), optional): Data column ids to export. Defaults to None.
+        model_ids (List(int), optional): Model ids to include predictions from. Defaults to None.
+        frozen_labelset_ids: (List(int), optional): frozen labelset ids to limit examples by. Defaults to None.
+        combine_labels (LabelResolutionStrategy, optional): One row per example, combine labels from multiple labels into a single row. Defaults to 'all'.
+        file_info (bool, optional): Include datafile information. Defaults to False.
+        anonymous (bool, optional): Anonymize user information. Defaults to False.
+        wait (bool, optional): Wait for the export to complete. Defaults to True.
+        request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
         Export object
@@ -193,6 +205,7 @@ class CreateExport(RequestChain):
         file_info: bool = False,
         anonymous: bool = False,
         wait: bool = True,
+        request_interval: Union[int, float] = 5,
     ):
         self.dataset_id = dataset_id
         self.labelset_id = labelset_id
@@ -203,6 +216,7 @@ class CreateExport(RequestChain):
         self.file_info = file_info
         self.anonymous = anonymous
         self.wait = wait
+        self.request_interval = request_interval
         super().__init__()
 
     def requests(self):
@@ -214,12 +228,11 @@ class CreateExport(RequestChain):
             frozen_labelset_ids=self.frozen_labelset_ids,
             combine_labels=self.combine_labels,
             file_info=self.file_info,
-            anonymoous=self.anonymous,
+            anonymous=self.anonymous,
         )
-        debouncer = Debouncer()
         if self.wait is True:
             while self.previous.status not in ["COMPLETE", "FAILED"]:
                 yield GetExport(self.previous.id)
-                debouncer.backoff()
+                yield Delay(seconds=self.request_interval)
 
         yield GetExport(self.previous.id)

@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+
 from indico.errors import IndicoDecodingError
 from indico.http.serialization import deserialize
 
@@ -68,6 +69,20 @@ def test_deserialize_pdf(mock_loader):
 
 def test_deserialize_gzip(mock_loader):
     response = mock_loader("application/gzip", "")
+    content = deserialize(response)
+
+    assert isinstance(content, bytes)
+
+
+def test_deserialize_csv(mock_loader):
+    response = mock_loader("text/csv", "")
+    content = deserialize(response)
+
+    assert isinstance(content, str)
+
+
+def test_deserialize_xls(mock_loader):
+    response = mock_loader("application/xls", "")
     content = deserialize(response)
 
     assert isinstance(content, bytes)

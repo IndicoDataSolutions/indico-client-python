@@ -44,14 +44,17 @@ class BaseType:
             k = cc_to_snake(k)
             if k in attrs:
                 attr_type = attrs[k]
-                if inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
+                if v is not None and inspect.isclass(attr_type) and issubclass(attr_type, BaseType):
                     v = attrs[k](**v)
 
                 if attr_type == JSONType:
                     v = json.loads(v)
 
                 if attr_type == datetime:
-                   v = datetime.fromtimestamp(float(v))
+                    try:
+                        v = datetime.fromtimestamp(float(v))
+                    except ValueError:
+                        v = datetime.fromisoformat(v)
 
                 subtype = list_subtype(attr_type)
                 if subtype and issubclass(subtype, BaseType):

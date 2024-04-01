@@ -10,14 +10,10 @@ User Guide
 
     intro
     concepts
-    docextract-intro
-    docextract_settings
-    model_predictions
     workflow-intro
     review-intro
     auto-review
     object-detection
-    migration
     examples
 
 Reference
@@ -42,7 +38,10 @@ Reference
     graphql_queries
     user_metrics
     workflow-metrics
+    workflow_components
+    blueprints
     document_report
+    integration
 
 **Types**
 
@@ -54,5 +53,8 @@ Reference
     model-group-type
     model-type
     user-metrics-types
+    blueprint-types
+    workflow-types
     workflow-metrics-types
     document_report_types
+    integration-types

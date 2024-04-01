@@ -1,23 +1,30 @@
 # Indico IPA platform Client
-### A python client library for the [Indico IPA Platform](https://app.indico.io/).
+
+### A python client library for the [Indico IPA Platform](https://try.indico.io/).
+
 ### See the full [Documentation](https://indicodatasolutions.github.io/indico-client-python/).
 
 # Installation
---------------
+
+---
+
 Required: Python 3.6, 3.7, or 3.8
 
 From PyPI:
+
 ```bash
 pip3 install indico-client
 ```
 
 From source:
+
 ```bash
 git clone https://github.com/IndicoDataSolutions/indico-client-python.git
 python3 setup.py install
 ```
 
 Running in a Docker container:
+
 ```
 docker build -t indico-client .
 docker run -it indico-client bash
@@ -25,65 +32,36 @@ docker run -it indico-client bash
 
 # Getting Started
 
-## Authentication 
+## Authentication
 
-The Indico Platform and Client Libraries use JSON Web Tokens (JWT) for user 
-authentication. You can download a token from your [user dashboard](https://app.indico.io/auth/user) by clicking the 
-large, blue “Download new API Token” button. Most browsers will download the API token 
-as indico_api_token.txt and place it in your Downloads directory. You should move the 
-token file from Downloads to either your home directory or another location in your 
-development environment.
+### Indico API token
 
+The Indico Platform and Client Libraries use JSON Web Tokens (JWT) for user
+authentication. Details on acquiring this token can be found at this [documentation](https://docs.indicodata.ai/articles/#!common-questions-publication/how-do-i-get-started-developing-with-the-indico-api/q/API%2520token/qid/3328/qp/1)
 
+### Environment variables
+
+The following environment variables are used for authentication in the default `IndicoClient` object
+
+- `INDICO_HOST`: URL of the IPA instance
+- `INDICO_API_TOKEN`: user token downloaded from these [directions](#indico-api-token)
 
 ## API Examples
 
-### Getting Classification/Extraction Results
+### Creating a Client
+
 ```python3
 from indico import IndicoClient, IndicoConfig
-from indico.queries import JobStatus, ModelGroupPredict
 
 config = IndicoConfig(
-    host='app.indico.io', # or your custom app location
+    host='try.indico.io', # or your custom app location
     api_token_path='./indico_api_token.txt' # path to your API token
     )
 client = IndicoClient(config=config)
-
-data = ["Test example", "Test example 2"]
-job = client.call(ModelGroupPredict(model_id=32777, data=data))
-
-prediction = client.call(JobStatus(id=job.id, wait=True))
-
-print(prediction.result)
-```
-
-### Performing OCR / Document Text and Data Extraction
-``` python3 
-from indico import IndicoClient, IndicoConfig
-from indico.queries import DocumentExtraction, JobStatus, RetrieveStorageObject
-
-config = IndicoConfig(
-    host='app.indico.io',
-    api_token_path='./indico_api_token.txt'
-    )
-
-client = IndicoClient(config=config)
-file_paths = ['./test_data.pdf', './test_data2.pdf']
-job = client.call(
-    DocumentExtraction(
-        files=file_paths, 
-        json_config={"preset_config": "ondocument"} # see full docs for config options
-        )
-    )
-# job is a list object with length equal to # of files, retrieve each extraction by 
-# its index- below, we're retrieving the first extraction in file_paths
-
-job_file = client.call(JobStatus(id=job[0].id, wait=True))
-result = client.call(RetrieveStorageObject(job_file.result))
-print(result)
 ```
 
 ### Pure GraphQL example
+
 ```
 from indico import IndicoClient
 from indico.client.request import GraphQLRequest
@@ -98,16 +76,47 @@ response = client.call(GraphQLRequest(
                 }
             }
         }
-    """, 
+    """,
     variables={"ids": [1]}
 ))
 
 model_groups = response["model_groups"]["model_groups"]
 ```
 
+# Testing the SDK
+
+To run the tests associated with this repo perform the following:
+
+### Prerequisite
+
+Ensure you have set the environment variables detailed [here](#environment-variables)
+
+You will also need the following env variables set for the Exchange integration tests:
+
+- `EXCH_TENANT_ID`
+- `EXCH_CLIENT_ID`
+- `EXCH_CLIENT_SECRET`
+- `EXCH_USER_ID`
+
+### Running the tests
+
+1. Create a virtual environment
+   `python3 -m venv venv`
+2. Activate the virtual environment
+   `source venv/bin/activate`
+3. Install the client
+   `python3 setup.py install`
+4. Install pytest
+   `pip3 install pytest`
+5. Run tests
+   `pytest -sv --host <indico_host> tests/`
+   _ Only run unit tests `pytest -sv --host <indico_host> tests/unit/`
+   _ Only run integration tests `pytest -sv --host <indico_host> tests/integration/`
+
 # Contributing
 
 This repository adheres (as best as possible) to the following standards:
- - Python Black Formatter
-    - Line Width=88
- - [Google Docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)
+
+- Python Black Formatter
+  - Line Width=88
+- [Google Docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)

@@ -3,6 +3,7 @@ from typing import List
 
 from indico.types.base import BaseType
 from indico.types.datafile import Datafile
+from indico.errors import IndicoInputError
 
 
 class DataColumn(BaseType):
@@ -55,10 +56,14 @@ class Dataset(BaseType):
     datacolumns: List[DataColumn]
 
     def labelset_by_name(self, name: str) -> LabelSet:
-        return next(l for l in self.labelsets if l.name == name)
+        if name not in [lab.name for lab in self.labelsets]:
+            raise IndicoInputError(f"No labelset found for {name}. Current labelset names include {[lab.name for lab in self.labelsets]}.")
+        return next(lab for lab in self.labelsets if lab.name == name)
 
     def datacolumn_by_name(self, name: str) -> DataColumn:
-        return next(l for l in self.datacolumns if l.name == name)
+        if name not in [datacol.name for datacol in self.datacolumns]:
+            raise IndicoInputError(f"No datacolumn found for {name}. Current datacolumn names include {[datacol.name for datacol in self.datacolumns]}.")
+        return next(datacol for datacol in self.datacolumns if datacol.name == name)
 
 
 class TableReadOrder(Enum):
@@ -71,7 +76,8 @@ class OcrEngine(Enum):
     """
     OMNIPAGE = 0
     READAPI = 1
-    pass
+    READAPI_V2 = 2
+    READAPI_TABLES_V1 = 3
 
 class OmnipageOcrOptionsInput(BaseType):
     """
@@ -125,3 +131,4 @@ class OcrOptionsInput():
     ocr_engine: OcrEngine
     omnipage_options: OmnipageOcrOptionsInput
     readapi_options: ReadApiOcrOptionsInput
+    
