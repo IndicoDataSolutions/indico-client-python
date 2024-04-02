@@ -4,4 +4,4 @@ services:
   indico-client-build:
     build:
       context: .
-    entrypoint: [ "sleep", "infinity" ]
+    entrypoint: ["sleep", "infinity"]
