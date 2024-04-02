@@ -46,7 +46,7 @@ class ModelOptions(BaseType):
     id: int
     domain: str
     high_quality: bool
-    interlabler_resolution: str
+    interlabeler_resolution: str
     sampling_strategy: str
     seed: int
     test_split: float
