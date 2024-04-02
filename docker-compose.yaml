@@ -1,0 +1,6 @@
+services:
+  runner:
+    build:
+      context: .
+      dockerfile: tox.Dockerfile
+    tty: true

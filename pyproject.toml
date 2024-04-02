@@ -4,4 +4,4 @@ profile = "black"
 
 [tool.mypy]
 strict = true
-packages = "indico"
+mypy_path = "./stubs:${MYPYPATH}"

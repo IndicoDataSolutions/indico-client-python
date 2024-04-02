@@ -1,15 +1,14 @@
 import asyncio
-import http.cookiejar
 import logging
 from contextlib import contextmanager
 from copy import deepcopy
+from http.cookiejar import DefaultCookiePolicy
 from pathlib import Path
-from typing import Optional, Union
+from typing import TYPE_CHECKING, cast
 
 import aiohttp
 import requests
 
-from indico.client.request import HTTPRequest
 from indico.config import IndicoConfig
 from indico.errors import (
     IndicoAuthenticationFailed,
@@ -20,45 +19,67 @@ from indico.http.serialization import aio_deserialize, deserialize
 
 from .retry import aioretry
 
+if TYPE_CHECKING:  # pragma: no cover
+    from http.cookiejar import Cookie
+    from io import IOBase
+    from typing import Any, Dict, Iterator, List, Optional, Union
+    from urllib.request import Request
+
+    from indico.client.request import (
+        HTTPRequest,
+        ProcessedResponseType,
+        ProvidedResponseType,
+    )
+    from indico.typing import AnyDict
+
+
 logger = logging.getLogger(__file__)
 
 
-class CookiePolicyOverride(http.cookiejar.DefaultCookiePolicy):
-    def set_ok(self, cookie, request):
+class CookiePolicyOverride(DefaultCookiePolicy):
+    def set_ok(self, cookie: "Cookie", request: "Request") -> bool:
         return True
 
-    def return_ok(self, cookie, request):
+    def return_ok(self, cookie: "Cookie", request: "Request") -> bool:
         return True
 
-    def path_return_ok(self, path, request):
+    def path_return_ok(self, path: str, request: "Request") -> bool:
         return True
 
-    def domain_return_ok(self, domain, request):
+    def domain_return_ok(self, domain: str, request: "Request") -> bool:
         return True
 
 
 class HTTPClient:
-    def __init__(self, config: IndicoConfig = None):
-        self.config = config
+    def __init__(self, config: "Optional[IndicoConfig]" = None):
+        self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
 
         self.request_session = requests.Session()
-        if config and isinstance(config.requests_params, dict):
-            for param in config.requests_params.keys():
-                setattr(self.request_session, param, config.requests_params[param])
+        if isinstance(self.config.requests_params, dict):
+            for param in self.config.requests_params.keys():
+                setattr(self.request_session, param, self.config.requests_params[param])
         self.request_session.cookies.set_policy(CookiePolicyOverride())
+
         self.get_short_lived_access_token()
 
-    def post(self, *args, json: Union[dict, list] = None, **kwargs):
+    def post(
+        self,
+        *args: "Any",
+        json: "Optional[Union[AnyDict, List[Any]]]" = None,
+        **kwargs: "Any",
+    ) -> "Any":
         return self._make_request("post", *args, json=json, **kwargs)
 
-    def get(self, *args, params: dict = None, **kwargs):
+    def get(
+        self, *args: "Any", params: "Optional[AnyDict]" = None, **kwargs: "Any"
+    ) -> "Any":
         return self._make_request("post", *args, params=params, **kwargs)
 
-    def get_short_lived_access_token(self):
-        # If the cookie here is already due to _disable_cookie_domain set and we try to pop it later
-        # it will error out because we have two cookies with the same name. We just remove the old one
-        # here as we are about to refresh it.
+    def get_short_lived_access_token(self) -> "AnyDict":
+        # If the cookie here is already due to _disable_cookie_domain set and we try to
+        # pop it later it will error out because we have two cookies with the same
+        # name. We just remove the old one here as we are about to refresh it.
         if "auth_token" in self.request_session.cookies:
             self.request_session.cookies.pop("auth_token")
 
@@ -75,12 +96,15 @@ class HTTPClient:
                 raise IndicoAuthenticationFailed()
             self.request_session.cookies.pop("auth_token")
             self.request_session.cookies.set_cookie(
-                requests.cookies.create_cookie(name="auth_token", value=value)
+                # must ignore because untyped in typeshed
+                requests.cookies.create_cookie(name="auth_token", value=value)  # type: ignore
             )
 
-        return r
+        return cast("AnyDict", r)
 
-    def execute_request(self, request: HTTPRequest):
+    def execute_request(
+        self, request: "HTTPRequest[ProvidedResponseType, ProcessedResponseType]"
+    ) -> "ProcessedResponseType":
         return request.process_response(
             self._make_request(
                 method=request.method.value.lower(), path=request.path, **request.kwargs
@@ -88,7 +112,7 @@ class HTTPClient:
         )
 
     @contextmanager
-    def _handle_files(self, req_kwargs):
+    def _handle_files(self, req_kwargs: "AnyDict") -> "Iterator[AnyDict]":
         streams = None
         # deepcopying buffers is not supported
         # so, remove "streams" before the deepcopy.
@@ -97,11 +121,11 @@ class HTTPClient:
                 streams = req_kwargs["streams"].copy()
             del req_kwargs["streams"]
 
-        new_kwargs = deepcopy(req_kwargs)
+        new_kwargs: "AnyDict" = deepcopy(req_kwargs)
 
-        files = []
+        files: "List[IOBase]" = []
         file_arg = {}
-        dup_counts = {}
+        dup_counts: "Dict[str, int]" = {}
         if "files" in new_kwargs and new_kwargs["files"] is not None:
             for filepath in new_kwargs["files"]:
                 path = Path(filepath)
@@ -129,19 +153,20 @@ class HTTPClient:
 
         new_kwargs["files"] = file_arg
 
-        yield new_kwargs
-
-        if files:
-            [f.close() for f in files]
+        try:
+            yield new_kwargs
+        finally:
+            for f in files:
+                f.close()
 
     def _make_request(
         self,
         method: str,
         path: str,
-        headers: dict = None,
-        _refreshed=False,
-        **request_kwargs,
-    ):
+        headers: "Optional[Dict[str, str]]" = None,
+        _refreshed: bool = False,
+        **request_kwargs: "Any",
+    ) -> "Any":
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
@@ -178,7 +203,9 @@ class HTTPClient:
                 extras=repr(response.content),
             )
 
-        content = deserialize(response, force_json=json, force_decompress=decompress)
+        content: "Any" = deserialize(
+            response, force_json=json, force_decompress=decompress
+        )
 
         if response.status_code >= 400:
             if isinstance(content, dict):
@@ -194,16 +221,17 @@ class HTTPClient:
             raise IndicoRequestError(
                 error=error, code=response.status_code, extras=extras
             )
+
         return content
 
 
-class AIOHTTPClient(HTTPClient):
+class AIOHTTPClient:
     """
     Beta client with a minimal set of features that can execute
     requests using the aiohttp library
     """
 
-    def __init__(self, config: Optional[IndicoConfig] = None):
+    def __init__(self, config: "Optional[IndicoConfig]" = None):
         """
         Config options specific to aiohttp
         unsafe - allows interacting with IP urls
@@ -212,25 +240,34 @@ class AIOHTTPClient(HTTPClient):
         self.base_url = f"{self.config.protocol}://{self.config.host}"
 
         self.request_session = aiohttp.ClientSession()
-        if config and isinstance(config.requests_params, dict):
-            for param in config.requests_params.keys():
-                setattr(self.request_session, param, config.requests_params[param])
+        if isinstance(self.config.requests_params, dict):
+            for param in self.config.requests_params.keys():
+                setattr(self.request_session, param, self.config.requests_params[param])
 
-    async def post(self, *args, json: Union[dict, list] = None, **kwargs):
+    async def post(
+        self,
+        *args: "Any",
+        json: "Optional[Union[AnyDict, List[Any]]]" = None,
+        **kwargs: "Any",
+    ) -> "Any":
         return await self._make_request("post", *args, json=json, **kwargs)
 
-    async def get(self, *args, params: dict = None, **kwargs):
+    async def get(
+        self, *args: "Any", params: "Optional[AnyDict]" = None, **kwargs: "Any"
+    ) -> "Any":
         return await self._make_request("post", *args, params=params, **kwargs)
 
-    async def get_short_lived_access_token(self):
+    async def get_short_lived_access_token(self) -> "AnyDict":
         r = await self.post(
             "/auth/users/refresh_token",
             headers={"Authorization": f"Bearer {self.config.api_token}"},
             _refreshed=True,
         )
-        return r
+        return cast("AnyDict", r)
 
-    async def execute_request(self, request: HTTPRequest):
+    async def execute_request(
+        self, request: "HTTPRequest[ProvidedResponseType, ProcessedResponseType]"
+    ) -> "ProcessedResponseType":
         return request.process_response(
             await self._make_request(
                 method=request.method.value.lower(), path=request.path, **request.kwargs
@@ -238,10 +275,12 @@ class AIOHTTPClient(HTTPClient):
         )
 
     @contextmanager
-    def _handle_files(self, req_kwargs):
+    def _handle_files(
+        self, req_kwargs: "AnyDict"
+    ) -> "Iterator[List[aiohttp.FormData]]":
         files = []
         file_args = []
-        dup_counts = {}
+        dup_counts: "Dict[str, int]" = {}
         for filepath in req_kwargs.pop("files", []) or []:
             data = aiohttp.FormData()
             path = Path(filepath)
@@ -269,7 +308,7 @@ class AIOHTTPClient(HTTPClient):
                 data.add_field(
                     "file",
                     stream,
-                    filename=filename + f"({dup_counts[filename]})" + _add_suffix,
+                    filename=filename + f"({dup_counts[filename]})",
                 )
                 dup_counts[filename] += 1
             else:
@@ -277,20 +316,21 @@ class AIOHTTPClient(HTTPClient):
                 dup_counts[filename] = 1
             file_args.append(data)
 
-        yield file_args
+        try:
+            yield file_args
+        finally:
+            for f in files:
+                f.close()
 
-        if files:
-            [f.close() for f in files]
-
-    @aioretry((aiohttp.ClientConnectionError, aiohttp.ServerDisconnectedError))
+    @aioretry(aiohttp.ClientConnectionError, aiohttp.ServerDisconnectedError)
     async def _make_request(
         self,
         method: str,
         path: str,
-        headers: dict = None,
-        _refreshed=False,
-        **request_kwargs,
-    ):
+        headers: "Optional[Dict[str, str]]" = None,
+        _refreshed: bool = False,
+        **request_kwargs: "Any",
+    ) -> "Any":
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
@@ -308,6 +348,7 @@ class AIOHTTPClient(HTTPClient):
                     )
                 )
                 return [resp for resp_set in resps for resp in resp_set]
+
             async with getattr(self.request_session, method)(
                 f"{self.base_url}{path}",
                 headers=headers,
@@ -335,7 +376,7 @@ class AIOHTTPClient(HTTPClient):
                         extras=repr(response.content),
                     )
 
-                content = await aio_deserialize(
+                content: "Any" = await aio_deserialize(
                     response, force_json=json, force_decompress=decompress
                 )
 
@@ -353,4 +394,5 @@ class AIOHTTPClient(HTTPClient):
                     raise IndicoRequestError(
                         error=error, code=response.status_code, extras=extras
                     )
+
                 return content

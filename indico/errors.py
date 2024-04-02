@@ -1,9 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Union
-
-    from indico.typing import AnyDict
+    from typing import Any, Union
 
 
 class IndicoError(Exception):
@@ -15,7 +13,7 @@ class IndicoRequestError(IndicoError):
         self,
         error: str,
         code: "Union[int, str]",
-        extras: "Optional[AnyDict]" = None,
+        extras: "Any" = None,
     ):
         super().__init__(f"Status: {code}, Error: {error}\n\tExtras: {extras}")
 
