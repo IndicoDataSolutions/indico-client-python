@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING
 
 from indico.errors import IndicoInvalidConfigSetting
 
-if TYPE_CHECKING:
-    from typing import Any, Dict, Optional, Tuple, Union
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Optional, Tuple, Union
+
+    from indico.typing import AnyDict
 
 
 class IndicoConfig:
@@ -32,12 +34,12 @@ class IndicoConfig:
         self.host: str = os.environ["INDICO_HOST"]
         self.protocol: str = os.getenv("INDICO_PROTOCOL", "https")
         self.serializer: str = os.getenv("INDICO_SERIALIZER", "msgpack")
-        self.api_token_path: Union[str, Path] = os.getenv(
+        self.api_token_path: "Union[str, Path]" = os.getenv(
             "INDICO_API_TOKEN_PATH", Path.home()
         )
-        self.api_token: Optional[str] = os.getenv("INDICO_API_TOKEN")
+        self.api_token: "Optional[str]" = os.getenv("INDICO_API_TOKEN")
         self.verify_ssl: bool = True
-        self.requests_params: Optional[Dict[str, Any]] = None
+        self.requests_params: "Optional[AnyDict]" = None
         self._disable_cookie_domain: bool = False
 
         for key, value in kwargs.items():
@@ -49,7 +51,7 @@ class IndicoConfig:
         if not self.api_token:
             self.api_token_path, self.api_token = self._resolve_api_token()
 
-    def _resolve_api_token(self) -> Tuple[Path, str]:
+    def _resolve_api_token(self) -> "Tuple[Path, str]":
         path = self.api_token_path
 
         if not isinstance(path, Path):
