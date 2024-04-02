@@ -38,6 +38,7 @@ nosetests.xml
 .noseids
 .pytest*
 *.json
+.hypothesis
 
 codeship.aes
 .env
