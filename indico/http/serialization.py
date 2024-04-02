@@ -114,7 +114,7 @@ def image_serialization(content: bytes, charset: "Optional[str]" = None) -> byte
     return content
 
 
-def zip_serialization(content: bytes, charset: "Optional[str]" = None):
+def zip_serialization(content: bytes, charset: "Optional[str]" = None) -> bytes:
     return content
 
 

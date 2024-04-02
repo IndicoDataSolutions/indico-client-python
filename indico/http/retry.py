@@ -1,22 +1,30 @@
 import asyncio
 import time
-import typing as t
 from functools import wraps
 from random import randint
+from typing import TYPE_CHECKING, Awaitable
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Callable, Optional, Tuple, Type, TypeVar, Union
+
+    from typing_extensions import ParamSpec
+
+    P = ParamSpec("P")
+    T = TypeVar("T")
 
 
 def retry(
-    ExceptionTypes: t.Type[Exception], tries: int = 3, delay: int = 1, backoff: int = 2
-) -> t.Callable:
+    *ExceptionTypes: "Type[Exception]", tries: int = 3, delay: int = 1, backoff: int = 2
+) -> "Callable[[Callable[P, T]], Callable[P, T]]":
     """
     Retry with exponential backoff
 
     Original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
     """
 
-    def retry_decorator(f: t.Callable) -> t.Any:
+    def retry_decorator(f: Callable[P, T]) -> Callable[P, T]:
         @wraps(f)
-        def retry_fn(*args: t.Any, **kwargs: t.Any) -> t.Any:
+        def retry_fn(*args: P.args, **kwargs: P.kwargs) -> T:
             n_tries, n_delay = tries, delay
             while n_tries > 1:
                 try:
@@ -33,12 +41,12 @@ def retry(
 
 
 def aioretry(
-    ExceptionTypes: t.Type[Exception],
+    *ExceptionTypes: "Type[Exception]",
     tries: int = 3,
-    delay: t.Union[int, t.Tuple[int, int]] = 1,
+    delay: "Union[int, Tuple[int, int]]" = 1,
     backoff: int = 2,
-    condition: t.Optional[t.Callable[[Exception], bool]] = None,
-) -> t.Callable:
+    condition: "Optional[Callable[[Exception], bool]]" = None,
+) -> "Callable[[Callable[P, Awaitable[T]]], Callable[P, Awaitable[T]]]":
     """
     Retry with exponential backoff
 
@@ -51,9 +59,9 @@ def aioretry(
             same time across multiple concurrent function calls
     """
 
-    def retry_decorator(f: t.Callable) -> t.Callable:
+    def retry_decorator(f: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]:
         @wraps(f)
-        async def retry_fn(*args: t.Any, **kwargs: t.Any) -> t.Any:
+        async def retry_fn(*args: P.args, **kwargs: P.kwargs) -> T:
             n_tries = tries
             if isinstance(delay, tuple):
                 # pick a random number to sleep
