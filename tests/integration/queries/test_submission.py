@@ -76,3 +76,5 @@ def test_get_reviews(indico):
         reviews = client.call(GetReviews(sub.id))
         for review in reviews:
             assert (isinstance(review, SubmissionReviewFull))
+            if not review.rejected:
+                assert isinstance(review.changes, (list, dict))

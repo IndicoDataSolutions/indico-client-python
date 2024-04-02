@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from indico.types import BaseType, List
+from indico.types import BaseType, List, JSONType
 
 from . import OutputFile, SubmissionFile
 
@@ -88,7 +88,7 @@ class SubmissionReviewFull(BaseType):
     rejected: bool
     review_type: str
     notes: str
-    changes: dict
+    changes: JSONType
 
 
 class Submission(BaseType):
