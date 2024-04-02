@@ -310,6 +310,9 @@ class UpdateModelGroupSettings(GraphQLRequest):
         if model_training_options:
             model_training_options = json.dumps(model_training_options)
 
+        if predict_options:
+            predict_options = json.dumps(predict_options)
+
         super().__init__(
             self.query,
             variables={
