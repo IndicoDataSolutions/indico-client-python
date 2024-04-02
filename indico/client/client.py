@@ -2,20 +2,25 @@
 
 import asyncio
 import time
-from typing import Optional, Union
+from typing import TYPE_CHECKING, cast
 
 import urllib3
 
-from indico.client.request import (
-    Delay,
-    GraphQLRequest,
-    HTTPRequest,
-    PagedRequest,
-    RequestChain,
-)
+from indico.client.request import Delay, HTTPRequest, RequestChain
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
 from indico.http.client import AIOHTTPClient, HTTPClient
+from indico.queries.version import GetIPAVersion
+
+if TYPE_CHECKING:  # pragma: no cover
+    from types import TracebackType
+    from typing import Any, AsyncIterator, Iterator, Optional, Type, TypeVar, Union
+
+    from typing_extensions import Self
+
+    from indico.client.request import PagedRequest
+
+    ReturnType = TypeVar("ReturnType")
 
 
 class IndicoClient:
@@ -34,35 +39,44 @@ class IndicoClient:
         RuntimeError: If api_token_path does not exist.
     """
 
-    def __init__(self, config: Optional[IndicoConfig] = None):
+    def __init__(self, config: "Optional[IndicoConfig]" = None):
         if not config:
             config = IndicoConfig()
+
         if not config.verify_ssl:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
         self.config = config
         self._http = HTTPClient(config)
 
-    def _handle_request_chain(self, chain: RequestChain):
-        response = None
+    def _handle_request_chain(
+        self,
+        chain: "RequestChain[Any, ReturnType]",
+    ) -> "ReturnType":
+        response: "Optional[ReturnType]" = None
+
         for request in chain.requests():
-            if isinstance(request, HTTPRequest):
-                response = self._http.execute_request(request)
-                chain.previous = response
-            elif isinstance(request, RequestChain):
+            if isinstance(request, RequestChain):
                 response = self._handle_request_chain(request)
+                chain.previous = response
+            elif isinstance(request, HTTPRequest):
+                response = self._http.execute_request(request)
                 chain.previous = response
             elif isinstance(request, Delay):
                 time.sleep(request.seconds)
-        if chain.result:
+
+        if chain.result is not None:
             return chain.result
-        return response
 
-    def get_ipa_version(self):
-        return self._http.execute_request(
-            GraphQLRequest("query getIPAVersion {\n  ipaVersion\n}\n")
-        )["ipaVersion"]
+        return cast("ReturnType", response)
 
-    def call(self, request: Union[HTTPRequest, RequestChain]):
+    def get_ipa_version(self) -> str:
+        return self.call(GetIPAVersion())
+
+    def call(
+        self,
+        request: "Union[HTTPRequest[Any, ReturnType], RequestChain[Any, ReturnType]]",
+    ) -> "ReturnType":
         """
         Make a call to the Indico IPA Platform
 
@@ -78,10 +92,14 @@ class IndicoClient:
 
         if isinstance(request, RequestChain):
             return self._handle_request_chain(request)
-        elif request and isinstance(request, HTTPRequest):
+        elif isinstance(request, HTTPRequest):
             return self._http.execute_request(request)
+        else:
+            raise ValueError(
+                "Invalid request type! Must be one of HTTPRequest or RequestChain."
+            )
 
-    def paginate(self, request: PagedRequest):
+    def paginate(self, request: "PagedRequest[ReturnType]") -> "Iterator[ReturnType]":
         """
         Provides a generator that continues paging through responses
         Available with List<> Requests that offer pagination
@@ -120,54 +138,63 @@ class AsyncIndicoClient:
         RuntimeError: If api_token_path does not exist.
     """
 
-    def __init__(self, config: Optional[IndicoConfig] = None):
+    def __init__(self, config: "Optional[IndicoConfig]" = None):
         if not config:
             config = IndicoConfig()
         if not config.verify_ssl:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
         self.config = config
         self._http = AIOHTTPClient(config)
-        self._created = False
+        self._created: bool = False
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "Self":
         return await self.create()
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(
+        self,
+        exc_type: "Optional[Type[BaseException]]",
+        exc: "Optional[BaseException]",
+        tb: "Optional[TracebackType]",
+    ) -> None:
         await self.cleanup()
 
-    async def create(self):
+    async def create(self) -> "Self":
         await self._http.get_short_lived_access_token()
         self._created = True
         return self
 
-    async def cleanup(self):
+    async def cleanup(self) -> None:
         await self._http.request_session.close()
 
-    async def _handle_request_chain(self, chain: RequestChain):
-        response = None
+    async def _handle_request_chain(
+        self,
+        chain: "RequestChain[Any, ReturnType]",
+    ) -> "ReturnType":
+        response: "Optional[ReturnType]" = None
+
         for request in chain.requests():
-            if isinstance(request, HTTPRequest):
-                response = await self._http.execute_request(request)
-                chain.previous = response
-            elif isinstance(request, RequestChain):
+            if isinstance(request, RequestChain):
                 response = await self._handle_request_chain(request)
+                chain.previous = response
+            elif isinstance(request, HTTPRequest):
+                response = await self._http.execute_request(request)
                 chain.previous = response
             elif isinstance(request, Delay):
                 await asyncio.sleep(request.seconds)
-        if chain.result:
+
+        if chain.result is not None:
             return chain.result
-        return response
 
-    async def get_ipa_version(self):
-        if not self._created:
-            raise IndicoError("Please .create() your client")
-        return (
-            await self._http.execute_request(
-                GraphQLRequest("query getIPAVersion {ipaVersion}")
-            )
-        )["ipaVersion"]
+        return cast("ReturnType", response)
 
-    async def call(self, request: Union[HTTPRequest, RequestChain]):
+    async def get_ipa_version(self) -> str:
+        return await self.call(GetIPAVersion())
+
+    async def call(
+        self,
+        request: "Union[HTTPRequest[Any, ReturnType], RequestChain[Any, ReturnType]]",
+    ) -> "ReturnType":
         """
         Make a call to the Indico IPA Platform
 
@@ -185,10 +212,16 @@ class AsyncIndicoClient:
 
         if isinstance(request, RequestChain):
             return await self._handle_request_chain(request)
-        elif request and isinstance(request, HTTPRequest):
+        elif isinstance(request, HTTPRequest):
             return await self._http.execute_request(request)
+        else:
+            raise ValueError(
+                "Invalid request type! Must be one of HTTPRequest or RequestChain."
+            )
 
-    async def paginate(self, request: PagedRequest):
+    async def paginate(
+        self, request: "PagedRequest[ReturnType]"
+    ) -> "AsyncIterator[ReturnType]":
         """
         Provides a generator that continues paging through responses
         Available with List<> Requests that offer pagination
