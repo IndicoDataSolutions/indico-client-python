@@ -23,7 +23,7 @@ from indico.queries.model_groups.metrics import (
 from indico.queries.storage import URL_PREFIX, UploadDocument
 from indico.types import Workflow
 from indico.types.dataset import Dataset
-from indico.types.model import Model, TrainingProgress
+from indico.types.model import Model, ModelOptions, TrainingProgress
 from indico.types.model_group import ModelGroup
 
 from ..data.datasets import (
@@ -221,6 +221,7 @@ def test_update_model_group_settings(indico, org_annotate_model_group):
             make_predictions=False,
         )
     )
+    assert isinstance(result, ModelOptions)
     assert result.model_training_options == {
         "use_autolabeled_data": True,
         "use_partial_data": True,
