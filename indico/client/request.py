@@ -14,6 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
 ProvidedResponseType = TypeVar("ProvidedResponseType")
 ProcessedResponseType = TypeVar("ProcessedResponseType")
 RequestClass = TypeVar("RequestClass")
+FinalResponseType = TypeVar("FinalResponseType")
 
 
 class HTTPMethod(Enum):
@@ -113,9 +114,9 @@ class PagedRequest(GraphQLRequest[ProcessedResponseType]):
         return cast("ProcessedResponseType", raw_response)
 
 
-class RequestChain(Generic[RequestClass], ABC):
+class RequestChain(Generic[RequestClass, FinalResponseType], ABC):
     previous: "Any" = None
-    result: "Any" = None
+    result: "Optional[FinalResponseType]" = None
 
     @abstractmethod
     def requests(self) -> "Iterator[RequestClass]": ...
