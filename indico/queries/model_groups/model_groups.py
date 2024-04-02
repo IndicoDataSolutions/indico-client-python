@@ -270,10 +270,15 @@ class UpdateModelGroupSettings(GraphQLRequest):
     """
 
     query = """
-        mutation updateModelGroup($modelGroupId: Int!, $modelTrainingOptions: JSONString) {
+        mutation updateModelGroup(
+            $modelGroupId: Int!,
+            $modelTrainingOptions: JSONString,
+            $predictOptions: JSONString,
+        ) {
             updateModelGroupSettings(
-                modelGroupId: $modelGroupId
-                modelTrainingOptions: $modelTrainingOptions
+                modelGroupId: $modelGroupId,
+                modelTrainingOptions: $modelTrainingOptions,
+                predictOptions: $predictOptions,
             ) {
                 modelOptions {
                     id
@@ -297,15 +302,6 @@ class UpdateModelGroupSettings(GraphQLRequest):
         model_group_id: int,
         model_training_options: Optional[Dict[str, Any]] = None,
         predict_options: Optional[Dict[str, Any]] = None,
-        domain: str = None,
-        finetune: bool = None,
-        interlabeler_resolution: str = None,
-        make_predictions: bool = None,
-        roc_auc_averaging: str = None,
-        sampling_strategy: str = None,
-        task_type: str = None,
-        test_split: float = None,
-        word_predictor_strength: str = None,
     ):
         if model_training_options:
             model_training_options = json.dumps(model_training_options)
@@ -319,15 +315,6 @@ class UpdateModelGroupSettings(GraphQLRequest):
                 "modelGroupId": model_group_id,
                 "modelTrainingOptions": model_training_options,
                 "predictOptions": predict_options,
-                "domain": domain,
-                "finetune": finetune,
-                "interlabelerResolution": interlabeler_resolution,
-                "makePredictions": make_predictions,
-                "rocAucAveraging": roc_auc_averaging,
-                "samplingStrategy": sampling_strategy,
-                "taskType": task_type,
-                "testSplit": test_split,
-                "wordPredictorStrength": word_predictor_strength,
             },
         )
 

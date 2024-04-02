@@ -218,7 +218,6 @@ def test_update_model_group_settings(indico, org_annotate_model_group):
         UpdateModelGroupSettings(
             model_group_id=org_annotate_model_group.id,
             model_training_options=model_training_options,
-            make_predictions=False,
         )
     )
     assert isinstance(result, ModelOptions)
