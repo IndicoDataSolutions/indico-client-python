@@ -40,7 +40,16 @@ class ModelOptions(BaseType):
 
     Attributes:
         id (int): The model options id
-        model_training_options (str): JSONString representation of the model training options specified
+        domain (str): feature domain
+        high_quality (bool): flag denoting if high quality was specified
+        interlabeler_resolution (str): label resolution strategy specified
+        sampling_strategy (str): sampling strategy specified
+        seed (int): number of seed specified
+        test_split (float): denotes specified test split
+        weight_by_class_frequency (bool): flag denoting weight by class frequency
+        word_predictor_strength (str): word predictor strength specified
+        predict_options (dict): JSONString representation of the predict options specified
+        model_training_options (dict): JSONString representation of the model training options specified
     """
 
     id: int
