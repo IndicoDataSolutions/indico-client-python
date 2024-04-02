@@ -1,12 +1,19 @@
+from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
 from indico.errors import IndicoRequestError
+from indico.typing import AnyDict
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Dict, List, Optional, Union
+    from typing import Any, Dict, Iterator, List, Optional, Union
 
-    AnyDict = Dict[str, Any]
+# the generic vars effectively disregarded through explicit casting throughout
+# this file in order to support better user-facing typing via client.call and
+# actual gql response types
+ProvidedResponseType = TypeVar("ProvidedResponseType")
+ProcessedResponseType = TypeVar("ProcessedResponseType")
+RequestClass = TypeVar("RequestClass")
 
 
 class HTTPMethod(Enum):
@@ -18,7 +25,7 @@ class HTTPMethod(Enum):
     OPTIONS = "OPTIONS"
 
 
-class HTTPRequest:
+class HTTPRequest(Generic[ProvidedResponseType, ProcessedResponseType]):
     def __init__(self, method: HTTPMethod, path: str, **kwargs: "Any"):
         self.method: HTTPMethod = method
         self.path: str = path
@@ -28,11 +35,13 @@ class HTTPRequest:
     def kwargs(self) -> "AnyDict":
         return self._kwargs
 
-    def process_response(self, response: "AnyDict") -> "AnyDict":
-        return response
+    def process_response(
+        self, response: "ProvidedResponseType"
+    ) -> "ProcessedResponseType":
+        return cast("ProcessedResponseType", response)
 
 
-class GraphQLRequest(HTTPRequest):
+class GraphQLRequest(HTTPRequest[AnyDict, ProcessedResponseType]):
     def __init__(self, query: str, variables: "Optional[AnyDict]" = None):
         self.query: str = query
         self.variables: "Optional[AnyDict]" = variables
@@ -43,8 +52,8 @@ class GraphQLRequest(HTTPRequest):
     def kwargs(self) -> "AnyDict":
         return {"json": {"query": self.query, "variables": self.variables}}
 
-    def process_response(self, response: "AnyDict") -> "AnyDict":
-        response = super().process_response(response)
+    def process_response(self, response: "AnyDict") -> "ProcessedResponseType":
+        raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
         errors: "List[AnyDict]" = response.pop("errors", [])
 
         if errors:
@@ -58,10 +67,10 @@ class GraphQLRequest(HTTPRequest):
                 extras=extras,
             )
 
-        return cast("AnyDict", response["data"])
+        return cast("ProcessedResponseType", raw_response["data"])
 
 
-class PagedRequest(GraphQLRequest):
+class PagedRequest(GraphQLRequest[ProcessedResponseType]):
     """
     To enable pagination, query must include $after as an argument
     and request pageInfo
@@ -90,10 +99,10 @@ class PagedRequest(GraphQLRequest):
         self.has_next_page = True
         super().__init__(query, variables=variables)
 
-    def process_response(self, response: "AnyDict") -> "AnyDict":
-        response = super().process_response(response)
+    def process_response(self, response: "AnyDict") -> "ProcessedResponseType":
+        raw_response = cast("AnyDict", super().process_response(response))
 
-        _pg = next(iter(response.values())).get("pageInfo")
+        _pg = next(iter(raw_response.values())).get("pageInfo")
         if not _pg:
             raise ValueError("The supplied GraphQL must include 'pageInfo'.")
 
@@ -101,15 +110,15 @@ class PagedRequest(GraphQLRequest):
         cast("AnyDict", self.variables)["after"] = (
             _pg["endCursor"] if self.has_next_page else None
         )
-        return response
+        return cast("ProcessedResponseType", raw_response)
 
 
-class RequestChain:
+class RequestChain(Generic[RequestClass], ABC):
     previous: "Any" = None
     result: "Any" = None
 
-    def requests(self) -> None:
-        pass
+    @abstractmethod
+    def requests(self) -> "Iterator[RequestClass]": ...
 
 
 class Delay:
