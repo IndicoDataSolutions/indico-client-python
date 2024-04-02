@@ -1,4 +1,7 @@
-from indico.types.base import BaseType
+import json
+from typing import Any, Dict, Optional
+
+from indico.types.base import BaseType, JSONType
 
 
 class TrainingProgress(BaseType):
@@ -41,4 +44,13 @@ class ModelOptions(BaseType):
     """
 
     id: int
-    model_training_options: str
+    domain: str
+    high_quality: bool
+    interlabler_resolution: str
+    sampling_strategy: str
+    seed: int
+    test_split: float
+    weight_by_class_frequency: bool
+    word_predictor_strength: str
+    predict_options: JSONType
+    model_training_options: JSONType

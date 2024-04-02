@@ -97,7 +97,7 @@ def test_model_group_progress(
     )
     time.sleep(1)
     model: Model = client.call(
-        (GetTrainingModelWithProgress(id=mg.model_group_by_name(name).id))
+        GetTrainingModelWithProgress(id=mg.model_group_by_name(name).id)
     )
 
     assert type(model) == Model
@@ -211,15 +211,17 @@ def check_annotation_metrics(result):
     assert result.retrain_for_metrics is False
 
 
-def test_update_model_group_settings(
-    indico, org_annotate_model_group
-):
+def test_update_model_group_settings(indico, org_annotate_model_group):
     client = IndicoClient()
-    model_training_options = {
-        "use_autolabeled_data" : True,
-        "use_partial_data" : True
-    }
+    model_training_options = {"use_autolabeled_data": True, "use_partial_data": True}
     result = client.call(
-        UpdateModelGroupSettings(model_group_id=org_annotate_model_group.id, model_training_options=model_training_options)
+        UpdateModelGroupSettings(
+            model_group_id=org_annotate_model_group.id,
+            model_training_options=model_training_options,
+            make_predictions=False,
+        )
     )
-    assert json.loads(result.model_training_options) == {'use_autolabeled_data': True, 'use_partial_data': True}
+    assert result.model_training_options == {
+        "use_autolabeled_data": True,
+        "use_partial_data": True,
+    }
