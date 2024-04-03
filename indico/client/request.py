@@ -119,7 +119,8 @@ class RequestChain(Generic[RequestClass, FinalResponseType], ABC):
     result: "Optional[FinalResponseType]" = None
 
     @abstractmethod
-    def requests(self) -> "Iterator[RequestClass]": ...
+    def requests(self) -> "Iterator[RequestClass]":
+        ...
 
 
 class Delay:
