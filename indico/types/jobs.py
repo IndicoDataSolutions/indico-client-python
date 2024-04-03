@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from typing import TYPE_CHECKING
+
 from indico.types.base import BaseType, JSONType
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any
 
 
 class Job(BaseType):
@@ -22,7 +27,7 @@ class Job(BaseType):
     result: JSONType
     ready: bool
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: "Any"):
         if "jobId" in kwargs:
             kwargs["id"] = kwargs["jobId"]
             del kwargs["jobId"]

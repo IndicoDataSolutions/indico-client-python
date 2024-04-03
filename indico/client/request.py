@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from enum import Enum
 from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
@@ -8,13 +8,9 @@ from indico.typing import AnyDict
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, Iterator, List, Optional, Union
 
-# the generic vars effectively disregarded through explicit casting throughout
-# this file in order to support better user-facing typing via client.call and
-# actual gql response types
-ProvidedResponseType = TypeVar("ProvidedResponseType")
-ProcessedResponseType = TypeVar("ProcessedResponseType")
-RequestClass = TypeVar("RequestClass")
-FinalResponseType = TypeVar("FinalResponseType")
+    from indico.typing import AnyDict
+
+ResponseType = TypeVar("ResponseType")
 
 
 class HTTPMethod(Enum):
@@ -26,7 +22,7 @@ class HTTPMethod(Enum):
     OPTIONS = "OPTIONS"
 
 
-class HTTPRequest(Generic[ProvidedResponseType, ProcessedResponseType]):
+class HTTPRequest(Generic[ResponseType]):
     def __init__(self, method: HTTPMethod, path: str, **kwargs: "Any"):
         self.method: HTTPMethod = method
         self.path: str = path
@@ -36,13 +32,11 @@ class HTTPRequest(Generic[ProvidedResponseType, ProcessedResponseType]):
     def kwargs(self) -> "AnyDict":
         return self._kwargs
 
-    def process_response(
-        self, response: "ProvidedResponseType"
-    ) -> "ProcessedResponseType":
-        return cast("ProcessedResponseType", response)
+    def process_response(self, response: "Any") -> "ResponseType":
+        return cast("ResponseType", response)
 
 
-class GraphQLRequest(HTTPRequest[AnyDict, ProcessedResponseType]):
+class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
     def __init__(self, query: str, variables: "Optional[AnyDict]" = None):
         self.query: str = query
         self.variables: "Optional[AnyDict]" = variables
@@ -53,9 +47,15 @@ class GraphQLRequest(HTTPRequest[AnyDict, ProcessedResponseType]):
     def kwargs(self) -> "AnyDict":
         return {"json": {"query": self.query, "variables": self.variables}}
 
-    def process_response(self, response: "AnyDict") -> "ProcessedResponseType":
+    def parse_payload(self, response: "AnyDict") -> "Any":
+        # obliterates the return typing so that new queries can type without
+        # needing to cast/ignore the super, and so that legacy untyped impls
+        # can continue to use `process_response`
+        return self.process_response(response)
+
+    def process_response(self, response: "AnyDict") -> "ResponseType":
         raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
-        errors: "List[AnyDict]" = response.pop("errors", [])
+        errors: "List[AnyDict]" = raw_response.pop("errors", [])
 
         if errors:
             extras: "Dict[str, List[Any]]" = {
@@ -68,10 +68,11 @@ class GraphQLRequest(HTTPRequest[AnyDict, ProcessedResponseType]):
                 extras=extras,
             )
 
-        return cast("ProcessedResponseType", raw_response["data"])
+        # technically incorrect, but necessary for backwards compatibility
+        return cast("ResponseType", raw_response["data"])
 
 
-class PagedRequest(GraphQLRequest[ProcessedResponseType]):
+class PagedRequest(GraphQLRequest[ResponseType]):
     """
     To enable pagination, query must include $after as an argument
     and request pageInfo
@@ -102,8 +103,8 @@ class PagedRequest(GraphQLRequest[ProcessedResponseType]):
 
     def process_response(
         self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
-    ) -> "ProcessedResponseType":
-        raw_response = cast("AnyDict", super().process_response(response))
+    ) -> "ResponseType":
+        raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
         if nested_keys:
             _pg = raw_response
             for key in nested_keys:
@@ -123,15 +124,19 @@ class PagedRequest(GraphQLRequest[ProcessedResponseType]):
         cast("AnyDict", self.variables)["after"] = (
             _pg["endCursor"] if self.has_next_page else None
         )
-        return cast("ProcessedResponseType", raw_response)
+
+        # technically incorrect, but necessary for backwards compatibility
+        return cast("ResponseType", raw_response)
 
 
-class RequestChain(Generic[RequestClass, FinalResponseType], ABC):
+class RequestChain(Generic[ResponseType]):
     previous: "Any" = None
-    result: "Optional[FinalResponseType]" = None
+    result: "Optional[ResponseType]" = None
 
     @abstractmethod
-    def requests(self) -> "Iterator[RequestClass]":
+    def requests(
+        self,
+    ) -> "Iterator[Union[RequestChain[Any], HTTPRequest[Any], Delay]]":
         ...
 
 
