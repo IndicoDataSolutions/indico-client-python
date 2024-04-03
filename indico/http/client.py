@@ -25,11 +25,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, Iterator, List, Optional, Union
     from urllib.request import Request
 
-    from indico.client.request import (
-        HTTPRequest,
-        ProcessedResponseType,
-        ProvidedResponseType,
-    )
+    from indico.client.request import HTTPRequest, ResponseType
     from indico.typing import AnyDict
 
 
@@ -102,9 +98,7 @@ class HTTPClient:
 
         return cast("AnyDict", r)
 
-    def execute_request(
-        self, request: "HTTPRequest[ProvidedResponseType, ProcessedResponseType]"
-    ) -> "ProcessedResponseType":
+    def execute_request(self, request: "HTTPRequest[ResponseType]") -> "ResponseType":
         return request.process_response(
             self._make_request(
                 method=request.method.value.lower(), path=request.path, **request.kwargs
@@ -266,8 +260,8 @@ class AIOHTTPClient:
         return cast("AnyDict", r)
 
     async def execute_request(
-        self, request: "HTTPRequest[ProvidedResponseType, ProcessedResponseType]"
-    ) -> "ProcessedResponseType":
+        self, request: "HTTPRequest[ResponseType]"
+    ) -> "ResponseType":
         return request.process_response(
             await self._make_request(
                 method=request.method.value.lower(), path=request.path, **request.kwargs
