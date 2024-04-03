@@ -14,7 +14,7 @@ from indico.queries.version import GetIPAVersion
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import TracebackType
-    from typing import Any, AsyncIterator, Iterator, Optional, Type, TypeVar, Union
+    from typing import AsyncIterator, Iterator, Optional, Type, TypeVar, Union
 
     from typing_extensions import Self
 
@@ -51,7 +51,7 @@ class IndicoClient:
 
     def _handle_request_chain(
         self,
-        chain: "RequestChain[Any, ReturnType]",
+        chain: "RequestChain[ReturnType]",
     ) -> "ReturnType":
         response: "Optional[ReturnType]" = None
 
@@ -75,7 +75,7 @@ class IndicoClient:
 
     def call(
         self,
-        request: "Union[HTTPRequest[Any, ReturnType], RequestChain[Any, ReturnType]]",
+        request: "Union[HTTPRequest[ReturnType], RequestChain[ReturnType]]",
     ) -> "ReturnType":
         """
         Make a call to the Indico IPA Platform
@@ -169,7 +169,7 @@ class AsyncIndicoClient:
 
     async def _handle_request_chain(
         self,
-        chain: "RequestChain[Any, ReturnType]",
+        chain: "RequestChain[ReturnType]",
     ) -> "ReturnType":
         response: "Optional[ReturnType]" = None
 
@@ -193,7 +193,7 @@ class AsyncIndicoClient:
 
     async def call(
         self,
-        request: "Union[HTTPRequest[Any, ReturnType], RequestChain[Any, ReturnType]]",
+        request: "Union[HTTPRequest[ReturnType], RequestChain[ReturnType]]",
     ) -> "ReturnType":
         """
         Make a call to the Indico IPA Platform
@@ -235,3 +235,12 @@ class AsyncIndicoClient:
         while request.has_next_page:
             r = await self._http.execute_request(request)
             yield r
+
+
+# class test(GraphQLRequest[int]):
+#     def process_response(self, response: "Payload") -> int:
+#         a: "Payload" = super().parse_payload(response)
+#         return a["a"]
+
+
+# a: str = IndicoClient().call(test(query=""))

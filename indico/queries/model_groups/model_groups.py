@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING
 
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound
@@ -7,9 +7,15 @@ from indico.types.jobs import Job
 from indico.types.model import Model, ModelOptions
 from indico.types.model_group import ModelGroup
 from indico.types.utils import cc_to_snake
+from indico.typing import AnyDict
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Iterator, List, Optional, Union, Dict
+
+    from indico.typing import Payload
 
 
-class GetModelGroup(RequestChain):
+class GetModelGroup(RequestChain[ModelGroup]):
     """
     Get an object describing a model group
 
@@ -23,23 +29,26 @@ class GetModelGroup(RequestChain):
     """
 
     def __init__(
-        self, id: int, wait: bool = False, request_interval: Union[int, float] = 5
+        self, id: int, wait: bool = False, request_interval: "Union[int, float]" = 5
     ):
         self.id = id
         self.wait = wait
         self.request_interval = request_interval
 
-    def requests(self):
+    def requests(
+        self,
+    ) -> "Iterator[Union[GetModelGroupSelectedModelStatus, Delay, _GetModelGroup]]":
         if self.wait:
             req = GetModelGroupSelectedModelStatus(id=self.id)
             yield req
             while self.previous not in ["FAILED", "COMPLETE", "NOT_ENOUGH_DATA"]:
                 yield Delay(seconds=self.request_interval)
                 yield req
+
         yield _GetModelGroup(id=self.id)
 
 
-class _GetModelGroup(GraphQLRequest):
+class _GetModelGroup(GraphQLRequest[ModelGroup]):
     """
     Get an object describing a model group
 
@@ -70,19 +79,18 @@ class _GetModelGroup(GraphQLRequest):
     def __init__(self, id: int):
         super().__init__(query=self.query, variables={"id": id})
 
-    def process_response(self, response):
+    def process_response(self, response: "Payload") -> "ModelGroup":
         try:
-            mg = ModelGroup(
-                **super().process_response(response)["modelGroups"]["modelGroups"][0]
+            return ModelGroup(
+                **super().parse_payload(response)["modelGroups"]["modelGroups"][0]
             )
         except IndexError:
             raise IndicoNotFound(
                 "ModelGroup not found. Please check the ID you are using."
             )
-        return mg
 
 
-class GetTrainingModelWithProgress(GraphQLRequest):
+class GetTrainingModelWithProgress(GraphQLRequest[Model]):
     """
     Get progress (percent complete) of a training model group
 
@@ -112,13 +120,12 @@ class GetTrainingModelWithProgress(GraphQLRequest):
     def __init__(self, id: int):
         super().__init__(query=self.query, variables={"id": id})
 
-    def process_response(self, response):
-        response = super().process_response(response)
-        model_groups = response["modelGroups"]["modelGroups"]
+    def process_response(self, response: "Payload") -> "Model":
+        model_groups = super().parse_payload(response)["modelGroups"]["modelGroups"]
         if len(model_groups) != 1:
             raise IndicoNotFound("Model Group")
-        models = model_groups[0]["models"]
 
+        models = model_groups[0]["models"]
         last = max(models, key=lambda m: m["id"])
         if not last:
             raise IndicoNotFound("Training Model")
@@ -126,7 +133,7 @@ class GetTrainingModelWithProgress(GraphQLRequest):
         return Model(**last)
 
 
-class GetModelGroupSelectedModelStatus(GraphQLRequest):
+class GetModelGroupSelectedModelStatus(GraphQLRequest[str]):
     """
     Get the status string of the selected model for the given model group id
 
@@ -154,14 +161,14 @@ class GetModelGroupSelectedModelStatus(GraphQLRequest):
     def __init__(self, id: int):
         super().__init__(query=self.query, variables={"id": id})
 
-    def process_response(self, response):
+    def process_response(self, response: "Payload") -> str:
         mg = ModelGroup(
-            **super().process_response(response)["modelGroups"]["modelGroups"][0]
+            **super().parse_payload(response)["modelGroups"]["modelGroups"][0]
         )
         return mg.selected_model.status
 
 
-class _ModelGroupPredict(GraphQLRequest):
+class _ModelGroupPredict(GraphQLRequest[Job]):
     query = """
         mutation ModelGroupPredict(<QUERY_ARGS>) {
             modelPredict(<MODEL_PREDICT_ARGS>) {
@@ -172,7 +179,7 @@ class _ModelGroupPredict(GraphQLRequest):
 
     query_args = {"modelId": "Int!", "data": "[String]", "predictOptions": "JSONString"}
 
-    def _args_strings(self, **kwargs):
+    def _args_strings(self, **kwargs: "Any") -> str:
         args = [k for k in self.query_args.keys() if kwargs.get(cc_to_snake(k))]
 
         query_args_string = ",".join(f"${k}: {self.query_args[k]}" for k in args)
@@ -183,12 +190,18 @@ class _ModelGroupPredict(GraphQLRequest):
 
         return query
 
-    def __init__(self, model_id: int, data: List[str], predict_options: Dict = None):
+    def __init__(
+        self,
+        model_id: int,
+        data: "List[str]",
+        predict_options: "Optional[AnyDict]" = None,
+    ):
+        predict_options_json: "Optional[str]" = None
         if predict_options:
-            predict_options = json.dumps(predict_options)
+            predict_options_json = json.dumps(predict_options)
 
         query = self._args_strings(
-            model_id=model_id, data=data, predict_options=predict_options
+            model_id=model_id, data=data, predict_options=predict_options_json
         )
 
         super().__init__(
@@ -196,15 +209,15 @@ class _ModelGroupPredict(GraphQLRequest):
             variables={
                 "modelId": model_id,
                 "data": data,
-                "predictOptions": predict_options,
+                "predictOptions": predict_options_json,
             },
         )
 
-    def process_response(self, response):
-        return Job(**super().process_response(response)["modelPredict"])
+    def process_response(self, response: "Payload") -> "Job":
+        return Job(**super().parse_payload(response)["modelPredict"])
 
 
-class ModelGroupPredict(RequestChain):
+class ModelGroupPredict(RequestChain[Job]):
     """
     Generate predictions from a model group on new data
 
@@ -220,15 +233,15 @@ class ModelGroupPredict(RequestChain):
     def __init__(
         self,
         model_id: int,
-        data: List[str],
+        data: "List[str]",
         load: bool = True,
-        predict_options: Dict = None,
+        predict_options: "Optional[AnyDict]" = None,
     ):
         self.model_id = model_id
         self.data = data
         self.predict_options = predict_options
 
-    def requests(self):
+    def requests(self) -> "Iterator[_ModelGroupPredict]":
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
         )
