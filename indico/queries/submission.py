@@ -507,7 +507,7 @@ class GetReviews(GraphQLRequest):
     {
         submission(id: $submissionId) {
             id
-            reviews {
+            reviews(includeChanges: true) {
                 id
                 submissionId
                 createdAt
