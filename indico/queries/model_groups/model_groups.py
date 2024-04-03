@@ -245,28 +245,15 @@ class UpdateModelGroupSettings(GraphQLRequest):
     Args:
         model_group_id (int): the id of the model group to update settings
         model_training_options (dict, optional): model training options to use when training model. Defaults to None
+            Valid options are based on model type:
+            - Text Extraction: 'max_empty_chunk_ratio', 'auto_negative_scaling', 'optimize_for', 'subtoken_prediction', 'base_model', 'class_weight'
+            - Text Classification: 'model_type'
+            - Object Detection / Image Classification: 'filter_empty', 'n_epochs', 'use_small_model'
         predict_options (dict, optional): predict options to use on model. Defaults to None
-        domain (str, optional): feature domain to use.
-            Valid values include STANDARD, STANDARD_V2, TOPICS, SENTIMENT, FINANCE, EMOTION, ENSEMBLE, FASTTEXT, UNSUPERVISEDSENTIMENT, IMAGE_V2, IMAGE_V3, IMAGE_V4, IMAGE_ENSEMBLE
-            Defaults to None
-        finetune (bool, optional): flag to use finetune or not in model training. Defaults to None
-        interlabeler_resolution (str, optional): denotes label resolution strategy.
-            Valid values include MAJORITY_VOTE_WITH_TIES, MAJORITY_VOTE_WITHOUT_TIES, UNANIMOUS, ALL
-            Defaults to None
-        make_predictions (bool, optional): flag to make predictions or not. Defaults to None
-        roc_auc_averaging (str, optional): roc auc averaging.
-            Valid values include SIMPLE, WEIGHTED
-            Defaults to None
-        sampling_strategy (str, optional): denote sampling strategy to use.
-            Valid values include NO_SAMPLING, RANDOM_OVERSAMPLE
-            Defaults to None
-        task_type (str, optional): denotes task type.
-            Valid values include CLASSIFICATION, CLASSIFICATION_MULTIPLE, RATIONALIZED_CLASSIFICATION, REGRESSION, ANNOTATION, OBJECT_DETECTION, FORM_EXTRACTION, CLASSIFICATION_UNBUNDLING
-            Defaults to None
-        test_split (float, optional): denotes test split. Defaults to None
-        word_predictor_strength (str, optional): denotes word predictor strength
-            Valid values include STRONG, MODERATE, WEAK
-            Defaults to None
+            Valid options are based on model type:
+            - Object Detection: 'threshold', 'predict_batch_size'
+            - Finetune: 'negative_confidence'
+            - Document: 'negative_confidence'
     """
 
     query = """
