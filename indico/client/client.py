@@ -6,11 +6,10 @@ from typing import TYPE_CHECKING, cast
 
 import urllib3
 
-from indico.client.request import Delay, HTTPRequest, RequestChain
+from indico.client.request import Delay, GraphQLRequest, HTTPRequest, RequestChain
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
 from indico.http.client import AIOHTTPClient, HTTPClient
-from indico.queries.version import GetIPAVersion
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import TracebackType
@@ -19,8 +18,25 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
     from indico.client.request import PagedRequest
+    from indico.typing import Payload
 
     ReturnType = TypeVar("ReturnType")
+
+
+# here to avoid circular imports
+class GetIPAVersion(GraphQLRequest[str]):
+    query = """
+        "query getIPAVersion {
+            ipaVersion
+        }
+    """
+
+    def __init__(self) -> None:
+        super().__init__(self.query)
+
+    def process_response(self, response: "Payload") -> str:
+        version: str = super().parse_payload(response)["ipaVersion"]
+        return version
 
 
 class IndicoClient:

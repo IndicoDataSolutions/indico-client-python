@@ -21,9 +21,9 @@ def retry(
     Original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
     """
 
-    def retry_decorator(f: Callable[P, T]) -> Callable[P, T]:
+    def retry_decorator(f: "Callable[P, T]") -> "Callable[P, T]":
         @wraps(f)
-        def retry_fn(*args: P.args, **kwargs: P.kwargs) -> T:
+        def retry_fn(*args: "P.args", **kwargs: "P.kwargs") -> "T":
             n_tries, n_delay = tries, delay
             while n_tries > 1:
                 try:
@@ -58,9 +58,9 @@ def aioretry(
             same time across multiple concurrent function calls
     """
 
-    def retry_decorator(f: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]:
+    def retry_decorator(f: "Callable[P, Awaitable[T]]") -> "Callable[P, Awaitable[T]]":
         @wraps(f)
-        async def retry_fn(*args: P.args, **kwargs: P.kwargs) -> T:
+        async def retry_fn(*args: "P.args", **kwargs: "P.kwargs") -> "T":
             n_tries = tries
             if isinstance(delay, tuple):
                 # pick a random number to sleep

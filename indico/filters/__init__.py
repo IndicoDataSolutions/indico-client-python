@@ -1,10 +1,10 @@
 import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 from indico.errors import IndicoInputError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
+    from typing import Any, ClassVar, List, Optional, Tuple, Union
 
     from indico.typing import AnyDict
 
@@ -17,14 +17,14 @@ def and_(*args: "Any") -> "Dict[str, List[Any]]":
     return {"AND": list(args)}
 
 
-class Filter(dict["str", "Any"]):
+class Filter(Dict[str, "Any"]):
     """
     Base filter class that allows users to construct filter statements for
     GraphQL queries. Search keys are constrained by the implementing subclasses
     If multiple arguments are supplied, they are treated as arg1 AND arg2 AND ...
     """
 
-    __options__: "ClassVar[Tuple[Any, ...]]"
+    __options__: "ClassVar[Tuple[Any, ...]]" = tuple()
 
     def __init__(self, **kwargs: "Any"):
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
@@ -67,7 +67,7 @@ class SubmissionReviewFilter(Filter):
         super().__init__(**kwargs)
 
 
-class DateRangeFilter(dict[str, "Optional[str]"]):
+class DateRangeFilter(Dict[str, "Optional[str]"]):
     """
     Create a Filter when querying for Submissions within a certain date range
     Args:

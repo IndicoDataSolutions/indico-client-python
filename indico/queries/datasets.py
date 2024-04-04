@@ -351,7 +351,7 @@ class RemoveDatasetFile(GraphQLRequest["Dataset"]):
 
 
 class _UploadDatasetFiles(HTTPRequest["List[AnyDict]"]):
-    def __init__(self, files: List[str]):
+    def __init__(self, files: "List[str]"):
         super().__init__(
             method=HTTPMethod.POST, path="/storage/files/upload", files=files
         )
