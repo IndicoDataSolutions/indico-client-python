@@ -25,8 +25,8 @@ class ExchangeIntegrationConfiguration(BaseType):
 
     user_id: str
     folder_id: str
-    folder_name: str = None
-    filters: str = None
+    folder_name: str
+    filters: str
 
 
 class Integration(BaseType):
