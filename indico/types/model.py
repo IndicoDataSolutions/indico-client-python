@@ -1,6 +1,3 @@
-import json
-from typing import Any, Dict, Optional
-
 from indico.types.base import BaseType, JSONType
 
 
