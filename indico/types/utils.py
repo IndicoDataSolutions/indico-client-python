@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from indico.errors import IndicoTimeoutError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import NoReturn, Optional, Union
+    from typing import Match, NoReturn, Optional, Union
 
 _cc_to_snake_re = re.compile(r"(?<!^)(?=[A-Z])")
 _snake_to_cc_re = re.compile(r"(.*?)_([a-zA-Z])")
@@ -15,7 +15,7 @@ def cc_to_snake(string: str) -> str:
     return re.sub(_cc_to_snake_re, "_", string).lower()
 
 
-def _camel(match: re.Match[str]) -> str:
+def _camel(match: "Match[str]") -> str:
     return match.group(1) + match.group(2).upper()
 
 
