@@ -1,17 +1,17 @@
-from typing import List
+from typing import TYPE_CHECKING
 
-import jsons
+from indico import GraphQLRequest
+from indico.types.integration import ExchangeIntegration
 
-from indico import GraphQLRequest, RequestChain
-from indico.errors import IndicoInputError
-from indico.types.integration import (
-    ExchangeIntegration,
-    ExchangeIntegrationConfiguration,
-    ExchangeIntegrationCredentials,
-)
+if TYPE_CHECKING:  # pragma: no cover
+    from indico.types.integration import (
+        ExchangeIntegrationConfiguration,
+        ExchangeIntegrationCredentials,
+    )
+    from indico.typing import AnyDict, Payload  # noqa: F401
 
 
-class AddExchangeIntegration(GraphQLRequest):
+class AddExchangeIntegration(GraphQLRequest["ExchangeIntegration"]):
     """
     Mutation to add a Microsoft Exchange integration to a workflow
 
@@ -43,8 +43,8 @@ class AddExchangeIntegration(GraphQLRequest):
 
     def __init__(
         self,
-        config: ExchangeIntegrationConfiguration,
-        credentials: ExchangeIntegrationCredentials,
+        config: "ExchangeIntegrationConfiguration",
+        credentials: "ExchangeIntegrationCredentials",
         workflow_id: int,
     ):
         super().__init__(
@@ -56,15 +56,15 @@ class AddExchangeIntegration(GraphQLRequest):
             },
         )
 
-    def process_response(self, response) -> ExchangeIntegration:
+    def process_response(self, response: "Payload") -> "ExchangeIntegration":
         return ExchangeIntegration(
-            **super().process_response(response)["addExchangeIntegrationToWorkflow"][
+            **super().parse_payload(response)["addExchangeIntegrationToWorkflow"][
                 "integration"
             ]
         )
 
 
-class StartIntegration(GraphQLRequest):
+class StartIntegration(GraphQLRequest["AnyDict"]):
     """
     Mutation to start an existing integration. Once an integration is started, documents will be submitted to the associated workflow.
 
@@ -91,7 +91,7 @@ class StartIntegration(GraphQLRequest):
         )
 
 
-class DeleteIntegration(GraphQLRequest):
+class DeleteIntegration(GraphQLRequest["AnyDict"]):
     """
     Mutation to delete an existing Integration.
 
@@ -115,7 +115,7 @@ class DeleteIntegration(GraphQLRequest):
         )
 
 
-class PauseIntegration(GraphQLRequest):
+class PauseIntegration(GraphQLRequest["AnyDict"]):
     """
     Mutation to pause an existing Integration.
 
