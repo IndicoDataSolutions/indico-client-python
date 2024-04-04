@@ -1,5 +1,4 @@
-import datetime
-from typing import Dict, List, Union
+from typing import TYPE_CHECKING, List
 
 from indico.client.request import GraphQLRequest, PagedRequest
 from indico.filters import UserMetricsFilter
@@ -10,6 +9,12 @@ from indico.types.user_metrics import (
     UserSnapshot,
     UserSummary,
 )
+
+if TYPE_CHECKING:  # pragma: no cover
+    from datetime import datetime
+    from typing import Optional, Union
+
+    from indico.typing import AnyDict, Payload
 
 
 class _PagedUserSnapshots(BaseType):
@@ -28,7 +33,7 @@ class _PagedUserChangelog(BaseType):
     results: List[UserChangelog]
 
 
-class GetUserSummary(GraphQLRequest):
+class GetUserSummary(GraphQLRequest["UserSummary"]):
     """
     Requests summary-level information of users in the app on a specific date.
 
@@ -52,17 +57,17 @@ query GetUserSummary($date: Date){
 }
     """
 
-    def __init__(self, date=None):
+    def __init__(self, date: "Optional[datetime]" = None):
         if date is not None:
             super().__init__(self.query, variables={"date": date.strftime("%Y-%m-%d")})
         else:
             super().__init__(self.query)
 
-    def process_response(self, response) -> UserSummary:
-        return UserSummary(**super().process_response(response)["userSummary"])
+    def process_response(self, response: "Payload") -> "UserSummary":
+        return UserSummary(**super().parse_payload(response)["userSummary"])
 
 
-class GetUserSnapshots(PagedRequest):
+class GetUserSnapshots(PagedRequest["List[UserSnapshot]"]):
     """
 
     Requests paged detailed information about app users on a specific date.
@@ -102,9 +107,9 @@ class GetUserSnapshots(PagedRequest):
     def __init__(
         self,
         *,
-        date: datetime,
-        filters: Union[Dict, UserMetricsFilter] = None,
-        limit: int = None
+        date: "datetime",
+        filters: "Optional[Union[AnyDict, UserMetricsFilter]]" = None,
+        limit: "Optional[int]" = None,
     ):
         variables = {
             "date": date.strftime("%Y-%m-%d") if date is not None else None,
@@ -113,13 +118,13 @@ class GetUserSnapshots(PagedRequest):
         }
         super().__init__(self.query, variables=variables)
 
-    def process_response(self, response) -> List[UserSnapshot]:
+    def process_response(self, response: "Payload") -> "List[UserSnapshot]":
         return _PagedUserSnapshots(
-            **super().process_response(response)["userSnapshot"]
+            **super().parse_payload(response)["userSnapshot"]
         ).results
 
 
-class GetUserChangelog(PagedRequest):
+class GetUserChangelog(PagedRequest["List[UserChangelog]"]):
     """
 
     Gets paged detailed information about app users.
@@ -158,10 +163,10 @@ class GetUserChangelog(PagedRequest):
     def __init__(
         self,
         *,
-        start_date: datetime,
-        end_date: datetime,
-        filters: Union[Dict, UserMetricsFilter] = None,
-        limit: int = None
+        start_date: "datetime",
+        end_date: "datetime",
+        filters: "Optional[Union[AnyDict, UserMetricsFilter]]" = None,
+        limit: "Optional[int]" = None,
     ):
         variables = {
             "sdate": start_date.strftime("%Y-%m-%d")
@@ -173,13 +178,13 @@ class GetUserChangelog(PagedRequest):
         }
         super().__init__(self.query, variables=variables)
 
-    def process_response(self, response) -> List[UserSnapshot]:
+    def process_response(self, response: "Payload") -> "List[UserChangelog]":
         return _PagedUserChangelog(
-            **super().process_response(response)["userChangelog"]
+            **super().parse_payload(response)["userChangelog"]
         ).results
 
 
-class GenerateChangelogReport(GraphQLRequest):
+class GenerateChangelogReport(GraphQLRequest["UserChangelogReport"]):
     """
 
     Creates a job to generate a report of detailed information about app users
@@ -208,10 +213,10 @@ class GenerateChangelogReport(GraphQLRequest):
     def __init__(
         self,
         *,
-        start_date: datetime,
-        end_date: datetime,
-        filters: Union[Dict, UserMetricsFilter] = None,
-        report_format: str = "csv"
+        start_date: "datetime",
+        end_date: "datetime",
+        filters: "Optional[Union[AnyDict, UserMetricsFilter]]" = None,
+        report_format: str = "csv",
     ):
         variables = {
             "sdate": start_date.strftime("%Y-%m-%d")
@@ -223,7 +228,7 @@ class GenerateChangelogReport(GraphQLRequest):
         }
         super().__init__(self.query, variables=variables)
 
-    def process_response(self, response) -> List[UserSnapshot]:
+    def process_response(self, response: "Payload") -> "UserChangelogReport":
         return UserChangelogReport(
-            **super().process_response(response)["userChangelogReport"]
+            **super().parse_payload(response)["userChangelogReport"]
         )

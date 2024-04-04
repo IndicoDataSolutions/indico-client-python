@@ -6,7 +6,7 @@ from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Dict, Iterator, List, Optional, Type, TypeAlias, Union
+    from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
     from indico.typing import AnyDict
 
@@ -111,14 +111,14 @@ class UploadBatched(RequestChain["List[AnyDict]"]):
         self,
         files: "List[str]",
         batch_size: int = 20,
-        request_cls: "Type[UploadDocument]" = UploadDocument,
+        request_cls: "Type[Any]" = UploadDocument,
     ):
         self.result: "Optional[List[Any]]" = None
         self.files = files
         self.batch_size = batch_size
         self.request_cls = request_cls
 
-    def requests(self) -> "Iterator[UploadDocument]":
+    def requests(self) -> "Iterator[Any]":
         self.result = []
         for i in range(0, len(self.files), self.batch_size):
             yield self.request_cls(self.files[i : i + self.batch_size])
@@ -147,4 +147,4 @@ class CreateStorageURLs(UploadDocument):
 
 
 # Alias to ensure backwards compatibility
-UploadImages: "TypeAlias" = CreateStorageURLs
+UploadImages = CreateStorageURLs
