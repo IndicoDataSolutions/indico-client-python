@@ -31,7 +31,7 @@ class IndicoConfig:
     """
 
     def __init__(self, **kwargs: "Any"):
-        self.host: str = os.environ["INDICO_HOST"]
+        self.host: str = os.getenv("INDICO_HOST", "")
         self.protocol: str = os.getenv("INDICO_PROTOCOL", "https")
         self.serializer: str = os.getenv("INDICO_SERIALIZER", "msgpack")
         self.api_token_path: "Union[str, Path]" = os.getenv(
