@@ -1,7 +1,7 @@
 import json
 from functools import partial
 from operator import eq, ne
-from typing import Dict, List, Union
+from typing import TYPE_CHECKING
 
 from indico.client.request import Delay, GraphQLRequest, PagedRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoTimeoutError
@@ -11,8 +11,13 @@ from indico.types import Job, Submission, SubmissionReviewFull
 from indico.types.submission import VALID_SUBMISSION_STATUSES
 from indico.types.utils import Timer
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterator, List, Optional, Union
 
-class ListSubmissions(PagedRequest):
+    from indico.typing import AnyDict, Payload
+
+
+class ListSubmissions(PagedRequest["List[Submission]"]):
     """
     List all Submissions visible to the authenticated user by most recent.
     Supports pagination (limit becomes page_size)
@@ -125,10 +130,10 @@ class ListSubmissions(PagedRequest):
     def __init__(
         self,
         *,
-        submission_ids: List[int] = None,
-        workflow_ids: List[int] = None,
-        filters: Union[Dict, SubmissionFilter] = None,
-        limit: int = 1000,
+        submission_ids: "Optional[List[int]]" = None,
+        workflow_ids: "Optional[List[int]]" = None,
+        filters: "Optional[Union[AnyDict, SubmissionFilter]]" = None,
+        limit: "Optional[int]" = 1000,
         order_by: str = "ID",
         desc: bool = True,
     ):
@@ -144,14 +149,14 @@ class ListSubmissions(PagedRequest):
             },
         )
 
-    def process_response(self, response) -> List[Submission]:
+    def process_response(self, response: "Payload") -> "List[Submission]":
         return [
             Submission(**s)
-            for s in super().process_response(response)["submissions"]["submissions"]
+            for s in super().parse_payload(response)["submissions"]["submissions"]
         ]
 
 
-class GetSubmission(GraphQLRequest):
+class GetSubmission(GraphQLRequest["Submission"]):
     """
     Retrieve a Submission by id
 
@@ -233,11 +238,11 @@ class GetSubmission(GraphQLRequest):
     def __init__(self, submission_id: int):
         super().__init__(self.query, variables={"submissionId": submission_id})
 
-    def process_response(self, response) -> Submission:
-        return Submission(**(super().process_response(response)["submission"]))
+    def process_response(self, response: "Payload") -> "Submission":
+        return Submission(**(super().parse_payload(response)["submission"]))
 
 
-class WaitForSubmissions(RequestChain):
+class WaitForSubmissions(RequestChain["List[Submission]"]):
     """
     Given submission_ids, wait for all to finish processing
     """
@@ -282,7 +287,7 @@ class WaitForSubmissions(RequestChain):
         }
     """
 
-    def __init__(self, submission_ids: List[int], timeout: Union[int, float] = 60):
+    def __init__(self, submission_ids: "List[int]", timeout: "Union[int, float]" = 60):
         if not submission_ids:
             raise IndicoInputError("Please provide submission ids")
 
@@ -293,7 +298,7 @@ class WaitForSubmissions(RequestChain):
             ListSubmissions, submission_ids=self.submission_ids, limit=None
         )
 
-    def requests(self) -> List[Submission]:
+    def requests(self) -> "Iterator[ListSubmissions]":
         timer = Timer(self.timeout)
 
         while True:
@@ -303,7 +308,7 @@ class WaitForSubmissions(RequestChain):
                 break
 
 
-class UpdateSubmission(GraphQLRequest):
+class UpdateSubmission(GraphQLRequest["Submission"]):
     """
     Update the retrieval status of a Submission by id
 
@@ -356,11 +361,11 @@ class UpdateSubmission(GraphQLRequest):
             variables={"submissionId": submission_id, "retrieved": retrieved},
         )
 
-    def process_response(self, response) -> Submission:
-        return Submission(**(super().process_response(response)["updateSubmission"]))
+    def process_response(self, response: "Payload") -> "Submission":
+        return Submission(**(super().parse_payload(response)["updateSubmission"]))
 
 
-class GenerateSubmissionResult(GraphQLRequest):
+class GenerateSubmissionResult(GraphQLRequest["Job"]):
     query = """
         mutation CreateSubmissionResults($submissionId: Int!) {
             submissionResults(submissionId: $submissionId) {
@@ -374,12 +379,12 @@ class GenerateSubmissionResult(GraphQLRequest):
         submission_id = submission if isinstance(submission, int) else submission.id
         super().__init__(self.query, variables={"submissionId": submission_id})
 
-    def process_response(self, response) -> Job:
-        response = super().process_response(response)["submissionResults"]
+    def process_response(self, response: "Payload") -> "Job":
+        response = super().parse_payload(response)["submissionResults"]
         return Job(id=response["jobId"])
 
 
-class SubmissionResult(RequestChain):
+class SubmissionResult(RequestChain["Job"]):
     """
     Generate a result file for a Submission
 
@@ -404,15 +409,13 @@ class SubmissionResult(RequestChain):
             IndicoInputError: The requested Submission is not `check_status`
     """
 
-    previous: Submission = None
-
     def __init__(
         self,
-        submission: Union[int, Submission],
-        check_status: str = None,
+        submission: "Union[int, Submission]",
+        check_status: "Optional[str]" = None,
         wait: bool = False,
-        timeout: Union[int, float] = 30,
-        request_interval: Union[int, float] = 5,
+        timeout: "Union[int, float]" = 30,
+        request_interval: "Union[int, float]" = 5,
     ):
         self.submission_id = (
             submission if isinstance(submission, int) else submission.id
@@ -431,7 +434,9 @@ class SubmissionResult(RequestChain):
             else partial(ne, "PROCESSING")
         )
 
-    def requests(self) -> Union[Job, str]:
+    def requests(
+        self,
+    ) -> "Iterator[Union[GetSubmission, Delay, GenerateSubmissionResult, JobStatus]]":
         timer = Timer(self.timeout)
         timer.check()
         yield GetSubmission(self.submission_id)
@@ -452,7 +457,7 @@ class SubmissionResult(RequestChain):
             yield JobStatus(id=self.previous.id, wait=True, timeout=self.timeout)
 
 
-class SubmitReview(GraphQLRequest):
+class SubmitReview(GraphQLRequest["Job"]):
     """
     Submit an "Auto" Review for a submission. Requires that the submission be in PENDING_AUTO_REVIEW status.
 
@@ -489,19 +494,21 @@ class SubmitReview(GraphQLRequest):
 
     def __init__(
         self,
-        submission: Union[int, Submission],
-        changes: Dict | List = None,
+        submission: "Union[int, Submission]",
+        changes: "Optional[Union[AnyDict, List[AnyDict]]]" = None,
         rejected: bool = False,
-        force_complete: bool = None,
+        force_complete: "Optional[bool]" = None,
     ):
+        changes_json: "Optional[str]" = None
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
             raise IndicoInputError("Must provide changes or reject=True")
         elif changes and isinstance(changes, (dict, list)):
-            changes = json.dumps(changes)
+            changes_json = json.dumps(changes)
+
         _vars = {
             "submissionId": submission_id,
-            "changes": changes,
+            "changes": changes_json,
             "rejected": rejected,
         }
 
@@ -519,12 +526,12 @@ class SubmitReview(GraphQLRequest):
 
         super().__init__(query, variables=_vars)
 
-    def process_response(self, response) -> Job:
-        response = super().process_response(response)["submitAutoReview"]
+    def process_response(self, response: "Payload") -> "Job":
+        response = super().parse_payload(response)["submitAutoReview"]
         return Job(id=response["jobId"])
 
 
-class GetReviews(GraphQLRequest):
+class GetReviews(GraphQLRequest["List[SubmissionReviewFull]"]):
     """
     Given a submission Id, return all the full Review objects back with changes
 
@@ -560,14 +567,14 @@ class GetReviews(GraphQLRequest):
     def __init__(self, submission_id: int):
         super().__init__(self.query, variables={"submissionId": submission_id})
 
-    def process_response(self, response) -> List[SubmissionReviewFull]:
+    def process_response(self, response: "Payload") -> "List[SubmissionReviewFull]":
         return [
             SubmissionReviewFull(**review)
-            for review in super().process_response(response)["submission"]["reviews"]
+            for review in super().parse_payload(response)["submission"]["reviews"]
         ]
 
 
-class RetrySubmission(GraphQLRequest):
+class RetrySubmission(GraphQLRequest["List[Submission]"]):
     """
     Given a list of submission ids, retry those failed submissions.
     Submissions must be in a failed state and cannot be requested before
@@ -599,14 +606,13 @@ class RetrySubmission(GraphQLRequest):
 }
     """
 
-    def __init__(self, submission_ids: List[int]):
+    def __init__(self, submission_ids: "List[int]"):
         if submission_ids is None or len(submission_ids) < 1:
             raise IndicoInputError("You must specify submission ids")
 
         super().__init__(self.query, variables={"submissionIds": submission_ids})
 
-    def process_response(self, response) -> List[Submission]:
+    def process_response(self, response: "Payload") -> "List[Submission]":
         return [
-            Submission(**s)
-            for s in super().process_response(response)["retrySubmissions"]
+            Submission(**s) for s in super().parse_payload(response)["retrySubmissions"]
         ]

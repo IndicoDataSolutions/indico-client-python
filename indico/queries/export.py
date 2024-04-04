@@ -1,16 +1,21 @@
 import io
 import warnings
-from typing import List, Union
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from indico.client import Delay, GraphQLRequest, RequestChain
-from indico.errors import IndicoRequestError
+from indico.errors import IndicoInputError, IndicoRequestError
 from indico.queries.storage import RetrieveStorageObject
 from indico.types.export import Export, LabelResolutionStrategy
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterator, List, Optional, Union
 
-class _CreateExport(GraphQLRequest):
+    from indico.typing import Payload
+
+
+class _CreateExport(GraphQLRequest["Export"]):
     query = """
         mutation CreateExport(
             $datasetId: Int!,
@@ -51,22 +56,36 @@ class _CreateExport(GraphQLRequest):
         self,
         dataset_id: int,
         labelset_id: int,
-        column_ids: List[int] = None,
-        model_ids: List[int] = None,
-        frozen_labelset_ids: List[int] = None,
-        combine_labels: LabelResolutionStrategy = LabelResolutionStrategy.ALL.name,
-        file_info: bool = None,
-        anonymoous: bool = None,
-        anonymous: bool = None,
+        column_ids: "Optional[List[int]]" = None,
+        model_ids: "Optional[List[int]]" = None,
+        frozen_labelset_ids: "Optional[List[int]]" = None,
+        combine_labels: "Union[LabelResolutionStrategy, str]" = LabelResolutionStrategy.ALL,
+        file_info: "Optional[bool]" = None,
+        anonymoous: "Optional[bool]" = None,
+        anonymous: "Optional[bool]" = None,
     ):
         if anonymoous:
             warnings.warn(
                 "Argument anonymoous is deprecated and will be removed in future versions. Use argument anonymous instead."
             )
             if anonymous:
-                raise IndicoRequestError("Cannot use both anonymoous and anonymous.")
-            else:
-                anonymous = anonymoous
+                raise IndicoInputError("Cannot use both anonymoous and anonymous.")
+            anonymous = anonymoous
+
+        if isinstance(combine_labels, LabelResolutionStrategy):
+            combine_labels = combine_labels.name
+        else:
+            if combine_labels not in LabelResolutionStrategy.__members__:
+                raise IndicoInputError(
+                    "Invalid resolution strategy. Use the LabelResolutionStrategy enum"
+                    " instead."
+                )
+
+            warnings.warn(
+                "String-based values to combine_labels is deprecated. Use the"
+                " LabelResolutionStrategy enum instead."
+            )
+
         super().__init__(
             self.query,
             variables={
@@ -81,12 +100,12 @@ class _CreateExport(GraphQLRequest):
             },
         )
 
-    def process_response(self, response):
-        response = super().process_response(response)
+    def process_response(self, response: "Payload") -> "Export":
+        response = super().parse_payload(response)
         return Export(**response["createExport"])
 
 
-class GetExport(GraphQLRequest):
+class GetExport(GraphQLRequest["Export"]):
     """
     Get information on an Export job
 
@@ -122,18 +141,18 @@ class GetExport(GraphQLRequest):
     def __init__(self, export_id: int):
         super().__init__(self.query, variables={"exportIds": [export_id]})
 
-    def process_response(self, response):
-        response = super().process_response(response)
+    def process_response(self, response: "Payload") -> "Export":
+        response = super().parse_payload(response)
         return Export(**response["exports"]["exports"][0])
 
 
 class _RetrieveExport(RetrieveStorageObject):
-    def process_response(self, response):
-        response = super().process_response(response)
-        return pd.read_csv(io.StringIO(response))
+    def process_response(self, response: "Payload") -> "pd.DataFrame":
+        raw_response: str = super().process_response(response)
+        return pd.read_csv(io.StringIO(raw_response))
 
 
-class DownloadExport(RequestChain):
+class DownloadExport(RequestChain["pd.DataFrame"]):
     """
     Download an export from an Indico storage url
 
@@ -148,7 +167,9 @@ class DownloadExport(RequestChain):
         IndicoRequestError if the Export job is not complete or failed
     """
 
-    def __init__(self, export_id: int = None, export: Export = None):
+    def __init__(
+        self, export_id: "Optional[int]" = None, export: "Optional[Export]" = None
+    ):
         if not export_id and not export:
             raise IndicoRequestError(
                 code="FAILURE",
@@ -157,11 +178,11 @@ class DownloadExport(RequestChain):
         self.export_id = export_id
         self.export = export
 
-    def requests(self):
+    def requests(self) -> "Iterator[Union[GetExport, _RetrieveExport]]":
         if self.export_id:
             yield GetExport(self.export_id)
-        export = self.export or self.previous
 
+        export = self.export or self.previous
         if export.status != "COMPLETE":
             raise IndicoRequestError(
                 code="400",
@@ -171,7 +192,7 @@ class DownloadExport(RequestChain):
         yield _RetrieveExport(export.download_url)
 
 
-class CreateExport(RequestChain):
+class CreateExport(RequestChain["Export"]):
     """
     Create an export job for a dataset.
 
@@ -192,20 +213,18 @@ class CreateExport(RequestChain):
 
     """
 
-    previous = None
-
     def __init__(
         self,
         dataset_id: int,
         labelset_id: int,
-        column_ids: List[int] = None,
-        model_ids: List[int] = None,
-        frozen_labelset_ids: List[int] = None,
-        combine_labels: LabelResolutionStrategy = LabelResolutionStrategy.ALL.name,
+        column_ids: "Optional[List[int]]" = None,
+        model_ids: "Optional[List[int]]" = None,
+        frozen_labelset_ids: "Optional[List[int]]" = None,
+        combine_labels: "Union[LabelResolutionStrategy, str]" = LabelResolutionStrategy.ALL,
         file_info: bool = False,
         anonymous: bool = False,
         wait: bool = True,
-        request_interval: Union[int, float] = 5,
+        request_interval: "Union[int, float]" = 5,
     ):
         self.dataset_id = dataset_id
         self.labelset_id = labelset_id
@@ -219,7 +238,7 @@ class CreateExport(RequestChain):
         self.request_interval = request_interval
         super().__init__()
 
-    def requests(self):
+    def requests(self) -> "Iterator[Union[_CreateExport, GetExport, Delay]]":
         yield _CreateExport(
             dataset_id=self.dataset_id,
             labelset_id=self.labelset_id,
