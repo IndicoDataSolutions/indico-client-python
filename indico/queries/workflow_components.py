@@ -1,13 +1,14 @@
-import jsons
 from typing import List
+
+import jsons
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
 from indico.types import (
+    LinkedLabelGroup,
     NewLabelsetArguments,
     NewQuestionnaireArguments,
     Workflow,
-    LinkedLabelGroup,
 )
 
 
@@ -96,6 +97,7 @@ class AddLinkedLabelComponent(RequestChain):
         model_group_id(int): the model group to source classes from.
         groups (List[LinkedLabelGroup]): configuration for how to group labels.
     """
+
     def __init__(
         self,
         after_component_id: int,
@@ -145,6 +147,7 @@ class AddContentLengthFilterComponent(RequestChain):
         minimum(int): minimum length of content to accept. Defaults to None.
         maximum(int): maximum length of content to accept. Defaults to None.
     """
+
     def __init__(
         self,
         workflow_id: int,
@@ -339,14 +342,16 @@ class AddModelGroupComponent(GraphQLRequest):
                 "afterLinkId": after_link_id,
                 "modelTrainingOptions": model_training_options,
                 "modelType": model_type,
-                "newLabelsetArgs": self.__labelset_to_json(new_labelset_args)
-                if new_labelset_args is not None
-                else None,
-                "questionnaireArgs": self.__questionnaire_to_json(
-                    new_questionnaire_args
-                )
-                if new_questionnaire_args is not None
-                else None,
+                "newLabelsetArgs": (
+                    self.__labelset_to_json(new_labelset_args)
+                    if new_labelset_args is not None
+                    else None
+                ),
+                "questionnaireArgs": (
+                    self.__questionnaire_to_json(new_questionnaire_args)
+                    if new_questionnaire_args is not None
+                    else None
+                ),
             },
         )
 
@@ -374,7 +379,6 @@ class AddModelGroupComponent(GraphQLRequest):
 
 
 class DeleteWorkflowComponent(GraphQLRequest):
-
     """
     Deletes a component from a workflow. If the component has an associated model, the model is deleted as well.
     Available on 5.3+ only.

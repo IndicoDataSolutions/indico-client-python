@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import deprecation
 
@@ -7,7 +7,7 @@ from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound
 from indico.queries.workflow_components import AddModelGroupComponent
 from indico.types.jobs import Job
-from indico.types.model import Model
+from indico.types.model import Model, ModelOptions
 from indico.types.model_group import ModelGroup
 from indico.types.utils import cc_to_snake
 
@@ -235,4 +235,79 @@ class ModelGroupPredict(RequestChain):
 
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
+        )
+
+
+class UpdateModelGroupSettings(GraphQLRequest):
+    """
+    Updates an existing model group component in the platform.
+
+    Args:
+        model_group_id (int): the id of the model group to update settings
+        model_training_options (dict, optional): model training options to use when training model. Defaults to None
+            Valid options are based on model type:
+            - Text Extraction: 'max_empty_chunk_ratio', 'auto_negative_scaling', 'optimize_for', 'subtoken_prediction', 'base_model', 'class_weight'
+            - Text Classification: 'model_type'
+            - Object Detection / Image Classification: 'filter_empty', 'n_epochs', 'use_small_model'
+        predict_options (dict, optional): predict options to use on model. Defaults to None
+            Valid options are based on model type:
+            - Object Detection: 'threshold', 'predict_batch_size'
+            - Finetune: 'negative_confidence'
+            - Document: 'negative_confidence'
+    """
+
+    query = """
+        mutation updateModelGroup(
+            $modelGroupId: Int!,
+            $modelTrainingOptions: JSONString,
+            $predictOptions: JSONString,
+        ) {
+            updateModelGroupSettings(
+                modelGroupId: $modelGroupId,
+                modelTrainingOptions: $modelTrainingOptions,
+                predictOptions: $predictOptions,
+            ) {
+                modelOptions {
+                    id
+                    domain
+                    highQuality
+                    interlabelerResolution
+                    samplingStrategy
+                    seed
+                    testSplit
+                    weightByClassFrequency
+                    wordPredictorStrength
+                    modelTrainingOptions
+                    predictOptions
+                }
+            }
+        }
+    """
+
+    def __init__(
+        self,
+        model_group_id: int,
+        model_training_options: Optional[Dict[str, Any]] = None,
+        predict_options: Optional[Dict[str, Any]] = None,
+    ):
+        if model_training_options:
+            model_training_options = json.dumps(model_training_options)
+
+        if predict_options:
+            predict_options = json.dumps(predict_options)
+
+        super().__init__(
+            self.query,
+            variables={
+                "modelGroupId": model_group_id,
+                "modelTrainingOptions": model_training_options,
+                "predictOptions": predict_options,
+            },
+        )
+
+    def process_response(self, response):
+        return ModelOptions(
+            **super().process_response(response)["updateModelGroupSettings"][
+                "modelOptions"
+            ]
         )
