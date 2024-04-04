@@ -7,12 +7,11 @@ from indico.types.jobs import Job
 from indico.types.model import Model, ModelOptions
 from indico.types.model_group import ModelGroup
 from indico.types.utils import cc_to_snake
-from indico.typing import AnyDict
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Iterator, List, Optional, Union, Dict
+    from typing import Any, Iterator, List, Optional, Union
 
-    from indico.typing import Payload
+    from indico.typing import AnyDict, Payload
 
 
 class GetModelGroup(RequestChain[ModelGroup]):
@@ -247,7 +246,7 @@ class ModelGroupPredict(RequestChain[Job]):
         )
 
 
-class UpdateModelGroupSettings(GraphQLRequest):
+class UpdateModelGroupSettings(GraphQLRequest["ModelOptions"]):
     """
     Updates an existing model group component in the platform.
 
@@ -296,27 +295,29 @@ class UpdateModelGroupSettings(GraphQLRequest):
     def __init__(
         self,
         model_group_id: int,
-        model_training_options: Optional[Dict[str, Any]] = None,
-        predict_options: Optional[Dict[str, Any]] = None,
+        model_training_options: "Optional[AnyDict]" = None,
+        predict_options: "Optional[AnyDict]" = None,
     ):
+        model_training_options_json: "Optional[str]" = None
         if model_training_options:
-            model_training_options = json.dumps(model_training_options)
+            model_training_options_json = json.dumps(model_training_options)
 
+        predict_options_json: "Optional[str]" = None
         if predict_options:
-            predict_options = json.dumps(predict_options)
+            predict_options_json = json.dumps(predict_options)
 
         super().__init__(
             self.query,
             variables={
                 "modelGroupId": model_group_id,
-                "modelTrainingOptions": model_training_options,
-                "predictOptions": predict_options,
+                "modelTrainingOptions": model_training_options_json,
+                "predictOptions": predict_options_json,
             },
         )
 
-    def process_response(self, response):
+    def process_response(self, response: "Payload") -> "ModelOptions":
         return ModelOptions(
-            **super().process_response(response)["updateModelGroupSettings"][
+            **super().parse_payload(response)["updateModelGroupSettings"][
                 "modelOptions"
             ]
         )
