@@ -1,11 +1,16 @@
-from typing import Dict, List, Union
+from typing import TYPE_CHECKING
 
-from indico.client.request import GraphQLRequest, PagedRequest, RequestChain
+from indico.client.request import PagedRequest
 from indico.filters import ModelGroupExampleFilter
-from indico.types import Example, model_group
+from indico.types.questionnaire import Example
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import List, Optional, Union
+
+    from indico.typing import AnyDict, Payload
 
 
-class ListModelGroupExamples(PagedRequest):
+class ListModelGroupExamples(PagedRequest["List[Example]"]):
     """
     List all examples associated with a given model group ID.
     Supports pagination (limit becomes page_size)
@@ -46,13 +51,13 @@ class ListModelGroupExamples(PagedRequest):
     def __init__(
         self,
         *,
-        model_group_id: int = None,
-        filters: Union[Dict, ModelGroupExampleFilter] = None,
+        model_group_id: "Optional[int]" = None,
+        filters: "Optional[Union[AnyDict, ModelGroupExampleFilter]]" = None,
         limit: int = 1000,
         order_by: str = "ID",
         desc: bool = True,
-        after: int = None,
-        before: int = None,
+        after: "Optional[int]" = None,
+        before: "Optional[int]" = None,
     ):
         variables = {
             "modelGroupId": model_group_id,
@@ -68,9 +73,6 @@ class ListModelGroupExamples(PagedRequest):
             variables=variables,
         )
 
-    def process_response(self, response) -> List[Example]:
-        response = response["data"]["modelGroups"]["modelGroups"][0]
-        _pg = next(iter(response.values()))["pageInfo"]
-        self.has_next_page = _pg["hasNextPage"]
-        self.variables["after"] = _pg["endCursor"] if self.has_next_page else None
-        return [Example(**s) for s in response["pagedExamples"]["examples"]]
+    def process_response(self, response: "Payload") -> "List[Example]":
+        example_page = super().parse_payload(response)["modelGroups"]["modelGroups"][0]
+        return [Example(**s) for s in example_page["pagedExamples"]["examples"]]

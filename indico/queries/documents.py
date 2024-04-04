@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import json
-from typing import List
+from typing import TYPE_CHECKING
 
-from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
+from indico.client.request import GraphQLRequest, RequestChain
 from indico.queries.storage import UploadBatched, UploadDocument
 from indico.types.jobs import Job
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterator, List, Optional, Union
 
-class _DocumentExtraction(GraphQLRequest):
+    from indico.typing import AnyDict, Payload
+
+
+class _DocumentExtraction(GraphQLRequest["List[Job]"]):
     query = """
         mutation($files: [FileInput], $jsonConfig: JSONString, $ocrEngine: OCREngine) {
             documentExtraction(files: $files, jsonConfig: $jsonConfig, ocrEngine: $ocrEngine) {
@@ -17,27 +22,31 @@ class _DocumentExtraction(GraphQLRequest):
         }
     """
 
-    def __init__(self, files, json_config={"preset_config": "legacy"}, ocr_engine=None):
-        if json_config and type(json_config) == dict:
-            json_config = json.dumps(json_config)
+    def __init__(
+        self,
+        files: "List[AnyDict]",
+        json_config: "Optional[AnyDict]" = {"preset_config": "legacy"},
+        ocr_engine: "Optional[str]" = None,
+    ):
+        json_config_json: "Optional[str]" = None
+        if json_config and isinstance(json_config, dict):
+            json_config_json = json.dumps(json_config)
+
         super().__init__(
             query=self.query,
             variables={
                 "files": files,
-                "jsonConfig": json_config,
+                "jsonConfig": json_config_json,
                 "ocrEngine": ocr_engine,
             },
         )
 
-    def process_response(self, response):
-        jobs = super().process_response(response)["documentExtraction"]["jobIds"]
-        if jobs:
-            return [Job(id=j) for j in jobs]
-        else:
-            return []
+    def process_response(self, response: "Payload") -> "List[Job]":
+        jobs = super().parse_payload(response)["documentExtraction"]["jobIds"] or set()
+        return [Job(id=j) for j in jobs]
 
 
-class DocumentExtraction(RequestChain):
+class DocumentExtraction(RequestChain["Job"]):
     """
     Extract raw text from PDF or TIF files.
 
@@ -72,9 +81,9 @@ class DocumentExtraction(RequestChain):
 
     def __init__(
         self,
-        files: List[str],
-        json_config: dict = None,
-        upload_batch_size: int = None,
+        files: "List[str]",
+        json_config: "Optional[AnyDict]" = None,
+        upload_batch_size: "Optional[int]" = None,
         ocr_engine: str = "OMNIPAGE",
     ):
         self.files = files
@@ -82,7 +91,9 @@ class DocumentExtraction(RequestChain):
         self.upload_batch_size = upload_batch_size
         self.ocr_engine = ocr_engine
 
-    def requests(self):
+    def requests(
+        self,
+    ) -> "Iterator[Union[UploadBatched, UploadDocument, _DocumentExtraction]]":
         if self.upload_batch_size:
             yield UploadBatched(
                 files=self.files,
@@ -91,6 +102,7 @@ class DocumentExtraction(RequestChain):
             )
         else:
             yield UploadDocument(files=self.files)
+
         yield _DocumentExtraction(
             files=self.previous,
             json_config=self.json_config,
