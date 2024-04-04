@@ -1,11 +1,16 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING
 
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoError, IndicoNotFound
 from indico.types.questionnaire import Example, Questionnaire
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterator, List, Optional, Union
 
-class AddLabels(GraphQLRequest):
+    from indico.typing import AnyDict, Payload
+
+
+class AddLabels(GraphQLRequest["AnyDict"]):
     """
     Add labels to an existing labelset.
 
@@ -34,8 +39,8 @@ class AddLabels(GraphQLRequest):
     def __init__(
         self,
         labelset_id: int,
-        labels: List[dict],
-        model_group_id: int = None,
+        labels: "List[AnyDict]",
+        model_group_id: "Optional[int]" = None,
     ):
         super().__init__(
             query=self.query,
@@ -47,7 +52,7 @@ class AddLabels(GraphQLRequest):
         )
 
 
-class GetQuestionnaireExamples(GraphQLRequest):
+class GetQuestionnaireExamples(GraphQLRequest["List[Example]"]):
     """
     Gets unlabeled examples from a Questionnaire.
 
@@ -84,7 +89,7 @@ class GetQuestionnaireExamples(GraphQLRequest):
         self,
         questionnaire_id: int,
         num_examples: int,
-        datafile_id: Optional[int] = None,
+        datafile_id: "Optional[int]" = None,
     ):
         super().__init__(
             query=self.query,
@@ -95,11 +100,11 @@ class GetQuestionnaireExamples(GraphQLRequest):
             },
         )
 
-    def process_response(self, response):
+    def process_response(self, response: "Payload") -> "List[Example]":
         try:
-            examples = [
+            return [
                 Example(**e)
-                for e in super().process_response(response)["questionnaires"][
+                for e in super().parse_payload(response)["questionnaires"][
                     "questionnaires"
                 ][0]["examples"]
             ]
@@ -107,10 +112,9 @@ class GetQuestionnaireExamples(GraphQLRequest):
             raise IndicoNotFound(
                 "Examples not found. Please check the ID you are using."
             )
-        return examples
 
 
-class _GetQuestionnaire(GraphQLRequest):
+class _GetQuestionnaire(GraphQLRequest["Questionnaire"]):
     """
     Gets a questionnaire from an ID.
 
@@ -153,16 +157,17 @@ class _GetQuestionnaire(GraphQLRequest):
             variables={"questionnaire_id": questionnaire_id},
         )
 
-    def process_response(self, response):
-        questionnaire_list = super().process_response(response)["questionnaires"][
+    def process_response(self, response: "Payload") -> "Questionnaire":
+        questionnaire_list: "List[AnyDict]" = super().parse_payload(response)[
             "questionnaires"
-        ]
+        ]["questionnaires"]
         if not questionnaire_list or not questionnaire_list[0]:
             raise IndicoError("Cannot find questionnaire")
+
         return Questionnaire(**questionnaire_list[0])
 
 
-class GetQuestionnaire(RequestChain):
+class GetQuestionnaire(RequestChain["Questionnaire"]):
     """
     Gets a questionnaire from an ID.
 
@@ -174,15 +179,15 @@ class GetQuestionnaire(RequestChain):
         Questionnaire object
     """
 
-    previous = None
+    previous: "Questionnaire"
 
     def __init__(self, questionnaire_id: int, wait: bool = True):
         self.questionnaire_id = questionnaire_id
         self.wait = wait
 
-    def requests(self):
+    def requests(self) -> "Iterator[Union[_GetQuestionnaire, Delay]]":
         yield _GetQuestionnaire(questionnaire_id=self.questionnaire_id)
         if self.wait:
             while self.previous.questions_status == "STARTED":
-                yield _GetQuestionnaire(questionnaire_id=self.questionnaire_id)
                 yield Delay()
+                yield _GetQuestionnaire(questionnaire_id=self.questionnaire_id)
