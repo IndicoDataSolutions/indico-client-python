@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
-from typing import Union
+from typing import TYPE_CHECKING
 
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.types.jobs import Job
 from indico.types.utils import Timer
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterator, Optional, Union
 
-class _JobStatus(GraphQLRequest):
+    from indico.typing import Payload
+
+
+class _JobStatus(GraphQLRequest["Job"]):
     query = """
         query JobStatus($id: String) {
             job(id: $id) {
@@ -17,14 +22,14 @@ class _JobStatus(GraphQLRequest):
         }
     """
 
-    def __init__(self, id):
+    def __init__(self, id: str):
         super().__init__(self.query, variables={"id": id})
 
-    def process_response(self, response):
-        return Job(**super().process_response(response)["job"])
+    def process_response(self, response: "Payload") -> "Job":
+        return Job(**super().parse_payload(response)["job"])
 
 
-class _JobStatusWithResult(GraphQLRequest):
+class _JobStatusWithResult(GraphQLRequest["Job"]):
     query = """
         query JobStatus($id: String) {
             job(id: $id) {
@@ -36,14 +41,14 @@ class _JobStatusWithResult(GraphQLRequest):
         }
     """
 
-    def __init__(self, id):
+    def __init__(self, id: str):
         super().__init__(self.query, variables={"id": id})
 
-    def process_response(self, response):
-        return Job(**super().process_response(response)["job"])
+    def process_response(self, response: "Payload") -> "Job":
+        return Job(**super().parse_payload(response)["job"])
 
 
-class JobStatus(RequestChain):
+class JobStatus(RequestChain["Job"]):
     """
     Status of a Job in the Indico Platform.
 
@@ -67,26 +72,28 @@ class JobStatus(RequestChain):
             completed after `timeout` seconds
     """
 
-    previous: Job = None
+    previous: "Job"
 
     def __init__(
         self,
         id: str,
         wait: bool = True,
-        request_interval: Union[int, float] = 0.2,
-        timeout: Union[int, float] = None,
+        request_interval: "Union[int, float]" = 0.2,
+        timeout: "Optional[Union[int, float]]" = None,
     ):
         self.id = id
         self.wait = wait
         self.request_interval = request_interval
         self.timeout = timeout
 
-    def requests(self):
+    def requests(self) -> "Iterator[Union[_JobStatus, Delay, _JobStatusWithResult]]":
         yield _JobStatus(id=self.id)
+
         if self.wait:
-            timer = None
+            timer: "Optional[Timer]" = None
             if self.timeout is not None:
                 timer = Timer(self.timeout)
+
             # Check status of job until done if wait == True
             while not (
                 (self.previous.status in ["SUCCESS"] and self.previous.ready)
@@ -103,4 +110,5 @@ class JobStatus(RequestChain):
                     timer.check()
                 yield Delay(seconds=self.request_interval)
                 yield _JobStatus(id=self.id)
+
             yield _JobStatusWithResult(id=self.id)
