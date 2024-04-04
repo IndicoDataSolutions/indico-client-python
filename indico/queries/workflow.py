@@ -1,15 +1,20 @@
 import io
 import tempfile
-from typing import Dict, List, Union
+from typing import TYPE_CHECKING
 
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoError, IndicoInputError
 from indico.queries.storage import UploadBatched, UploadDocument
-from indico.types import SUBMISSION_RESULT_VERSIONS, Job, Submission, Workflow
+from indico.types import SUBMISSION_RESULT_VERSIONS, Submission, Workflow
 from indico.types.utils import cc_to_snake, snake_to_cc
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, ClassVar, Dict, Iterator, List, Optional, Union
 
-class ListWorkflows(GraphQLRequest):
+    from indico.typing import Payload
+
+
+class ListWorkflows(GraphQLRequest["List[Workflow]"]):
     """
     List all workflows visible to authenticated user
 
@@ -79,9 +84,9 @@ class ListWorkflows(GraphQLRequest):
     def __init__(
         self,
         *,
-        dataset_ids: List[int] = None,
-        workflow_ids: List[int] = None,
-        limit=100,
+        dataset_ids: Optional[List[int]] = None,
+        workflow_ids: Optional[List[int]] = None,
+        limit: int = 100,
     ):
         super().__init__(
             self.query,
@@ -92,12 +97,14 @@ class ListWorkflows(GraphQLRequest):
             },
         )
 
-    def process_response(self, response) -> List[Workflow]:
-        resp = super().process_response(response)
-        return [Workflow(**w) for w in resp["workflows"]["workflows"]]
+    def process_response(self, response: "Payload") -> "List[Workflow]":
+        return [
+            Workflow(**w)
+            for w in super().parse_payload(response)["workflows"]["workflows"]
+        ]
 
 
-class GetWorkflow(ListWorkflows):
+class GetWorkflow(GraphQLRequest["Workflow"]):
     """
     Query for Workflow by id
 
@@ -109,13 +116,13 @@ class GetWorkflow(ListWorkflows):
     """
 
     def __init__(self, workflow_id: int):
-        super().__init__(workflow_ids=[workflow_id])
+        self.list_workflows = ListWorkflows(workflow_ids=[workflow_id])
 
-    def process_response(self, response) -> Workflow:
-        return super().process_response(response)[0]
+    def process_response(self, response: "Payload") -> "Workflow":
+        return self.list_workflows.process_response(response)[0]
 
 
-class _ToggleReview(GraphQLRequest):
+class _ToggleReview(GraphQLRequest["Workflow"]):
     toggle = "enableReview"
     query_name = "toggleWorkflowReview"
     query = """
@@ -137,8 +144,8 @@ class _ToggleReview(GraphQLRequest):
             variables={"workflowId": workflow_id, "reviewState": enable_review},
         )
 
-    def process_response(self, response) -> Workflow:
-        return Workflow(**super().process_response(response)[self.query_name])
+    def process_response(self, response: "Payload") -> "Workflow":
+        return Workflow(**super().parse_payload(response)[self.query_name])
 
 
 class _ToggleAutoReview(_ToggleReview):
@@ -146,7 +153,7 @@ class _ToggleAutoReview(_ToggleReview):
     query_name = "toggleWorkflowAutoReview"
 
 
-class UpdateWorkflowSettings(RequestChain):
+class UpdateWorkflowSettings(RequestChain["Workflow"]):
     """
     Mutation to toggle review and auto-review on a workflow
 
@@ -163,9 +170,9 @@ class UpdateWorkflowSettings(RequestChain):
 
     def __init__(
         self,
-        workflow: Union[Workflow, int],
-        enable_review: bool = None,
-        enable_auto_review: bool = None,
+        workflow: "Union[Workflow, int]",
+        enable_review: "Optional[bool]" = None,
+        enable_auto_review: "Optional[bool]" = None,
     ):
         self.workflow_id = workflow.id if isinstance(workflow, Workflow) else workflow
         if enable_review is None and enable_auto_review is None:
@@ -174,14 +181,14 @@ class UpdateWorkflowSettings(RequestChain):
         self.enable_review = enable_review
         self.enable_auto_review = enable_auto_review
 
-    def requests(self):
+    def requests(self) -> "Iterator[_ToggleReview]":
         if self.enable_review is not None:
             yield _ToggleReview(self.workflow_id, self.enable_review)
         if self.enable_auto_review is not None:
             yield _ToggleAutoReview(self.workflow_id, self.enable_auto_review)
 
 
-class _WorkflowSubmission(GraphQLRequest):
+class _WorkflowSubmission(GraphQLRequest["Union[List[Submission], List[int]]"]):
     query = """
         mutation workflowSubmissionMutation({signature}) {{
             {mutation_name}({args}) {{
@@ -228,14 +235,14 @@ class _WorkflowSubmission(GraphQLRequest):
     def __init__(
         self,
         detailed_response: bool,
-        **kwargs,
+        **kwargs: "Any",
     ):
         self.workflow_id = kwargs["workflow_id"]
 
         # construct mutation signature and args based on provided kwargs to ensure
         # backwards-compatible graphql calls
         #
-        # inputFiles, bundle, and resultVersion only avaliable on IPA 4.9.0+
+        # inputFiles, bundle, and resultVersion only available on IPA 4.9.0+
         subq = (
             self.files_subquery
             if kwargs.get("bundle") or kwargs.get("result_version")
@@ -247,11 +254,13 @@ class _WorkflowSubmission(GraphQLRequest):
             else self.query
         )
 
-        args = [
+        args_list: "List[str]" = [
             _arg for _arg in self.mutation_args.keys() if kwargs.get(cc_to_snake(_arg))
         ]
-        signature = ",".join(f"${_arg}: {self.mutation_args[_arg]}" for _arg in args)
-        args = ",".join(f"{_arg}: ${_arg}" for _arg in args)
+        signature: str = ",".join(
+            f"${_arg}: {self.mutation_args[_arg]}" for _arg in args_list
+        )
+        args: str = ",".join(f"{_arg}: ${_arg}" for _arg in args_list)
 
         super().__init__(
             query=q.format(
@@ -260,15 +269,17 @@ class _WorkflowSubmission(GraphQLRequest):
             variables={snake_to_cc(var): val for var, val in kwargs.items()},
         )
 
-    def process_response(self, response):
-        response = super().process_response(response)[self.mutation_name]
+    def process_response(
+        self, response: "Payload"
+    ) -> "Union[List[Submission], List[int]]":
+        response = super().parse_payload(response)[self.mutation_name]
         if "submissions" in response:
             return [Submission(**s) for s in response["submissions"]]
         if not response["submissionIds"]:
             raise IndicoError(f"Failed to submit to workflow {self.workflow_id}")
         else:
-            return response["submissionIds"]
-        return [Job(id=job_id) for job_id in response["jobIds"]]
+            sub_ids: "List[int]" = response["submissionIds"]
+            return sub_ids
 
 
 class _WorkflowUrlSubmission(_WorkflowSubmission):
@@ -277,7 +288,7 @@ class _WorkflowUrlSubmission(_WorkflowSubmission):
     del mutation_args["files"]
 
 
-class WorkflowSubmission(RequestChain):
+class WorkflowSubmission(RequestChain["Union[List[Submission], List[int]]"]):
     f"""
     Submit files to a workflow for processing.
     One of `files`, `urls`, `stream`, or `text` is required.
@@ -304,17 +315,17 @@ class WorkflowSubmission(RequestChain):
 
     """
 
-    detailed_response = False
+    detailed_response: "ClassVar[bool]" = False
 
     def __init__(
         self,
         workflow_id: int,
-        files: List[str] = None,
-        urls: List[str] = None,
+        files: "Optional[List[str]]" = None,
+        urls: "Optional[List[str]]" = None,
         submission: bool = True,
         bundle: bool = False,
-        result_version: str = None,
-        streams: Dict[str, io.BufferedIOBase] = None,
+        result_version: "Optional[str]" = None,
+        streams: "Optional[Dict[str, io.BufferedIOBase]]" = None,
         text: str = "",
         batch_size: int = 10,
     ):
@@ -328,8 +339,6 @@ class WorkflowSubmission(RequestChain):
         if streams is not None:
             self.streams = streams.copy()
             self.has_streams = True
-        else:
-            self.streams = None
         self.text = text
         self.batch_size = batch_size
         if not submission:
@@ -351,7 +360,9 @@ class WorkflowSubmission(RequestChain):
                 "Only one of 'files' or 'streams', 'urls', or 'text' may be specified"
             )
 
-    def requests(self):
+    def requests(
+        self,
+    ) -> "Iterator[Union[UploadBatched, UploadDocument, _WorkflowSubmission]]":
         if self.files:
             yield UploadBatched(files=self.files, batch_size=self.batch_size)
             yield _WorkflowSubmission(
@@ -416,15 +427,15 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
 
     """
 
-    detailed_response = True
+    detailed_response: "ClassVar[bool]" = True
 
     def __init__(
         self,
         workflow_id: int,
-        files: List[str] = None,
-        urls: List[str] = None,
+        files: "Optional[List[str]]" = None,
+        urls: "Optional[List[str]]" = None,
         bundle: bool = False,
-        result_version: str = None,
+        result_version: "Optional[str]" = None,
     ):
         super().__init__(
             workflow_id,
@@ -436,7 +447,7 @@ class WorkflowSubmissionDetailed(WorkflowSubmission):
         )
 
 
-class _AddDataToWorkflow(GraphQLRequest):
+class _AddDataToWorkflow(GraphQLRequest["Workflow"]):
     query = """
         mutation addDataToWorkflow($workflowId: Int!) {
             addDataToWorkflow(workflowId: $workflowId){
@@ -455,13 +466,13 @@ class _AddDataToWorkflow(GraphQLRequest):
             variables={"workflowId": workflow_id},
         )
 
-    def process_response(self, response) -> Workflow:
+    def process_response(self, response: "Payload") -> "Workflow":
         return Workflow(
-            **super().process_response(response)["addDataToWorkflow"]["workflow"]
+            **super().parse_payload(response)["addDataToWorkflow"]["workflow"]
         )
 
 
-class AddDataToWorkflow(RequestChain):
+class AddDataToWorkflow(RequestChain["Workflow"]):
     """
     Mutation to update data in a workflow, presumably
     after new data is added to the dataset.
@@ -480,16 +491,16 @@ class AddDataToWorkflow(RequestChain):
         self.workflow_id = workflow_id
         self.wait = wait
 
-    def requests(self):
+    def requests(self) -> "Iterator[Union[_AddDataToWorkflow, Delay, GetWorkflow]]":
         yield _AddDataToWorkflow(self.workflow_id)
 
         if self.wait:
             while self.previous.status != "COMPLETE":
-                yield GetWorkflow(workflow_id=self.workflow_id)
                 yield Delay()
+                yield GetWorkflow(workflow_id=self.workflow_id)
 
 
-class CreateWorkflow(GraphQLRequest):
+class CreateWorkflow(GraphQLRequest["Workflow"]):
     """
     Mutation to create workflow given an existing dataset.
 
@@ -540,13 +551,11 @@ class CreateWorkflow(GraphQLRequest):
             variables={"datasetId": dataset_id, "name": name},
         )
 
-    def process_response(self, response) -> Workflow:
-        return Workflow(
-            **super().process_response(response)["createWorkflow"]["workflow"]
-        )
+    def process_response(self, response: "Payload") -> "Workflow":
+        return Workflow(**super().parse_payload(response)["createWorkflow"]["workflow"])
 
 
-class DeleteWorkflow(GraphQLRequest):
+class DeleteWorkflow(GraphQLRequest[bool]):
     """
     Mutation to delete workflow given workflow id. Note that this operation includes deleting
     all components and models associated with this workflow.
@@ -566,5 +575,6 @@ class DeleteWorkflow(GraphQLRequest):
     def __init__(self, workflow_id: int):
         super().__init__(self.query, variables={"workflowId": workflow_id})
 
-    def process_response(self, response) -> bool:
-        return super().process_response(response)["deleteWorkflow"]["success"]
+    def process_response(self, response: "Payload") -> bool:
+        status: bool = super().parse_payload(response)["deleteWorkflow"]["success"]
+        return status

@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import TYPE_CHECKING
 
 import jsons
 
@@ -12,8 +12,13 @@ from indico.types import (
     Workflow,
 )
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterator, List, Optional
 
-class _AddWorkflowComponent(GraphQLRequest):
+    from indico.typing import AnyDict, Payload
+
+
+class _AddWorkflowComponent(GraphQLRequest["Workflow"]):
     query = """
         mutation addWorkflowComponent($afterComponentId: Int, $afterComponentLinkId: Int, $component: JSONString!, $workflowId: Int!, $blueprintId: Int) {
         addWorkflowComponent(
@@ -65,11 +70,11 @@ class _AddWorkflowComponent(GraphQLRequest):
 
     def __init__(
         self,
-        after_component_id: int,
-        after_component_link: int,
+        after_component_id: "Optional[int]",
+        after_component_link: "Optional[int]",
         workflow_id: int,
-        component: dict,
-        blueprint_id: int | None = None,
+        component: "AnyDict",
+        blueprint_id: "Optional[int]" = None,
     ):
         super().__init__(
             self.query,
@@ -82,13 +87,13 @@ class _AddWorkflowComponent(GraphQLRequest):
             },
         )
 
-    def process_response(self, response) -> Workflow:
+    def process_response(self, response: "Payload") -> "Workflow":
         return Workflow(
-            **super().process_response(response)["addWorkflowComponent"]["workflow"]
+            **super().parse_payload(response)["addWorkflowComponent"]["workflow"]
         )
 
 
-class AddLinkedLabelComponent(RequestChain):
+class AddLinkedLabelComponent(RequestChain["Workflow"]):
     """
     Adds a linked label transformer that groups together labels
 
@@ -107,8 +112,8 @@ class AddLinkedLabelComponent(RequestChain):
         workflow_id: int,
         labelset_id: int,
         model_group_id: int,
-        groups: List[LinkedLabelGroup],
-        after_component_link_id: int = None,
+        groups: "List[LinkedLabelGroup]",
+        after_component_link_id: "Optional[int]" = None,
     ):
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
@@ -122,7 +127,7 @@ class AddLinkedLabelComponent(RequestChain):
             },
         }
 
-    def __groups_to_json(self, group: LinkedLabelGroup):
+    def __groups_to_json(self, group: "LinkedLabelGroup") -> "AnyDict":
         return {
             "name": group.name,
             "strategy": group.strategy.name.lower(),
@@ -130,7 +135,7 @@ class AddLinkedLabelComponent(RequestChain):
             "strategy_settings": group.strategy_settings,
         }
 
-    def requests(self):
+    def requests(self) -> "Iterator[_AddWorkflowComponent]":
         yield _AddWorkflowComponent(
             after_component_id=self.after_component_id,
             after_component_link=self.after_component_link_id,
@@ -139,7 +144,7 @@ class AddLinkedLabelComponent(RequestChain):
         )
 
 
-class AddContentLengthFilterComponent(RequestChain):
+class AddContentLengthFilterComponent(RequestChain["Workflow"]):
     """
     Adds a content length filter.
 
@@ -154,9 +159,9 @@ class AddContentLengthFilterComponent(RequestChain):
         self,
         workflow_id: int,
         after_component_id: int,
-        after_component_link_id: int = None,
-        minimum: int = None,
-        maximum: int = None,
+        after_component_link_id: "Optional[int]" = None,
+        minimum: "Optional[int]" = None,
+        maximum: "Optional[int]" = None,
     ):
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
@@ -168,7 +173,7 @@ class AddContentLengthFilterComponent(RequestChain):
             "config": {"minimum": minimum, "maximum": maximum},
         }
 
-    def requests(self):
+    def requests(self) -> "Iterator[_AddWorkflowComponent]":
         yield _AddWorkflowComponent(
             after_component_id=self.after_component_id,
             after_component_link=self.after_component_link_id,
@@ -177,7 +182,7 @@ class AddContentLengthFilterComponent(RequestChain):
         )
 
 
-class AddLinkClassificationComponent(RequestChain):
+class AddLinkClassificationComponent(RequestChain["Workflow"]):
     """
     Adds a link classification model component with filtered classes.
 
@@ -194,9 +199,9 @@ class AddLinkClassificationComponent(RequestChain):
         workflow_id: int,
         after_component_id: int,
         model_group_id: int,
-        filtered_classes: List[List[str]],
-        labels: str = None,
-        after_component_link_id: int = None,
+        filtered_classes: "List[List[str]]",
+        labels: "Optional[str]" = None,
+        after_component_link_id: "Optional[int]" = None,
     ):
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
@@ -210,7 +215,7 @@ class AddLinkClassificationComponent(RequestChain):
             },
         }
 
-    def requests(self):
+    def requests(self) -> "Iterator[_AddWorkflowComponent]":
         yield _AddWorkflowComponent(
             after_component_id=self.after_component_id,
             after_component_link=self.after_component_link_id,
@@ -219,7 +224,7 @@ class AddLinkClassificationComponent(RequestChain):
         )
 
 
-class AddModelGroupComponent(GraphQLRequest):
+class AddModelGroupComponent(GraphQLRequest["Workflow"]):
     """
     Adds a new model group to a workflow, optionally with a customized questionnaire.
     Available on 5.0+ only.
@@ -302,13 +307,13 @@ class AddModelGroupComponent(GraphQLRequest):
         dataset_id: int,
         name: str,
         source_column_id: int,
-        after_component_id: int = None,
-        after_link_id: int = None,
-        labelset_column_id: int = None,
-        new_labelset_args: NewLabelsetArguments = None,
-        new_questionnaire_args: NewQuestionnaireArguments = None,
-        model_training_options: str = None,
-        model_type: str = None,
+        after_component_id: "Optional[int]" = None,
+        after_link_id: "Optional[int]" = None,
+        labelset_column_id: "Optional[int]" = None,
+        new_labelset_args: "Optional[NewLabelsetArguments]" = None,
+        new_questionnaire_args: "Optional[NewQuestionnaireArguments]" = None,
+        model_training_options: "Optional[AnyDict]" = None,
+        model_type: "Optional[str]" = None,
         blueprint_id: int = None,
     ):
         if labelset_column_id is not None and new_labelset_args is not None:
@@ -323,8 +328,9 @@ class AddModelGroupComponent(GraphQLRequest):
                 "Must define one of either labelset_column_id or new_labelset_args."
             )
 
+        model_training_options_json: "Optional[str]" = None
         if model_training_options:
-            model_training_options = jsons.dumps(model_training_options)
+            model_training_options_json = jsons.dumps(model_training_options)
 
         super().__init__(
             self.query,
@@ -336,7 +342,7 @@ class AddModelGroupComponent(GraphQLRequest):
                 "labelsetColumnId": labelset_column_id,
                 "afterComponentId": after_component_id,
                 "afterLinkId": after_link_id,
-                "modelTrainingOptions": model_training_options,
+                "modelTrainingOptions": model_training_options_json,
                 "modelType": model_type,
                 "newLabelsetArgs": (
                     self.__labelset_to_json(new_labelset_args)
@@ -352,7 +358,7 @@ class AddModelGroupComponent(GraphQLRequest):
             },
         )
 
-    def __labelset_to_json(self, labelset: NewLabelsetArguments):
+    def __labelset_to_json(self, labelset: "NewLabelsetArguments") -> "AnyDict":
         return {
             "name": labelset.name,
             "numLabelersRequired": labelset.num_labelers_required,
@@ -361,7 +367,9 @@ class AddModelGroupComponent(GraphQLRequest):
             "targetNames": labelset.target_names,
         }
 
-    def __questionnaire_to_json(self, questionnaire: NewQuestionnaireArguments):
+    def __questionnaire_to_json(
+        self, questionnaire: "NewQuestionnaireArguments"
+    ) -> "AnyDict":
         return {
             "instructions": questionnaire.instructions,
             "forceTextMode": questionnaire.force_text_mode,
@@ -369,13 +377,13 @@ class AddModelGroupComponent(GraphQLRequest):
             "users": questionnaire.users,
         }
 
-    def process_response(self, response) -> Workflow:
+    def process_response(self, response: "Payload") -> "Workflow":
         return Workflow(
-            **super().process_response(response)["addModelGroupComponent"]["workflow"]
+            **super().parse_payload(response)["addModelGroupComponent"]["workflow"]
         )
 
 
-class DeleteWorkflowComponent(GraphQLRequest):
+class DeleteWorkflowComponent(GraphQLRequest["Workflow"]):
     """
     Deletes a component from a workflow. If the component has an associated model, the model is deleted as well.
     Available on 5.3+ only.
@@ -441,9 +449,9 @@ class DeleteWorkflowComponent(GraphQLRequest):
             variables={"workflowId": workflow_id, "componentId": component_id},
         )
 
-    def process_response(self, response) -> Workflow:
+    def process_response(self, response: "Payload") -> "Workflow":
         return Workflow(
-            **super().process_response(response)["deleteWorkflowComponent"]["workflow"]
+            **super().parse_payload(response)["deleteWorkflowComponent"]["workflow"]
         )
 
 
@@ -469,10 +477,10 @@ class AddStaticModelComponent(RequestChain):
         workflow_id: int,
         after_component_id: int | None = None,
         after_component_link_id: int | None = None,
-        static_component_config: dict[str, Any] | None = None,
-        component_name: str | None = None,
+        static_component_config: "Optional[AnyDict]" = None,
+        component_name: "Optional[str]" = None,
         auto_process: bool = False,
-        export_file: str | None = None,
+        export_file: "Optional[str]" = None,
     ):
         if not export_file and auto_process:
             raise IndicoInputError("Must provide export_file if auto_process is True.")
