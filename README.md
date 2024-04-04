@@ -105,13 +105,18 @@ You will also need the following env variables set for the Exchange integration 
 2. Activate the virtual environment
    `source venv/bin/activate`
 3. Install the client
-   `python3 setup.py install`
-4. Install pytest
-   `pip3 install pytest`
+   `pip3 install --editable .`
+4. Install test deps
+   `pip3 install "pytest>=5.2.1" "requests-mock>=1.8.0" "pytest-asyncio"`
 5. Run tests
    `pytest -sv --host <indico_host> tests/`
    _ Only run unit tests `pytest -sv --host <indico_host> tests/unit/`
    _ Only run integration tests `pytest -sv --host <indico_host> tests/integration/`
+6. Check typing
+   ```sh
+   mypy --install-types --non-interactive
+   mypy --config-file=pyproject.toml
+   ```
 
 # Contributing
 

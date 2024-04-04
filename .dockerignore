@@ -1,0 +1,11 @@
+venv
+dist
+docs
+docsrc
+.hypothesis
+.mypy_cache
+.pytest_cache
+.tox
+build
+readme_docs
+scripts
