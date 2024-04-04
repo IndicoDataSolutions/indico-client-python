@@ -1,7 +1,7 @@
-import datetime
-from typing import Optional
+from datetime import datetime
+from typing import List
 
-from indico.types import BaseType, JSONType, List
+from indico.types import BaseType, JSONType
 
 from . import OutputFile, SubmissionFile
 
