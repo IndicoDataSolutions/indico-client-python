@@ -1,6 +1,7 @@
 """
 Setup for indico apis
 """
+
 from pathlib import Path
 
 from setuptools import find_packages, setup
@@ -18,7 +19,7 @@ setup(
     url="https://github.com/IndicoDataSolutions/indico-client-python",
     author="indico",
     author_email="engineering@indico.io",
-    tests_require=["pytest>=5.2.1", "requests-mock>=1.8.0", "pytest-asyncio"],
+    tests_require=["pytest<8", "requests-mock>=1.8.0", "pytest-asyncio>0.21"],
     install_requires=[
         "requests>=2.22.0",
         "setuptools>=41.4.0",

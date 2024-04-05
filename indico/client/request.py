@@ -48,12 +48,6 @@ class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
         return {"json": {"query": self.query, "variables": self.variables}}
 
     def parse_payload(self, response: "AnyDict") -> "Any":
-        # obliterates the return typing so that new queries can type without
-        # needing to cast/ignore the super, and so that legacy untyped impls
-        # can continue to use `process_response`
-        return GraphQLRequest.process_response(self, response)
-
-    def process_response(self, response: "AnyDict") -> "ResponseType":
         raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
         errors: "List[AnyDict]" = raw_response.pop("errors", [])
 
@@ -68,8 +62,12 @@ class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
                 extras=extras,
             )
 
+        return raw_response["data"]
+
+    def process_response(self, response: "AnyDict") -> "ResponseType":
+        raw_response = self.parse_payload(response)
         # technically incorrect, but necessary for backwards compatibility
-        return cast("ResponseType", raw_response["data"])
+        return cast("ResponseType", raw_response)
 
 
 class PagedRequest(GraphQLRequest[ResponseType]):
@@ -103,7 +101,7 @@ class PagedRequest(GraphQLRequest[ResponseType]):
 
     def process_response(
         self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
-    ) -> "ResponseType":
+    ) -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
         if nested_keys:
             _pg = raw_response
@@ -125,8 +123,7 @@ class PagedRequest(GraphQLRequest[ResponseType]):
             _pg["endCursor"] if self.has_next_page else None
         )
 
-        # technically incorrect, but necessary for backwards compatibility
-        return cast("ResponseType", raw_response)
+        return raw_response
 
 
 class RequestChain(Generic[ResponseType]):

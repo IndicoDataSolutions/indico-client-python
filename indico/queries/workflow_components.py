@@ -13,7 +13,7 @@ from indico.types import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterator, List, Optional
+    from typing import Iterator, List, Optional, Union
 
     from indico.typing import AnyDict, Payload
 
@@ -312,7 +312,7 @@ class AddModelGroupComponent(GraphQLRequest["Workflow"]):
         labelset_column_id: "Optional[int]" = None,
         new_labelset_args: "Optional[NewLabelsetArguments]" = None,
         new_questionnaire_args: "Optional[NewQuestionnaireArguments]" = None,
-        model_training_options: "Optional[AnyDict]" = None,
+        model_training_options: "Optional[Union[str, AnyDict]]" = None,
         model_type: "Optional[str]" = None,
         blueprint_id: int = None,
     ):
@@ -330,7 +330,10 @@ class AddModelGroupComponent(GraphQLRequest["Workflow"]):
 
         model_training_options_json: "Optional[str]" = None
         if model_training_options:
-            model_training_options_json = jsons.dumps(model_training_options)
+            if isinstance(model_training_options, dict):
+                model_training_options_json = jsons.dumps(model_training_options)
+            else:
+                model_training_options_json = model_training_options
 
         super().__init__(
             self.query,

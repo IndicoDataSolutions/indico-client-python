@@ -116,10 +116,13 @@ class GetWorkflow(GraphQLRequest["Workflow"]):
     """
 
     def __init__(self, workflow_id: int):
-        self.list_workflows = ListWorkflows(workflow_ids=[workflow_id])
+        super().__init__(
+            ListWorkflows.query,
+            variables={"datasetIds": None, "workflowIds": [workflow_id], "limit": 100},
+        )
 
     def process_response(self, response: "Payload") -> "Workflow":
-        return self.list_workflows.process_response(response)[0]
+        return Workflow(**super().parse_payload(response)["workflows"]["workflows"][0])
 
 
 class _ToggleReview(GraphQLRequest["Workflow"]):
