@@ -25,12 +25,15 @@ class _DocumentExtraction(GraphQLRequest["List[Job]"]):
     def __init__(
         self,
         files: "List[AnyDict]",
-        json_config: "Optional[AnyDict]" = {"preset_config": "legacy"},
+        json_config: "Optional[Union[AnyDict, str]]" = {"preset_config": "legacy"},
         ocr_engine: "Optional[str]" = None,
     ):
         json_config_json: "Optional[str]" = None
-        if json_config and isinstance(json_config, dict):
-            json_config_json = json.dumps(json_config)
+        if json_config:
+            if isinstance(json_config, dict):
+                json_config_json = json.dumps(json_config)
+            else:
+                json_config_json = json_config
 
         super().__init__(
             query=self.query,
