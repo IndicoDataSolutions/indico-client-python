@@ -107,7 +107,7 @@ You will also need the following env variables set for the Exchange integration 
 3. Install the client
    `pip3 install --editable .`
 4. Install test deps
-   `pip3 install "pytest>=5.2.1" "requests-mock>=1.8.0" "pytest-asyncio"`
+   `pip3 install "pytest<8" "requests-mock>=1.8.0" "pytest-asyncio>0.21"`
 5. Run tests
    `pytest -sv --host <indico_host> tests/`
    _ Only run unit tests `pytest -sv --host <indico_host> tests/unit/`
