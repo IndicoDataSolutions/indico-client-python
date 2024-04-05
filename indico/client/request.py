@@ -134,7 +134,10 @@ class RequestChain(Generic[ResponseType]):
     def requests(
         self,
     ) -> "Iterator[Union[RequestChain[Any], HTTPRequest[Any], Delay]]":
-        ...
+        raise NotImplementedError(
+            "RequestChains must define an iterator for their requests;"
+            "otherwise, subclass GraphQLResponse instead."
+        )
 
 
 class Delay:
