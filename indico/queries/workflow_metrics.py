@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from indico.client.request import GraphQLRequest
 from indico.errors import IndicoInputError
@@ -7,8 +7,6 @@ from indico.types import BaseType
 from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import List
-
     from indico.typing import Payload
 
 

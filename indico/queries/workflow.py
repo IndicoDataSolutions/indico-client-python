@@ -83,8 +83,8 @@ class ListWorkflows(GraphQLRequest["List[Workflow]"]):
     def __init__(
         self,
         *,
-        dataset_ids: Optional[List[int]] = None,
-        workflow_ids: Optional[List[int]] = None,
+        dataset_ids: "Optional[List[int]]" = None,
+        workflow_ids: "Optional[List[int]]" = None,
         limit: int = 100,
     ):
         super().__init__(
