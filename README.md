@@ -114,9 +114,11 @@ You will also need the following env variables set for the Exchange integration 
    _ Only run integration tests `pytest -sv --host <indico_host> tests/integration/`
 6. Check typing
    ```sh
-   mypy --install-types --non-interactive
+   pip3 install "mypy==1.8" typing_extensions pandas-stubs types-requests types-pytz types-openpyxl
    mypy --config-file=pyproject.toml
    ```
+
+Alternatively, run all the unit tests via `docker compose run --rm tester`
 
 # Contributing
 
