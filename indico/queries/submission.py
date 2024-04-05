@@ -375,7 +375,7 @@ class GenerateSubmissionResult(GraphQLRequest["Job"]):
 
     """
 
-    def __init__(self, submission: Union[int, Submission]):
+    def __init__(self, submission: "Union[int, Submission]"):
         submission_id = submission if isinstance(submission, int) else submission.id
         super().__init__(self.query, variables={"submissionId": submission_id})
 
