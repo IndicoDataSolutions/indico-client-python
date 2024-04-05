@@ -495,7 +495,7 @@ class SubmitReview(GraphQLRequest["Job"]):
     def __init__(
         self,
         submission: "Union[int, Submission]",
-        changes: "Optional[Union[AnyDict, List[AnyDict]]]" = None,
+        changes: "Optional[Union[str, AnyDict, List[AnyDict]]]" = None,
         rejected: bool = False,
         force_complete: "Optional[bool]" = None,
     ):
@@ -503,8 +503,11 @@ class SubmitReview(GraphQLRequest["Job"]):
         submission_id = submission if isinstance(submission, int) else submission.id
         if not changes and not rejected:
             raise IndicoInputError("Must provide changes or reject=True")
-        elif changes and isinstance(changes, (dict, list)):
-            changes_json = json.dumps(changes)
+        elif changes:
+            if isinstance(changes, (dict, list)):
+                changes_json = json.dumps(changes)
+            else:
+                changes_json = changes
 
         _vars = {
             "submissionId": submission_id,

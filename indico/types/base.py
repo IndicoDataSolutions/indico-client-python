@@ -67,7 +67,7 @@ class BaseType:
                 if attr_type == JSONType and v is not None:
                     v = json.loads(v)
 
-                if attr_type == datetime:
+                if attr_type == datetime and v is not None:
                     try:
                         v = datetime.fromtimestamp(float(v))
                     except ValueError:

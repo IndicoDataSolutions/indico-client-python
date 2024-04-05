@@ -3,6 +3,9 @@ from typing import TYPE_CHECKING
 
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound
+
+# backwards compat
+from indico.queries.workflow_components import AddModelGroupComponent  # noqa: F401
 from indico.types.jobs import Job
 from indico.types.model import Model, ModelOptions
 from indico.types.model_group import ModelGroup
@@ -193,11 +196,14 @@ class _ModelGroupPredict(GraphQLRequest[Job]):
         self,
         model_id: int,
         data: "List[str]",
-        predict_options: "Optional[AnyDict]" = None,
+        predict_options: "Optional[Union[str, AnyDict]]" = None,
     ):
         predict_options_json: "Optional[str]" = None
         if predict_options:
-            predict_options_json = json.dumps(predict_options)
+            if isinstance(predict_options, dict):
+                predict_options_json = json.dumps(predict_options)
+            else:
+                predict_options_json = predict_options
 
         query = self._args_strings(
             model_id=model_id, data=data, predict_options=predict_options_json
@@ -295,16 +301,22 @@ class UpdateModelGroupSettings(GraphQLRequest["ModelOptions"]):
     def __init__(
         self,
         model_group_id: int,
-        model_training_options: "Optional[AnyDict]" = None,
-        predict_options: "Optional[AnyDict]" = None,
+        model_training_options: "Optional[Union[str, AnyDict]]" = None,
+        predict_options: "Optional[Union[str, AnyDict]]" = None,
     ):
         model_training_options_json: "Optional[str]" = None
         if model_training_options:
-            model_training_options_json = json.dumps(model_training_options)
+            if isinstance(model_training_options, dict):
+                model_training_options = json.dumps(model_training_options)
+            else:
+                model_training_options = model_training_options
 
         predict_options_json: "Optional[str]" = None
         if predict_options:
-            predict_options_json = json.dumps(predict_options)
+            if isinstance(predict_options, dict):
+                predict_options_json = json.dumps(predict_options)
+            else:
+                predict_options_json = predict_options
 
         super().__init__(
             self.query,
