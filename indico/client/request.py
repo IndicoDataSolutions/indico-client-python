@@ -50,7 +50,7 @@ class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
         # obliterates the return typing so that new queries can type without
         # needing to cast/ignore the super, and so that legacy untyped impls
         # can continue to use `process_response`
-        return self.process_response(response)
+        return GraphQLRequest.process_response(self, response)
 
     def process_response(self, response: "AnyDict") -> "ResponseType":
         raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
