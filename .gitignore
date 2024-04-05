@@ -57,6 +57,7 @@ examples/readme.py
 docsrc/_build
 docs/.doctrees
 setup_tests.sh
+test.csv
 
 .venv
 .vscode/
