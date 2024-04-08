@@ -145,7 +145,7 @@ class HTTPClient:
                 f"{self.base_url}{path}",
                 headers=headers,
                 stream=True,
-                verify=self.config.verify_ssl,
+                verify=False if not self.config.verify_ssl or not self.request_session.verify else True,
                 **new_kwargs,
             )
 

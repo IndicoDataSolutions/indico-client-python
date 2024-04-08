@@ -95,7 +95,13 @@ def test_client_verify_false_request(indico_request, auth, indico_test_config):
 
 
 def test_client_requests_params(indico_request, auth, indico_test_config):
-    client = IndicoClient(indico_test_config)
+    client = IndicoClient(
+        IndicoConfig(
+            requests_params={"verify": False},
+            host=indico_test_config.host,
+            protocol=indico_test_config.protocol,
+        )
+    )
     indico_request(
         "post",
         "/graph/api/graphql",
