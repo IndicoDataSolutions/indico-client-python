@@ -21,5 +21,5 @@ class DocumentReport(BaseType):
     errors: str
     retrieved: bool
     input_files: List[SubmissionFile]
-    deleted: bool
+    files_deleted: bool
 

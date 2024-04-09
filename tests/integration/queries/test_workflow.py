@@ -87,7 +87,7 @@ def test_workflow_submission(
     sub = client.call(GetSubmission(submission_id))
     assert isinstance(sub, Submission)
     assert sub.retrieved is False
-    assert sub.deleted is False
+    assert sub.files_deleted is False
     client.call(UpdateSubmission(submission_id, retrieved=True))
     sub = client.call(GetSubmission(submission_id))
     assert sub.retrieved is True

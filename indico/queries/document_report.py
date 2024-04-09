@@ -32,7 +32,7 @@ class GetDocumentReport(PagedRequest):
               errors
               retrieved
               submissionId
-              deleted
+              filesDeleted
               inputFiles{
                 id
                 filename
