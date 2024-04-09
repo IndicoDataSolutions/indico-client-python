@@ -169,28 +169,69 @@ class GetSubmission(GraphQLRequest):
                 datasetId
                 workflowId
                 status
+                createdAt
+                updatedAt
+                createdBy
+                updatedBy
+                completedAt
+                errors
+                filesDeleted
                 inputFiles {
                     id
-                    filename
                     filepath
+                    filename
                     filetype
+                    submissionId
                     fileSize
                     numPages
                 }
                 inputFile
                 inputFilename
                 resultFile
-                retrieved
-                deleted
-                errors
-                reviews {
+                outputFiles {
                     id
+                    filepath
+                    submissionId
+                    componentId
+                    createdAt
+                }
+                retrieved
+                autoReview {
+                    id
+                    submissionId
                     createdAt
                     createdBy
+                    startedAt
                     completedAt
                     rejected
                     reviewType
                     notes
+                }
+                retries {
+                    id
+                    submissionId
+                    previousErrors
+                    previousStatus
+                    retryErrors
+                }
+                reviews {
+                    id
+                    submissionId
+                    createdAt
+                    createdBy
+                    startedAt
+                    completedAt
+                    rejected
+                    reviewType
+                    notes
+                }
+                reviewInProgress
+                }
+                pageInfo {
+                startCursor
+                endCursor
+                hasNextPage
+                aggregateCount
                 }
             }
         }
@@ -232,7 +273,7 @@ class WaitForSubmissions(RequestChain):
                     inputFilename
                     resultFile
                     retrieved
-                    deleted
+                    filesDeleted
                     errors
                     reviews {
                         id
@@ -300,7 +341,7 @@ class UpdateSubmission(GraphQLRequest):
                 inputFilename
                 resultFile
                 retrieved
-                deleted
+                filesDeleted
                 errors
             }
         }
