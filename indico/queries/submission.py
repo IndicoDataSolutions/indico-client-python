@@ -226,13 +226,6 @@ class GetSubmission(GraphQLRequest):
                     notes
                 }
                 reviewInProgress
-                }
-                pageInfo {
-                startCursor
-                endCursor
-                hasNextPage
-                aggregateCount
-                }
             }
         }
     """
