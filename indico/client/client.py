@@ -251,12 +251,3 @@ class AsyncIndicoClient:
         while request.has_next_page:
             r = await self._http.execute_request(request)
             yield r
-
-
-# class test(GraphQLRequest[int]):
-#     def process_response(self, response: "Payload") -> int:
-#         a: "Payload" = super().parse_payload(response)
-#         return a["a"]
-
-
-# a: str = IndicoClient().call(test(query=""))
