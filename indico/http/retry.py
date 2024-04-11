@@ -2,10 +2,10 @@ import asyncio
 import time
 from functools import wraps
 from random import randint
-from typing import TYPE_CHECKING, Awaitable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Callable, Optional, Tuple, Type, TypeVar, Union
+    from typing import Awaitable, Callable, Optional, Tuple, Type, TypeVar, Union
 
     from typing_extensions import ParamSpec
 
