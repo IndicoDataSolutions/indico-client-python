@@ -20,7 +20,12 @@ def list_subtype(cls: "Any") -> "Optional[Any]":
     origin: "Optional[type]" = getattr(
         cls, "__origin__", getattr(cls, "__extra__", None)
     )
-    if origin is not None and issubclass(origin, list) and cls.__args__:
+    if (
+        origin is not None
+        and type(origin) == type
+        and issubclass(origin, list)
+        and cls.__args__
+    ):
         return cls.__args__[0]
 
     return None
