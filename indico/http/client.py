@@ -365,7 +365,7 @@ class AIOHTTPClient:
 
                 if response.status >= 500:
                     raise IndicoRequestError(
-                        code=response.status_code,
+                        code=response.status,
                         error=response.reason,
                         extras=repr(response.content),
                     )
@@ -386,7 +386,7 @@ class AIOHTTPClient:
                         extras = None
 
                     raise IndicoRequestError(
-                        error=error, code=response.status_code, extras=extras
+                        error=error, code=response.status, extras=extras
                     )
 
                 return content
