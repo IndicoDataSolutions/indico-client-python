@@ -9,7 +9,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from indico.typing import AnyDict
 
-ResponseType = TypeVar("ResponseType")
+ResponseType = TypeVar("ResponseType", covariant=True)
 
 
 class HTTPMethod(Enum):
