@@ -3,32 +3,31 @@ Example for building a classifier -> extraction model workflow
 
 Note the dataset in this example was built from data/swaps_with_class.csv
 """
+
 from datetime import datetime
 
-from indico.queries import (
-    GetDataset,
-    AddModelGroupComponent,
-    AddLinkClassificationComponent,
-    CreateWorkflow,
-)
-from indico.types import NewLabelsetArguments, NewQuestionnaireArguments, ModelTaskType
-
-from config import INDICO_CLIENT, DATASET_ID, CLASSIFIER_CLASSES
-from queries import get_user_ids
 from component_links import get_component_link_id
-
+from config import CLASSIFIER_CLASSES, DATASET_ID, INDICO_CLIENT
+from queries import get_user_ids
 
 from indico import IndicoClient, IndicoConfig
+from indico.queries import (
+    AddLinkClassificationComponent,
+    AddModelGroupComponent,
+    CreateWorkflow,
+    GetDataset,
+)
+from indico.types import ModelTaskType, NewLabelsetArguments, NewQuestionnaireArguments
 
 HOST = "indico.host"
 API_TOKEN_PATH = "/path/to/indico_api_token.txt"
 
 INDICO_CONFIG = IndicoConfig(host=HOST, api_token_path=API_TOKEN_PATH)
 INDICO_CLIENT = IndicoClient(config=INDICO_CONFIG)
-DATASET_ID = <your dataset id>
+DATASET_ID = int("<your dataset id>")
 
 CLASSIFIER_CLASSES = ["class A", "class B"]
-    
+
 timestamp = datetime.now()
 
 dataset = INDICO_CLIENT.call(GetDataset(DATASET_ID))
@@ -50,13 +49,13 @@ new_labelset_args = {
     "name": classifier_name,
     "num_labelers_required": 1,
     "task_type": ModelTaskType.CLASSIFICATION,
-    "target_names": CLASSIFIER_CLASSES
+    "target_names": CLASSIFIER_CLASSES,
 }
 questionnaire_args = {
-        "instructions": "Click things",
-        "show_predictions": True,
-        "users": user_ids
-    }
+    "instructions": "Click things",
+    "show_predictions": True,
+    "users": user_ids,
+}
 
 classifier_wf = INDICO_CLIENT.call(
     AddModelGroupComponent(
@@ -82,7 +81,6 @@ extraction_filter_wf = INDICO_CLIENT.call(
         after_component_id=classifier_component.id,
         filtered_classes=filtered_classes,
         labels=None,
-        
     )
 )
 
@@ -93,14 +91,14 @@ extraction_filter_wf = INDICO_CLIENT.call(
 class_a_link_id = get_component_link_id(workflow.id, ["class A"])
 class_b_link_id = get_component_link_id(workflow.id, ["class B"])
 
-#create extraction model 1
+# create extraction model 1
 extraction_model_1_name = f"Extraction 1 {timestamp}"
 new_labelset_args = {
     "datacolumn_id": source_col_id,
     "name": extraction_model_1_name,
     "num_labelers_required": 1,
     "task_type": ModelTaskType.ANNOTATION,
-    "target_names": ["extraction class 1"]
+    "target_names": ["extraction class 1"],
 }
 extraction_model_1 = INDICO_CLIENT.call(
     AddModelGroupComponent(
@@ -114,14 +112,14 @@ extraction_model_1 = INDICO_CLIENT.call(
     )
 )
 
-#create extraction model 2
+# create extraction model 2
 extraction_model_2_name = f"Extraction 2 {timestamp}"
 new_labelset_args = {
     "datacolumn_id": source_col_id,
     "name": extraction_model_2_name,
     "num_labelers_required": 1,
     "task_type": ModelTaskType.ANNOTATION,
-    "target_names": ["extraction class 2"]
+    "target_names": ["extraction class 2"],
 }
 extraction_model_2 = INDICO_CLIENT.call(
     AddModelGroupComponent(

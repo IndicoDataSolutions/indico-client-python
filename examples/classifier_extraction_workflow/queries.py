@@ -24,18 +24,18 @@ def get_component_links(workflow_id, indico_client):
     workflow_query = """
         query ListWorkflows($workflowIds: [Int]){
             workflows(workflowIds: $workflowIds){
-                workflows {                   
+                workflows {
                     componentLinks{
                         id
                         headComponentId
                         tailComponentId
                         filters{
                             classes
-                        }                        
+                        }
                     }
                 }
             }
-        }            
+        }
     """
     variables = {"workflowIds": [workflow_id]}
     resp = indico_client.call(GraphQLRequest(workflow_query, variables))

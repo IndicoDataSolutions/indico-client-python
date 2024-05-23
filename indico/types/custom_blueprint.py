@@ -1,4 +1,5 @@
 import typing as t
+
 from indico.types import BaseType
 
 
@@ -11,4 +12,5 @@ class TaskBlueprint(BaseType):
     footer: str
     tags: t.List[str]
     enabled: bool
-    config: t.Dict
+    # should this be JSONType?
+    config: t.Dict  # type: ignore

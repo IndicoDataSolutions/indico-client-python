@@ -1,15 +1,17 @@
-import pytest
-from indico.client import IndicoClient
-from indico.filters import or_, UserMetricsFilter
-from indico.queries import JobStatus, RetrieveStorageObject
-from indico.types.user_metrics import UserSummary
-from indico.queries.usermetrics import (
-    GetUserSummary,
-    GetUserSnapshots,
-    GetUserChangelog,
-    GenerateChangelogReport,
-)
 from datetime import datetime
+
+import pytest
+
+from indico.client import IndicoClient
+from indico.filters import UserMetricsFilter, or_
+from indico.queries import JobStatus, RetrieveStorageObject
+from indico.queries.usermetrics import (
+    GenerateChangelogReport,
+    GetUserChangelog,
+    GetUserSnapshots,
+    GetUserSummary,
+)
+from indico.types.user_metrics import UserSummary
 
 
 def test_fetch_summary(indico):
