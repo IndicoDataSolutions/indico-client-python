@@ -21,7 +21,6 @@ setup(
         "msgpack>=0.5.6",
         "msgpack-numpy==0.4.4.3",
         "numpy>=1.16.0",
-        "Pillow>=6.2.0",
         "requests>=2.22.0",
         "setuptools>=41.4.0",
         "pandas>=1.0.3",
