@@ -18,9 +18,6 @@ setup(
     author_email="engineering@indico.io",
     tests_require=["pytest>=5.2.1", "requests-mock>=1.8.0", "pytest-asyncio"],
     install_requires=[
-        "msgpack>=0.5.6",
-        "msgpack-numpy==0.4.4.3",
-        "numpy>=1.16.0",
         "requests>=2.22.0",
         "setuptools>=41.4.0",
         "pandas>=1.0.3",
@@ -29,4 +26,11 @@ setup(
         "jsons",
         "aiohttp[speedups]"
     ],
+    extras_require={
+        "deserialization": [
+            "msgpack>=0.5.6",
+            "msgpack-numpy==0.4.4.3",
+            "numpy>=1.16.0",
+        ],
+    }
 )
