@@ -20,17 +20,22 @@ setup(
     install_requires=[
         "requests>=2.22.0",
         "setuptools>=41.4.0",
-        "pandas>=1.0.3",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
         "deprecation>=2.1.0",
         "jsons",
         "aiohttp[speedups]"
     ],
     extras_require={
+        "datasets": [
+            "pandas>=1.0.3",
+        ],
         "deserialization": [
             "msgpack>=0.5.6",
             "msgpack-numpy==0.4.4.3",
             "numpy>=1.16.0",
+        ],
+        "exports": [
+            "pandas>=1.0.3",
         ],
     }
 )

@@ -2,8 +2,6 @@ import io
 import warnings
 from typing import List, Union
 
-import pandas as pd
-
 from indico.client import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound, IndicoRequestError
 from indico.queries.storage import RetrieveStorageObject
@@ -129,6 +127,14 @@ class GetExport(GraphQLRequest):
 
 class _RetrieveExport(RetrieveStorageObject):
     def process_response(self, response):
+        try:
+            import pandas as pd
+        except ImportError as error:
+            raise RuntimeError(
+                "downloading exports requires additional dependencies: "
+                "`pip install indico-client[exports]`"
+            ) from error
+
         response = super().process_response(response)
         return pd.read_csv(io.StringIO(response))
 

@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Union
 
 import deprecation
 import jsons
-import pandas as pd
 
 from indico.client.request import (
     Delay,
@@ -249,6 +248,15 @@ class CreateDataset(RequestChain):
     def requests(self):
         if self.from_local_images:
             self.dataset_type = "IMAGE"
+
+            try:
+                import pandas as pd
+            except ImportError as error:
+                raise RuntimeError(
+                    "creating image datasets requires additional dependencies:"
+                    "`pip install indico-client[datasets]`"
+                ) from error
+
             # Assume image filenames are in the same directory as the csv with
             # image labels and that there is a column representing their name
             df = pd.read_csv(self.files)
