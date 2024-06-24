@@ -26,6 +26,12 @@ setup(
         "aiohttp[speedups]"
     ],
     extras_require={
+        "all": [
+            "msgpack>=0.5.6",
+            "msgpack-numpy==0.4.4.3",
+            "numpy>=1.16.0",
+            "pandas>=1.0.3",
+        ],
         "datasets": [
             "pandas>=1.0.3",
         ],
