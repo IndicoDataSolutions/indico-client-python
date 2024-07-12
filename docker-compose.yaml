@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  indico-client-build:
+    build:
+      context: .
+    entrypoint: [ "sleep", "infinity" ]
