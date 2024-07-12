@@ -1,7 +1,0 @@
-- name: test
-  service: indico-client-test
-  command: /indico-client/scripts/test.sh
-- name: deploy
-  tag: ^([0-9]+)\.([0-9]+)\.([0-9]+)?
-  service: indico-client-deploy
-  command: /indico-client/scripts/deploy.sh
