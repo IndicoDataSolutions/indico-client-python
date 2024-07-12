@@ -1,0 +1,304 @@
+pipeline:
+  name: Python SDK
+  identifier: publish_python_sdk
+  projectIdentifier: IPA_Release
+  orgIdentifier: default
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Indico
+        repoName: indico-client-python
+        build: <+input>
+        resources:
+          limits:
+            memory: 2G
+  stages:
+    - stage:
+        name: build info
+        identifier: build_info
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: account.cicdharness
+              namespace: harness
+              automountServiceAccountToken: true
+              nodeSelector:
+                node_group: <+input>
+              harnessImageConnectorRef: account.dockerhubproxy
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  name: build info
+                  identifier: build_info
+                  template:
+                    templateRef: account.build_info
+                    versionLabel: 1.0.0
+    - parallel:
+        - stage:
+            name: code checks
+            identifier: code_checks
+            template:
+              templateRef: account.python_checks
+              versionLabel: 1.0.0
+              templateInputs:
+                type: CI
+                variables:
+                  - name: RUN_LINTER
+                    type: String
+                    value: <+input>.default(TRUE).allowedValues(TRUE,FALSE)
+                  - name: isort
+                    type: String
+                    value: <+input>
+                  - name: black
+                    type: String
+                    value: <+input>
+                  - name: ruff
+                    type: String
+                    value: <+input>
+                  - name: mypy
+                    type: String
+                    value: <+input>
+                  - name: pylint
+                    type: String
+                    value: <+input>
+        - stage:
+            name: build containers
+            identifier: build_containers
+            description: ""
+            type: CI
+            spec:
+              cloneCodebase: true
+              infrastructure:
+                useFromStage: build_info
+              execution:
+                steps:
+                  - step:
+                      type: BuildAndPushDockerRegistry
+                      name: build test container
+                      identifier: build_test_container
+                      spec:
+                        connectorRef: account.harbor
+                        repo: harbor.devops.indico.io/indico/<+pipeline.variables.service>
+                        tags:
+                          - <+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
+                        buildArgs:
+                          REGISTRY_PATH: harbor.devops.indico.io/indico
+                          GEMFURY_TOKEN: <+secrets.getValue("account.gemFuryToken")>
+                          POETRY_INSTALL_ARGS: <+stage.variables.test_poetry_args>
+                        resources:
+                          limits:
+                            memory: <+stage.variables.test_ram>
+                      when:
+                        stageStatus: Success
+                        condition: <+pipeline.variables.RUN_UNITTESTS> == "TRUE"
+            variables:
+              - name: test_poetry_args
+                type: String
+                description: poetry args for test container. use space if none
+                required: false
+                value: <+input>
+              - name: deploy_poetry_args
+                type: String
+                description: poetry args for service container. use space if none
+                required: false
+                value: <+input>
+              - name: test_ram
+                type: String
+                description: ""
+                required: false
+                value: <+input>.default(2G).allowedValues(2G,3G,4G,5G,6G,7G,8G)
+              - name: deploy_ram
+                type: String
+                description: ""
+                required: false
+                value: <+input>.default(2G).allowedValues(2G,3G,4G,5G,6G,7G,8G)
+    - parallel:
+        - stage:
+            name: snyk tests
+            identifier: snyk_tests
+            description: ""
+            type: CI
+            spec:
+              cloneCodebase: true
+              infrastructure:
+                useFromStage: build_info
+              execution:
+                steps:
+                  - parallel:
+                      - step:
+                          type: Run
+                          name: snyk code
+                          identifier: snyk_code
+                          spec:
+                            connectorRef: account.harbor
+                            image: harbor.devops.indico.io/dockerhub-proxy/snyk/snyk:python-3.10
+                            shell: Sh
+                            command: |-
+                              snyk code test \
+                                 --org=${SNYK_ORG} \
+                                 --json-file-output=snyk_code.json || true
+                            envVariables:
+                              SNYK_TOKEN: <+secrets.getValue("account.hashicorpvault://vaulttoolsargo/devops-snyk-importer#SNYK_TOKEN")>
+                              SNYK_ORG: <+secrets.getValue("account.hashicorpvault://vaulttoolsargo/devops-snyk-importer#SNYK_ORG_ID")>
+                          when:
+                            stageStatus: Success
+                            condition: "false"
+                      - step:
+                          type: Run
+                          name: snyk oss
+                          identifier: snyk_oss
+                          spec:
+                            connectorRef: account.harbor
+                            image: harbor.devops.indico.io/dockerhub-proxy/snyk/snyk:python-3.10
+                            shell: Sh
+                            command: |-
+                              snyk test \
+                                 --org=${SNYK_ORG} \
+                                 --json-file-output=snyk_oss.json || true
+                            envVariables:
+                              SNYK_TOKEN: <+secrets.getValue("account.hashicorpvault://vaulttoolsargo/devops-snyk-importer#SNYK_TOKEN")>
+                              SNYK_ORG: <+secrets.getValue("account.hashicorpvault://vaulttoolsargo/devops-snyk-importer#SNYK_ORG_ID")>
+                  - step:
+                      type: Run
+                      name: parse snyk
+                      identifier: parse_snyk
+                      spec:
+                        connectorRef: account.harbor
+                        image: harbor.devops.indico.io/indico/snyk_filter:development.26bfff3b52c863aebc5545c57eac4bdf872dfdd9
+                        shell: Bash
+                        command: snyk-filter
+            when:
+              pipelineStatus: Success
+              condition: <+stage.variables.RUN_SNYK> == "TRUE"
+            variables:
+              - name: RUN_SNYK
+                type: String
+                description: ""
+                required: false
+                value: <+input>.default(TRUE).allowedValues(TRUE,FALSE)
+              - name: container_ram
+                type: String
+                description: ""
+                required: false
+                value: <+input>.default(2G).allowedValues(2G,3G,4G,5G,6G,7G,8G,9G,10G)
+        - stage:
+            name: unit tests
+            identifier: unit_tests
+            description: ""
+            type: CI
+            spec:
+              cloneCodebase: true
+              infrastructure:
+                useFromStage: build_info
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: run_unit_tests
+                      identifier: run_unit_tests
+                      spec:
+                        connectorRef: account.harbor
+                        image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
+                        shell: Sh
+                        command: |-
+                          cd scripts
+                          ./test.sh
+    - stage:
+        name: publish
+        identifier: publish
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: account.cicdharness
+              namespace: harness
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: info
+                  identifier: info
+                  spec:
+                    connectorRef: account.harbor
+                    image: harbor.devops.indico.io/dockerhub-proxy/alpine/git
+                    shell: Sh
+                    command: |-
+                      RUN_PRELEASE="false"
+                      RUN_RELEASE="false"
+
+                      TARGET_BRANCH="<+codebase.branch>"
+                      COMMIT_MESSAGE="<+codebase.commitMessage>"
+                      MODIFIED_COMMIT_MESSAGE=$(echo "${COMMIT_MESSAGE}" | head -n 1)
+                      COMMITTER="<+codebase.gitUser>"
+
+                      echo "Committer: ${COMMITTER}"
+                      echo "Target Branch: ${TARGET_BRANCH}"
+                      echo "Commit Message: ${MODIFIED_COMMIT_MESSAGE}"
+                    envVariables:
+                      RELEASE_BRANCH: <+stage.variables.RELEASE_BRANCH>
+                    outputVariables:
+                      - name: RUN_PRELEASE
+                      - name: RUN_RELEASE
+              - parallel:
+                  - step:
+                      type: Run
+                      name: publish prelease
+                      identifier: publish_prelease
+                      spec:
+                        connectorRef: account.harbor
+                        image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
+                        shell: Sh
+                        command: echo "prerelease"
+                      when:
+                        stageStatus: Success
+                        condition: <+<+execution.steps.Info.output.outputVariables.RUN_PRELEASE> == "true">
+                  - step:
+                      type: Run
+                      name: publish release
+                      identifier: publish_release
+                      spec:
+                        connectorRef: account.harbor
+                        image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
+                        shell: Sh
+                        command: echo "release"
+                      when:
+                        stageStatus: Success
+                        condition: <+<+execution.steps.Info.output.outputVariables.RUN_RELEASE> == "true">
+          caching:
+            enabled: false
+            paths: []
+        when:
+          pipelineStatus: Success
+          condition: <+stage.variables.RUN_PUBLISH> == "TRUE"
+  variables:
+    - name: repo
+      type: String
+      description: Repo name
+      required: false
+      value: <+input>
+    - name: service
+      type: String
+      description: ""
+      required: true
+      value: <+input>
+    - name: RUN_UNITTESTS
+      type: String
+      description: ""
+      required: true
+      value: <+input>.default(TRUE).allowedValues(TRUE,FALSE)
+    - name: RUN_PUBLISH
+      type: String
+      description: Publish to pypi
+      value: <+input>.default(FALSE).allowedValues(TRUE,FALSE)
+  tags: {}
