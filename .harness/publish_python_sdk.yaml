@@ -180,7 +180,7 @@ pipeline:
                 type: String
                 description: ""
                 required: false
-                value: <+input>.default(TRUE).allowedValues(TRUE,FALSE)
+                value: <+input>.default(FALSE).allowedValues(TRUE,FALSE)
               - name: container_ram
                 type: String
                 description: ""
