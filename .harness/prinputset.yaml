@@ -1,0 +1,89 @@
+inputSet:
+  name: pr-input-set
+  identifier: prinputset
+  orgIdentifier: default
+  projectIdentifier: IPA_Release
+  pipeline:
+    identifier: publish_python_sdk
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
+    stages:
+      - stage:
+          identifier: build_info
+          type: CI
+          spec:
+            infrastructure:
+              type: KubernetesDirect
+              spec:
+                nodeSelector:
+                  node_group: <+input>
+      - parallel:
+          - stage:
+              identifier: code_checks
+              template:
+                templateInputs:
+                  type: CI
+                  variables:
+                    - name: RUN_LINTER
+                      type: String
+                      value: "TRUE"
+                    - name: isort
+                      type: String
+                      value: <+input>
+                    - name: black
+                      type: String
+                      value: <+input>
+                    - name: ruff
+                      type: String
+                      value: <+input>
+                    - name: mypy
+                      type: String
+                      value: <+input>
+                    - name: pylint
+                      type: String
+                      value: <+input>
+          - stage:
+              identifier: build_containers
+              type: CI
+              variables:
+                - name: test_poetry_args
+                  type: String
+                  value: <+input>
+                - name: deploy_poetry_args
+                  type: String
+                  value: <+input>
+                - name: test_ram
+                  type: String
+                  value: 2G
+                - name: deploy_ram
+                  type: String
+                  value: 2G
+      - parallel:
+          - stage:
+              identifier: snyk_tests
+              type: CI
+              variables:
+                - name: RUN_SNYK
+                  type: String
+                  value: "FALSE"
+                - name: container_ram
+                  type: String
+                  value: 2G
+    variables:
+      - name: repo
+        type: String
+        value: indico-client-python
+      - name: service
+        type: String
+        value: indico-client-python
+      - name: RUN_UNITTESTS
+        type: String
+        value: "TRUE"
+      - name: RUN_PUBLISH
+        type: String
+        value: "FALSE"
