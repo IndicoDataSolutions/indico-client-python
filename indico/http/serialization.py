@@ -70,6 +70,14 @@ def raw_bytes(content, *args, **kwargs):
 
 
 def msgpack_deserialization(content, charset):
+    try:
+        import msgpack
+    except ImportError as error:
+        raise RuntimeError(
+            "msgpack deserialization requires additional dependencies: "
+            "`pip install indico-client[deserialization]`"
+        ) from error
+
     return msgpack.unpackb(content)
 
 
