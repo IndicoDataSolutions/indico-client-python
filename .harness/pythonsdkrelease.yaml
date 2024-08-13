@@ -1,5 +1,6 @@
 inputSet:
   name: python-sdk-release
+  tags: {}
   identifier: pythonsdkrelease
   orgIdentifier: default
   projectIdentifier: IPA_Release
@@ -81,3 +82,6 @@ inputSet:
       - name: RUN_RELEASE
         type: String
         value: "TRUE"
+      - name: RUN_PUBLISH
+        type: String
+        value: "FALSE"
