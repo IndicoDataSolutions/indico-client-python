@@ -259,7 +259,12 @@ pipeline:
                         connectorRef: account.harbor
                         image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
                         shell: Sh
-                        command: echo "prerelease"
+                        command: |-
+                          #!/bin/bash
+                          rm -rf /indico-client/dist
+                          pip install twine==3.3.0
+                          python setup.py sdist
+                          twine upload -u __token__ -p <+stage.variables.pypi_token> /indico-client/dist/*
                       when:
                         stageStatus: Success
                         condition: <+<+execution.steps.Info.output.outputVariables.RUN_PRELEASE> == "true">
@@ -281,6 +286,12 @@ pipeline:
         when:
           pipelineStatus: Success
           condition: <+stage.variables.RUN_PUBLISH> == "TRUE"
+        variables:
+          - name: pypi_token
+            type: Secret
+            description: ""
+            required: false
+            value: pypi_publish_token
   variables:
     - name: repo
       type: String
