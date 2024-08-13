@@ -27,7 +27,7 @@ pipeline:
               namespace: harness
               automountServiceAccountToken: true
               nodeSelector:
-                node_group: <+input>
+                node_group: cpu
               harnessImageConnectorRef: account.dockerhubproxy
               os: Linux
           execution:
