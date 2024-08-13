@@ -297,8 +297,13 @@ pipeline:
       description: ""
       required: true
       value: <+input>.default(TRUE).allowedValues(TRUE,FALSE)
-    - name: RUN_PUBLISH
+    - name: RUN_PRERELEASE
       type: String
-      description: Publish to pypi
+      description: Publish alpha/prerelease to pypi
+      value: <+input>.default(FALSE).allowedValues(TRUE,FALSE)
+    - name: RUN_RELEASE
+      type: String
+      description: ""
+      required: false
       value: <+input>.default(FALSE).allowedValues(TRUE,FALSE)
   tags: {}
