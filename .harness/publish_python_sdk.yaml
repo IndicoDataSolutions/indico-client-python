@@ -317,4 +317,9 @@ pipeline:
       description: ""
       required: false
       value: <+input>.default(FALSE).allowedValues(TRUE,FALSE)
+    - name: RUN_PUBLISH
+      type: String
+      description: Run the publish step for release or pre-release
+      required: false
+      value: <+input>.default(FALSE).allowedValues(TRUE,FALSE)
   tags: {}
