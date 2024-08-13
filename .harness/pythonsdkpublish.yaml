@@ -82,3 +82,6 @@ inputSet:
       - name: RUN_RELEASE
         type: String
         value: "FALSE"
+      - name: RUN_PUBLISH
+        type: String
+        value: "TRUE"
