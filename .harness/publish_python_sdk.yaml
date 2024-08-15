@@ -264,7 +264,7 @@ pipeline:
                           twine upload -u __token__ -p <+stage.variables.pypi_token> /indico-client/dist/*
                       when:
                         stageStatus: Success
-                        condition: <+execution.steps.Info.output.outputVariables.RUN_PRELEASE> == "TRUE"
+                        condition: <+pipeline.variables.RUN_PRERELEASE> == "TRUE"
                   - step:
                       type: Run
                       name: publish release
