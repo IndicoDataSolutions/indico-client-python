@@ -234,9 +234,6 @@ pipeline:
                     image: harbor.devops.indico.io/dockerhub-proxy/alpine/git
                     shell: Sh
                     command: |-
-                      RUN_PRELEASE="false"
-                      RUN_RELEASE="false"
-
                       TARGET_BRANCH="<+codebase.branch>"
                       COMMIT_MESSAGE="<+codebase.commitMessage>"
                       MODIFIED_COMMIT_MESSAGE=$(echo "${COMMIT_MESSAGE}" | head -n 1)
