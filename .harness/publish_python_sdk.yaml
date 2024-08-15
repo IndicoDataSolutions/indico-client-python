@@ -282,7 +282,7 @@ pipeline:
             paths: []
         when:
           pipelineStatus: Success
-          condition: <+stage.pipelineVariables.RUN_PUBLISH> == "TRUE"
+          condition: <+pipeline.variables.RUN_PUBLISH> == "TRUE"
         variables:
           - name: pypi_token
             type: Secret
