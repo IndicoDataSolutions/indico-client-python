@@ -259,8 +259,8 @@ pipeline:
                         command: |-
                           #!/bin/bash
                           rm -rf /indico-client/dist
-                          pip install twine==3.3.0
-                          python setup.py sdist
+                          pip3 install twine==3.3.0
+                          python3 setup.py sdist
                           twine upload -u __token__ -p <+stage.variables.pypi_token> /indico-client/dist/*
                       when:
                         stageStatus: Success
