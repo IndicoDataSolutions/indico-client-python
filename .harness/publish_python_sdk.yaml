@@ -77,25 +77,36 @@ pipeline:
                 useFromStage: build_info
               execution:
                 steps:
-                  - step:
-                      type: BuildAndPushDockerRegistry
-                      name: build test container
-                      identifier: build_test_container
-                      spec:
-                        connectorRef: account.harbor
-                        repo: harbor.devops.indico.io/indico/<+pipeline.variables.service>
-                        tags:
-                          - <+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
-                        buildArgs:
-                          REGISTRY_PATH: harbor.devops.indico.io/indico
-                          GEMFURY_TOKEN: <+secrets.getValue("account.gemFuryToken")>
-                          POETRY_INSTALL_ARGS: <+stage.variables.test_poetry_args>
-                        resources:
-                          limits:
-                            memory: <+stage.variables.test_ram>
-                      when:
-                        stageStatus: Success
-                        condition: <+pipeline.variables.RUN_UNITTESTS> == "TRUE"
+                  - parallel:
+                      - step:
+                          type: BuildAndPushDockerRegistry
+                          name: build test container
+                          identifier: build_test_container
+                          spec:
+                            connectorRef: account.harbor
+                            repo: harbor.devops.indico.io/indico/<+pipeline.variables.service>
+                            tags:
+                              - <+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
+                            dockerfile: tox.Dockerfile
+                            buildArgs:
+                              REGISTRY_PATH: harbor.devops.indico.io/indico
+                              GEMFURY_TOKEN: <+secrets.getValue("account.gemFuryToken")>
+                              POETRY_INSTALL_ARGS: <+stage.variables.test_poetry_args>
+                            resources:
+                              limits:
+                                memory: <+stage.variables.test_ram>
+                          when:
+                            stageStatus: Success
+                            condition: <+pipeline.variables.RUN_UNITTESTS> == "TRUE"
+                      - step:
+                          type: BuildAndPushDockerRegistry
+                          name: build container
+                          identifier: build_container
+                          spec:
+                            connectorRef: account.harbor
+                            repo: harbor.devops.indico.io/indico/<+pipeline.variables.service>
+                            tags:
+                              - <+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.IMAGE_TAG>
             variables:
               - name: test_poetry_args
                 type: String
@@ -254,7 +265,7 @@ pipeline:
                       identifier: publish_prelease
                       spec:
                         connectorRef: account.harbor
-                        image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
+                        image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.IMAGE_TAG>
                         shell: Sh
                         command: |-
                           #!/bin/bash
