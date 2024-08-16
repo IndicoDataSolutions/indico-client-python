@@ -269,6 +269,7 @@ pipeline:
                         shell: Sh
                         command: |-
                           #!/bin/bash
+                          git checkout <+trigger.tag>
                           rm -rf /indico-client/dist
                           pip3 install twine==3.3.0
                           python3 setup.py sdist
