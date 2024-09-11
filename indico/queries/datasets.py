@@ -5,7 +5,6 @@ import tempfile
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
-import deprecation
 import jsons
 import pandas as pd
 
@@ -22,6 +21,7 @@ from indico.filters import DatasetFilter
 from indico.queries.storage import UploadBatched, UploadImages
 from indico.types.dataset import (
     Dataset,
+    EmailOptions,
     OcrEngine,
     OcrInputLanguage,
     OmnipageOcrOptionsInput,
@@ -228,6 +228,7 @@ class CreateDataset(RequestChain):
         omnipage_ocr_options: OmnipageOcrOptionsInput = None,
         read_api_ocr_options: ReadApiOcrOptionsInput = None,
         request_interval: Union[int, float] = 5,
+        email_options: EmailOptions = None,
     ):
         self.files = files
         self.name = name
@@ -240,6 +241,7 @@ class CreateDataset(RequestChain):
         self.omnipage_ocr_options = omnipage_ocr_options
         self.read_api_ocr_options = read_api_ocr_options
         self.request_interval = request_interval
+        self.email_options = email_options
         if omnipage_ocr_options is not None and read_api_ocr_options is not None:
             raise IndicoInputError(
                 "Must supply either omnipage or readapi options but not both."
@@ -279,6 +281,7 @@ class CreateDataset(RequestChain):
             readapi_ocr_options=self.read_api_ocr_options,
             omnipage_ocr_options=self.omnipage_ocr_options,
             ocr_engine=self.ocr_engine,
+            email_options=self.email_options,
         )
         yield _AddFiles(
             dataset_id=self.previous.id, metadata=file_metadata, autoprocess=True
@@ -376,6 +379,7 @@ class CreateEmptyDataset(GraphQLRequest):
         ocr_engine: OcrEngine = None,
         omnipage_ocr_options: OmnipageOcrOptionsInput = None,
         readapi_ocr_options: ReadApiOcrOptionsInput = None,
+        email_options: EmailOptions = None,
     ):
         if not dataset_type:
             dataset_type = "TEXT"
@@ -386,7 +390,8 @@ class CreateEmptyDataset(GraphQLRequest):
                     "ocrEngine": ocr_engine.name,
                     "omnipageOptions": omnipage_ocr_options,
                     "readapiOptions": readapi_ocr_options,
-                }
+                },
+                "emailOptions": email_options,
             }
         super().__init__(
             self.query,

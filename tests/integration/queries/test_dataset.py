@@ -425,3 +425,26 @@ def test_bad_csv_create_dataset(indico):
     assert dataset.status == "CREATING"
     dataset = client.call(GetDatasetFileStatus(id=dataset.id))
     assert all([f.status == "FAILED" for f in dataset.files])
+
+
+@pytest.mark.ocr("readapi")
+def test_create_with_email_options_readapi(indico):
+    client = IndicoClient()
+    readapi_config: ReadApiOcrOptionsInput = {
+        "auto_rotate": True,
+        "single_column": False,
+        "upscale_images": True,
+        "languages": ["AUTO"],
+    }
+    email_config = {
+        "include_sections": {"header": True, "body": True, "attachments": True},
+        "unpack": True,
+    }
+    dataset = client.call(
+        CreateEmptyDataset(
+            name=f"dataset-{int(time.time())}",
+            ocr_engine=OcrEngine.READAPI,
+            readapi_ocr_options=readapi_config,
+            email_options=email_config,
+        )
+    )
