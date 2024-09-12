@@ -143,6 +143,15 @@ class IncludeSections(BaseType):
 
 
 class EmailOptions(BaseType):
+    """
+    Email options
+
+    Args:
+        include_sections: Sections of the email to include after parsing (header, body, attachments)
+        unpack: Unpack an email and treat it as a multi-file Submission
+        preserve_body_whitespace: Preserve whitespace in the body of the email
+    """
+
     include_sections: Optional[IncludeSections]
     unpack: Optional[bool]
     preserve_body_whitespace: Optional[bool]
