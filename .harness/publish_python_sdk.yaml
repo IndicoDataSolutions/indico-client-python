@@ -289,7 +289,17 @@ pipeline:
                         connectorRef: account.harbor
                         image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
                         shell: Sh
-                        command: echo "release"
+                        command: |-
+                          #!/bin/bash
+                          TAG="<+trigger.tag>"
+                          git fetch origin tag $TAG
+                          rm -rf /indico-client/dist
+                          pip3 install twine==3.3.0
+                          python3 setup.py sdist
+                          echo "checking dist files at '.dist/*'"
+                          twine check .dist/*
+                          echo "uploading release ${TAG}"
+                          twine upload -u __token__ -p <+stage.variables.pypi_token> .dist/*
                       when:
                         stageStatus: Success
                         condition: <+<+execution.steps.Info.output.outputVariables.RUN_RELEASE> == "true">
