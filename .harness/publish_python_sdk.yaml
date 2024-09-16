@@ -270,12 +270,9 @@ pipeline:
                         command: |-
                           #!/bin/bash
                           git fetch
-                          git checkout <+trigger.tag>
                           rm -rf /indico-client/dist
                           pip3 install twine==3.3.0
                           python3 setup.py sdist
-                          twine check /indico-client/dist/*
-                          pwd
                           twine upload -u __token__ -p <+stage.variables.pypi_token> /indico-client/dist/*
                       when:
                         stageStatus: Success
