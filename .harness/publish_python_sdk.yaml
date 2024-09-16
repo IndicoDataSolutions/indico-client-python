@@ -275,9 +275,9 @@ pipeline:
                           pip3 install twine==3.3.0
                           python3 setup.py sdist
                           echo "checking dist files at '/indico-client/dist/*'"
-                          twine check /indico-client/dist/*
+                          twine check dist/*
                           echo "uploading pre-release ${TAG}"
-                          twine upload -u __token__ -p <+stage.variables.pypi_token> /indico-client/dist/*
+                          twine upload -u __token__ -p <+stage.variables.pypi_token> dist/*
                       when:
                         stageStatus: Success
                         condition: <+pipeline.variables.RUN_PRERELEASE> == "TRUE"
