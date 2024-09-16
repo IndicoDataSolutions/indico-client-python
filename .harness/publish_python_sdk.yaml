@@ -269,10 +269,13 @@ pipeline:
                         shell: Sh
                         command: |-
                           #!/bin/bash
-                          git checkout <+pipeline.branch>
+                          git fetch --depth=50 origin +refs/tags/<+trigger.tag>
                           rm -rf /indico-client/dist
                           pip3 install twine==3.3.0
                           python3 setup.py sdist
+                          ls
+                          ls /indico-client
+                          ls /indico-client/dist
                           twine upload -u __token__ -p <+stage.variables.pypi_token> /indico-client/dist/*
                       when:
                         stageStatus: Success
