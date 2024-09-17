@@ -1,7 +1,7 @@
 import inspect
 import json
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, List, cast
+from typing import TYPE_CHECKING, Any, List, cast, get_origin
 
 from indico.types.utils import cc_to_snake
 
@@ -38,6 +38,7 @@ def valid_type(v: "Any") -> bool:
     return (
         (inspect.isclass(v) and issubclass(v, BaseType))
         or v in [str, int, float, bool, JSONType, datetime]
+        or get_origin(v) is dict
         or valid_type(list_subtype(v))
     )
 
