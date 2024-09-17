@@ -1,3 +1,5 @@
+from typing import Any
+
 from indico.types import BaseType
 
 
@@ -25,3 +27,4 @@ class SubmissionFile(BaseType):
     filetype: str
     file_size: int
     num_pages: int
+    meta: dict[str, Any]
