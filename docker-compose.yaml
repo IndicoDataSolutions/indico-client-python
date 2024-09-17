@@ -5,3 +5,14 @@ services:
     build:
       context: .
     entrypoint: ["sleep", "infinity"]
+
+  tester:
+    build:
+      context: .
+      dockerfile: tox.Dockerfile
+    volumes:
+      - ./:/indico-client
+      - ${INDICO_API_TOKEN_PATH:-$HOME/indico_api_token.txt}:/root/indico_api_token.txt
+    environment:
+      INDICO_HOST: ${INDICO_HOST:-dev-ci.us-east-2.indico-dev.indico.io}
+    command: tox -vvvvp

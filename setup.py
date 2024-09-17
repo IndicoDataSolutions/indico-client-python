@@ -19,7 +19,6 @@ setup(
     url="https://github.com/IndicoDataSolutions/indico-client-python",
     author="indico",
     author_email="engineering@indico.io",
-    tests_require=["pytest<8", "requests-mock>=1.8.0", "pytest-asyncio>0.21"],
     install_requires=[
         "requests>=2.22.0",
         "setuptools>=41.4.0",
