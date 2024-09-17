@@ -1,7 +1,11 @@
-from enum import Enum
-from typing import List, Union
 from datetime import datetime
-from indico.types import BaseType, ModelGroup, ModelTaskType
+from enum import Enum
+from typing import TYPE_CHECKING, List
+
+from indico.types import BaseType, ModelGroup
+
+if TYPE_CHECKING:  # pragma: no cover
+    from indico.typing import AnyDict
 
 
 class WorkflowComponent(BaseType):
@@ -17,8 +21,6 @@ class WorkflowComponent(BaseType):
     task_type: str
     model_type: str
     model_group: ModelGroup
-    task_type: str
-    model_type: str
     minimum: int
     maximum: int
 
@@ -71,7 +73,7 @@ class Workflow(BaseType):
 
 
 class LinkedLabelStrategy(Enum):
-    BY_ROW = 0,
+    BY_ROW = (0,)
     BY_KEY = 1
 
 
@@ -81,7 +83,7 @@ class LinkedLabelGroup:
         name: str,
         strategy: LinkedLabelStrategy,
         class_ids: List[int],
-        strategy_settings: dict,
+        strategy_settings: "AnyDict",
     ):
         self.name = name
         self.strategy = strategy
@@ -90,8 +92,8 @@ class LinkedLabelGroup:
 
 
 class ComponentFamily(Enum):
-    MODEL = 0,
-    FILTER = 1,
-    TRANSFORMER = 2,
-    REVIEW = 3,
+    MODEL = (0,)
+    FILTER = (1,)
+    TRANSFORMER = (2,)
+    REVIEW = (3,)
     OUTPUT = 4

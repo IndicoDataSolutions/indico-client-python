@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import List
-from indico import IndicoConfig, IndicoClient
+
+from indico import IndicoClient, IndicoConfig
+from indico.filters import DocumentReportFilter
 from indico.queries.document_report import GetDocumentReport
 from indico.types.document_report import DocumentReport
-from indico.filters import DocumentReportFilter
-
 
 """Example 1: Document Report for a date range and page through the results"""
 

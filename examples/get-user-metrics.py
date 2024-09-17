@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 
-from indico import IndicoConfig, IndicoClient
-from indico.filters import or_, UserMetricsFilter
+from indico import IndicoClient, IndicoConfig
+from indico.filters import UserMetricsFilter, or_
 from indico.queries import JobStatus, RetrieveStorageObject
 from indico.queries.usermetrics import (
-    GetUserSummary,
-    GetUserSnapshots,
     GenerateChangelogReport,
     GetUserChangelog,
+    GetUserSnapshots,
+    GetUserSummary,
 )
 from indico.types.user_metrics import UserSummary
 

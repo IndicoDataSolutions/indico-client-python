@@ -1,32 +1,36 @@
-from pathlib import Path
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import List
 
 import pytest
+
 from indico.client import IndicoClient
 from indico.queries import (
     JobStatus,
     RetrieveStorageObject,
-    UpdateWorkflowSettings,
-    WorkflowSubmission,
-    WaitForSubmissions,
     SubmitReview,
+    UpdateWorkflowSettings,
+    WaitForSubmissions,
+    WorkflowSubmission,
 )
-
-from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
 from indico.queries.workflow_metrics import GetWorkflowMetrics
-from datetime import datetime
+from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
+
 from ..data.datasets import *  # noqa
 from ..data.datasets import PUBLIC_URL
-import time
 
 
 @pytest.fixture
-def workflow(indico, org_annotate_dataset, org_annotate_workflow, org_annotate_model_group):
+def workflow(
+    indico, org_annotate_dataset, org_annotate_workflow, org_annotate_model_group
+):
     client = IndicoClient()
 
     wf = client.call(
-        UpdateWorkflowSettings(org_annotate_workflow.id, enable_review=True, enable_auto_review=True)
+        UpdateWorkflowSettings(
+            org_annotate_workflow.id, enable_review=True, enable_auto_review=True
+        )
     )
     assert wf.review_enabled and wf.auto_review_enabled
 

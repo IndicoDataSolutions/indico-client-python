@@ -6,9 +6,10 @@ stored locally on your computer or at a publicly accessible URL. The code snippe
 below shows you what to do if the images are on your computer.
 """
 
+import pandas as pd
+
 from indico import IndicoClient, IndicoConfig
 from indico.queries import CreateDataset
-import pandas as pd
 
 # Create an Indico API client
 my_config = IndicoConfig(

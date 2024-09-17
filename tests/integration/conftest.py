@@ -1,11 +1,13 @@
 import logging
-import pytest
 import os
+
+import pytest
 
 from indico.client import IndicoClient
 from indico.queries.datasets import GetAvailableOcrEngines
-from .data.datasets import *
+
 from .data.async_datasets import *
+from .data.datasets import *
 
 logging.getLogger("indico").setLevel(logging.DEBUG)
 

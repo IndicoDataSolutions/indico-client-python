@@ -1,5 +1,6 @@
 import os
 from unittest import mock
+
 from indico.config import IndicoConfig
 
 

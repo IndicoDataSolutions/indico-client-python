@@ -1,0 +1,3 @@
+from typing import Any
+
+def unpackb(packed: bytes, **kwargs: Any) -> Any: ...
