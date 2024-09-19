@@ -302,7 +302,7 @@ pipeline:
                           twine upload -u __token__ -p <+stage.variables.pypi_token> .dist/*
                       when:
                         stageStatus: Success
-                        condition: <+<+execution.steps.Info.output.outputVariables.RUN_RELEASE> == "true">
+                        condition: <+pipeline.variables.RUN_RELEASE> == "TRUE"
           caching:
             enabled: false
             paths: []
