@@ -18,16 +18,30 @@ setup(
     author_email="engineering@indico.io",
     tests_require=["pytest>=5.2.1", "requests-mock>=1.8.0", "pytest-asyncio"],
     install_requires=[
-        "msgpack>=0.5.6",
-        "msgpack-numpy==0.4.4.3",
-        "numpy>=1.16.0",
-        "Pillow>=6.2.0",
         "requests>=2.22.0",
         "setuptools>=41.4.0",
-        "pandas>=1.0.3",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
         "deprecation>=2.1.0",
         "jsons",
         "aiohttp[speedups]"
     ],
+    extras_require={
+        "all": [
+            "msgpack>=0.5.6",
+            "msgpack-numpy==0.4.4.3",
+            "numpy>=1.16.0",
+            "pandas>=1.0.3",
+        ],
+        "datasets": [
+            "pandas>=1.0.3",
+        ],
+        "deserialization": [
+            "msgpack>=0.5.6",
+            "msgpack-numpy==0.4.4.3",
+            "numpy>=1.16.0",
+        ],
+        "exports": [
+            "pandas>=1.0.3",
+        ],
+    }
 )
