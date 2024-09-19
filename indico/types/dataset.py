@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
+from indico.errors import IndicoInputError
 from indico.types.base import BaseType
 from indico.types.datafile import Datafile
-from indico.errors import IndicoInputError
 
 
 class DataColumn(BaseType):
@@ -57,12 +57,16 @@ class Dataset(BaseType):
 
     def labelset_by_name(self, name: str) -> LabelSet:
         if name not in [lab.name for lab in self.labelsets]:
-            raise IndicoInputError(f"No labelset found for {name}. Current labelset names include {[lab.name for lab in self.labelsets]}.")
+            raise IndicoInputError(
+                f"No labelset found for {name}. Current labelset names include {[lab.name for lab in self.labelsets]}."
+            )
         return next(lab for lab in self.labelsets if lab.name == name)
 
     def datacolumn_by_name(self, name: str) -> DataColumn:
         if name not in [datacol.name for datacol in self.datacolumns]:
-            raise IndicoInputError(f"No datacolumn found for {name}. Current datacolumn names include {[datacol.name for datacol in self.datacolumns]}.")
+            raise IndicoInputError(
+                f"No datacolumn found for {name}. Current datacolumn names include {[datacol.name for datacol in self.datacolumns]}."
+            )
         return next(datacol for datacol in self.datacolumns if datacol.name == name)
 
 
@@ -70,14 +74,17 @@ class TableReadOrder(Enum):
     ROW = 0
     COLUMN = 1
 
+
 class OcrEngine(Enum):
     """
     Enum representing available OCR engines.
     """
+
     OMNIPAGE = 0
     READAPI = 1
     READAPI_V2 = 2
     READAPI_TABLES_V1 = 3
+
 
 class OmnipageOcrOptionsInput(BaseType):
     """
@@ -95,6 +102,7 @@ class OmnipageOcrOptionsInput(BaseType):
         table_read_order(TableReadOrder): Read table by row or column.
 
     """
+
     auto_rotate: bool
     single_column: bool
     upscale_images: bool
@@ -104,6 +112,7 @@ class OmnipageOcrOptionsInput(BaseType):
     native_layout: bool
     native_pdf: bool
     table_read_order: TableReadOrder
+
 
 class ReadApiOcrOptionsInput(BaseType):
     """
@@ -115,20 +124,44 @@ class ReadApiOcrOptionsInput(BaseType):
         upscale_images(bool): Scale up low resolution images.
         languages(List[str]): List of languages to use.
     """
+
     auto_rotate: bool
     single_column: bool
     upscale_images: bool
     languages: List[str]
 
+
 class OcrInputLanguage(BaseType):
     name: str
     code: str
 
-class OcrOptionsInput():
+
+class IncludeSections(BaseType):
+    header: Optional[bool]
+    body: Optional[bool]
+    attachments: Optional[bool]
+
+
+class EmailOptions(BaseType):
+    """
+    Email options
+
+    Args:
+        include_sections: Sections of the email to include after parsing (header, body, attachments)
+        unpack: Unpack an email and treat it as a multi-file Submission
+        preserve_body_whitespace: Preserve whitespace in the body of the email
+    """
+
+    include_sections: Optional[IncludeSections]
+    unpack: Optional[bool]
+    preserve_body_whitespace: Optional[bool]
+
+
+class OcrOptionsInput:
     """
     Input options for OCR engine.
     """
+
     ocr_engine: OcrEngine
     omnipage_options: OmnipageOcrOptionsInput
     readapi_options: ReadApiOcrOptionsInput
-    
