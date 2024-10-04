@@ -1,9 +1,19 @@
 import json
-from typing import Any
+from datetime import datetime
+from typing import TYPE_CHECKING, Any, cast, final
 
-from pydantic import AliasGenerator, BaseModel, BeforeValidator, ConfigDict
+from pydantic import (
+    AliasGenerator,
+    BaseModel,
+    BeforeValidator,
+    ConfigDict,
+    field_validator,
+)
 from pydantic.alias_generators import to_camel
 from typing_extensions import Annotated
+
+if TYPE_CHECKING:  # pragma: no cover
+    from pydantic import ValidationInfo
 
 
 class BaseType(BaseModel):
@@ -14,7 +24,22 @@ class BaseType(BaseModel):
         populate_by_name=True,
     )
 
+    @field_validator("*", mode="before")
+    @classmethod
+    @final
+    def _validate_legacy_datetime(cls, v: Any, info: "ValidationInfo") -> Any:
+        # pydantic forces a UTC timezone when validating datetimes provided in epoch
+        # time. this isn't backwards compat, so we override the built-in validation for
+        # all fields defined with a datetime annotation with our legacy parsing
+        if cls.model_fields[cast(str, info.field_name)].annotation == datetime:
+            try:
+                v = datetime.fromtimestamp(float(v))
+            except ValueError:
+                v = datetime.fromisoformat(v)
 
-# this really should be dict[str, Any], but that breaks static typing since we supply
+        return v
+
+
+# this really should be dict[str, Any], but that breaks static typing since we'd supply
 # the field as a string but the model's type would be annotated as a dict
 JSONType = Annotated[Any, BeforeValidator(json.loads)]
