@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from typing import TYPE_CHECKING
+
+from typing import Optional
+
+from pydantic import Field
 
 from indico.types.base import BaseType, JSONType
-
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any
 
 
 class Job(BaseType):
@@ -22,13 +22,7 @@ class Job(BaseType):
         ready (bool):
     """
 
-    id: int
-    status: str
-    result: JSONType
-    ready: bool
-
-    def __init__(self, **kwargs: "Any"):
-        if "jobId" in kwargs:
-            kwargs["id"] = kwargs["jobId"]
-            del kwargs["jobId"]
-        super().__init__(**kwargs)
+    id: int = Field(validation_alias="jobId")
+    status: Optional[str] = None
+    result: Optional[JSONType] = None
+    ready: Optional[bool] = None

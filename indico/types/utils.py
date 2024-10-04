@@ -2,23 +2,26 @@ import re
 import time
 from typing import TYPE_CHECKING
 
+from pydantic.alias_generators import to_snake
+
 from indico.errors import IndicoTimeoutError
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Match, NoReturn, Optional, Union
 
-_cc_to_snake_re = re.compile(r"(?<!^)(?=[A-Z])")
 _snake_to_cc_re = re.compile(r"(.*?)_([a-zA-Z])")
 
 
 def cc_to_snake(string: str) -> str:
-    return re.sub(_cc_to_snake_re, "_", string).lower()
+    return to_snake(string)
 
 
 def _camel(match: "Match[str]") -> str:
     return match.group(1) + match.group(2).upper()
 
 
+# pydantic's `to_camel` behaves slightly differently that what we want, in that it
+# doesn't parse strings that start with an underscore, hence why we do not use it here
 def snake_to_cc(string: str) -> str:
     return re.sub(_snake_to_cc_re, _camel, string, 0)
 

@@ -31,5 +31,6 @@ setup(
         "deprecation>=2.1.0",
         "jsons",
         "aiohttp[speedups]",
+        "pydantic>=2",
     ],
 )

@@ -2,13 +2,13 @@
 Handles deserialization / decoding of responses
 """
 
-import cgi
 import gzip
 import io
 import json
 import logging
 import traceback
 from collections import defaultdict
+from email.message import Message
 from typing import TYPE_CHECKING
 
 import msgpack
@@ -16,12 +16,20 @@ import msgpack
 from indico.errors import IndicoDecodingError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Mapping, Optional
+    from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
     from aiohttp import ClientResponse
     from requests import Response
 
 logger = logging.getLogger(__name__)
+
+
+def _parse_header(header: str) -> "Tuple[str, Dict[str, str]]":
+    """Parse a header and return as a tuple of a main value and additional params"""
+    m = Message()
+    m["content-type"] = header
+    params = m.get_params(failobj=[])
+    return params[0][0], dict(params[1:])
 
 
 def decompress(response: "Response") -> bytes:
@@ -33,7 +41,7 @@ def decompress(response: "Response") -> bytes:
 def deserialize(
     response: "Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = cgi.parse_header(response.headers["Content-Type"])
+    content_type, params = _parse_header(response.headers["Content-Type"])
     content: bytes
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
@@ -59,7 +67,7 @@ def deserialize(
 async def aio_deserialize(
     response: "ClientResponse", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = cgi.parse_header(response.headers["Content-Type"])
+    content_type, params = _parse_header(response.headers["Content-Type"])
     content: bytes = await response.read()
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:

@@ -4,7 +4,7 @@ from indico.client.request import GraphQLRequest, RequestChain
 from indico.queries.storage import UploadBatched, UploadDocument
 from indico.types import Job
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterator, List, Optional, Union
 
     from indico.typing import AnyDict, Payload
