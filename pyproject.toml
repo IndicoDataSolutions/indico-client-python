@@ -6,3 +6,4 @@ profile = "black"
 strict = true
 packages = ["indico"]
 mypy_path = "./stubs:${MYPYPATH}"
+plugins = ["pydantic.mypy"]
