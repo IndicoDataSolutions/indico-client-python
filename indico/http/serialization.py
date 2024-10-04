@@ -9,14 +9,14 @@ import logging
 import traceback
 from collections import defaultdict
 from email.message import Message
-from typing import TYPE_CHECKING, Dict, Tuple
+from typing import TYPE_CHECKING
 
 import msgpack
 
 from indico.errors import IndicoDecodingError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Mapping, Optional
+    from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
     from aiohttp import ClientResponse
     from requests import Response
@@ -24,7 +24,7 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-def _parse_header(header: str) -> Tuple[str, Dict[str, str]]:
+def _parse_header(header: str) -> "Tuple[str, Dict[str, str]]":
     """Parse a header and return as a tuple of a main value and additional params"""
     m = Message()
     m["content-type"] = header
