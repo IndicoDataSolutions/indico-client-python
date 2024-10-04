@@ -2,17 +2,18 @@ import re
 import time
 from typing import TYPE_CHECKING
 
+from pydantic.alias_generators import to_snake
+
 from indico.errors import IndicoTimeoutError
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Match, NoReturn, Optional, Union
 
-_cc_to_snake_re = re.compile(r"(?<!^)(?=[A-Z])")
 _snake_to_cc_re = re.compile(r"(.*?)_([a-zA-Z])")
 
 
 def cc_to_snake(string: str) -> str:
-    return re.sub(_cc_to_snake_re, "_", string).lower()
+    return to_snake(string)
 
 
 def _camel(match: "Match[str]") -> str:

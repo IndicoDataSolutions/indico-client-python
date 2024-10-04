@@ -22,6 +22,11 @@ class BaseType(BaseModel):
         # field names (camel case) or by their python names (snake case)
         alias_generator=AliasGenerator(validation_alias=to_camel),
         populate_by_name=True,
+        # by default, pydantic warns if a model defines a field prefixed with 'model_'.
+        # we have a lot of those, so we can omit that namespace from the warnings.
+        # pydantic will still throw an error if we define a field that clashes with an
+        # built-in internal one, though.
+        protected_namespaces=(),
     )
 
     @field_validator("*", mode="before")
