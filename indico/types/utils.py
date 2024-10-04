@@ -20,6 +20,8 @@ def _camel(match: "Match[str]") -> str:
     return match.group(1) + match.group(2).upper()
 
 
+# pydantic's `to_camel` behaves slightly differently that what we want, in that it
+# doesn't parse strings that start with an underscore, hence why we do not use it here
 def snake_to_cc(string: str) -> str:
     return re.sub(_snake_to_cc_re, _camel, string, 0)
 
