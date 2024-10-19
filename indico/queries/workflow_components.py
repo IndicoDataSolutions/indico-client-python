@@ -1,10 +1,12 @@
-from typing import List
+from typing import Any, List
 
 import jsons
+import requests
 
 from indico import GraphQLRequest, RequestChain
-from indico.errors import IndicoInputError
+from indico.errors import IndicoInputError, IndicoRequestError
 from indico.types import (
+    Job,
     LinkedLabelGroup,
     NewLabelsetArguments,
     NewQuestionnaireArguments,
@@ -13,55 +15,54 @@ from indico.types import (
 
 
 class _AddWorkflowComponent(GraphQLRequest):
-    query = """mutation addWorkflowComponent($afterComponentId:Int, $afterComponentLinkId: Int, $component: JSONString!, $workflowId: Int!){
-  addWorkflowComponent(afterComponentId: $afterComponentId,
-  component: $component,
-  workflowId:$workflowId
-  afterComponentLinkId: $afterComponentLinkId){
-  workflow {
+    query = """
+        mutation addWorkflowComponent($afterComponentId: Int, $afterComponentLinkId: Int, $component: JSONString!, $workflowId: Int!, $blueprintId: Int) {
+        addWorkflowComponent(
+            afterComponentId: $afterComponentId
+            component: $component
+            workflowId: $workflowId
+            afterComponentLinkId: $afterComponentLinkId
+            blueprintId: $blueprintId
+        ) {
+            workflow {
+            id
+            components {
                 id
-                components {
-                                id
-                                componentType
-                                reviewable
-                                ... on ContentLengthComponent
-                                {
-                                minimum
-                                maximum
-                                }
-                                filteredClasses
-                                ... on ModelGroupComponent {
-                                    taskType
-                                    modelType
-                                    modelGroup {
-                                      status
-                                      id
-                                      classNames
-                                      name
-                                      taskType
-                                      questionnaireId
-                                      selectedModel{
-                                        id
-                                      }
-                                    }
-
-                                }
-
-
-                            }
-                            componentLinks {
-                                id
-                                headComponentId
-                                tailComponentId
-                                filters{
-                                    classes
-                                }
-
-                            }
-
+                componentType
+                reviewable
+                ... on ContentLengthComponent {
+                minimum
+                maximum
+                }
+                filteredClasses
+                ... on ModelGroupComponent {
+                taskType
+                modelType
+                modelGroup {
+                    status
+                    id
+                    classNames
+                    name
+                    taskType
+                    questionnaireId
+                    selectedModel {
+                    id
+                    }
+                }
+                }
             }
-  }
-}"""
+            componentLinks {
+                id
+                headComponentId
+                tailComponentId
+                filters {
+                classes
+                }
+            }
+            }
+        }
+        }
+    """
 
     def __init__(
         self,
@@ -69,6 +70,7 @@ class _AddWorkflowComponent(GraphQLRequest):
         after_component_link: int,
         workflow_id: int,
         component: dict,
+        blueprint_id: int | None = None,
     ):
         super().__init__(
             self.query,
@@ -77,6 +79,7 @@ class _AddWorkflowComponent(GraphQLRequest):
                 "afterComponentLink": after_component_link,
                 "workflowId": workflow_id,
                 "component": jsons.dumps(component),
+                "blueprintId": blueprint_id,
             },
         )
 
@@ -107,7 +110,6 @@ class AddLinkedLabelComponent(RequestChain):
         groups: List[LinkedLabelGroup],
         after_component_link_id: int = None,
     ):
-
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
         self.after_component_link_id = after_component_link_id
@@ -239,68 +241,59 @@ class AddModelGroupComponent(GraphQLRequest):
     """
 
     query = """
-            mutation addModelGroup(
-          $workflowId: Int!,
-          $name: String!,
-          $datasetId: Int!,
-          $sourceColumnId: Int!,
-          $afterComponentId: Int,
-          $labelsetColumnId: Int,
-          $afterLinkId: Int,
-          $newLabelsetArgs: NewLabelsetInput,
-          $questionnaireArgs: QuestionnaireInput,
-          $modelTrainingOptions: JSONString,
-          $modelType : ModelType
+        mutation addModelGroup($workflowId: Int!, $name: String!, $datasetId: Int!, $sourceColumnId: Int!, $afterComponentId: Int, $labelsetColumnId: Int, $afterLinkId: Int, $newLabelsetArgs: NewLabelsetInput, $questionnaireArgs: QuestionnaireInput, $modelTrainingOptions: JSONString, $modelType: ModelType) {
+        addModelGroupComponent(
+            workflowId: $workflowId
+            name: $name
+            datasetId: $datasetId
+            sourceColumnId: $sourceColumnId
+            afterComponentId: $afterComponentId
+            afterLinkId: $afterLinkId
+            labelsetColumnId: $labelsetColumnId
+            modelTrainingOptions: $modelTrainingOptions
+            newLabelsetArgs: $newLabelsetArgs
+            questionnaireArgs: $questionnaireArgs
+            modelType: $modelType
         ) {
-          addModelGroupComponent(workflowId: $workflowId, name: $name, datasetId: $datasetId,
-          sourceColumnId: $sourceColumnId, afterComponentId: $afterComponentId, afterLinkId: $afterLinkId, labelsetColumnId: $labelsetColumnId,
-          modelTrainingOptions: $modelTrainingOptions,
-
-    newLabelsetArgs: $newLabelsetArgs,
-    questionnaireArgs: $questionnaireArgs, modelType: $modelType) {
             workflow {
+            id
+            components {
                 id
-                components {
-                                id
-                                componentType
-                                reviewable
-
-                                filteredClasses
-                                ... on ContentLengthComponent
-                                {
-                                minimum
-                                maximum
-                                }
-                                ... on ModelGroupComponent {
-                                    taskType
-                                    modelType
-                                    modelGroup {
-                                        status
-                                      id
-                                      name
-                                      taskType
-                                      classNames
-                                      questionnaireId
-                                      selectedModel{
-                                        id
-                                      }
-                                    }
-                                }
-
-                            }
-                            componentLinks {
-                                id
-                                headComponentId
-                                tailComponentId
-                                filters {
-                                    classes
-                                }
-                            }
-
+                componentType
+                reviewable
+                filteredClasses
+                ... on ContentLengthComponent {
+                minimum
+                maximum
+                }
+                ... on ModelGroupComponent {
+                taskType
+                modelType
+                modelGroup {
+                    status
+                    id
+                    name
+                    taskType
+                    classNames
+                    questionnaireId
+                    selectedModel {
+                    id
+                    }
+                }
+                }
             }
-          }
+            componentLinks {
+                id
+                headComponentId
+                tailComponentId
+                filters {
+                classes
+                }
+            }
+            }
         }
-            """
+        }
+    """
 
     def __init__(
         self,
@@ -316,7 +309,6 @@ class AddModelGroupComponent(GraphQLRequest):
         model_training_options: str = None,
         model_type: str = None,
     ):
-
         if labelset_column_id is not None and new_labelset_args is not None:
             raise IndicoInputError(
                 "Cannot define both labelset_column_id and new_labelset_args, must be one "
@@ -448,3 +440,113 @@ class DeleteWorkflowComponent(GraphQLRequest):
         return Workflow(
             **super().process_response(response)["deleteWorkflowComponent"]["workflow"]
         )
+
+
+class AddStaticModelComponent(RequestChain):
+    """
+    Add a static model component to a workflow.
+    Available on 6.13+ only.
+
+    Args:
+        workflow_id(int): the id of the workflow to add the component to.
+        after_component_id(int): the id of the component to add this component after. Should be after the input ocr extraction component.
+        static_component_config(dict[str, Any]): the configuration for the static model component.
+        blueprint_id(int): the id of the static model blueprint to use.
+    """
+
+    def __init__(
+        self,
+        workflow_id: int,
+        after_component_id: int,
+        static_component_config: dict[str, Any],
+        # Perhaps not required, maybe just figure it out from the static_component_config
+        blueprint_id: int,
+    ):
+        self.workflow_id = workflow_id
+        self.after_component_id = after_component_id
+        self.component = {
+            "component_type": "static_model",
+            "config": static_component_config,
+        }
+        self.blueprint_id = blueprint_id
+
+    def requests(self):
+        yield _AddWorkflowComponent(
+            after_component_id=self.after_component_id,
+            workflow_id=self.workflow_id,
+            component=self.component,
+            after_component_link=None,
+            blueprint_id=self.blueprint_id,
+        )
+
+
+class ProcessStaticModelExport(GraphQLRequest):
+    """
+    Process a static model export.
+    Available on 6.13+ only.
+
+    Args:
+        storage_uri(str): the storage uri of the static model export that was uploaded to Indico.
+
+    Returns:
+        Job: the job that was created to process the static model export.
+    """
+
+    query = """
+        mutation processStaticModelExport($storageUri: String!) {
+            processStaticModelExport(storageUri: $storageUri) {
+                jobId
+            }
+        }
+    """
+
+    def __init__(self, storage_uri: str):
+        super().__init__(self.query, variables={"storageUri": storage_uri})
+
+    def process_response(self, response) -> Job:
+        job_id = super().process_response(response)["processStaticModelExport"]["jobId"]
+        return Job(id=job_id)
+
+
+class UploadStaticModelExport(GraphQLRequest):
+    """
+    Upload a static model export to Indico.
+    Available on 6.13+ only.
+
+    Args:
+        file_path(str): path to the export zip file to upload to Indico.
+
+    Returns:
+        str: the storage uri of the static model export.
+    """
+
+    query = """
+        query exportUpload {
+            exportUpload {
+                signedUrl
+                storageUri
+            }
+        }
+    """
+
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        super().__init__(self.query)
+
+    def process_response(self, response) -> str:
+        resp = super().process_response(response)["exportUpload"]
+        signed_url = resp["signedUrl"]
+        storage_uri = resp["storageUri"]
+
+        with open(self.file_path, "rb") as file:
+            file_content = file.read()
+
+        headers = {"Content-Type": "application/zip"}
+        response = requests.put(signed_url, data=file_content, headers=headers)
+
+        if response.status_code != 200:
+            raise IndicoRequestError(
+                f"Failed to upload static model export: {response.text}"
+            )
+
+        return storage_uri
