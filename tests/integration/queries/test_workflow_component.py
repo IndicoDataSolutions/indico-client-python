@@ -17,7 +17,13 @@ from indico.queries.workflow_components import (
     ProcessStaticModelExport,
     UploadStaticModelExport,
 )
-from indico.types import Job, ModelGroup, ModelTaskType, NewLabelsetArguments
+from indico.types import (
+    Job,
+    ModelGroup,
+    ModelTaskType,
+    NewLabelsetArguments,
+    StaticModelConfig,
+)
 
 from ..data.datasets import *  # noqa
 
@@ -249,40 +255,13 @@ def test_add_static_model_component(indico, org_annotate_dataset):
     after_component_id = next(
         c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION"
     )
-    get_blueprints_query = """
-        query gallery{
-            gallery{
-                component{
-                    blueprintsPage {
-                        componentBlueprints {
-                        id
-                        componentType
-                        config
-                        }
-                    }
-                }
-            }
-        }
-    """
-    blueprints = client.call(GraphQLRequest(get_blueprints_query))
-    static_model_blueprint = next(
-        bp
-        for bp in blueprints["gallery"]["component"]["blueprintsPage"][
-            "componentBlueprints"
-        ]
-        if bp["componentType"] == "STATIC_MODEL"
-        and bp["config"]["task_type"] == finished_job.result["task_type"]
-    )
 
     static_model_req = AddStaticModelComponent(
         workflow_id=wf.id,
         after_component_id=after_component_id,
-        blueprint_id=static_model_blueprint["id"],
-        static_component_config={
-            "model_type": finished_job.result["model_type"],
-            "model_file_path": finished_job.result["model_file_path"],
-            "predict_options": finished_job.result["predict_options"],
-        },
+        static_component_config=StaticModelConfig(
+            export_meta=finished_job.result,
+        ),
     )
     wf = client.call(static_model_req)
 

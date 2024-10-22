@@ -12,6 +12,7 @@ from indico.types import (
     NewQuestionnaireArguments,
     Workflow,
 )
+from indico.types.static_model import StaticModelConfig
 
 
 class _AddWorkflowComponent(GraphQLRequest):
@@ -451,16 +452,13 @@ class AddStaticModelComponent(RequestChain):
         workflow_id(int): the id of the workflow to add the component to.
         after_component_id(int): the id of the component to add this component after. Should be after the input ocr extraction component.
         static_component_config(dict[str, Any]): the configuration for the static model component.
-        blueprint_id(int): the id of the static model blueprint to use.
     """
 
     def __init__(
         self,
         workflow_id: int,
         after_component_id: int,
-        static_component_config: dict[str, Any],
-        # Perhaps not required, maybe just figure it out from the static_component_config
-        blueprint_id: int,
+        static_component_config: StaticModelConfig,
     ):
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
@@ -468,7 +466,6 @@ class AddStaticModelComponent(RequestChain):
             "component_type": "static_model",
             "config": static_component_config,
         }
-        self.blueprint_id = blueprint_id
 
     def requests(self):
         yield _AddWorkflowComponent(
@@ -476,7 +473,6 @@ class AddStaticModelComponent(RequestChain):
             workflow_id=self.workflow_id,
             component=self.component,
             after_component_link=None,
-            blueprint_id=self.blueprint_id,
         )
 
 
