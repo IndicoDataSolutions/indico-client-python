@@ -68,7 +68,7 @@ class CreateModelExport(RequestChain):
                 yield GetModelExports([self.previous.id])
                 yield Delay(seconds=self.request_interval)
 
-        yield GetModelExports([self.previous.id])
+        yield GetModelExports([self.previous.id], with_signed_url=True)
 
 
 class GetModelExports(GraphQLRequest):
