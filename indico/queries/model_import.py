@@ -1,52 +1,14 @@
+from typing import Generator
+
 import requests
 
-from indico.client.request import GraphQLRequest
+from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoRequestError
+from indico.queries.jobs import JobStatus
 from indico.types.jobs import Job
 
 
-class ProcessStaticModelExport(GraphQLRequest):
-    """
-    Process a static model export.
-
-    Available on 6.14+ only.
-
-    Args:
-        storage_uri(str): the storage uri of the static model export that was uploaded to Indico.
-
-    Returns:
-        Job: the job that was created to process the static model export.
-    """
-
-    query = """
-        mutation processStaticModelExport($storageUri: String!) {
-            processStaticModelExport(storageUri: $storageUri) {
-                jobId
-            }
-        }
-    """
-
-    def __init__(self, storage_uri: str):
-        super().__init__(self.query, variables={"storageUri": storage_uri})
-
-    def process_response(self, response) -> Job:
-        job_id = super().process_response(response)["processStaticModelExport"]["jobId"]
-        return Job(id=job_id)
-
-
-class UploadStaticModelExport(GraphQLRequest):
-    """
-    Upload a static model export to Indico.
-
-    Available on 6.14+ only.
-
-    Args:
-        file_path(str): path to the export zip file to upload to Indico.
-
-    Returns:
-        str: the storage uri of the static model export.
-    """
-
+class _UploadSMExport(GraphQLRequest):
     query = """
         query exportUpload {
             exportUpload {
@@ -75,5 +37,69 @@ class UploadStaticModelExport(GraphQLRequest):
             raise IndicoRequestError(
                 f"Failed to upload static model export: {response.text}"
             )
-
         return storage_uri
+
+
+class ProcessStaticModelExport(GraphQLRequest):
+    """
+    Process a static model export.
+
+    Available on 6.14+ only.
+
+    Args:
+        storage_uri(str): the storage uri of the static model export that was uploaded to Indico.
+
+    Returns:
+        Job: the id of the job that is processing the static model export.
+    """
+
+    query = """
+        mutation processStaticModelExport($storageUri: String!) {
+            processStaticModelExport(storageUri: $storageUri) {
+                jobId
+            }
+        }
+    """
+
+    def __init__(
+        self,
+        storage_uri: str | None = None,
+    ):
+        self.storage_uri = storage_uri
+        super().__init__(
+            self.query,
+            variables={"storageUri": self.storage_uri},
+        )
+
+    def process_response(self, response) -> Job:
+        job_id = super().process_response(response)["processStaticModelExport"]["jobId"]
+        return Job(id=job_id)
+
+
+class UploadStaticModelExport(RequestChain):
+    """
+    Upload a static model export to Indico.
+
+    Available on 6.14+ only.
+
+    Args:
+        file_path(str): path to the export zip file to upload to Indico.
+
+    Options:
+        auto_process(bool): if True, the static model export will be processed after it is uploaded.
+
+    Returns:
+        str: the storage uri of the static model export.
+    """
+
+    def __init__(self, file_path: str, auto_process: bool = False):
+        self.file_path = file_path
+        self.auto_process = auto_process
+
+    def requests(self) -> Generator[str | Job, None, None]:
+        if self.auto_process:
+            yield _UploadSMExport(self.file_path)
+            yield ProcessStaticModelExport(self.previous)
+            yield JobStatus(self.previous.id)
+        else:
+            yield _UploadSMExport(self.file_path)

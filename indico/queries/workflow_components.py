@@ -4,6 +4,11 @@ import jsons
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
+from indico.queries.jobs import JobStatus
+from indico.queries.model_import import (
+    ProcessStaticModelExport,
+    UploadStaticModelExport,
+)
 from indico.types import (
     LinkedLabelGroup,
     NewLabelsetArguments,
@@ -453,20 +458,43 @@ class AddStaticModelComponent(RequestChain):
         static_component_config(dict[str, Any]): the configuration for the static model component.
     """
 
+    previous = None
+
     def __init__(
         self,
         workflow_id: int,
         after_component_id: int,
-        static_component_config: StaticModelConfig,
+        static_component_config: StaticModelConfig | None = None,
+        auto_process: bool = False,
+        export_file: str | None = None,
     ):
+        if not export_file and auto_process:
+            raise IndicoInputError("Must provide export_file if auto_process is True.")
+
+        if not auto_process and not static_component_config:
+            raise IndicoInputError(
+                "Must provide static_component_config if auto_process is False."
+            )
+
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
         self.component = {
             "component_type": "static_model",
             "config": static_component_config,
         }
+        self.auto_process = auto_process
+        self.export_file = export_file
 
     def requests(self):
+        if self.auto_process:
+            yield UploadStaticModelExport(
+                auto_process=True,
+                file_path=self.export_file,
+            )
+            self.component.update(
+                {"config": StaticModelConfig(export_meta=self.previous.result)}
+            )
+
         yield _AddWorkflowComponent(
             after_component_id=self.after_component_id,
             workflow_id=self.workflow_id,

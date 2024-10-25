@@ -10,7 +10,7 @@ from indico.queries import (
     GetWorkflow,
     JobStatus,
 )
-from indico.queries.workflow_components import (
+from indico.queries import (
     AddLinkClassificationComponent,
     AddModelGroupComponent,
     AddStaticModelComponent,
