@@ -4,9 +4,7 @@ import jsons
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
-from indico.queries.jobs import JobStatus
 from indico.queries.model_import import (
-    ProcessStaticModelExport,
     UploadStaticModelExport,
 )
 from indico.types import (
@@ -456,6 +454,8 @@ class AddStaticModelComponent(RequestChain):
         workflow_id(int): the id of the workflow to add the component to.
         after_component_id(int): the id of the component to add this component after. Should be after the input ocr extraction component.
         static_component_config(dict[str, Any]): the configuration for the static model component.
+        auto_process(bool): if True, the static model export will be processed after it is uploaded.
+        export_file(str): the path to the static model export file.
     """
 
     previous = None
