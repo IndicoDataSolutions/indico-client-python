@@ -101,5 +101,10 @@ class UploadStaticModelExport(RequestChain):
             yield _UploadSMExport(self.file_path)
             yield ProcessStaticModelExport(self.previous)
             yield JobStatus(self.previous.id)
+            if self.previous.status == "FAILURE":
+                raise IndicoRequestError(
+                    code="FAILURE",
+                    error=f"Failed to process static model export: {self.previous.result['message']}",
+                )
         else:
             yield _UploadSMExport(self.file_path)
