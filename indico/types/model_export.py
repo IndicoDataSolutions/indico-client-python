@@ -11,4 +11,4 @@ class ModelExport(BaseType):
     file_path: str
     created_at: datetime.datetime
     created_by: int
-    signed_url: str | None = None
+    signed_url: str

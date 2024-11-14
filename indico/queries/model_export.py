@@ -4,15 +4,14 @@ from indico.types.model_export import ModelExport
 
 class _CreateModelExport(GraphQLRequest):
     query = """
-        mutation createModelExport($modelId: Int!) {
-            createModelExport(modelId: $modelId) {
+        mutation ($modelId: Int!) {
+            createModelExport(
+                modelId: $modelId
+            ) {
                 id
                 name
                 status
                 modelId
-                filePath
-                createdAt
-                createdBy
             }
         }
     """
@@ -22,9 +21,7 @@ class _CreateModelExport(GraphQLRequest):
         super().__init__(self.query, variables={"modelId": model_id})
 
     def process_response(self, response) -> ModelExport:
-        return ModelExport(
-            **super().process_response(response)["createModelExport"]["modelExport"]
-        )
+        return ModelExport(**super().process_response(response)["createModelExport"])
 
 
 class CreateModelExport(RequestChain):
@@ -34,26 +31,12 @@ class CreateModelExport(RequestChain):
     Available on 6.14+ only.
     """
 
-    query = """
-        mutation createModelExport($modelId: Int!) {
-            createModelExport(modelId: $modelId) {
-                id
-                name
-                status
-                modelId
-                filePath
-                createdAt
-                createdBy
-            }
-        }
-    """
-
     previous: ModelExport | None = None
 
     def __init__(
         self,
         model_id: int,
-        wait: bool = False,
+        wait: bool = True,
         request_interval: int | float = 5,
     ):
         self.wait = wait
@@ -64,8 +47,9 @@ class CreateModelExport(RequestChain):
     def requests(self):
         yield _CreateModelExport(self.model_id)
         if self.wait:
-            while self.previous.status not in ["COMPLETE", "FAILED"]:
+            while self.previous and self.previous.status not in ["COMPLETE", "FAILED"]:
                 yield GetModelExports([self.previous.id])
+                self.previous = self.previous[0]
                 yield Delay(seconds=self.request_interval)
 
         yield GetModelExports([self.previous.id], with_signed_url=self.wait is True)
@@ -81,7 +65,9 @@ class GetModelExports(GraphQLRequest):
     query = """
         query getModelExports($exportIds: [Int]) {
             modelExports(exportIds: $exportIds) {
-                modelExports {fields}
+                modelExports {
+                    {fields}
+                }
             }
         }
     """

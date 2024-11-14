@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 import jsons
 
@@ -13,7 +13,6 @@ from indico.types import (
     NewQuestionnaireArguments,
     Workflow,
 )
-from indico.types.static_model import StaticModelConfig
 
 
 class _AddWorkflowComponent(GraphQLRequest):
@@ -78,7 +77,7 @@ class _AddWorkflowComponent(GraphQLRequest):
             self.query,
             variables={
                 "afterComponentId": after_component_id,
-                "afterComponentLink": after_component_link,
+                "afterComponentLinkId": after_component_link,
                 "workflowId": workflow_id,
                 "component": jsons.dumps(component),
                 "blueprintId": blueprint_id,
@@ -97,6 +96,7 @@ class AddLinkedLabelComponent(RequestChain):
 
     Args:
         after_component_id(int): the component this component follows.
+        after_component_link_id(int): the component link this component follows.
         workflow_id(int): the workflow id.
         labelset_id(int): the labelset to source classes from.
         model_group_id(int): the model group to source classes from.
@@ -451,11 +451,12 @@ class AddStaticModelComponent(RequestChain):
     Available on 6.14+ only.
 
     Args:
-        workflow_id(int): the id of the workflow to add the component to.
-        after_component_id(int): the id of the component to add this component after. Should be after the input ocr extraction component.
-        static_component_config(dict[str, Any]): the configuration for the static model component.
-        auto_process(bool): if True, the static model export will be processed after it is uploaded.
-        export_file(str): the path to the static model export file.
+        `workflow_id(int)`: the id of the workflow to add the component to.
+        `after_component_id(int)`: the id of the component to add this component after. Should be after the input ocr extraction component.
+        `after_component_link_id(int)`: the component link to add this component after.
+        `static_component_config(dict[str, Any])`: the configuration for the static model component. this would the dictionary returned from the job upon completion.
+        `auto_process(bool)`: if True, the static model export will be automatically processed after it is uploaded.
+        `export_file(str)`: the path to the static model export file.
     """
 
     previous = None
@@ -463,8 +464,10 @@ class AddStaticModelComponent(RequestChain):
     def __init__(
         self,
         workflow_id: int,
-        after_component_id: int,
-        static_component_config: StaticModelConfig | None = None,
+        after_component_id: int | None = None,
+        after_component_link_id: int | None = None,
+        static_component_config: dict[str, Any] | None = None,
+        component_name: str | None = None,
         auto_process: bool = False,
         export_file: str | None = None,
     ):
@@ -476,12 +479,24 @@ class AddStaticModelComponent(RequestChain):
                 "Must provide static_component_config if auto_process is False."
             )
 
+        if not after_component_id and not after_component_link_id:
+            raise IndicoInputError(
+                "Must provide either `after_component_id` or `after_component_link_id`."
+            )
+
         self.workflow_id = workflow_id
         self.after_component_id = after_component_id
+        self.after_component_link_id = after_component_link_id
         self.component = {
             "component_type": "static_model",
-            "config": static_component_config,
+            "config": {
+                "export_meta": static_component_config,
+            },
         }
+
+        if component_name:
+            self.component.update({"name": component_name})
+
         self.auto_process = auto_process
         self.export_file = export_file
 
@@ -492,12 +507,16 @@ class AddStaticModelComponent(RequestChain):
                 file_path=self.export_file,
             )
             self.component.update(
-                {"config": StaticModelConfig(export_meta=self.previous.result)}
+                {
+                    "config": {
+                        "export_meta": self.previous.result,
+                    }
+                }
             )
 
         yield _AddWorkflowComponent(
             after_component_id=self.after_component_id,
+            after_component_link=self.after_component_link_id,
             workflow_id=self.workflow_id,
             component=self.component,
-            after_component_link=None,
         )
