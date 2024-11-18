@@ -4,6 +4,10 @@ from indico.types.base import BaseType
 
 
 class ModelExport(BaseType):
+    """
+    The returned model export object.
+    """
+
     id: int
     name: str
     status: str

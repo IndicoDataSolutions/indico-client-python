@@ -29,6 +29,11 @@ class CreateModelExport(RequestChain):
     Create a model export.
 
     Available on 6.14+ only.
+
+    Args:
+        model_id (int): the model id.
+        wait (bool): wait for the export to complete. Defaults to True.
+        request_interval (int | float): the interval between requests in seconds. Defaults to 5.
     """
 
     previous: ModelExport | None = None
@@ -60,6 +65,10 @@ class GetModelExports(GraphQLRequest):
     Get model export(s).
 
     Available on 6.14+ only.
+
+    Args:
+        export_ids (list[int]): the export ids.
+        with_signed_url (bool): include the signed url. Defaults to False
     """
 
     query = """
