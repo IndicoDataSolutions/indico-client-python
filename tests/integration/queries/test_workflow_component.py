@@ -1,7 +1,29 @@
-from indico.client import IndicoClient
-from indico.queries import DeleteWorkflowComponent, GetWorkflow, GetDataset
-from indico.queries.workflow_components import AddLinkClassificationComponent
-from indico.types import ModelGroup, ModelTaskType, NewLabelsetArguments
+import time
+
+import pytest
+
+from indico.client import GraphQLRequest, IndicoClient
+from indico.queries import (
+    CreateWorkflow,
+    DeleteWorkflowComponent,
+    GetDataset,
+    GetWorkflow,
+    JobStatus,
+)
+from indico.queries import (
+    AddLinkClassificationComponent,
+    AddModelGroupComponent,
+    AddStaticModelComponent,
+    ProcessStaticModelExport,
+    UploadStaticModelExport,
+)
+from indico.types import (
+    Job,
+    ModelGroup,
+    ModelTaskType,
+    NewLabelsetArguments,
+    StaticModelConfig,
+)
 
 from ..data.datasets import *  # noqa
 
@@ -55,6 +77,7 @@ def test_delete_workflow_component(
     assert mg_comp_id not in {c.id for c in wf.components}
     assert len(wf.component_links) == num_links - 1
 
+
 def test_add_many_filtered_classes(indico, org_annotate_dataset):
     client = IndicoClient()
     workflowreq = CreateWorkflow(
@@ -63,7 +86,9 @@ def test_add_many_filtered_classes(indico, org_annotate_dataset):
     wf = client.call(workflowreq)
     mg_name = f"TestAnnotationModelGroup-{int(time.time())}"
     labelset_name = "test-filtered-classes"
-    after_component_id = next(c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION")
+    after_component_id = next(
+        c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION"
+    )
     source_column_id = org_annotate_dataset.datacolumn_by_name(
         "News Headlines w/Company Names"
     ).id
@@ -81,23 +106,23 @@ def test_add_many_filtered_classes(indico, org_annotate_dataset):
         ),
     )
     wf = client.call(modelgroupreq)
-    mg = next(c for c in wf.components if c.component_type == 'MODEL_GROUP')
+    mg = next(c for c in wf.components if c.component_type == "MODEL_GROUP")
     after_component_id = mg.id
-    
-    classes_to_filter = [
-            ["type 1"],
-            ["type 3"]
-        ]
+
+    classes_to_filter = [["type 1"], ["type 3"]]
     filtered = AddLinkClassificationComponent(
-            workflow_id=wf.id,
-            after_component_id=after_component_id,
-            model_group_id=mg.model_group.id,
-            filtered_classes=classes_to_filter,
-            labels="actual",
-        )
+        workflow_id=wf.id,
+        after_component_id=after_component_id,
+        model_group_id=mg.model_group.id,
+        filtered_classes=classes_to_filter,
+        labels="actual",
+    )
     wf = client.call(filtered)
-    new_component = next(c.id for c in wf.components if c.component_type == "LINK_CLASSIFICATION_MODEL")
+    new_component = next(
+        c.id for c in wf.components if c.component_type == "LINK_CLASSIFICATION_MODEL"
+    )
     assert new_component is not None
+
 
 def test_add_single_filtered_class(indico, org_annotate_dataset):
     client = IndicoClient()
@@ -107,7 +132,9 @@ def test_add_single_filtered_class(indico, org_annotate_dataset):
     wf = client.call(workflowreq)
     mg_name = f"TestAnnotationModelGroup-{int(time.time())}"
     labelset_name = "test-filtered-classes"
-    after_component_id = next(c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION")
+    after_component_id = next(
+        c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION"
+    )
     source_column_id = org_annotate_dataset.datacolumn_by_name(
         "News Headlines w/Company Names"
     ).id
@@ -125,21 +152,21 @@ def test_add_single_filtered_class(indico, org_annotate_dataset):
         ),
     )
     wf = client.call(modelgroupreq)
-    mg = next(c for c in wf.components if c.component_type == 'MODEL_GROUP')
+    mg = next(c for c in wf.components if c.component_type == "MODEL_GROUP")
     after_component_id = mg.id
-    
-    classes_to_filter = [
-            ["type 1"]
-        ]
+
+    classes_to_filter = [["type 1"]]
     filtered = AddLinkClassificationComponent(
-            workflow_id=wf.id,
-            after_component_id=after_component_id,
-            model_group_id=mg.model_group.id,
-            filtered_classes=classes_to_filter,
-            labels="actual",
-        )
+        workflow_id=wf.id,
+        after_component_id=after_component_id,
+        model_group_id=mg.model_group.id,
+        filtered_classes=classes_to_filter,
+        labels="actual",
+    )
     wf = client.call(filtered)
-    new_component =  next(c.id for c in wf.components if c.component_type == 'LINK_CLASSIFICATION_MODEL')
+    new_component = next(
+        c.id for c in wf.components if c.component_type == "LINK_CLASSIFICATION_MODEL"
+    )
     assert new_component is not None
 
 
@@ -151,7 +178,9 @@ def test_add_bad_syntax_filtered_classes(indico, org_annotate_dataset):
     wf = client.call(workflowreq)
     mg_name = f"TestAnnotationModelGroup-{int(time.time())}"
     labelset_name = "test-filtered-classes"
-    after_component_id = next(c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION")
+    after_component_id = next(
+        c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION"
+    )
     source_column_id = org_annotate_dataset.datacolumn_by_name(
         "News Headlines w/Company Names"
     ).id
@@ -169,20 +198,72 @@ def test_add_bad_syntax_filtered_classes(indico, org_annotate_dataset):
         ),
     )
     wf = client.call(modelgroupreq)
-    mg = next(c for c in wf.components if c.component_type == 'MODEL_GROUP')
+    mg = next(c for c in wf.components if c.component_type == "MODEL_GROUP")
     after_component_id = mg.id
-    
-    classes_to_filter = [
-            ["type 1"],
-            ["type 2"]
-        ]
+
+    classes_to_filter = [["type 1"], ["type 2"]]
     filtered = AddLinkClassificationComponent(
-            workflow_id=wf.id,
-            after_component_id=after_component_id,
-            model_group_id=6108,
-            filtered_classes=[classes_to_filter],
-            labels="actual",
-        )
+        workflow_id=wf.id,
+        after_component_id=after_component_id,
+        model_group_id=6108,
+        filtered_classes=[classes_to_filter],
+        labels="actual",
+    )
     with pytest.raises(Exception):
         wf = client.call(filtered)
-   
+
+
+def test_upload_static_model_export(indico):
+    client = IndicoClient()
+    upload_req = UploadStaticModelExport(
+        file_path="tests/integration/data/exports/test-export.zip"
+    )
+    storage_uri = client.call(upload_req)
+    assert storage_uri is not None
+
+
+def test_process_static_model_export(indico):
+    client = IndicoClient()
+    storage_uri = client.call(
+        UploadStaticModelExport(
+            file_path="tests/integration/data/exports/test-export.zip"
+        )
+    )
+    job: Job = client.call(ProcessStaticModelExport(storage_uri=storage_uri))
+    finished_job = client.call(JobStatus(job.id))
+    assert finished_job.status == "SUCCESS"
+    assert finished_job.result is not None
+
+
+def test_add_static_model_component(indico, org_annotate_dataset):
+    client = IndicoClient()
+    workflowreq = CreateWorkflow(
+        dataset_id=org_annotate_dataset.id, name=f"OrgAnnotate-test-{int(time.time())}"
+    )
+    wf = client.call(workflowreq)
+
+    storage_uri = client.call(
+        UploadStaticModelExport(
+            file_path="tests/integration/data/exports/test-export.zip"
+        )
+    )
+    job: Job = client.call(ProcessStaticModelExport(storage_uri=storage_uri))
+    finished_job = client.call(JobStatus(job.id))
+    assert finished_job.status == "SUCCESS"
+    assert finished_job.result is not None
+
+    after_component_id = next(
+        c.id for c in wf.components if c.component_type == "INPUT_OCR_EXTRACTION"
+    )
+
+    static_model_req = AddStaticModelComponent(
+        workflow_id=wf.id,
+        after_component_id=after_component_id,
+        static_component_config=StaticModelConfig(
+            export_meta=finished_job.result,
+        ),
+    )
+    wf = client.call(static_model_req)
+
+    assert len(wf.components) == 3
+    assert any(c.component_type == "STATIC_MODEL" for c in wf.components)
