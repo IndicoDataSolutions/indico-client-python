@@ -3,7 +3,7 @@ from typing import Generator
 import requests
 
 from indico.client.request import GraphQLRequest, RequestChain
-from indico.errors import IndicoRequestError
+from indico.errors import IndicoInputError, IndicoRequestError
 from indico.queries.jobs import JobStatus
 from indico.types.jobs import Job
 
@@ -48,14 +48,15 @@ class ProcessStaticModelExport(GraphQLRequest):
 
     Args:
         storage_uri(str): the storage uri of the static model export that was uploaded to Indico.
+        workflow_id(int): the id of the workflow that the static model export is being added to.
 
     Returns:
         Job: the id of the job that is processing the static model export.
     """
 
     query = """
-        mutation processStaticModelExport($storageUri: String!) {
-            processStaticModelExport(storageUri: $storageUri) {
+        mutation processStaticModelExport($storageUri: String!, $workflowId: Int!) {
+            processStaticModelExport(storageUri: $storageUri, workflowId: $workflowId) {
                 jobId
             }
         }
@@ -63,12 +64,17 @@ class ProcessStaticModelExport(GraphQLRequest):
 
     def __init__(
         self,
-        storage_uri: str | None = None,
+        storage_uri: str,
+        workflow_id: int,
     ):
         self.storage_uri = storage_uri
+        self.workflow_id = workflow_id
         super().__init__(
             self.query,
-            variables={"storageUri": self.storage_uri},
+            variables={
+                "storageUri": self.storage_uri,
+                "workflowId": self.workflow_id,
+            },
         )
 
     def process_response(self, response) -> Job:
@@ -87,19 +93,30 @@ class UploadStaticModelExport(RequestChain):
 
     Options:
         auto_process(bool): if True, the static model export will be processed after it is uploaded.
+        workflow_id(int): the id of the workflow that the static model export is being added to. Required if `auto_process` is True.
 
     Returns:
         str: the storage uri of the static model export.
     """
 
-    def __init__(self, file_path: str, auto_process: bool = False):
+    def __init__(
+        self, file_path: str, auto_process: bool = False, workflow_id: int | None = None
+    ):
         self.file_path = file_path
         self.auto_process = auto_process
+        if auto_process and not workflow_id:
+            raise IndicoInputError(
+                "Must provide `workflow_id` if `auto_process` is True."
+            )
+
+        self.workflow_id = workflow_id
 
     def requests(self) -> Generator[str | Job, None, None]:
         if self.auto_process:
             yield _UploadSMExport(self.file_path)
-            yield ProcessStaticModelExport(self.previous)
+            yield ProcessStaticModelExport(
+                storage_uri=self.previous, workflow_id=self.workflow_id
+            )
             yield JobStatus(self.previous.id)
             if self.previous.status == "FAILURE":
                 raise IndicoRequestError(
