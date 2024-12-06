@@ -505,6 +505,7 @@ class AddStaticModelComponent(RequestChain):
             yield UploadStaticModelExport(
                 auto_process=True,
                 file_path=self.export_file,
+                workflow_id=self.workflow_id,
             )
             self.component.update(
                 {
