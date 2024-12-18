@@ -83,7 +83,7 @@ class SubmissionFilter(Filter):
 
     Args:
         file_type (list): submissions with a file type in this list. Options:
-            [CSV, PDF, EXCEL, DOC, DOCX, PPT, PPTX, PNG, JPG, TIFF, TXT, RTF, XLS, XLSX, UNKNOWN, MSG, EML]
+            [CSV, PDF, EXCEL, DOC, DOCX, PPT, PPTX, PNG, JPG, TIFF, TXT, RTF, XLS, XLSX, XLSB, XLSM, UNKNOWN, MSG, EML]
         input_filename (str): submissions with input file names containing this string
         status (str): submissions in this status. Options:
             [PROCESSING, PENDING_REVIEW, PENDING_ADMIN_REVIEW, COMPLETE, FAILED]
