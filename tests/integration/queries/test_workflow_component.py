@@ -20,7 +20,7 @@ from indico.types import (
     ModelGroup,
     ModelTaskType,
     NewLabelsetArguments,
-    StaticModelConfig,
+    # StaticModelConfig,
 )
 
 from ..data.datasets import *  # noqa
@@ -257,9 +257,9 @@ def test_add_static_model_component(indico, org_annotate_dataset):
     static_model_req = AddStaticModelComponent(
         workflow_id=wf.id,
         after_component_id=after_component_id,
-        static_component_config=StaticModelConfig(
-            export_meta=finished_job.result,
-        ),
+        static_component_config={
+            "export_meta": finished_job.result,
+        },
     )
     wf = client.call(static_model_req)
 

@@ -1,14 +1,20 @@
-from typing import Generator
+from typing import TYPE_CHECKING, cast
 
 import requests
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
-from indico.queries.jobs import JobStatus
 from indico.types.jobs import Job
 
+from .jobs import JobStatus
 
-class _UploadSMExport(GraphQLRequest):
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Dict, Iterator, Optional, Union  # noqa: F401
+
+    from indico.typing import Payload
+
+
+class _UploadSMExport(GraphQLRequest[str]):
     query = """
         query exportUpload {
             exportUpload {
@@ -22,8 +28,8 @@ class _UploadSMExport(GraphQLRequest):
         self.file_path = file_path
         super().__init__(self.query)
 
-    def process_response(self, response) -> str:
-        resp = super().process_response(response)["exportUpload"]
+    def process_response(self, response: "Payload") -> str:
+        resp: "Dict[str, str]" = super().parse_payload(response)["exportUpload"]
         signed_url = resp["signedUrl"]
         storage_uri = resp["storageUri"]
 
@@ -31,16 +37,17 @@ class _UploadSMExport(GraphQLRequest):
             file_content = file.read()
 
         headers = {"Content-Type": "application/zip"}
-        response = requests.put(signed_url, data=file_content, headers=headers)
+        export_response = requests.put(signed_url, data=file_content, headers=headers)
 
-        if response.status_code != 200:
+        if export_response.status_code != 200:
             raise IndicoRequestError(
-                f"Failed to upload static model export: {response.text}"
+                f"Failed to upload static model export: {export_response.text}",
+                export_response.status_code,
             )
         return storage_uri
 
 
-class ProcessStaticModelExport(GraphQLRequest):
+class ProcessStaticModelExport(GraphQLRequest["Job"]):
     """
     Process a static model export.
 
@@ -77,12 +84,12 @@ class ProcessStaticModelExport(GraphQLRequest):
             },
         )
 
-    def process_response(self, response) -> Job:
-        job_id = super().process_response(response)["processStaticModelExport"]["jobId"]
+    def process_response(self, response: "Payload") -> Job:
+        job_id = super().parse_payload(response)["processStaticModelExport"]["jobId"]
         return Job(id=job_id)
 
 
-class UploadStaticModelExport(RequestChain):
+class UploadStaticModelExport(RequestChain["Union[Job, str]"]):
     """
     Upload a static model export to Indico.
 
@@ -100,22 +107,27 @@ class UploadStaticModelExport(RequestChain):
     """
 
     def __init__(
-        self, file_path: str, auto_process: bool = False, workflow_id: int | None = None
+        self,
+        file_path: str,
+        auto_process: bool = False,
+        workflow_id: "Optional[int]" = None,
     ):
-        self.file_path = file_path
-        self.auto_process = auto_process
-        if auto_process and not workflow_id:
+        if auto_process and workflow_id is None:
             raise IndicoInputError(
                 "Must provide `workflow_id` if `auto_process` is True."
             )
 
+        self.file_path = file_path
+        self.auto_process = auto_process
         self.workflow_id = workflow_id
 
-    def requests(self) -> Generator[str | Job, None, None]:
+    def requests(
+        self,
+    ) -> "Iterator[Union[_UploadSMExport, ProcessStaticModelExport, JobStatus]]":
         if self.auto_process:
             yield _UploadSMExport(self.file_path)
             yield ProcessStaticModelExport(
-                storage_uri=self.previous, workflow_id=self.workflow_id
+                storage_uri=self.previous, workflow_id=cast(int, self.workflow_id)
             )
             yield JobStatus(self.previous.id)
             if self.previous.status == "FAILURE":

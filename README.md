@@ -105,7 +105,7 @@ You will also need the following env variables set for the Exchange integration 
 2. Activate the virtual environment
    `source venv/bin/activate`
 3. Install the client
-   `pip3 install --editable .`
+   `pip3 install --editable .[all]`
 4. Install test deps
    `pip3 install "pytest<8" "requests-mock>=1.8.0" "pytest-asyncio>0.21"`
 5. Run tests
