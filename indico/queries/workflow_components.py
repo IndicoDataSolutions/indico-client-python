@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import jsons
 
@@ -15,7 +15,7 @@ from indico.types import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterator, List, Optional, Union
+    from typing import Any, Iterator, List, Optional, Union
 
     from indico.typing import AnyDict, Payload
 
@@ -455,7 +455,7 @@ class DeleteWorkflowComponent(GraphQLRequest["Workflow"]):
         )
 
 
-class AddStaticModelComponent(RequestChain):
+class AddStaticModelComponent(RequestChain["Workflow"]):
     """
     Add a static model component to a workflow.
 
@@ -470,17 +470,17 @@ class AddStaticModelComponent(RequestChain):
         `export_file(str)`: the path to the static model export file.
     """
 
-    previous = None
+    previous: "Any" = None
 
     def __init__(
         self,
         workflow_id: int,
-        after_component_id: int | None = None,
-        after_component_link_id: int | None = None,
-        static_component_config: dict[str, Any] | None = None,
-        component_name: str | None = None,
+        after_component_id: "Optional[int]" = None,
+        after_component_link_id: "Optional[int]" = None,
+        static_component_config: "Optional[AnyDict]" = None,
+        component_name: "Optional[str]" = None,
         auto_process: bool = False,
-        export_file: str | None = None,
+        export_file: "Optional[str]" = None,
     ):
         if not export_file and auto_process:
             raise IndicoInputError("Must provide export_file if auto_process is True.")
@@ -511,11 +511,13 @@ class AddStaticModelComponent(RequestChain):
         self.auto_process = auto_process
         self.export_file = export_file
 
-    def requests(self):
+    def requests(
+        self,
+    ) -> "Iterator[Union[UploadStaticModelExport, _AddWorkflowComponent]]":
         if self.auto_process:
             yield UploadStaticModelExport(
                 auto_process=True,
-                file_path=self.export_file,
+                file_path=cast(str, self.export_file),
                 workflow_id=self.workflow_id,
             )
             self.component.update(
