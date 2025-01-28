@@ -1,13 +1,13 @@
 """
 Handles deserialization / decoding of responses
 """
-import cgi
 import gzip
 import io
 import json
 import logging
 import traceback
 from collections import defaultdict
+from email.message import EmailMessage
 
 from indico.errors import IndicoDecodingError
 
@@ -21,7 +21,7 @@ def decompress(response):
 
 
 def deserialize(response, force_json=False, force_decompress=False):
-    content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
+    content_type, params = parse_header(response.headers.get("Content-Type"))
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = decompress(response)
@@ -43,7 +43,7 @@ def deserialize(response, force_json=False, force_decompress=False):
         )
 
 async def aio_deserialize(response, force_json=False, force_decompress=False):
-    content_type, params = cgi.parse_header(response.headers.get("Content-Type"))
+    content_type, params = parse_header(response.headers.get("Content-Type"))
     content = await response.read()
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
@@ -62,6 +62,11 @@ async def aio_deserialize(response, force_json=False, force_decompress=False):
         raise IndicoDecodingError(
             content_type, charset, content.decode("ascii", "ignore")
         )
+
+def parse_header(header: str) -> tuple[str, dict[str, str]]:
+    email = EmailMessage()
+    email["Content-Type"] = header
+    return email.get_content_type(), email["Content-Type"].params
 
 def raw_bytes(content, *args, **kwargs):
     return content
