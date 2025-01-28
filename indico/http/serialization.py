@@ -9,8 +9,6 @@ import logging
 import traceback
 from collections import defaultdict
 
-import msgpack
-
 from indico.errors import IndicoDecodingError
 
 logger = logging.getLogger(__name__)
