@@ -177,6 +177,7 @@ class HTTPClient:
                 f"{self.base_url}{path}",
                 headers=headers,
                 stream=True,
+                timeout=(4, 64),
                 verify=False
                 if not self.config.verify_ssl or not self.request_session.verify
                 else True,
@@ -361,6 +362,7 @@ class AIOHTTPClient:
             async with getattr(self.request_session, method)(
                 f"{self.base_url}{path}",
                 headers=headers,
+                timeout=aiohttp.ClientTimeout(sock_connect=4, sock_read=64),
                 verify_ssl=self.config.verify_ssl,
                 **request_kwargs,
             ) as response:
