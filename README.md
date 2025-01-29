@@ -8,7 +8,7 @@
 
 ---
 
-Required: Python 3.6, 3.7, or 3.8
+Required: Python 3.9+
 
 From PyPI:
 
