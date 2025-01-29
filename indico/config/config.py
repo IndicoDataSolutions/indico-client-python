@@ -22,6 +22,10 @@ class IndicoConfig:
         api_token= (str, optional): The actual text of the API Token. Takes precedence over api_token_path
         verify_ssl= (bool, optional): Whether to verify the host's SSL certificate. Default=True
         requests_params= (dict, optional): Dictionary of requests. Session parameters to set
+        retry_count= (int, optional): Retry API calls this many times.
+        retry_wait= (float, optional): Wait this many seconds after the first error before retrying.
+        retry_backoff= (float, optional): Multiply the wait time by this amount for each additional error.
+        retry_jitter= (float, optional): Add a random amount of time (up to this percent as a decimal) to the wait time to prevent simultaneous retries.
 
     Returns:
         IndicoConfig object
@@ -41,6 +45,11 @@ class IndicoConfig:
         self.verify_ssl: bool = True
         self.requests_params: "Optional[AnyDict]" = None
         self._disable_cookie_domain: bool = False
+
+        self.retry_count: int = int(os.getenv("INDICO_retry_count", "4"))
+        self.retry_wait: float = float(os.getenv("INDICO_retry_wait", "1"))
+        self.retry_backoff: float = float(os.getenv("INDICO_retry_backoff", "4"))
+        self.retry_jitter: float = float(os.getenv("INDICO_retry_jitter", "1"))
 
         for key, value in kwargs.items():
             if hasattr(self, key):

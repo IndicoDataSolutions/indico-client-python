@@ -17,7 +17,7 @@ from indico.errors import (
 )
 from indico.http.serialization import aio_deserialize, deserialize
 
-from .retry import aioretry
+from .retry import retry
 
 if TYPE_CHECKING:  # pragma: no cover
     from http.cookiejar import Cookie
@@ -50,6 +50,14 @@ class HTTPClient:
     def __init__(self, config: "Optional[IndicoConfig]" = None):
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
+        self._decorate_with_retry = retry(
+            requests.RequestException,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )
+        self._make_request = self._decorate_with_retry(self._make_request)  # type: ignore[method-assign]
 
         self.request_session = requests.Session()
         if isinstance(self.config.requests_params, dict):
@@ -232,6 +240,14 @@ class AIOHTTPClient:
         """
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
+        self._decorate_with_retry = retry(
+            aiohttp.ClientConnectionError,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )
+        self._make_request = self._decorate_with_retry(self._make_request)  # type: ignore[method-assign]
 
         self.request_session = aiohttp.ClientSession()
         if isinstance(self.config.requests_params, dict):
@@ -316,7 +332,6 @@ class AIOHTTPClient:
             for f in files:
                 f.close()
 
-    @aioretry(aiohttp.ClientConnectionError, aiohttp.ServerDisconnectedError)
     async def _make_request(
         self,
         method: str,
