@@ -284,7 +284,7 @@ pipeline:
                           twine upload -u __token__ -p <+stage.variables.pypi_token> .dist/*
                       when:
                         stageStatus: Success
-                        condition: <+pipeline.variables.RUN_RELEASE> == "TRUE"
+                        condition: <+pipeline.variables.RUN_PRERELEASE> == "TRUE"
                   - step:
                       type: Run
                       name: publish release
