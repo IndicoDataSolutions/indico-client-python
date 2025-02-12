@@ -272,7 +272,7 @@ pipeline:
                         shell: Sh
                         command: |-
                           #!/bin/bash
-                          TAG="<+trigger.tag>"
+                          TAG="<+codebase.tag>"
                           apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
@@ -295,7 +295,7 @@ pipeline:
                         shell: Sh
                         command: |-
                           #!/bin/bash
-                          TAG="<+trigger.tag>"
+                          TAG="<+codebase.tag>"
                           apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
