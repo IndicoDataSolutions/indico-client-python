@@ -273,6 +273,7 @@ pipeline:
                         command: |-
                           #!/bin/bash
                           TAG="<+trigger.tag>"
+                          apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
                           pip3 install twine==3.3.0
@@ -295,6 +296,7 @@ pipeline:
                         command: |-
                           #!/bin/bash
                           TAG="<+trigger.tag>"
+                          apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
                           pip3 install twine==3.3.0
