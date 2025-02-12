@@ -281,7 +281,7 @@ pipeline:
                           echo "checking dist files at 'dist/*'"
                           twine check dist/*
                           echo "uploading pre-release ${TAG}"
-                          twine upload -u __token__ -p <+stage.variables.pypi_token> .dist/*
+                          twine upload -u __token__ -p <+stage.variables.pypi_token> dist/*
                       when:
                         stageStatus: Success
                         condition: <+pipeline.variables.RUN_PRERELEASE> == "TRUE"
@@ -304,7 +304,7 @@ pipeline:
                           echo "checking dist files at 'dist/*'"
                           twine check dist/*
                           echo "uploading release ${TAG}"
-                          twine upload -u __token__ -p <+stage.variables.pypi_token> .dist/*
+                          twine upload -u __token__ -p <+stage.variables.pypi_token> dist/*
                       when:
                         stageStatus: Success
                         condition: <+pipeline.variables.RUN_RELEASE> == "TRUE"
