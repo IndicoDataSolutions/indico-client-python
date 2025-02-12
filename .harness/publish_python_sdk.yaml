@@ -243,10 +243,13 @@ pipeline:
                   spec:
                     connectorRef: account.harbor
                     image: harbor.devops.indico.io/dockerhub-proxy/alpine/git
-                    shell: Bash
+                    shell: Sh
                     command: |-
                       TARGET_BRANCH="<+codebase.branch>"
-                      COMMIT_MESSAGE="<+codebase.commitMessage>"
+                      COMMIT_MESSAGE=$(cat <<'EOF'
+                      <+codebase.commitMessage>
+                      EOF
+                      )
                       MODIFIED_COMMIT_MESSAGE=$(echo "${COMMIT_MESSAGE}" | head -n 1)
                       COMMITTER="<+codebase.gitUser>"
 
