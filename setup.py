@@ -1,9 +1,12 @@
 """
 Setup for indico apis
 """
-import versioneer
+
 from pathlib import Path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
+
+import versioneer
 
 setup(
     name="indico-client",
@@ -16,14 +19,13 @@ setup(
     url="https://github.com/IndicoDataSolutions/indico-client-python",
     author="indico",
     author_email="engineering@indico.io",
-    tests_require=["pytest>=5.2.1", "requests-mock>=1.8.0", "pytest-asyncio"],
     install_requires=[
         "requests>=2.22.0",
         "setuptools>=41.4.0",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
         "deprecation>=2.1.0",
         "jsons",
-        "aiohttp[speedups]"
+        "aiohttp[speedups]",
     ],
     extras_require={
         "all": [

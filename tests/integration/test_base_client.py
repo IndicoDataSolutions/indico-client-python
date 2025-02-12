@@ -1,7 +1,7 @@
 import pytest
 
 from indico.client import IndicoClient, IndicoConfig
-from indico.client.request import HTTPRequest, HTTPMethod, GraphQLRequest
+from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest
 from indico.errors import IndicoAuthenticationFailed
 from tests.integration.data.datasets import org_annotate_dataset
 

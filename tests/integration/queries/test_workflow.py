@@ -380,7 +380,6 @@ def test_workflow_submission_auto_review_v1(
     org_annotate_workflow,
     org_annotate_model_group,
 ):
-
     client = IndicoClient()
 
     wf = client.call(
@@ -426,7 +425,6 @@ def test_workflow_submission_auto_review_v3_result(
     org_annotate_workflow,
     org_annotate_model_group,
 ):
-
     client = IndicoClient()
 
     wf = client.call(

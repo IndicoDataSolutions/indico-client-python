@@ -1,18 +1,23 @@
 """"""
-from typing import List, Union
+
+from typing import TYPE_CHECKING, List
 
 from indico import PagedRequest
 from indico.filters import DocumentReportFilter
 from indico.types import BaseType
 from indico.types.document_report import DocumentReport
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Optional, Union
+
+    from indico.typing import AnyDict, Payload
+
 
 class _DocumentReportList(BaseType):
     submissions: List[DocumentReport]
-    pass
 
 
-class GetDocumentReport(PagedRequest):
+class GetDocumentReport(PagedRequest["List[DocumentReport]"]):
     """
     Query to generate a Document Report, otherwise known as a log of past submissions.
     """
@@ -53,12 +58,19 @@ class GetDocumentReport(PagedRequest):
         """
 
     def __init__(
-        self, filters: Union[dict, DocumentReportFilter] = None, limit: int = None, all_submissions = False
+        self,
+        filters: "Optional[Union[AnyDict, DocumentReportFilter]]" = None,
+        limit: "Optional[int]" = None,
+        all_submissions: bool = False,
     ):
-        variables = {"filters": filters, "limit": limit, "allSubmissions": all_submissions}
+        variables = {
+            "filters": filters,
+            "limit": limit,
+            "allSubmissions": all_submissions,
+        }
         super().__init__(self.query, variables=variables)
 
-    def process_response(self, response):
+    def process_response(self, response: "Payload") -> "List[DocumentReport]":
         return _DocumentReportList(
-            **super().process_response(response)["submissionsLog"]
+            **super().parse_payload(response)["submissionsLog"]
         ).submissions

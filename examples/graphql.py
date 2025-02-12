@@ -1,7 +1,6 @@
 from indico import IndicoClient, IndicoConfig
 from indico.queries import GraphQLRequest
 
-
 my_config = IndicoConfig(
     host="try.indico.io", api_token_path="./path/to/indico_api_token.txt"
 )

@@ -4,9 +4,9 @@ IndicoClient to make concurrent calls to the platform
 """
 
 import asyncio
+
 from indico import AsyncIndicoClient, IndicoConfig
 from indico.queries import CreateDataset
-
 
 """
 Examples for client creation

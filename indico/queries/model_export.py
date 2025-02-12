@@ -1,8 +1,15 @@
+from typing import TYPE_CHECKING
+
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.types.model_export import ModelExport
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Iterator, List, Union
 
-class _CreateModelExport(GraphQLRequest):
+    from indico.typing import Payload
+
+
+class _CreateModelExport(GraphQLRequest["ModelExport"]):
     query = """
         mutation ($modelId: Int!) {
             createModelExport(
@@ -20,11 +27,11 @@ class _CreateModelExport(GraphQLRequest):
         self.model_id = model_id
         super().__init__(self.query, variables={"modelId": model_id})
 
-    def process_response(self, response) -> ModelExport:
-        return ModelExport(**super().process_response(response)["createModelExport"])
+    def process_response(self, response: "Payload") -> ModelExport:
+        return ModelExport(**super().parse_payload(response)["createModelExport"])
 
 
-class CreateModelExport(RequestChain):
+class CreateModelExport(RequestChain["List[ModelExport]"]):
     """
     Create a model export.
 
@@ -36,20 +43,20 @@ class CreateModelExport(RequestChain):
         request_interval (int | float): the interval between requests in seconds. Defaults to 5.
     """
 
-    previous: ModelExport | None = None
+    previous: "Any" = None
 
     def __init__(
         self,
         model_id: int,
         wait: bool = True,
-        request_interval: int | float = 5,
+        request_interval: "Union[int, float]" = 5,
     ):
         self.wait = wait
         self.model_id = model_id
         self.request_interval = request_interval
         super().__init__()
 
-    def requests(self):
+    def requests(self) -> "Iterator[Union[_CreateModelExport, Delay, GetModelExports]]":
         yield _CreateModelExport(self.model_id)
         if self.wait:
             while self.previous and self.previous.status not in ["COMPLETE", "FAILED"]:
@@ -60,7 +67,7 @@ class CreateModelExport(RequestChain):
         yield GetModelExports([self.previous.id], with_signed_url=self.wait is True)
 
 
-class GetModelExports(GraphQLRequest):
+class GetModelExports(GraphQLRequest["List[ModelExport]"]):
     """
     Get model export(s).
 
@@ -91,17 +98,17 @@ class GetModelExports(GraphQLRequest):
         "createdBy",
     ]
 
-    def __init__(self, export_ids: list[int], with_signed_url: bool = False):
+    def __init__(self, export_ids: "List[int]", with_signed_url: bool = False):
         if with_signed_url:
             self._base_fields.append("signedUrl")
 
         query_with_fields = self.query.replace("{fields}", "\n".join(self._base_fields))
         super().__init__(query_with_fields, variables={"exportIds": export_ids})
 
-    def process_response(self, response) -> list[ModelExport]:
+    def process_response(self, response: "Payload") -> "List[ModelExport]":
         return [
             ModelExport(**export)
-            for export in super().process_response(response)["modelExports"][
+            for export in super().parse_payload(response)["modelExports"][
                 "modelExports"
             ]
         ]
