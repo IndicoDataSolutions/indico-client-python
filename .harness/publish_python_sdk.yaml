@@ -290,7 +290,7 @@ pipeline:
                       identifier: publish_release
                       spec:
                         connectorRef: account.harbor
-                        image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.TEST_IMAGE_TAG>
+                        image: harbor.devops.indico.io/indico/<+pipeline.variables.service>:<+pipeline.stages.build_info.spec.execution.steps.build_info.output.outputVariables.IMAGE_TAG>
                         shell: Sh
                         command: |-
                           #!/bin/bash
