@@ -84,4 +84,4 @@ inputSet:
         value: "TRUE"
       - name: RUN_PUBLISH
         type: String
-        value: "FALSE"
+        value: "TRUE"
