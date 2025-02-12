@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 from indico.errors import IndicoDecodingError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Mapping, Optional
+    from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
     from aiohttp import ClientResponse
     from requests import Response
@@ -78,7 +78,7 @@ async def aio_deserialize(
         )
 
 
-def parse_header(header: str) -> tuple[str, dict[str, str]]:
+def parse_header(header: str) -> "Tuple[str, Dict[str, str]]":
     email = EmailMessage()
     email["Content-Type"] = header
     return email.get_content_type(), email["Content-Type"].params
