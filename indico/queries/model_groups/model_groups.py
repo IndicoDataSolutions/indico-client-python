@@ -1,11 +1,8 @@
 import json
 from typing import Any, Dict, List, Optional, Union
 
-import deprecation
-
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoNotFound
-from indico.queries.workflow_components import AddModelGroupComponent
 from indico.types.jobs import Job
 from indico.types.model import Model, ModelOptions
 from indico.types.model_group import ModelGroup
@@ -232,7 +229,6 @@ class ModelGroupPredict(RequestChain):
         self.predict_options = predict_options
 
     def requests(self):
-
         yield _ModelGroupPredict(
             model_id=self.model_id, data=self.data, predict_options=self.predict_options
         )
@@ -254,6 +250,7 @@ class UpdateModelGroupSettings(GraphQLRequest):
             - Object Detection: 'threshold', 'predict_batch_size'
             - Finetune: 'negative_confidence'
             - Document: 'negative_confidence'
+        merge_model_training_options (boolean) : if True, the model training options will be merged with the existing model training options. Defaults to False.
     """
 
     query = """
@@ -261,11 +258,13 @@ class UpdateModelGroupSettings(GraphQLRequest):
             $modelGroupId: Int!,
             $modelTrainingOptions: JSONString,
             $predictOptions: JSONString,
+            $mergeModelTrainingOptions: Boolean
         ) {
             updateModelGroupSettings(
                 modelGroupId: $modelGroupId,
                 modelTrainingOptions: $modelTrainingOptions,
                 predictOptions: $predictOptions,
+                mergeModelTrainingOptions: $mergeModelTrainingOptions
             ) {
                 modelOptions {
                     id
@@ -289,6 +288,7 @@ class UpdateModelGroupSettings(GraphQLRequest):
         model_group_id: int,
         model_training_options: Optional[Dict[str, Any]] = None,
         predict_options: Optional[Dict[str, Any]] = None,
+        merge_model_training_options: bool = False,
     ):
         if model_training_options:
             model_training_options = json.dumps(model_training_options)
@@ -302,6 +302,7 @@ class UpdateModelGroupSettings(GraphQLRequest):
                 "modelGroupId": model_group_id,
                 "modelTrainingOptions": model_training_options,
                 "predictOptions": predict_options,
+                "mergeModelTrainingOptions": merge_model_training_options,
             },
         )
 
