@@ -316,7 +316,9 @@ class AddModelGroupComponent(GraphQLRequest):
                 "Cannot define both labelset_column_id and new_labelset_args, must be one "
                 "or the other."
             )
-        if labelset_column_id is None and new_labelset_args is None:
+        if (
+            labelset_column_id is None and new_labelset_args is None
+        ) and blueprint_id is None:
             raise IndicoInputError(
                 "Must define one of either labelset_column_id or new_labelset_args."
             )
