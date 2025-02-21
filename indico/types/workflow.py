@@ -1,6 +1,7 @@
-from enum import Enum
-from typing import List
 from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List
+
 from indico.types import BaseType, ModelGroup
 
 
@@ -31,6 +32,7 @@ class WorkflowComponentLinks(BaseType):
     id: int
     head_component_id: int
     tail_component_id: int
+    config: Dict[str, Any]
 
 
 class Workflow(BaseType):
@@ -71,7 +73,7 @@ class Workflow(BaseType):
 
 
 class LinkedLabelStrategy(Enum):
-    BY_ROW = 0,
+    BY_ROW = (0,)
     BY_KEY = 1
 
 
@@ -90,8 +92,8 @@ class LinkedLabelGroup:
 
 
 class ComponentFamily(Enum):
-    MODEL = 0,
-    FILTER = 1,
-    TRANSFORMER = 2,
-    REVIEW = 3,
+    MODEL = (0,)
+    FILTER = (1,)
+    TRANSFORMER = (2,)
+    REVIEW = (3,)
     OUTPUT = 4
