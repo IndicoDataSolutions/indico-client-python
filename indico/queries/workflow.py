@@ -94,9 +94,10 @@ class ListWorkflows(GraphQLRequest):
         )
 
     def process_response(self, response) -> List[Workflow]:
+        resp = super().process_response(response)
         return [
             Workflow(**w)
-            for w in super().process_response(response)["workflows"]["workflows"]
+            for w in resp["workflows"]["workflows"]
         ]
 
 

@@ -1,8 +1,9 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List
+from typing import List
 
 from indico.types import BaseType, ModelGroup
+from indico.types.base import JSONType
 
 
 class WorkflowComponent(BaseType):
@@ -32,7 +33,7 @@ class WorkflowComponentLinks(BaseType):
     id: int
     head_component_id: int
     tail_component_id: int
-    config: Dict[str, Any]
+    config: JSONType
 
 
 class Workflow(BaseType):
