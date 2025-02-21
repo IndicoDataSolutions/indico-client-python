@@ -62,11 +62,12 @@ class ListWorkflows(GraphQLRequest):
                         }
 
                     }
-                  componentLinks{
+                  componentLinks {
                     id
                     headComponentId
                     tailComponentId
-                    filters{
+                    config
+                    filters {
                       classes
                     }
 
