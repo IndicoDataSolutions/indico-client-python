@@ -1,7 +1,7 @@
 from enum import Enum
-from typing import List, Union
+from typing import List
 from datetime import datetime
-from indico.types import BaseType, ModelGroup, ModelTaskType
+from indico.types import BaseType, ModelGroup
 
 
 class WorkflowComponent(BaseType):
