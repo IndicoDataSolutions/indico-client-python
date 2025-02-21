@@ -26,6 +26,7 @@ class GetWorkflowMetrics(GraphQLRequest):
         workflow_ids (List[int]): ids of specific workflows to query.
 
     """
+
     __MAP_WORKFLOW_KEYS = {
         WorkflowMetricsOptions.SUBMISSIONS: """
         firstSubmittedDate
@@ -127,8 +128,7 @@ class GetWorkflowMetrics(GraphQLRequest):
                     avgMinsPerDocExceptions
                   }
                }
-        """
-
+        """,
     }
     query = """
 query ($workflowIds: [Int]!, $startDate: Date, $endDate:Date) {
@@ -144,25 +144,40 @@ query ($workflowIds: [Int]!, $startDate: Date, $endDate:Date) {
 }
 """
 
-    def __init__(self, options: List[WorkflowMetricsOptions], start_date: datetime, end_date: datetime,
-                 workflow_ids: List[int]):
+    def __init__(
+        self,
+        options: List[WorkflowMetricsOptions],
+        start_date: datetime,
+        end_date: datetime,
+        workflow_ids: List[int],
+    ):
         self.query = self.__map_query_values(options)
         if workflow_ids is None or start_date is None:
             raise IndicoInputError("Must specify date and workflow id")
         if end_date is None:
             end_date = datetime.now()
-        super().__init__(self.query, variables={"startDate": start_date.strftime('%Y-%m-%d'),
-                                                "endDate": end_date.strftime('%Y-%m-%d'), "workflowIds": workflow_ids})
+        super().__init__(
+            self.query,
+            variables={
+                "startDate": start_date.strftime("%Y-%m-%d"),
+                "endDate": end_date.strftime("%Y-%m-%d"),
+                "workflowIds": workflow_ids,
+            },
+        )
 
     def process_response(self, response) -> List[WorkflowMetrics]:
-        list_of_metrics = _TopWorkflowMetric(**super().process_response(response)["workflows"]).workflows
+        list_of_metrics = _TopWorkflowMetric(
+            **super().process_response(response)["workflows"]
+        ).workflows
         return list(map(lambda x: x.metrics, list_of_metrics))
 
     def __map_query_values(self, options: List[WorkflowMetricsOptions]):
-        daily = ' '
+        daily = " "
         if len(options) < 1:
-            daily = ' '.join([self.__MAP_WORKFLOW_KEYS[a] for a in self.__MAP_WORKFLOW_KEYS.keys()])
+            daily = " ".join(
+                [self.__MAP_WORKFLOW_KEYS[a] for a in self.__MAP_WORKFLOW_KEYS.keys()]
+            )
         else:
-            daily = ' '.join([self.__MAP_WORKFLOW_KEYS[a] for a in options])
+            daily = " ".join([self.__MAP_WORKFLOW_KEYS[a] for a in options])
         query = self.query.replace("__QUERY_OPTS__", daily)
         return query

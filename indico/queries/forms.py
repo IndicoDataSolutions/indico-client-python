@@ -7,7 +7,6 @@ from indico.queries.jobs import Job
 
 
 class _FormPreprocessing(GraphQLRequest):
-
     query = """
         mutation($files: [FileInput]) {
             activeFormFields(

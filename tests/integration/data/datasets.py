@@ -270,19 +270,14 @@ def exchange_integration_to_delete(org_annotate_workflow: Workflow) -> Integrati
     creds = {
         "clientId": os.getenv("EXCH_CLIENT_ID"),
         "clientSecret": os.getenv("EXCH_CLIENT_SECRET"),
-        "tenantId": os.getenv("EXCH_TENANT_ID")
+        "tenantId": os.getenv("EXCH_TENANT_ID"),
     }
 
-    config = {
-        "userId": os.getenv("EXCH_USER_ID"),
-        "folderId": "mailFolders('inbox')"
-    }
+    config = {"userId": os.getenv("EXCH_USER_ID"), "folderId": "mailFolders('inbox')"}
 
     integ: Integration = client.call(
         AddExchangeIntegration(
-            workflow_id=org_annotate_workflow.id,
-            config=config,
-            credentials=creds
+            workflow_id=org_annotate_workflow.id, config=config, credentials=creds
         )
     )
 
@@ -295,24 +290,15 @@ def started_exchange_integration(org_annotate_workflow: Workflow) -> Integration
     creds = {
         "clientId": os.getenv("EXCH_CLIENT_ID"),
         "clientSecret": os.getenv("EXCH_CLIENT_SECRET"),
-        "tenantId": os.getenv("EXCH_TENANT_ID")
+        "tenantId": os.getenv("EXCH_TENANT_ID"),
     }
 
-    config = {
-        "userId": os.getenv("EXCH_USER_ID"),
-        "folderId": "mailFolders('inbox')"
-    }
+    config = {"userId": os.getenv("EXCH_USER_ID"), "folderId": "mailFolders('inbox')"}
 
     integ: Integration = client.call(
         AddExchangeIntegration(
-            workflow_id=org_annotate_workflow.id,
-            config=config,
-            credentials=creds
+            workflow_id=org_annotate_workflow.id, config=config, credentials=creds
         )
     )
-    client.call(
-        StartIntegration(
-            integration_id=integ.id
-        )
-    )
+    client.call(StartIntegration(integration_id=integ.id))
     yield integ

@@ -65,6 +65,7 @@ class SubmissionReview(BaseType):
     review_type: str
     notes: str
 
+
 class SubmissionReviewFull(BaseType):
     f"""
     Information about a submission's Reviews. Includes changes

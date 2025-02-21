@@ -3,6 +3,7 @@ import pytest
 from indico.client.request import HTTPMethod, HTTPRequest, GraphQLRequest
 from datetime import datetime
 
+
 def test_http_request_properties():
     data = {"test", "something"}
     path = "/something/api/test"
@@ -30,6 +31,7 @@ def test_graphql_request_properties():
     assert req.path == "/graph/api/graphql"
     assert req.method == HTTPMethod.POST
     assert req.kwargs["json"] == {"query": query, "variables": variables}
+
 
 def test_graphql_request_properties_datetime():
     query = "query($ids: List(Int)) { dataset(ids: $ids) { name } }"

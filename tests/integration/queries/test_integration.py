@@ -17,8 +17,9 @@ from tests.integration.data.datasets import (
     org_annotate_exchange_integration,
     org_annotate_model_group,
     exchange_integration_to_delete,
-    started_exchange_integration
+    started_exchange_integration,
 )
+
 
 def test_add_integration(airlines_workflow: Workflow):
     client = IndicoClient()
@@ -48,31 +49,19 @@ def test_start_integration(
     integ = org_annotate_exchange_integration
     assert not integ.enabled
     client = IndicoClient()
-    resp = client.call(
-        StartIntegration(
-            integration_id=integ.id
-        )
-    )
+    resp = client.call(StartIntegration(integration_id=integ.id))
     assert resp["startWorkflowIntegration"]["success"]
-    
+
 
 def test_delete_integration(exchange_integration_to_delete: Integration):
     integ = exchange_integration_to_delete
     client = IndicoClient()
-    resp = client.call(
-        DeleteIntegration(
-            integration_id=integ.id
-        )
-    )
+    resp = client.call(DeleteIntegration(integration_id=integ.id))
     assert resp["deleteWorkflowIntegration"]["success"]
 
 
 def test_pause_integration(started_exchange_integration: Integration):
     integ = started_exchange_integration
     client = IndicoClient()
-    resp = client.call(
-        PauseIntegration(
-            integration_id=integ.id
-        )
-    )
+    resp = client.call(PauseIntegration(integration_id=integ.id))
     assert resp["pauseWorkflowIntegration"]["success"]

@@ -144,7 +144,10 @@ def test_document_extraction_batched(indico):
         assert job.ready is True
         assert isinstance(job.result["url"], str)
 
-@unittest.skip("Expected to fail pending https://indicodata.atlassian.net/browse/SUP-437")
+
+@unittest.skip(
+    "Expected to fail pending https://indicodata.atlassian.net/browse/SUP-437"
+)
 def test_document_extraction_images(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"

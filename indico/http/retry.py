@@ -5,7 +5,6 @@ import typing as t
 from functools import wraps
 
 
-
 def retry(
     ExceptionTypes: t.Type[Exception], tries: int = 3, delay: int = 1, backoff: int = 2
 ) -> t.Callable:
@@ -31,6 +30,7 @@ def retry(
         return retry_fn
 
     return retry_decorator
+
 
 def aioretry(
     ExceptionTypes: t.Type[Exception],

@@ -19,7 +19,6 @@ def snake_to_cc(string: str):
     return re.sub(_snake_to_cc_re, _camel, string, 0)
 
 
-
 class Timer:
     def __init__(self, timeout: Union[int, float]):
         self.timeout = timeout

@@ -33,6 +33,7 @@ class ModelGroup(BaseType):
 
 class ModelTaskType(Enum):
     """A list of valid task types for a model group."""
+
     CLASSIFICATION = 1
     FORM_EXTRACTION = 2
     OBJECT_DETECTION = 3
@@ -54,16 +55,16 @@ class ModelType(Enum):
 
 class NewQuestionnaireArguments(BaseType):
     """instructions: String
-Questionnaire instructions
+    Questionnaire instructions
 
-forceTextMode: Boolean = false
-Always use Text Labeling UI
+    forceTextMode: Boolean = false
+    Always use Text Labeling UI
 
-showPredictions: Boolean = true
-Show predictions at the global level
+    showPredictions: Boolean = true
+    Show predictions at the global level
 
-users: [Int]
-User IDs to add to the questionnaire"""
+    users: [Int]
+    User IDs to add to the questionnaire"""
 
     instructions: str
     force_text_mode: bool = False
@@ -71,9 +72,15 @@ User IDs to add to the questionnaire"""
     users: List[int]
 
 
-class NewLabelsetArguments():
-    def __init__(self, name: str, task_type: ModelTaskType,
-                 target_names: List[str], datacolumn_id: int, num_labelers_required: int = 1):
+class NewLabelsetArguments:
+    def __init__(
+        self,
+        name: str,
+        task_type: ModelTaskType,
+        target_names: List[str],
+        datacolumn_id: int,
+        num_labelers_required: int = 1,
+    ):
         self.name = name
         self.num_labelers_required = num_labelers_required
         self.task_type = task_type
