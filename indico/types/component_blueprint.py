@@ -31,6 +31,19 @@ class ComponentBlueprint(BaseType):
 class BlueprintPage(BaseType):
     blueprints: List[ComponentBlueprint]
 
+    def find_bp(self, **kwargs) -> Optional[ComponentBlueprint]:
+        """
+        Find a blueprint by keyword arguments.
+        """
+        return next(
+            (
+                blueprint
+                for blueprint in self.blueprints
+                if all(getattr(blueprint, k) == v for k, v in kwargs.items())
+            ),
+            None,
+        )
+
     def get_by_ctype(self, component_type: str) -> Optional[ComponentBlueprint]:
         """
         Get a blueprint by component type.
