@@ -54,11 +54,11 @@ class ListGallery(PagedRequest):
 
     def __init__(
         self,
-        *,
         filters: Optional[Union[Dict, ComponentBlueprintFilter]] = None,
         limit: int = 100,
         order_by: str = "ID",
         desc: bool = False,
+        **kwargs,
     ):
         super().__init__(
             self.query,
@@ -67,6 +67,7 @@ class ListGallery(PagedRequest):
                 "limit": limit,
                 "orderBy": order_by,
                 "desc": desc,
+                **kwargs,
             },
         )
 
