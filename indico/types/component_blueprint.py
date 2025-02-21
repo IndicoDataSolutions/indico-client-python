@@ -25,7 +25,7 @@ class ComponentBlueprint(BaseType):
         has_ootb = "ootb" in self.tags
         has_editable = "editable" in self.tags
 
-        return has_ootb or has_editable
+        return has_ootb and has_editable
 
 
 class BlueprintPage(BaseType):
