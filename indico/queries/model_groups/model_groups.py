@@ -258,13 +258,13 @@ class UpdateModelGroupSettings(GraphQLRequest):
             $modelGroupId: Int!,
             $modelTrainingOptions: JSONString,
             $predictOptions: JSONString,
-            $mergeModelTrainingOptions: Boolean
+            $merge: Boolean
         ) {
             updateModelGroupSettings(
                 modelGroupId: $modelGroupId,
                 modelTrainingOptions: $modelTrainingOptions,
                 predictOptions: $predictOptions,
-                mergeModelTrainingOptions: $mergeModelTrainingOptions
+                merge: $merge
             ) {
                 modelOptions {
                     id
