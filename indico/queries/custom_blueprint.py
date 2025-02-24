@@ -1,18 +1,24 @@
-import typing as t
+from typing import TYPE_CHECKING
 
 from indico import GraphQLRequest
 from indico.errors import IndicoInputError
-from indico.types.workflow import ComponentFamily
 from indico.types.custom_blueprint import TaskBlueprint
+from indico.types.workflow import ComponentFamily
 
-SUPPORTED_CUSTOM_COMPONENT_FAMILIES = [
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import List, Optional
+
+    from indico.typing import AnyDict, Payload
+
+
+SUPPORTED_CUSTOM_COMPONENT_FAMILIES: "List[ComponentFamily]" = [
     ComponentFamily.OUTPUT,
     ComponentFamily.FILTER,
     ComponentFamily.MODEL,
 ]
 
 
-class RegisterCustomBlueprint(GraphQLRequest):
+class RegisterCustomBlueprint(GraphQLRequest["TaskBlueprint"]):
     """
     Mutation to register a custom blueprint, making it available in the gallery to add to workflows
 
@@ -70,15 +76,15 @@ mutation createCustomBP(
 
     def __init__(
         self,
-        component_family: ComponentFamily,
+        component_family: "ComponentFamily",
         name: str,
         description: str,
-        config: t.Dict,
-        tags: t.List[str],
+        config: "AnyDict",
+        tags: "List[str]",
         footer: str = "",
-        icon: str = None,
-        all_access: bool = None,
-        dataset_ids: t.List[int] = None,
+        icon: "Optional[str]" = None,
+        all_access: "Optional[bool]" = None,
+        dataset_ids: "Optional[List[int]]" = None,
     ):
         if (
             not component_family
@@ -133,5 +139,5 @@ mutation createCustomBP(
             },
         )
 
-    def process_response(self, response) -> TaskBlueprint:
-        return TaskBlueprint(**super().process_response(response)[self.mutation_name])
+    def process_response(self, response: "Payload") -> "TaskBlueprint":
+        return TaskBlueprint(**super().parse_payload(response)[self.mutation_name])

@@ -1,4 +1,5 @@
 import pytest
+
 from indico.client import IndicoClient
 from indico.errors import IndicoInputError
 from indico.queries.custom_blueprint import RegisterCustomBlueprint

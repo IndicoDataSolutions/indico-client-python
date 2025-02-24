@@ -1,10 +1,10 @@
 from indico import IndicoClient, IndicoConfig
 from indico.queries import (
-    CreateDataset,
-    ModelGroupPredict,
     AddModelGroupComponent,
-    JobStatus,
+    CreateDataset,
     GetModelGroupSelectedModelStatus,
+    JobStatus,
+    ModelGroupPredict,
 )
 
 # Create an Indico API client

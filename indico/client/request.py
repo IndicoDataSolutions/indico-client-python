@@ -1,7 +1,16 @@
+from abc import abstractmethod
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
 from indico.errors import IndicoInputError, IndicoRequestError
+from indico.typing import AnyDict
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Dict, Iterator, List, Optional, Union
+
+    from indico.typing import AnyDict
+
+ResponseType = TypeVar("ResponseType", covariant=True)
 
 
 class HTTPMethod(Enum):
@@ -13,41 +22,55 @@ class HTTPMethod(Enum):
     OPTIONS = "OPTIONS"
 
 
-class HTTPRequest:
-    def __init__(self, method: HTTPMethod, path: str, **kwargs):
-        self.method = method
-        self.path = path
-        self.kwargs = kwargs
-
-    def process_response(self, response):
-        return response
-
-
-class GraphQLRequest(HTTPRequest):
-    def __init__(self, query: str, variables: Dict[str, Any] = None):
-        self.query = query
-        self.variables = variables
-        self.method = HTTPMethod.POST
-        self.path = "/graph/api/graphql"
+class HTTPRequest(Generic[ResponseType]):
+    def __init__(self, method: HTTPMethod, path: str, **kwargs: "Any"):
+        self.method: HTTPMethod = method
+        self.path: str = path
+        self._kwargs: "AnyDict" = kwargs
 
     @property
-    def kwargs(self):
+    def kwargs(self) -> "AnyDict":
+        return self._kwargs
+
+    def process_response(self, response: "Any") -> "ResponseType":
+        return cast("ResponseType", response)
+
+
+class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
+    def __init__(self, query: str, variables: "Optional[AnyDict]" = None):
+        self.query: str = query
+        self.variables: "Optional[AnyDict]" = variables
+
+        super().__init__(HTTPMethod.POST, "/graph/api/graphql")
+
+    @property
+    def kwargs(self) -> "AnyDict":
         return {"json": {"query": self.query, "variables": self.variables}}
 
-    def process_response(self, response):
-        response = super().process_response(response)
-        errors = response.pop("errors", [])
+    def parse_payload(self, response: "AnyDict") -> "Any":
+        raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
+        errors: "List[AnyDict]" = raw_response.pop("errors", [])
+
         if errors:
-            extras = {"locations": [error.pop("locations", None) for error in errors]}
+            extras: "Dict[str, List[Any]]" = {
+                "locations": [error.pop("locations", None) for error in errors]
+            }
+
             raise IndicoRequestError(
                 error="\n".join(error["message"] for error in errors),
                 code=400,
                 extras=extras,
             )
-        return response["data"]
+
+        return raw_response["data"]
+
+    def process_response(self, response: "AnyDict") -> "ResponseType":
+        raw_response = self.parse_payload(response)
+        # technically incorrect, but necessary for backwards compatibility
+        return cast("ResponseType", raw_response)
 
 
-class PagedRequest(GraphQLRequest):
+class PagedRequest(GraphQLRequest[ResponseType]):
     """
     To enable pagination, query must include $after as an argument
     and request pageInfo
@@ -68,15 +91,20 @@ class PagedRequest(GraphQLRequest):
         }
     """
 
-    def __init__(self, query: str, variables: Dict[str, Any] = None):
+    def __init__(self, query: str, variables: "Optional[AnyDict]" = None):
+        if variables is None:
+            variables = {}
+
         variables["after"] = None
         self.has_next_page = True
         super().__init__(query, variables=variables)
 
-    def process_response(self, response, nested_keys: Optional[List[str]] = None):
-        response = super().process_response(response)
+    def process_response(
+        self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
+    ) -> "Any":
+        raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
         if nested_keys:
-            _pg = response
+            _pg = raw_response
             for key in nested_keys:
                 if key not in _pg.keys():
                     raise IndicoInputError(
@@ -87,19 +115,31 @@ class PagedRequest(GraphQLRequest):
         else:
             _pg = next(iter(response.values()))["pageInfo"]
 
+        if not _pg:
+            raise ValueError("The supplied GraphQL must include 'pageInfo'.")
+
         self.has_next_page = _pg["hasNextPage"]
-        self.variables["after"] = _pg["endCursor"] if self.has_next_page else None
-        return response
+        cast("AnyDict", self.variables)["after"] = (
+            _pg["endCursor"] if self.has_next_page else None
+        )
+
+        return raw_response
 
 
-class RequestChain:
-    previous: Any = None
-    result: Any = None
+class RequestChain(Generic[ResponseType]):
+    previous: "Any" = None
+    result: "Optional[ResponseType]" = None
 
-    def requests(self):
-        pass
+    @abstractmethod
+    def requests(
+        self,
+    ) -> "Iterator[Union[RequestChain[Any], HTTPRequest[Any], Delay]]":
+        raise NotImplementedError(
+            "RequestChains must define an iterator for their requests;"
+            "otherwise, subclass GraphQLResponse instead."
+        )
 
 
 class Delay:
-    def __init__(self, seconds: Union[int, float] = 2):
+    def __init__(self, seconds: "Union[int, float]" = 2):
         self.seconds = seconds

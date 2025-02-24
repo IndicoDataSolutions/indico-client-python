@@ -3,7 +3,7 @@
 import json
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import TYPE_CHECKING
 
 import jsons
 
@@ -18,17 +18,20 @@ from indico.client.request import (
 from indico.errors import IndicoInputError, IndicoNotFound
 from indico.filters import DatasetFilter
 from indico.queries.storage import UploadBatched, UploadImages
-from indico.types.dataset import (
-    Dataset,
-    EmailOptions,
-    OcrEngine,
-    OcrInputLanguage,
-    OmnipageOcrOptionsInput,
-    ReadApiOcrOptionsInput,
-)
+from indico.types.dataset import Dataset, OcrEngine, OcrInputLanguage
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Iterator, List, Optional, Union
+
+    from indico.types.dataset import (
+        EmailOptions,
+        OmnipageOcrOptionsInput,
+        ReadApiOcrOptionsInput,
+    )
+    from indico.typing import AnyDict, Payload
 
 
-class ListDatasets(PagedRequest):
+class ListDatasets(PagedRequest["List[Dataset]"]):
     """
     List all of your datasets
 
@@ -70,7 +73,7 @@ class ListDatasets(PagedRequest):
     def __init__(
         self,
         *,
-        filters: Optional[Union[Dict, DatasetFilter]] = None,
+        filters: "Optional[Union[AnyDict, DatasetFilter]]" = None,
         limit: int = 100,
         order_by: str = "ID",
         desc: bool = False,
@@ -85,12 +88,14 @@ class ListDatasets(PagedRequest):
             },
         )
 
-    def process_response(self, response) -> List[Dataset]:
-        response = super().process_response(response)
+    def process_response(
+        self, response: "Payload", _: "Optional[List[str]]" = None
+    ) -> "List[Dataset]":
+        response = super().parse_payload(response)
         return [Dataset(**dataset) for dataset in response["datasetsPage"]["datasets"]]
 
 
-class GetDataset(GraphQLRequest):
+class GetDataset(GraphQLRequest["Dataset"]):
     """
     Retrieve a dataset description object
 
@@ -124,8 +129,8 @@ class GetDataset(GraphQLRequest):
     def __init__(self, id: int):
         super().__init__(self.query, variables={"id": id})
 
-    def process_response(self, response) -> Dataset:
-        response = super().process_response(response)
+    def process_response(self, response: "Payload") -> "Dataset":
+        response = super().parse_payload(response)
         if "dataset" not in response or not isinstance(response["dataset"], dict):
             raise IndicoNotFound("Failed to find dataset")
         return Dataset(**response["dataset"])
@@ -164,7 +169,7 @@ class GetDatasetFileStatus(GetDataset):
     """
 
 
-class GetDatasetStatus(GraphQLRequest):
+class GetDatasetStatus(GraphQLRequest[str]):
     """
     Get the status of a dataset
 
@@ -186,11 +191,12 @@ class GetDatasetStatus(GraphQLRequest):
     def __init__(self, id: int):
         super().__init__(self.query, variables={"id": id})
 
-    def process_response(self, response) -> str:
-        return response["data"]["dataset"]["status"]
+    def process_response(self, response: "Payload") -> str:
+        status: str = super().parse_payload(response)["dataset"]["status"]
+        return status
 
 
-class CreateDataset(RequestChain):
+class CreateDataset(RequestChain["Dataset"]):
     """
     Create a dataset and upload the associated files.
 
@@ -212,22 +218,20 @@ class CreateDataset(RequestChain):
 
     """
 
-    previous = None
-
     def __init__(
         self,
         name: str,
-        files: List[str],
+        files: "Union[str, List[str]]",
         wait: bool = True,
         dataset_type: str = "TEXT",
         from_local_images: bool = False,
         image_filename_col: str = "filename",
         batch_size: int = 20,
-        ocr_engine: OcrEngine = None,
-        omnipage_ocr_options: OmnipageOcrOptionsInput = None,
-        read_api_ocr_options: ReadApiOcrOptionsInput = None,
-        request_interval: Union[int, float] = 5,
-        email_options: EmailOptions = None,
+        ocr_engine: "Optional[OcrEngine]" = None,
+        omnipage_ocr_options: "Optional[OmnipageOcrOptionsInput]" = None,
+        read_api_ocr_options: "Optional[ReadApiOcrOptionsInput]" = None,
+        request_interval: "Union[int, float]" = 5,
+        email_options: "Optional[EmailOptions]" = None,
     ):
         self.files = files
         self.name = name
@@ -247,12 +251,19 @@ class CreateDataset(RequestChain):
             )
         super().__init__()
 
-    def requests(self):
+    def requests(
+        self,
+    ) -> "Iterator[Union[UploadBatched, _UploadDatasetFiles, CreateEmptyDataset, _AddFiles, GetDatasetFileStatus, Delay, GetDataset]]":
         if self.from_local_images:
+            if not isinstance(self.files, str):
+                raise ValueError(
+                    "'files' should be a string path when using `from_local_images`."
+                )
+
             self.dataset_type = "IMAGE"
 
             try:
-                import pandas as pd
+                import pandas as pd  # type: ignore
             except ImportError as error:
                 raise RuntimeError(
                     "creating image datasets requires additional dependencies:"
@@ -277,11 +288,15 @@ class CreateDataset(RequestChain):
                 df.to_csv(image_csv_path)
                 yield _UploadDatasetFiles(files=[image_csv_path])
         else:
+            if not isinstance(self.files, list):
+                raise ValueError("'files' should be a list of paths.")
+
             yield UploadBatched(
                 files=self.files,
                 batch_size=self.batch_size,
                 request_cls=_UploadDatasetFiles,
             )
+
         file_metadata = self.previous
         yield CreateEmptyDataset(
             name=self.name,
@@ -305,7 +320,7 @@ class CreateDataset(RequestChain):
         yield GetDataset(id=dataset_id)
 
 
-class RemoveDatasetFile(GraphQLRequest):
+class RemoveDatasetFile(GraphQLRequest["Dataset"]):
     """
     Remove a file from a dataset by ID.  To retrieve a list of files in a dataset,
     see `GetDatasetFileStatus`.
@@ -333,18 +348,18 @@ class RemoveDatasetFile(GraphQLRequest):
             variables={"datasetId": dataset_id, "fileId": file_id},
         )
 
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["deleteDatasetFile"])
+    def process_response(self, response: "Payload") -> "Dataset":
+        return Dataset(**super().parse_payload(response)["deleteDatasetFile"])
 
 
-class _UploadDatasetFiles(HTTPRequest):
-    def __init__(self, files: List[str]):
+class _UploadDatasetFiles(HTTPRequest["List[AnyDict]"]):
+    def __init__(self, files: "List[str]"):
         super().__init__(
             method=HTTPMethod.POST, path="/storage/files/upload", files=files
         )
 
 
-class DeleteDataset(GraphQLRequest):
+class DeleteDataset(GraphQLRequest[bool]):
     """
     Delete a dataset
 
@@ -363,14 +378,15 @@ class DeleteDataset(GraphQLRequest):
     }
     """
 
-    def __init__(self, id):
+    def __init__(self, id: int):
         super().__init__(self.query, variables={"id": id})
 
-    def process_response(self, response):
-        return super().process_response(response)["deleteDataset"]["success"]
+    def process_response(self, response: "Payload") -> bool:
+        status: bool = super().parse_payload(response)["deleteDataset"]["success"]
+        return status
 
 
-class CreateEmptyDataset(GraphQLRequest):
+class CreateEmptyDataset(GraphQLRequest["Dataset"]):
     query = """
     mutation($name: String!, $datasetType: DatasetType, $config: DataConfigInput) {
         createDataset(name: $name, datasetType: $datasetType, config: $config ) {
@@ -383,11 +399,11 @@ class CreateEmptyDataset(GraphQLRequest):
     def __init__(
         self,
         name: str,
-        dataset_type: str = None,
-        ocr_engine: OcrEngine = None,
-        omnipage_ocr_options: OmnipageOcrOptionsInput = None,
-        readapi_ocr_options: ReadApiOcrOptionsInput = None,
-        email_options: EmailOptions = None,
+        dataset_type: "Optional[str]" = None,
+        ocr_engine: "Optional[OcrEngine]" = None,
+        omnipage_ocr_options: "Optional[OmnipageOcrOptionsInput]" = None,
+        readapi_ocr_options: "Optional[ReadApiOcrOptionsInput]" = None,
+        email_options: "Optional[EmailOptions]" = None,
     ):
         if not dataset_type:
             dataset_type = "TEXT"
@@ -414,11 +430,11 @@ class CreateEmptyDataset(GraphQLRequest):
             },
         )
 
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["createDataset"])
+    def process_response(self, response: "Payload") -> "Dataset":
+        return Dataset(**super().parse_payload(response)["createDataset"])
 
 
-class _AddFiles(GraphQLRequest):
+class _AddFiles(GraphQLRequest["Dataset"]):
     query = """
     mutation AddFiles($datasetId: Int!, $metadata: JSONString!, $autoprocess: Boolean){
         addDatasetFiles(datasetId: $datasetId, metadataList: $metadata, autoprocess: $autoprocess) {
@@ -428,7 +444,7 @@ class _AddFiles(GraphQLRequest):
     }
     """
 
-    def __init__(self, dataset_id: int, metadata: List[str], autoprocess: bool):
+    def __init__(self, dataset_id: int, metadata: "List[str]", autoprocess: bool):
         super().__init__(
             self.query,
             variables={
@@ -438,11 +454,11 @@ class _AddFiles(GraphQLRequest):
             },
         )
 
-    def process_response(self, response):
-        return Dataset(**super().process_response(response)["addDatasetFiles"])
+    def process_response(self, response: "Payload") -> "Dataset":
+        return Dataset(**super().parse_payload(response)["addDatasetFiles"])
 
 
-class AddDatasetFiles(RequestChain):
+class AddDatasetFiles(RequestChain["Dataset"]):
     """
     Add files to a dataset.
 
@@ -459,12 +475,10 @@ class AddDatasetFiles(RequestChain):
         Dataset
     """
 
-    previous = None
-
     def __init__(
         self,
         dataset_id: int,
-        files: List[str],
+        files: "List[str]",
         autoprocess: bool = True,
         wait: bool = True,
         batch_size: int = 20,
@@ -481,7 +495,9 @@ class AddDatasetFiles(RequestChain):
         )
         super().__init__()
 
-    def requests(self):
+    def requests(
+        self,
+    ) -> "Iterator[Union[UploadBatched, _AddFiles, GetDatasetFileStatus, Delay]]":
         yield UploadBatched(
             files=self.files,
             batch_size=self.batch_size,
@@ -497,15 +513,15 @@ class AddDatasetFiles(RequestChain):
             while not all(
                 f.status in self.expected_statuses for f in self.previous.files
             ):
-                yield GetDatasetFileStatus(id=self.previous.id)
                 yield Delay()
+                yield GetDatasetFileStatus(id=self.previous.id)
 
 
 # Alias for backwards compatibility
 AddFiles = AddDatasetFiles
 
 
-class GetAvailableOcrEngines(GraphQLRequest):
+class GetAvailableOcrEngines(GraphQLRequest["List[OcrEngine]"]):
     """
     Fetches and lists the available OCR engines
     """
@@ -518,15 +534,15 @@ class GetAvailableOcrEngines(GraphQLRequest):
         }
     }"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(self.query)
 
-    def process_response(self, response):
-        engines = super().process_response(response)["ocrOptions"]["engines"]
+    def process_response(self, response: "Payload") -> "List[OcrEngine]":
+        engines = super().parse_payload(response)["ocrOptions"]["engines"]
         return [OcrEngine[e["name"]] for e in engines]
 
 
-class GetOcrEngineLanguageCodes(GraphQLRequest):
+class GetOcrEngineLanguageCodes(GraphQLRequest["List[OcrInputLanguage]"]):
     """
     Fetches and lists the available languages by name and code for the given OCR Engine
 
@@ -546,12 +562,12 @@ class GetOcrEngineLanguageCodes(GraphQLRequest):
         }
     }"""
 
-    def __init__(self, engine: OcrEngine):
+    def __init__(self, engine: "OcrEngine"):
         self.engine = engine
         super().__init__(self.query)
 
-    def process_response(self, response):
-        data = super().process_response(response)["ocrOptions"]["engines"]
+    def process_response(self, response: "Payload") -> "List[OcrInputLanguage]":
+        data = super().parse_payload(response)["ocrOptions"]["engines"]
         engine_laguages = next(
             x["languages"] for x in data if x["name"] == self.engine.name
         )

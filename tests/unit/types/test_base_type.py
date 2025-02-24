@@ -1,6 +1,7 @@
-from typing import List
-from indico.types.base import BaseType, JSONType
 from datetime import datetime
+from typing import Dict, List
+
+from indico.types.base import BaseType, JSONType
 
 
 def test_setting_attributes_from_dict():
@@ -96,3 +97,12 @@ def test_timestamp_to_datetime_field():
     x = A(**{"createdAt": "1590169591.582852"})
 
     assert x.created_at == datetime.fromtimestamp(1590169591.582852)
+
+
+def test_generic_dict_field():
+    class A(BaseType):
+        meta: Dict[str, str]
+
+    x = A(meta={"foo": "bar"})
+
+    assert x.meta == {"foo": "bar"}

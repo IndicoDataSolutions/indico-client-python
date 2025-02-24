@@ -1,24 +1,24 @@
-from pathlib import Path
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import List
 
 import pytest
+
 from indico.client import IndicoClient
 from indico.queries import (
     JobStatus,
     RetrieveStorageObject,
-    UpdateWorkflowSettings,
-    WorkflowSubmission,
-    WaitForSubmissions,
     SubmitReview,
+    UpdateWorkflowSettings,
+    WaitForSubmissions,
+    WorkflowSubmission,
 )
-
-from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
 from indico.queries.workflow_metrics import GetWorkflowMetrics
-from datetime import datetime
+from indico.types.workflow_metrics import WorkflowMetrics, WorkflowMetricsOptions
+
 from ..data.datasets import *  # noqa
 from ..data.datasets import PUBLIC_URL
-import time
 
 
 @pytest.fixture

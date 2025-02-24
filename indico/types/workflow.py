@@ -1,9 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from indico.types import BaseType, ModelGroup
 from indico.types.base import JSONType
+
+if TYPE_CHECKING:  # pragma: no cover
+    from indico.typing import AnyDict
 
 
 class WorkflowComponent(BaseType):
@@ -19,8 +22,6 @@ class WorkflowComponent(BaseType):
     task_type: str
     model_type: str
     model_group: ModelGroup
-    task_type: str
-    model_type: str
     minimum: int
     maximum: int
 
@@ -84,7 +85,7 @@ class LinkedLabelGroup:
         name: str,
         strategy: LinkedLabelStrategy,
         class_ids: List[int],
-        strategy_settings: dict,
+        strategy_settings: "AnyDict",
     ):
         self.name = name
         self.strategy = strategy

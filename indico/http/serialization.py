@@ -9,20 +9,30 @@ import logging
 import traceback
 from collections import defaultdict
 from email.message import EmailMessage
+from typing import TYPE_CHECKING
 
 from indico.errors import IndicoDecodingError
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Callable, Dict, Mapping, Optional, Tuple
+
+    from aiohttp import ClientResponse
+    from requests import Response  # type: ignore
 
 logger = logging.getLogger(__name__)
 
 
-def decompress(response):
+def decompress(response: "Response") -> bytes:
     response.raw.decode_content = True
-    value = io.BytesIO(response.raw.data).getvalue()
+    value: bytes = io.BytesIO(response.raw.data).getvalue()
     return gzip.decompress(value)
 
 
-def deserialize(response, force_json=False, force_decompress=False):
-    content_type, params = parse_header(response.headers.get("Content-Type"))
+def deserialize(
+    response: "Response", force_json: bool = False, force_decompress: bool = False
+) -> "Any":
+    content_type, params = parse_header(response.headers["Content-Type"])
+    content: bytes
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = decompress(response)
@@ -44,14 +54,16 @@ def deserialize(response, force_json=False, force_decompress=False):
         )
 
 
-async def aio_deserialize(response, force_json=False, force_decompress=False):
-    content_type, params = parse_header(response.headers.get("Content-Type"))
-    content = await response.read()
+async def aio_deserialize(
+    response: "ClientResponse", force_json: bool = False, force_decompress: bool = False
+) -> "Any":
+    content_type, params = parse_header(response.headers["Content-Type"])
+    content: bytes = await response.read()
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
-        content = gzip.decompress(io.BytesIO(content).get_value())
+        content = gzip.decompress(io.BytesIO(content).getvalue())
 
-    charset = params.get("charset", "utf-8")
+    charset: str = params.get("charset", "utf-8")
 
     # For storage object for example where the content is json based on url ending
     if force_json:
@@ -66,17 +78,19 @@ async def aio_deserialize(response, force_json=False, force_decompress=False):
         )
 
 
-def parse_header(header: str) -> tuple[str, dict[str, str]]:
+def parse_header(header: str) -> "Tuple[str, Dict[str, str]]":
     email = EmailMessage()
     email["Content-Type"] = header
     return email.get_content_type(), email["Content-Type"].params
 
 
-def raw_bytes(content, *args, **kwargs):
+def raw_bytes(
+    content: bytes, charset: "Optional[str]", *args: "Any", **kwargs: "Any"
+) -> bytes:
     return content
 
 
-def msgpack_deserialization(content, charset):
+def msgpack_deserialization(content: bytes, charset: "Optional[str]" = None) -> "Any":
     try:
         import msgpack
     except ImportError as error:
@@ -88,23 +102,23 @@ def msgpack_deserialization(content, charset):
     return msgpack.unpackb(content)
 
 
-def json_deserialization(content, charset="utf-8"):
+def json_deserialization(content: bytes, charset: str = "utf-8") -> "Any":
     return json.loads(content.decode(charset))
 
 
-def text_deserialization(content, charset="utf-8"):
+def text_deserialization(content: bytes, charset: str = "utf-8") -> str:
     return content.decode(charset)
 
 
-def image_serialization(content, charset=None):
+def image_serialization(content: bytes, charset: "Optional[str]" = None) -> bytes:
     return content
 
 
-def zip_serialization(content, charset=None):
+def zip_serialization(content: bytes, charset: "Optional[str]" = None) -> bytes:
     return content
 
 
-_SERIALIZATION_FNS = defaultdict(
+_SERIALIZATION_FNS: "Mapping[str, Callable[[bytes, str], Any]]" = defaultdict(
     lambda: text_deserialization,
     {
         "application/pdf": raw_bytes,
@@ -119,7 +133,6 @@ _SERIALIZATION_FNS = defaultdict(
         "application/vnd.ms-excel": raw_bytes,
         "application/msexcel": raw_bytes,
         "application/excel": raw_bytes,
-        "application/msexcel": raw_bytes,
         "application/x-dos_ms_excel": raw_bytes,
         "application/x-excel": raw_bytes,
         "application/x-ms-excel": raw_bytes,
@@ -131,7 +144,6 @@ _SERIALIZATION_FNS = defaultdict(
         "application/vnd.openxmlformats-officedocument.presentationml.presentation": raw_bytes,
         "application/mspowerpoint": raw_bytes,
         "application/powerpoint": raw_bytes,
-        "application/vnd.ms-powerpoint": raw_bytes,
         "application/x-mspowerpoint": raw_bytes,
         "image/png": image_serialization,
         "image/jpeg": image_serialization,

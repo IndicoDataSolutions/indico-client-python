@@ -1,9 +1,10 @@
-import pytest
 from datetime import datetime
 
-from indico.client import IndicoClient, IndicoConfig
+import pytest
+
+from indico.client import IndicoClient
 from indico.filters import DateRangeFilter, SubmissionFilter, SubmissionReviewFilter
-from indico.queries import ListSubmissions, GetReviews
+from indico.queries import GetReviews, ListSubmissions
 from indico.types import SubmissionReviewFull
 
 

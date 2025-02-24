@@ -26,6 +26,7 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+.mypy_cache
 
 # Translations
 *.mo
@@ -37,6 +38,7 @@ nosetests.xml
 .noseids
 .pytest*
 *.json
+.hypothesis
 
 codeship.aes
 .env
@@ -55,6 +57,7 @@ examples/readme.py
 docsrc/_build
 docs/.doctrees
 setup_tests.sh
+test.csv
 
 .venv
 .vscode/

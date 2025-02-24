@@ -3,20 +3,19 @@ import os
 from indico.client import IndicoClient
 from indico.queries import (
     AddExchangeIntegration,
-    StartIntegration,
     DeleteIntegration,
     PauseIntegration,
+    StartIntegration,
 )
-
-from indico.types import Workflow, Integration, ModelGroup
+from indico.types import Integration, ModelGroup, Workflow
 from tests.integration.data.datasets import (
-    airlines_workflow,
     airlines_dataset,
-    org_annotate_workflow,
+    airlines_workflow,
     org_annotate_dataset,
     org_annotate_exchange_integration,
     org_annotate_model_group,
     exchange_integration_to_delete,
+    org_annotate_workflow,
     started_exchange_integration,
 )
 

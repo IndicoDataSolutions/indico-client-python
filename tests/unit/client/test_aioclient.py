@@ -1,7 +1,6 @@
 import pytest
 
-
-from indico.client import AsyncIndicoClient, HTTPRequest, HTTPMethod, GraphQLRequest
+from indico.client import AsyncIndicoClient, GraphQLRequest, HTTPMethod, HTTPRequest
 from indico.config import IndicoConfig
 from indico.errors import IndicoError
 

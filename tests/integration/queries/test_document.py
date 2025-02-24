@@ -1,12 +1,14 @@
-import unittest
-import pytest
 import os
+import unittest
 from pathlib import Path
+
+import pytest
+
 from indico.client import IndicoClient
 from indico.queries import (
-    RetrieveStorageObject,
-    JobStatus,
     DocumentExtraction,
+    JobStatus,
+    RetrieveStorageObject,
     UploadBatched,
     UploadDocument,
 )

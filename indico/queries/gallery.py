@@ -1,11 +1,16 @@
-from typing import Dict, Optional, Union
+from typing import TYPE_CHECKING, Optional, cast
 
 from indico.client.request import GraphQLRequest, PagedRequest
-from indico.filters import ComponentBlueprintFilter
 from indico.types.component_blueprint import BlueprintPage, BlueprintTags
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, List
 
-class ListGallery(PagedRequest):
+    from indico.filters import ComponentBlueprintFilter
+    from indico.typing import AnyDict, Payload
+
+
+class ListGallery(PagedRequest[BlueprintPage]):
     """
     List all blueprints available in the gallery.
 
@@ -54,11 +59,11 @@ class ListGallery(PagedRequest):
 
     def __init__(
         self,
-        filters: Optional[Union[Dict, ComponentBlueprintFilter]] = None,
+        filters: "Optional[ComponentBlueprintFilter]" = None,
         limit: int = 100,
         order_by: str = "ID",
         desc: bool = False,
-        **kwargs,
+        **kwargs: "Any",
     ):
         super().__init__(
             self.query,
@@ -71,7 +76,9 @@ class ListGallery(PagedRequest):
             },
         )
 
-    def process_response(self, response) -> BlueprintPage:
+    def process_response(
+        self, response: "Payload", _: "Optional[List[str]]" = None
+    ) -> "BlueprintPage":
         response = super().process_response(
             response, nested_keys=["gallery", "component", "blueprintsPage"]
         )
@@ -85,7 +92,7 @@ class ListGallery(PagedRequest):
         )
 
 
-class GetGalleryTags(GraphQLRequest):
+class GetGalleryTags(GraphQLRequest[BlueprintTags]):
     """
     List all blueprint tags available in the gallery.
 
@@ -106,15 +113,15 @@ class GetGalleryTags(GraphQLRequest):
         }
     """
 
-    def __init__(self, component_family: Optional[str] = None):
+    def __init__(self, component_family: "Optional[str]" = None):
         self.component_family = component_family
         super().__init__(
             self.query,
             variables={"componentFamily": component_family},
         )
 
-    def process_response(self, response) -> BlueprintTags:
-        response = super().process_response(response)
+    def process_response(self, response: "Payload") -> "BlueprintTags":
+        response = cast(Payload, super().process_response(response))
         return BlueprintTags(
             tags=[tag for tag in response["gallery"]["component"]["availableTags"]]
         )

@@ -1,27 +1,32 @@
 import datetime
-from typing import Any, Iterable, List, Mapping, Union
+from typing import TYPE_CHECKING, Dict
 
 from indico.errors import IndicoInputError
 
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, ClassVar, List, Optional, Tuple, Union
 
-def or_(*args: Iterable[Mapping[str, Any]]):
+    from indico.typing import AnyDict
+
+
+def or_(*args: "Any") -> "Dict[str, List[Any]]":
     return {"OR": list(args)}
 
 
-def and_(*args: Iterable[Mapping[str, Any]]):
+def and_(*args: "Any") -> "Dict[str, List[Any]]":
     return {"AND": list(args)}
 
 
-class Filter(dict):
+class Filter(Dict[str, "Any"]):
     """
     Base filter class that allows users to construct filter statements for
     GraphQL queries. Search keys are constrained by the implementing subclasses
     If multiple arguments are supplied, they are treated as arg1 AND arg2 AND ...
     """
 
-    __options__ = None
+    __options__: "ClassVar[Tuple[Any, ...]]" = tuple()
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: "Any"):
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         if not kwargs:
             raise IndicoInputError(f"One of {self.__options__} must be specified")
@@ -49,9 +54,9 @@ class SubmissionReviewFilter(Filter):
 
     def __init__(
         self,
-        rejected: Union[bool, None] = None,
-        created_by: Union[int, None] = None,
-        review_type: Union[str, None] = None,
+        rejected: "Optional[bool]" = None,
+        created_by: "Optional[int]" = None,
+        review_type: "Optional[str]" = None,
     ):
         kwargs = {
             "rejected": rejected,
@@ -62,7 +67,7 @@ class SubmissionReviewFilter(Filter):
         super().__init__(**kwargs)
 
 
-class DateRangeFilter(dict):
+class DateRangeFilter(Dict[str, "Optional[str]"]):
     """
     Create a Filter when querying for Submissions within a certain date range
     Args:
@@ -71,9 +76,9 @@ class DateRangeFilter(dict):
     """
 
     def __init__(
-        self, filter_from: Union[str, None] = None, filter_to: Union[str, None] = None
+        self, filter_from: "Optional[str]" = None, filter_to: "Optional[str]" = None
     ):
-        kwargs = {"from": filter_from, "to": filter_to}
+        kwargs: "Dict[str, Optional[str]]" = {"from": filter_from, "to": filter_to}
         self.update(kwargs)
 
 
@@ -111,17 +116,17 @@ class SubmissionFilter(Filter):
 
     def __init__(
         self,
-        file_type: Union[List[str], None] = None,
-        input_filename: Union[str, None] = None,
-        status: Union[str, None] = None,
-        retrieved: Union[bool, None] = None,
-        reviews: Union[SubmissionReviewFilter, None] = None,
-        review_in_progress: Union[bool, None] = None,
-        files_deleted: Union[bool, None] = None,
-        created_at: Union[DateRangeFilter, None] = None,
-        updated_at: Union[DateRangeFilter, None] = None,
+        file_type: "Optional[List[str]]" = None,
+        input_filename: "Optional[str]" = None,
+        status: "Optional[str]" = None,
+        retrieved: "Optional[bool]" = None,
+        reviews: "Optional[SubmissionReviewFilter]" = None,
+        review_in_progress: "Optional[bool]" = None,
+        files_deleted: "Optional[bool]" = None,
+        created_at: "Optional[DateRangeFilter]" = None,
+        updated_at: "Optional[DateRangeFilter]" = None,
     ):
-        kwargs = {
+        kwargs: "AnyDict" = {
             "filetype": file_type,
             "inputFilename": input_filename,
             "status": status.upper() if status else status,
@@ -155,12 +160,12 @@ class ModelGroupExampleFilter(Filter):
 
     def __init__(
         self,
-        file_name: Union[str, None] = None,
-        partial: Union[bool, None] = None,
-        status: Union[str, None] = None,
-        text_search: Union[str, None] = None,
+        file_name: "Optional[str]" = None,
+        partial: "Optional[bool]" = None,
+        status: "Optional[str]" = None,
+        text_search: "Optional[str]" = None,
     ):
-        kwargs = {
+        kwargs: "Dict[str, Optional[Union[bool, str]]]" = {
             "fileName": file_name,
             "partial": partial,
             "textSearch": text_search,
@@ -184,9 +189,14 @@ class UserMetricsFilter(Filter):
     __options__ = ("user_id", "user_email")
 
     def __init__(
-        self, user_id: Union[int, None] = None, user_email: Union[str, None] = None
+        self,
+        user_id: "Optional[int]" = None,
+        user_email: "Optional[str]" = None,
     ):
-        kwargs = {"userId": user_id, "userEmail": user_email}
+        kwargs: "Dict[str, Optional[Union[int, str]]]" = {
+            "userId": user_id,
+            "userEmail": user_email,
+        }
 
         super().__init__(**kwargs)
 
@@ -219,15 +229,19 @@ class DocumentReportFilter(Filter):
 
     def __init__(
         self,
-        submission_id: Union[int, None] = None,
-        workflow_id: Union[int, None] = None,
-        status: Union[str, None] = None,
-        created_at_start_date: Union[datetime.datetime, None] = None,
-        created_at_end_date: Union[datetime.datetime, None] = None,
-        updated_at_start_date: Union[datetime.datetime, None] = None,
-        updated_at_end_date: Union[datetime.datetime, None] = None,
+        submission_id: "Optional[int]" = None,
+        workflow_id: "Optional[int]" = None,
+        status: "Optional[str]" = None,
+        created_at_start_date: "Optional[datetime.datetime]" = None,
+        created_at_end_date: "Optional[datetime.datetime]" = None,
+        updated_at_start_date: "Optional[datetime.datetime]" = None,
+        updated_at_end_date: "Optional[datetime.datetime]" = None,
     ):
-        kwargs = {"workflowId": workflow_id, "id": submission_id, "status": status}
+        kwargs: "AnyDict" = {
+            "workflowId": workflow_id,
+            "id": submission_id,
+            "status": status,
+        }
         if created_at_end_date and not created_at_start_date:
             raise IndicoInputError("Must specify created_at_start_date")
         if created_at_start_date:
