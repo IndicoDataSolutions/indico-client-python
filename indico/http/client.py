@@ -18,7 +18,7 @@ from indico.errors import (
 )
 from indico.http.serialization import aio_deserialize, deserialize
 
-from .retry import aioretry
+from .retry import retry
 
 logger = logging.getLogger(__file__)
 
@@ -41,6 +41,14 @@ class HTTPClient:
     def __init__(self, config: IndicoConfig = None):
         self.config = config
         self.base_url = f"{self.config.protocol}://{self.config.host}"
+        self._decorate_with_retry = retry(
+            requests.RequestException,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )
+        self._make_request = self._decorate_with_retry(self._make_request)
 
         self.request_session = requests.Session()
         if config and isinstance(config.requests_params, dict):
@@ -150,6 +158,7 @@ class HTTPClient:
                 f"{self.base_url}{path}",
                 headers=headers,
                 stream=True,
+                timeout=(4, 64),
                 verify=False
                 if not self.config.verify_ssl or not self.request_session.verify
                 else True,
@@ -210,6 +219,14 @@ class AIOHTTPClient(HTTPClient):
         """
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
+        self._decorate_with_retry = retry(
+            aiohttp.ClientConnectionError,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )
+        self._make_request = self._decorate_with_retry(self._make_request)
 
         self.request_session = aiohttp.ClientSession()
         if config and isinstance(config.requests_params, dict):
@@ -282,7 +299,6 @@ class AIOHTTPClient(HTTPClient):
         if files:
             [f.close() for f in files]
 
-    @aioretry((aiohttp.ClientConnectionError, aiohttp.ServerDisconnectedError))
     async def _make_request(
         self,
         method: str,
@@ -311,6 +327,7 @@ class AIOHTTPClient(HTTPClient):
             async with getattr(self.request_session, method)(
                 f"{self.base_url}{path}",
                 headers=headers,
+                timeout=aiohttp.ClientTimeout(sock_connect=4, sock_read=64),
                 verify_ssl=self.config.verify_ssl,
                 **request_kwargs,
             ) as response:
