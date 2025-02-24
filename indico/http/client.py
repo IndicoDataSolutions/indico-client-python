@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 import aiohttp
-import requests
+import requests  # type: ignore
 
 from indico.config import IndicoConfig
 from indico.errors import (
@@ -93,7 +93,7 @@ class HTTPClient:
             self.request_session.cookies.pop("auth_token")
             self.request_session.cookies.set_cookie(
                 # must ignore because untyped in typeshed
-                requests.cookies.create_cookie(name="auth_token", value=value)  # type: ignore
+                requests.cookies.create_cookie(name="auth_token", value=value)
             )
 
         return cast("AnyDict", r)

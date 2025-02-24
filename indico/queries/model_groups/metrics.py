@@ -7,7 +7,7 @@ from indico.queries.model_groups import GetModelGroup
 from indico.types.model_metrics import SequenceMetrics
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Dict, Iterator, Type, Union
+    from typing import Any, Dict, Generator, Type, Union
 
     from indico.typing import AnyDict, Payload
 
@@ -134,7 +134,7 @@ class GetModelGroupMetrics(RequestChain["Union[SequenceMetrics, AnyDict]"]):
 
     def requests(
         self,
-    ) -> "Iterator[Union[GetModelGroup, AnnotationModelGroupMetrics, ObjectDetectionMetrics]]":
+    ) -> "Generator[Union[GetModelGroup, AnnotationModelGroupMetrics, ObjectDetectionMetrics], None, Any]":
         yield GetModelGroup(id=self.model_group_id)
         if self.previous.task_type not in task_type_query_mapping:
             raise IndicoInputError(

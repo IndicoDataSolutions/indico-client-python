@@ -10,7 +10,7 @@ from indico.types.export import Export, LabelResolutionStrategy
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterator, List, Optional, Union
 
-    import pandas as pd
+    import pandas as pd  # type: ignore
 
     from indico.typing import Payload
 

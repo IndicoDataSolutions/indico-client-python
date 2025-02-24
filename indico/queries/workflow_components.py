@@ -314,7 +314,7 @@ class AddModelGroupComponent(GraphQLRequest["Workflow"]):
         new_questionnaire_args: "Optional[NewQuestionnaireArguments]" = None,
         model_training_options: "Optional[Union[str, AnyDict]]" = None,
         model_type: "Optional[str]" = None,
-        blueprint_id: int = None,
+        blueprint_id: "Optional[int]" = None,
     ):
         if labelset_column_id is not None and new_labelset_args is not None:
             raise IndicoInputError(

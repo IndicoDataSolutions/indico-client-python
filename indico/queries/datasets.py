@@ -88,7 +88,9 @@ class ListDatasets(PagedRequest["List[Dataset]"]):
             },
         )
 
-    def process_response(self, response: "Payload") -> "List[Dataset]":
+    def process_response(
+        self, response: "Payload", _: "Optional[List[str]]" = None
+    ) -> "List[Dataset]":
         response = super().parse_payload(response)
         return [Dataset(**dataset) for dataset in response["datasetsPage"]["datasets"]]
 
@@ -261,7 +263,7 @@ class CreateDataset(RequestChain["Dataset"]):
             self.dataset_type = "IMAGE"
 
             try:
-                import pandas as pd
+                import pandas as pd  # type: ignore
             except ImportError as error:
                 raise RuntimeError(
                     "creating image datasets requires additional dependencies:"

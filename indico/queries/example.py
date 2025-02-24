@@ -73,6 +73,8 @@ class ListModelGroupExamples(PagedRequest["List[Example]"]):
             variables=variables,
         )
 
-    def process_response(self, response: "Payload") -> "List[Example]":
+    def process_response(
+        self, response: "Payload", _: "Optional[List[str]]" = None
+    ) -> "List[Example]":
         example_page = super().parse_payload(response)["modelGroups"]["modelGroups"][0]
         return [Example(**s) for s in example_page["pagedExamples"]["examples"]]
