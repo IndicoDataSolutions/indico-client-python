@@ -12,6 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
     P = ParamSpec("P")
     T = TypeVar("T")
 
+
 def retry(
     *ExceptionTypes: "Type[Exception]", tries: int = 3, delay: int = 1, backoff: int = 2
 ) -> "Callable[[Callable[P, T]], Callable[P, T]]":

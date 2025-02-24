@@ -4,7 +4,6 @@ from typing import Dict, List
 from indico.types.base import BaseType, JSONType
 
 
-
 def test_setting_attributes_from_dict():
     class A(BaseType):
         id: int

@@ -5,7 +5,6 @@ import pytest
 from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest
 
 
-
 def test_http_request_properties():
     data = {"test", "something"}
     path = "/something/api/test"
