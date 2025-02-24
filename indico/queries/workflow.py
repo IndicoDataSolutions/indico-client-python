@@ -1,5 +1,4 @@
 import io
-import json
 import tempfile
 from typing import Dict, List, Union
 
@@ -62,11 +61,12 @@ class ListWorkflows(GraphQLRequest):
                         }
 
                     }
-                  componentLinks{
+                  componentLinks {
                     id
                     headComponentId
                     tailComponentId
-                    filters{
+                    config
+                    filters {
                       classes
                     }
 
@@ -93,10 +93,8 @@ class ListWorkflows(GraphQLRequest):
         )
 
     def process_response(self, response) -> List[Workflow]:
-        return [
-            Workflow(**w)
-            for w in super().process_response(response)["workflows"]["workflows"]
-        ]
+        resp = super().process_response(response)
+        return [Workflow(**w) for w in resp["workflows"]["workflows"]]
 
 
 class GetWorkflow(ListWorkflows):

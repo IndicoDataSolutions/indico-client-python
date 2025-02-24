@@ -1,7 +1,9 @@
-from enum import Enum
-from typing import List, Union
 from datetime import datetime
-from indico.types import BaseType, ModelGroup, ModelTaskType
+from enum import Enum
+from typing import List
+
+from indico.types import BaseType, ModelGroup
+from indico.types.base import JSONType
 
 
 class WorkflowComponent(BaseType):
@@ -31,6 +33,7 @@ class WorkflowComponentLinks(BaseType):
     id: int
     head_component_id: int
     tail_component_id: int
+    config: JSONType
 
 
 class Workflow(BaseType):
@@ -71,7 +74,7 @@ class Workflow(BaseType):
 
 
 class LinkedLabelStrategy(Enum):
-    BY_ROW = 0,
+    BY_ROW = 0
     BY_KEY = 1
 
 
@@ -90,8 +93,8 @@ class LinkedLabelGroup:
 
 
 class ComponentFamily(Enum):
-    MODEL = 0,
-    FILTER = 1,
-    TRANSFORMER = 2,
-    REVIEW = 3,
+    MODEL = 0
+    FILTER = 1
+    TRANSFORMER = 2
+    REVIEW = 3
     OUTPUT = 4

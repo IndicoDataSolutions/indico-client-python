@@ -252,3 +252,37 @@ class DocumentReportFilter(Filter):
                 ),
             }
         super().__init__(**kwargs)
+
+
+class ComponentBlueprintFilter(Filter):
+    """
+    Create a Filter when querying for ComponentBlueprints.
+
+    Args:
+        name (str): name of the component blueprint
+        component_type (str): type of the component blueprint
+        component_family (str): family of the component blueprint
+        tags (list): tags of the component blueprint
+    """
+
+    __options__ = (
+        "name",
+        "component_type",
+        "component_family",
+        "tags",
+    )
+
+    def __init__(
+        self,
+        name: Union[str, None] = None,
+        component_type: Union[str, None] = None,
+        component_family: Union[str, None] = None,
+        tags: Union[List[str], None] = None,
+    ):
+        kwargs = {
+            "name": name,
+            "componentType": component_type,
+            "componentFamily": component_family,
+            "tags": tags,
+        }
+        super().__init__(**kwargs)

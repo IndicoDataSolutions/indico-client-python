@@ -1,5 +1,6 @@
 inputSet:
   name: pr-input-set
+  tags: {}
   identifier: prinputset
   orgIdentifier: default
   projectIdentifier: IPA_Release
@@ -9,19 +10,10 @@ inputSet:
       ci:
         codebase:
           build:
-            type: PR
+            type: branch
             spec:
-              number: <+trigger.prNumber>
+              branch: <+trigger.branch>
     stages:
-      - stage:
-          identifier: build_info
-          type: CI
-          spec:
-            infrastructure:
-              type: KubernetesDirect
-              spec:
-                nodeSelector:
-                  node_group: <+input>
       - parallel:
           - stage:
               identifier: code_checks
@@ -40,7 +32,7 @@ inputSet:
                       value: <+input>
                     - name: ruff
                       type: String
-                      value: <+input>
+                      value: ruff format --check indico tests
                     - name: mypy
                       type: String
                       value: <+input>
@@ -84,6 +76,12 @@ inputSet:
       - name: RUN_UNITTESTS
         type: String
         value: "TRUE"
+      - name: RUN_PRERELEASE
+        type: String
+        value: "FALSE"
+      - name: RUN_RELEASE
+        type: String
+        value: "FALSE"
       - name: RUN_PUBLISH
         type: String
         value: "FALSE"

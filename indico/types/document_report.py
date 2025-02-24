@@ -9,6 +9,7 @@ class DocumentReport(BaseType):
     A report about a submission
 
     """
+
     dataset_id: int
     workflow_id: int
     submission_id: int
@@ -22,4 +23,3 @@ class DocumentReport(BaseType):
     retrieved: bool
     input_files: List[SubmissionFile]
     files_deleted: bool
-

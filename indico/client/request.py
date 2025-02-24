@@ -1,7 +1,7 @@
 from enum import Enum
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Optional, Union
 
-from indico.errors import IndicoRequestError
+from indico.errors import IndicoInputError, IndicoRequestError
 
 
 class HTTPMethod(Enum):
@@ -73,9 +73,20 @@ class PagedRequest(GraphQLRequest):
         self.has_next_page = True
         super().__init__(query, variables=variables)
 
-    def process_response(self, response):
+    def process_response(self, response, nested_keys: Optional[List[str]] = None):
         response = super().process_response(response)
-        _pg = next(iter(response.values()))["pageInfo"]
+        if nested_keys:
+            _pg = response
+            for key in nested_keys:
+                if key not in _pg.keys():
+                    raise IndicoInputError(
+                        f"Nested key not found in response: {key}",
+                    )
+                _pg = _pg[key]
+            _pg = _pg["pageInfo"]
+        else:
+            _pg = next(iter(response.values()))["pageInfo"]
+
         self.has_next_page = _pg["hasNextPage"]
         self.variables["after"] = _pg["endCursor"] if self.has_next_page else None
         return response

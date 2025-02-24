@@ -22,11 +22,15 @@ import time
 
 
 @pytest.fixture
-def workflow(indico, org_annotate_dataset, org_annotate_workflow, org_annotate_model_group):
+def workflow(
+    indico, org_annotate_dataset, org_annotate_workflow, org_annotate_model_group
+):
     client = IndicoClient()
 
     wf = client.call(
-        UpdateWorkflowSettings(org_annotate_workflow.id, enable_review=True, enable_auto_review=True)
+        UpdateWorkflowSettings(
+            org_annotate_workflow.id, enable_review=True, enable_auto_review=True
+        )
     )
     assert wf.review_enabled and wf.auto_review_enabled
 

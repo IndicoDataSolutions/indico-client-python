@@ -4,9 +4,7 @@ import jsons
 
 from indico import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError
-from indico.queries.model_import import (
-    UploadStaticModelExport,
-)
+from indico.queries.model_import import UploadStaticModelExport
 from indico.types import (
     LinkedLabelGroup,
     NewLabelsetArguments,
@@ -239,11 +237,11 @@ class AddModelGroupComponent(GraphQLRequest):
         new_labelset_args(NewLabelsetArguments): if needed, new labelset to add.
             Only use if not using labelset_column_id.
         new_questionnaire_args(NewQuestionnaireArguments): Customize the questionnaire associated with this model group.
-
+        blueprint_id(int): the id of the blueprint to add the model group to.
     """
 
     query = """
-        mutation addModelGroup($workflowId: Int!, $name: String!, $datasetId: Int!, $sourceColumnId: Int!, $afterComponentId: Int, $labelsetColumnId: Int, $afterLinkId: Int, $newLabelsetArgs: NewLabelsetInput, $questionnaireArgs: QuestionnaireInput, $modelTrainingOptions: JSONString, $modelType: ModelType) {
+        mutation addModelGroup($workflowId: Int!, $name: String!, $datasetId: Int!, $sourceColumnId: Int!, $afterComponentId: Int, $labelsetColumnId: Int, $afterLinkId: Int, $newLabelsetArgs: NewLabelsetInput, $questionnaireArgs: QuestionnaireInput, $modelTrainingOptions: JSONString, $modelType: ModelType, $blueprintId: Int) {
         addModelGroupComponent(
             workflowId: $workflowId
             name: $name
@@ -256,6 +254,7 @@ class AddModelGroupComponent(GraphQLRequest):
             newLabelsetArgs: $newLabelsetArgs
             questionnaireArgs: $questionnaireArgs
             modelType: $modelType
+            blueprintId: $blueprintId
         ) {
             workflow {
             id
@@ -310,13 +309,16 @@ class AddModelGroupComponent(GraphQLRequest):
         new_questionnaire_args: NewQuestionnaireArguments = None,
         model_training_options: str = None,
         model_type: str = None,
+        blueprint_id: int = None,
     ):
         if labelset_column_id is not None and new_labelset_args is not None:
             raise IndicoInputError(
                 "Cannot define both labelset_column_id and new_labelset_args, must be one "
                 "or the other."
             )
-        if labelset_column_id is None and new_labelset_args is None:
+        if (
+            labelset_column_id is None and new_labelset_args is None
+        ) and blueprint_id is None:
             raise IndicoInputError(
                 "Must define one of either labelset_column_id or new_labelset_args."
             )
@@ -346,6 +348,7 @@ class AddModelGroupComponent(GraphQLRequest):
                     if new_questionnaire_args is not None
                     else None
                 ),
+                **({"blueprintId": blueprint_id} if blueprint_id else {}),
             },
         )
 
