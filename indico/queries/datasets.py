@@ -89,7 +89,7 @@ class ListDatasets(PagedRequest["List[Dataset]"]):
         )
 
     def process_response(
-        self, response: "Payload", _: "Optional[List[str]]" = None
+        self, response: "Payload", _: "Optional[str]" = None
     ) -> "List[Dataset]":
         response = super().parse_payload(response)
         return [Dataset(**dataset) for dataset in response["datasetsPage"]["datasets"]]

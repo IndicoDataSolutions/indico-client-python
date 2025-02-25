@@ -32,7 +32,7 @@ inputSet:
                       value: <+input>
                     - name: ruff
                       type: String
-                      value: <+input>
+                      value: ruff format --check indico tests
                     - name: mypy
                       type: String
                       value: <+input>

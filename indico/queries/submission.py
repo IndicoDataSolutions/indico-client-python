@@ -150,7 +150,7 @@ class ListSubmissions(PagedRequest["List[Submission]"]):
         )
 
     def process_response(
-        self, response: "Payload", _: "Optional[List[str]]" = None
+        self, response: "Payload", _: "Optional[str]" = None
     ) -> "List[Submission]":
         return [
             Submission(**s)

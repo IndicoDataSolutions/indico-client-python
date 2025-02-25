@@ -2,6 +2,8 @@ from abc import abstractmethod
 from enum import Enum
 from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
+import jq
+
 from indico.errors import IndicoInputError, IndicoRequestError
 from indico.typing import AnyDict
 
@@ -100,20 +102,16 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         super().__init__(query, variables=variables)
 
     def process_response(
-        self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
+        self, response: "AnyDict", jq_path: "Optional[str]" = None
     ) -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
-        if nested_keys:
-            _pg = raw_response
-            for key in nested_keys:
-                if key not in _pg.keys():
-                    raise IndicoInputError(
-                        f"Nested key not found in response: {key}",
-                    )
-                _pg = _pg[key]
-            _pg = _pg["pageInfo"]
+        if jq_path:
+            try:
+                _pg = jq.compile(jq_path).input(raw_response).first()["pageInfo"]
+            except Exception:
+                raise IndicoInputError(f"Invalid jq path: {jq_path}. ")
         else:
-            _pg = next(iter(response.values()))["pageInfo"]
+            _pg = raw_response["pageInfo"]
 
         if not _pg:
             raise ValueError("The supplied GraphQL must include 'pageInfo'.")
