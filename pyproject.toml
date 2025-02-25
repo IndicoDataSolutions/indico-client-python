@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "indico-client"
-version = "7.0.0"
+version = "7.1.0"
 description = "Indico Data Solutions Python SDK for Intake"
 authors = ["Indico Engineering <engineering@indicodata.ai>"]
 license = "MIT"
@@ -8,35 +8,34 @@ readme = "README.md"
 homepage = "https://indicodata.ai"
 repository = "https://github.com/IndicoDataSolutions/indico-client-python"
 documentation = "https://developer.indicodata.ai"
-packages = [
-    { include = "indico" }
-]
+packages = [{ include = "indico" }]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-msgpack = { version = ">=0.5.6", optional = true }
-msgpack-numpy = { version = "0.4.4.3", optional = true }
-numpy = { version = ">=1.16.0" , optional = true }
-pillow = { version = ">=6.2.0" , optional = true }
+python = ">=3.8"
 requests = ">=2.22.0"
-pandas = { version = ">=1.0.3", optional = true }
 deprecation = ">=2.1.0"
 aiohttp = {extras = ["speedups"], version = "^3.9.5"}
 jsons = "^1.6.3"
+jq = "^1.8.0"
+
+# Optional deps
+pandas = { version = ">=1.0.3", optional = true }
+msgpack = { version = ">=0.5.6", optional = true }
+msgpack-numpy = { version = "0.4.4.3", optional = true }
+numpy = { version = ">=1.16.0",  optional = true }
+pillow = { version = ">=6.2.0",  optional = true }
+types-requests = { version = "^2.32.0.20241016", optional = true }
 
 [tool.poetry.extras]
 datasets = ["pandas"]
 exports = ["pandas"]
 serialization = ["msgpack", "msgpack-numpy", "pillow", "numpy"]
+typing = ["types-requests"]
 
 [tool.poetry.group.test.dependencies]
 pytest = "*"
 requests-mock = ">=1.8.0"
 pytest-asyncio = "*"
-
-[tool.isort]
-known_first_party = ["indico"]
-profile = "black"
 
 [tool.mypy]
 strict = true
