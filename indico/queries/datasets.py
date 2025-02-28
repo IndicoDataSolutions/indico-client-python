@@ -263,7 +263,7 @@ class CreateDataset(RequestChain["Dataset"]):
             self.dataset_type = "IMAGE"
 
             try:
-                import pandas as pd  # type: ignore
+                import pandas as pd
             except ImportError as error:
                 raise RuntimeError(
                     "creating image datasets requires additional dependencies:"

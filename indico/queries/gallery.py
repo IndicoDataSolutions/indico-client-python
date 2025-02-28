@@ -1,13 +1,13 @@
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, cast
 
 from indico.client.request import GraphQLRequest, PagedRequest
 from indico.types.component_blueprint import BlueprintPage, BlueprintTags
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, List
+    from typing import Any, List, Optional
 
     from indico.filters import ComponentBlueprintFilter
-    from indico.typing import AnyDict, Payload
+    from indico.typing import Payload
 
 
 class ListGallery(PagedRequest[BlueprintPage]):

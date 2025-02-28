@@ -1,6 +1,6 @@
 """"""
 
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING
 
 from indico import PagedRequest
 from indico.filters import DocumentReportFilter
@@ -8,7 +8,7 @@ from indico.types import BaseType
 from indico.types.document_report import DocumentReport
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Union
+    from typing import List, Optional, Union
 
     from indico.typing import AnyDict, Payload
 
