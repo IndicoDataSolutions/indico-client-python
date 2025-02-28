@@ -4,7 +4,7 @@ import asyncio
 import time
 from typing import TYPE_CHECKING, cast
 
-import urllib3  # type: ignore
+import urllib3
 
 from indico.client.request import Delay, GraphQLRequest, HTTPRequest, RequestChain
 from indico.config import IndicoConfig

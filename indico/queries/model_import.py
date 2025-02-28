@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, cast
 
-import requests  # type: ignore
+import requests
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError

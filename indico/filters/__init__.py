@@ -288,10 +288,10 @@ class ComponentBlueprintFilter(Filter):
 
     def __init__(
         self,
-        name: Union[str, None] = None,
-        component_type: Union[str, None] = None,
-        component_family: Union[str, None] = None,
-        tags: Union[List[str], None] = None,
+        name: "Optional[str]" = None,
+        component_type: "Optional[str]" = None,
+        component_family: "Optional[str]" = None,
+        tags: "Optional[List[str]]" = None,
     ):
         kwargs = {
             "name": name,
