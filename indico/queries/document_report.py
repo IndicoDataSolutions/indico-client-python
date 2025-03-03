@@ -1,6 +1,6 @@
 """"""
 
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List
 
 from indico import PagedRequest
 from indico.filters import DocumentReportFilter

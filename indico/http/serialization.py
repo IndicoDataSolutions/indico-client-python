@@ -17,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
     from aiohttp import ClientResponse
-    from requests import Response  # type: ignore
+    from requests import Response
 
 logger = logging.getLogger(__name__)
 
