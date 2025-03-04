@@ -99,7 +99,7 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         self.has_next_page = True
         super().__init__(query, variables=variables)
 
-    def process_response(
+    def parse_payload(
         self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
     ) -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))

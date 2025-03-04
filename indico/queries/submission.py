@@ -149,9 +149,7 @@ class ListSubmissions(PagedRequest["List[Submission]"]):
             },
         )
 
-    def process_response(
-        self, response: "Payload", _: "Optional[List[str]]" = None
-    ) -> "List[Submission]":
+    def process_response(self, response: "Payload") -> "List[Submission]":
         return [
             Submission(**s)
             for s in super().parse_payload(response)["submissions"]["submissions"]
