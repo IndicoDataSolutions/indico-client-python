@@ -115,7 +115,7 @@ class PagedRequest(GraphQLRequest[ResponseType]):
 
             _pg = composite.get("pageInfo")
         else:
-            _pg = next(iter(response.values())).get("pageInfo")
+            _pg = next(iter(raw_response.values())).get("pageInfo")
 
         if not _pg:
             raise ValueError("The supplied GraphQL must include 'pageInfo'.")
