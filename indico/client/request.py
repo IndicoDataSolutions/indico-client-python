@@ -105,14 +105,15 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
 
         if nested_keys:
-            _pg = raw_response
+            composite = raw_response
             for key in nested_keys:
-                if key not in _pg.keys():
+                if key not in composite.keys():
                     raise IndicoInputError(
                         f"Nested key not found in response: {key}",
                     )
-                _pg = _pg[key]
-            _pg = _pg.get("pageInfo")
+                composite = composite[key]
+
+            _pg = composite.get("pageInfo")
         else:
             _pg = next(iter(response.values())).get("pageInfo")
 

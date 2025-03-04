@@ -79,7 +79,7 @@ class ListGallery(PagedRequest[BlueprintPage]):
     def process_response(
         self, response: "Payload", _: "Optional[List[str]]" = None
     ) -> "BlueprintPage":
-        response = super().parse_payload(
+        response = super().process_response(
             response, nested_keys=["gallery", "component", "blueprintsPage"]
         )
         return BlueprintPage(
