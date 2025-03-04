@@ -79,7 +79,7 @@ class ListGallery(PagedRequest[BlueprintPage]):
     def process_response(
         self, response: "Payload", _: "Optional[List[str]]" = None
     ) -> "BlueprintPage":
-        response = super().process_response(
+        response = super().parse_payload(
             response, nested_keys=["gallery", "component", "blueprintsPage"]
         )
         return BlueprintPage(
@@ -121,7 +121,7 @@ class GetGalleryTags(GraphQLRequest[BlueprintTags]):
         )
 
     def process_response(self, response: "Payload") -> "BlueprintTags":
-        response = cast(Payload, super().process_response(response))
+        response = cast(Payload, super().parse_payload(response))
         return BlueprintTags(
             tags=[tag for tag in response["gallery"]["component"]["availableTags"]]
         )

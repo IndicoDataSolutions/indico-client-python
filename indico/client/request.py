@@ -102,7 +102,8 @@ class PagedRequest(GraphQLRequest[ResponseType]):
     def process_response(
         self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
     ) -> "Any":
-        raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
+        raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
+
         if nested_keys:
             _pg = raw_response
             for key in nested_keys:
@@ -111,9 +112,9 @@ class PagedRequest(GraphQLRequest[ResponseType]):
                         f"Nested key not found in response: {key}",
                     )
                 _pg = _pg[key]
-            _pg = _pg["pageInfo"]
+            _pg = _pg.get("pageInfo")
         else:
-            _pg = next(iter(response.values()))["pageInfo"]
+            _pg = next(iter(response.values())).get("pageInfo")
 
         if not _pg:
             raise ValueError("The supplied GraphQL must include 'pageInfo'.")
