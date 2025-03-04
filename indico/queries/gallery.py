@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from indico.client.request import GraphQLRequest, PagedRequest
 from indico.types.component_blueprint import BlueprintPage, BlueprintTags
@@ -121,7 +121,11 @@ class GetGalleryTags(GraphQLRequest[BlueprintTags]):
         )
 
     def process_response(self, response: "Payload") -> "BlueprintTags":
-        response = cast(Payload, super().parse_payload(response))
         return BlueprintTags(
-            tags=[tag for tag in response["gallery"]["component"]["availableTags"]]
+            tags=[
+                tag
+                for tag in super().parse_payload(response)["gallery"]["component"][
+                    "availableTags"
+                ]
+            ]
         )
