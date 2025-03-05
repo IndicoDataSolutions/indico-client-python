@@ -70,9 +70,7 @@ class GetDocumentReport(PagedRequest["List[DocumentReport]"]):
         }
         super().__init__(self.query, variables=variables)
 
-    def process_response(
-        self, response: "Payload", _: "Optional[List[str]]" = None
-    ) -> "List[DocumentReport]":
+    def process_response(self, response: "Payload") -> "List[DocumentReport]":
         return _DocumentReportList(
             **super().parse_payload(response)["submissionsLog"]
         ).submissions

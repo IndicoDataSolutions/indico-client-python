@@ -118,9 +118,7 @@ class GetUserSnapshots(PagedRequest["List[UserSnapshot]"]):
         }
         super().__init__(self.query, variables=variables)
 
-    def process_response(
-        self, response: "Payload", _: "Optional[List[str]]" = None
-    ) -> "List[UserSnapshot]":
+    def process_response(self, response: "Payload") -> "List[UserSnapshot]":
         return _PagedUserSnapshots(
             **super().parse_payload(response)["userSnapshot"]
         ).results
@@ -180,9 +178,7 @@ class GetUserChangelog(PagedRequest["List[UserChangelog]"]):
         }
         super().__init__(self.query, variables=variables)
 
-    def process_response(
-        self, response: "Payload", _: "Optional[List[str]]" = None
-    ) -> "List[UserChangelog]":
+    def process_response(self, response: "Payload") -> "List[UserChangelog]":
         return _PagedUserChangelog(
             **super().parse_payload(response)["userChangelog"]
         ).results

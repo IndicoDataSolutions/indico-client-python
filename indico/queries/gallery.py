@@ -1,10 +1,10 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from indico.client.request import GraphQLRequest, PagedRequest
 from indico.types.component_blueprint import BlueprintPage, BlueprintTags
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, List, Optional
+    from typing import Any, Optional
 
     from indico.filters import ComponentBlueprintFilter
     from indico.typing import Payload
@@ -76,10 +76,8 @@ class ListGallery(PagedRequest[BlueprintPage]):
             },
         )
 
-    def process_response(
-        self, response: "Payload", _: "Optional[List[str]]" = None
-    ) -> "BlueprintPage":
-        response = super().process_response(
+    def process_response(self, response: "Payload") -> "BlueprintPage":
+        response = super().parse_payload(
             response, nested_keys=["gallery", "component", "blueprintsPage"]
         )
         return BlueprintPage(
@@ -121,7 +119,11 @@ class GetGalleryTags(GraphQLRequest[BlueprintTags]):
         )
 
     def process_response(self, response: "Payload") -> "BlueprintTags":
-        response = cast(Payload, super().process_response(response))
         return BlueprintTags(
-            tags=[tag for tag in response["gallery"]["component"]["availableTags"]]
+            tags=[
+                tag
+                for tag in super().parse_payload(response)["gallery"]["component"][
+                    "availableTags"
+                ]
+            ]
         )

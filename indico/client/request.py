@@ -99,21 +99,23 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         self.has_next_page = True
         super().__init__(query, variables=variables)
 
-    def process_response(
+    def parse_payload(
         self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
     ) -> "Any":
-        raw_response: "AnyDict" = cast("AnyDict", super().process_response(response))
+        raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
+
         if nested_keys:
-            _pg = raw_response
+            composite = raw_response
             for key in nested_keys:
-                if key not in _pg.keys():
+                if key not in composite.keys():
                     raise IndicoInputError(
                         f"Nested key not found in response: {key}",
                     )
-                _pg = _pg[key]
-            _pg = _pg["pageInfo"]
+                composite = composite[key]
+
+            _pg = composite.get("pageInfo")
         else:
-            _pg = next(iter(response.values()))["pageInfo"]
+            _pg = next(iter(raw_response.values())).get("pageInfo")
 
         if not _pg:
             raise ValueError("The supplied GraphQL must include 'pageInfo'.")

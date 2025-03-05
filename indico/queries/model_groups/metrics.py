@@ -106,7 +106,7 @@ class ObjectDetectionMetrics(GraphQLRequest["AnyDict"]):
 
     def process_response(self, response: "Payload") -> "AnyDict":
         raw_response: "AnyDict" = json.loads(
-            super().process_response(response)["modelGroups"]["modelGroups"][0][
+            super().parse_payload(response)["modelGroups"]["modelGroups"][0][
                 "selectedModel"
             ]["evaluation"]["metrics"]
         )
