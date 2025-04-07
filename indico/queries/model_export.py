@@ -1,3 +1,5 @@
+from typing import List, Optional, Union
+
 from indico.client.request import Delay, GraphQLRequest, RequestChain
 from indico.types.model_export import ModelExport
 
@@ -36,13 +38,13 @@ class CreateModelExport(RequestChain):
         request_interval (int | float): the interval between requests in seconds. Defaults to 5.
     """
 
-    previous: ModelExport | None = None
+    previous: Optional[ModelExport] = None
 
     def __init__(
         self,
         model_id: int,
         wait: bool = True,
-        request_interval: int | float = 5,
+        request_interval: Union[int, float] = 5,
     ):
         self.wait = wait
         self.model_id = model_id
@@ -91,14 +93,14 @@ class GetModelExports(GraphQLRequest):
         "createdBy",
     ]
 
-    def __init__(self, export_ids: list[int], with_signed_url: bool = False):
+    def __init__(self, export_ids: List[int], with_signed_url: bool = False):
         if with_signed_url:
             self._base_fields.append("signedUrl")
 
         query_with_fields = self.query.replace("{fields}", "\n".join(self._base_fields))
         super().__init__(query_with_fields, variables={"exportIds": export_ids})
 
-    def process_response(self, response) -> list[ModelExport]:
+    def process_response(self, response) -> List[ModelExport]:
         return [
             ModelExport(**export)
             for export in super().process_response(response)["modelExports"][

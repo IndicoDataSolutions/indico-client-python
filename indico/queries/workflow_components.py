@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Dict, List, Optional
 
 import jsons
 
@@ -71,7 +71,7 @@ class _AddWorkflowComponent(GraphQLRequest):
         after_component_link: int,
         workflow_id: int,
         component: dict,
-        blueprint_id: int | None = None,
+        blueprint_id: Optional[int] = None,
     ):
         super().__init__(
             self.query,
@@ -464,12 +464,12 @@ class AddStaticModelComponent(RequestChain):
     def __init__(
         self,
         workflow_id: int,
-        after_component_id: int | None = None,
-        after_component_link_id: int | None = None,
-        static_component_config: dict[str, Any] | None = None,
-        component_name: str | None = None,
+        after_component_id: Optional[int] = None,
+        after_component_link_id: Optional[int] = None,
+        static_component_config: Optional[Dict[str, Any]] = None,
+        component_name: Optional[str] = None,
         auto_process: bool = False,
-        export_file: str | None = None,
+        export_file: Optional[str] = None,
     ):
         if not export_file and auto_process:
             raise IndicoInputError("Must provide export_file if auto_process is True.")
