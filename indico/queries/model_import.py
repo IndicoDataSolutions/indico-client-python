@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Optional, Union
 
 import requests
 
@@ -100,7 +100,10 @@ class UploadStaticModelExport(RequestChain):
     """
 
     def __init__(
-        self, file_path: str, auto_process: bool = False, workflow_id: int | None = None
+        self,
+        file_path: str,
+        auto_process: bool = False,
+        workflow_id: Optional[int] = None,
     ):
         self.file_path = file_path
         self.auto_process = auto_process
@@ -111,7 +114,7 @@ class UploadStaticModelExport(RequestChain):
 
         self.workflow_id = workflow_id
 
-    def requests(self) -> Generator[str | Job, None, None]:
+    def requests(self) -> Generator[Union[str, Job], None, None]:
         if self.auto_process:
             yield _UploadSMExport(self.file_path)
             yield ProcessStaticModelExport(

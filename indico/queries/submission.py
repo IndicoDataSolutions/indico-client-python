@@ -490,7 +490,7 @@ class SubmitReview(GraphQLRequest):
     def __init__(
         self,
         submission: Union[int, Submission],
-        changes: Dict | List = None,
+        changes: Union[Dict, List] = None,
         rejected: bool = False,
         force_complete: bool = None,
     ):
