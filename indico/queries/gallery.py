@@ -15,24 +15,24 @@ class ListGallery(PagedRequest[BlueprintPage]):
     List all blueprints available in the gallery.
 
     Args:
-        filters (ComponentBlueprintFilter): filters to apply to the blueprints
+        filter (GenericScalar): filters to apply to the blueprints
         limit (int): maximum number of blueprints to return
         order_by (str): order to sort the blueprints by
-        desc (bool): whether to sort the blueprints in descending order
+        asc (bool): whether to sort the blueprints in ascending order
+        cursor (str): cursor to start the pagination from
     """
 
     query = """
-        query getGalleryBlueprints($desc: Boolean, $orderBy: COMPONENTBLUEPRINT_COLUMN_ENUM, $skip: Int, $limit: Int, $after: Int, $before: Int, $filters: ComponentBlueprintFilter) {
+        query getGalleryBlueprints($asc: Boolean, $cursor: String, $sortBy: String, $size: Int, $skip: Int, $filters: GenericScalar) {
             gallery {
                 component {
                     blueprintsPage(
+                        asc: $asc
+                        cursor: $cursor
+                        filter: $filters
+                        size: $size
                         skip: $skip
-                        before: $before
-                        after: $after
-                        limit: $limit
-                        desc: $desc
-                        orderBy: $orderBy
-                        filters: $filters
+                        sortBy: $sortBy
                     ) {
                         componentBlueprints {
                             id
@@ -45,12 +45,8 @@ class ListGallery(PagedRequest[BlueprintPage]):
                             tags
                             modelOptions
                         }
-                        pageInfo {
-                            startCursor
-                            endCursor
-                            hasNextPage
-                            aggregateCount
-                        }
+                        cursor
+                        total
                     }
                 }
             }
@@ -59,19 +55,21 @@ class ListGallery(PagedRequest[BlueprintPage]):
 
     def __init__(
         self,
-        filters: "Optional[ComponentBlueprintFilter]" = None,
+        filters: "Optional[str]" = None,
         limit: int = 100,
         order_by: str = "ID",
         desc: bool = False,
+        cursor: "Optional[str]" = None,
         **kwargs: "Any",
     ):
         super().__init__(
             self.query,
             variables={
                 "filters": filters,
-                "limit": limit,
-                "orderBy": order_by,
-                "desc": desc,
+                "size": limit,
+                "sortBy": order_by,
+                "asc": not desc,
+                "cursor": cursor,
                 **kwargs,
             },
         )
@@ -96,26 +94,36 @@ class GetGalleryTags(GraphQLRequest[BlueprintTags]):
 
     Args:
         component_family (str): the family of components to filter by
+        tag_categories (str): the category(ies) of tags to filter by
     """
 
     query = """
-        query getGalleryBlueprints($componentFamily: ComponentFamily) {
+        query getGalleryBlueprints($componentFamily: ComponentFamily, $tagCategories: [BPTagCategory]) {
             gallery {
                 component {
-                    availableTags(componentFamily: $componentFamily) {
+                    availableTags(componentFamily: $componentFamily, tagCategories: $tagCategories) {
                         tag
                         value
+                        tagCategory
                     }
                 }
             }
         }
     """
 
-    def __init__(self, component_family: "Optional[str]" = None):
+    def __init__(
+        self,
+        component_family: "Optional[str]" = None,
+        tag_categories: "Optional[list[str]]" = None,
+    ):
         self.component_family = component_family
+        self.tag_categories = tag_categories
         super().__init__(
             self.query,
-            variables={"componentFamily": component_family},
+            variables={
+                "componentFamily": component_family,
+                "tagCategories": tag_categories,
+            },
         )
 
     def process_response(self, response: "Payload") -> "BlueprintTags":
