@@ -6,7 +6,6 @@ from indico.types.component_blueprint import BlueprintPage, BlueprintTags
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Optional
 
-    from indico.filters import ComponentBlueprintFilter
     from indico.typing import Payload
 
 
