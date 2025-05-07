@@ -17,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from typing_extensions import Self
 
-    from indico.client.request import PagedRequest
+    from indico.client.request import PagedRequest, PagedRequestV2
     from indico.typing import Payload
 
     ReturnType = TypeVar("ReturnType")
@@ -115,7 +115,9 @@ class IndicoClient:
                 "Invalid request type! Must be one of HTTPRequest or RequestChain."
             )
 
-    def paginate(self, request: "PagedRequest[ReturnType]") -> "Iterator[ReturnType]":
+    def paginate(
+        self, request: "PagedRequest[ReturnType] | PagedRequestV2[ReturnType]"
+    ) -> "Iterator[ReturnType]":
         """
         Provides a generator that continues paging through responses
         Available with List<> Requests that offer pagination

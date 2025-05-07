@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from indico.client.request import GraphQLRequest, PagedRequest
+from indico.client.request import GraphQLRequest, PagedRequestV2
 from indico.types.component_blueprint import BlueprintPage, BlueprintTags
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -9,7 +9,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from indico.typing import Payload
 
 
-class ListGallery(PagedRequest[BlueprintPage]):
+class ListGallery(PagedRequestV2[BlueprintPage]):
     """
     List all blueprints available in the gallery.
 
@@ -17,12 +17,12 @@ class ListGallery(PagedRequest[BlueprintPage]):
         filter (GenericScalar): filters to apply to the blueprints
         limit (int): maximum number of blueprints to return
         order_by (str): order to sort the blueprints by
-        asc (bool): whether to sort the blueprints in ascending order
+        desc (bool): whether to sort the blueprints in descending order
         cursor (str): cursor to start the pagination from
     """
 
     query = """
-        query getGalleryBlueprints($asc: Boolean, $cursor: String, $sortBy: String, $size: Int, $skip: Int, $filters: GenericScalar) {
+        query getGalleryBlueprints($asc: Boolean, $cursor: String, $sortBy: String, $size: Int, $filters: GenericScalar) {
             gallery {
                 component {
                     blueprintsPage(
@@ -30,7 +30,6 @@ class ListGallery(PagedRequest[BlueprintPage]):
                         cursor: $cursor
                         filter: $filters
                         size: $size
-                        skip: $skip
                         sortBy: $sortBy
                     ) {
                         componentBlueprints {
@@ -56,7 +55,7 @@ class ListGallery(PagedRequest[BlueprintPage]):
         self,
         filters: "Optional[str]" = None,
         limit: int = 100,
-        order_by: str = "ID",
+        order_by: str = "name",
         desc: bool = False,
         cursor: "Optional[str]" = None,
         **kwargs: "Any",
