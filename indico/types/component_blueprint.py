@@ -74,6 +74,7 @@ class BlueprintPage(BaseType):
 class Tag(BaseType):
     tag: str
     value: str
+    tag_category: str
 
 
 class BlueprintTags(BaseType):
