@@ -1,4 +1,4 @@
-FROM python:3.9.15
+FROM python:latest
 
 COPY . /indico-client
 WORKDIR /indico-client
