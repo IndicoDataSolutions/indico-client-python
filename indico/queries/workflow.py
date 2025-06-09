@@ -76,6 +76,7 @@ class ListWorkflows(GraphQLRequest["List[Workflow]"]):
                     }
 
                   }
+                  datasetId
                 }
             }
         }
