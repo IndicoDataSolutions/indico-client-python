@@ -45,6 +45,7 @@ class Workflow(BaseType):
     id: int
     name: str
     status: str
+    dataset_id: int
     review_enabled: bool
     auto_review_enabled: bool
     components: List[WorkflowComponent]

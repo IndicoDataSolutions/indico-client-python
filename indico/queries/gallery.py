@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from indico.client.request import GraphQLRequest, PagedRequestV2
 from indico.types.component_blueprint import BlueprintPage, BlueprintTags
@@ -112,7 +112,7 @@ class GetGalleryTags(GraphQLRequest[BlueprintTags]):
     def __init__(
         self,
         component_family: "Optional[str]" = None,
-        tag_categories: "Optional[list[str]]" = None,
+        tag_categories: "Optional[List[str]]" = None,
     ):
         self.component_family = component_family
         self.tag_categories = tag_categories
