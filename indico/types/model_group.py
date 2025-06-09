@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import Any, Dict, List
 
 from indico.types.base import BaseType
 from indico.types.model import Model
@@ -72,6 +72,59 @@ class NewQuestionnaireArguments(BaseType):
     users: List[int]
 
 
+class ValidationActionType(Enum):
+    """Determines how validation failures are handled."""
+
+    NO_ACTION = "NO_ACTION"
+    WARN = "WARN"
+    ERROR = "ERROR"
+    REJECT = "REJECT"
+
+
+class _ValidationConfig:
+    """Base configuration for validation rules."""
+
+    setting_name: str
+    setting_value: dict[str, Any]
+    on_failure: ValidationActionType
+
+
+class ValidationInputConfig(_ValidationConfig, BaseType):
+    """Configuration that controls which additional validation checks should be run and what actions should be taken in case of their failure."""
+
+    def to_json(self):
+        """
+        Convert to JSON serializable format
+
+        Returns:
+            dict: JSON-ready python dictionary
+        """
+        return {
+            "setting_name": self.setting_name,
+            "setting_value": self.setting_value,
+            "on_failure": self.on_failure.value,
+        }
+
+
+class _FieldInput:
+    """
+    Basic inputs for a new field
+    """
+
+    required: bool
+    multiple: bool
+    datatype: str
+    input_config: Dict[str, Any]
+    format_config: Dict[str, Any]
+    validation_config: List[ValidationInputConfig]
+
+
+class FieldInput(_FieldInput, BaseType):
+    """Field input with name for review UI and workflow result file"""
+
+    name: str
+
+
 class NewLabelsetArguments:
     def __init__(
         self,
@@ -79,6 +132,7 @@ class NewLabelsetArguments:
         task_type: ModelTaskType,
         target_names: List[str],
         datacolumn_id: int,
+        field_data: List[FieldInput],
         num_labelers_required: int = 1,
     ):
         self.name = name
@@ -86,3 +140,4 @@ class NewLabelsetArguments:
         self.task_type = task_type
         self.target_names = target_names
         self.datacolumn_id = datacolumn_id
+        self.field_data = field_data
