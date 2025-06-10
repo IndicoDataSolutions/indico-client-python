@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterator, List, Mapping
 
 from indico.types.base import BaseType
 from indico.types.model import Model
@@ -89,7 +89,7 @@ class _ValidationConfig:
     on_failure: ValidationActionType
 
 
-class ValidationInputConfig(_ValidationConfig, BaseType):
+class ValidationInputConfig(_ValidationConfig, BaseType, Mapping[str, Any]):
     """Configuration that controls which additional validation checks should be run and what actions should be taken in case of their failure."""
 
     def to_json(self):
@@ -100,10 +100,24 @@ class ValidationInputConfig(_ValidationConfig, BaseType):
             dict: JSON-ready python dictionary
         """
         return {
-            "setting_name": self.setting_name,
-            "setting_value": self.setting_value,
-            "on_failure": self.on_failure.value,
+            "settingName": self.setting_name,
+            "settingValue": self.setting_value,
+            "onFailure": (
+                self.on_failure.value
+                if isinstance(self.on_failure, ValidationActionType)
+                else self.on_failure
+            ),
         }
+
+    # Implement Mapping interface so instances can be expanded with ** in BaseType
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.to_json())
+
+    def __len__(self) -> int:
+        return len(self.to_json())
+
+    def __getitem__(self, key):
+        return self.to_json()[key]
 
 
 class _FieldInput:
@@ -124,6 +138,19 @@ class FieldInput(_FieldInput, BaseType):
 
     name: str
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "required": self.required,
+            "multiple": self.multiple,
+            "datatype": self.datatype,
+            "inputConfig": self.input_config,
+            "formatConfig": self.format_config,
+            "validationConfig": [vc.to_json() for vc in self.validation_config]
+            if self.validation_config
+            else [],
+        }
+
 
 class NewLabelsetArguments:
     def __init__(
@@ -140,4 +167,4 @@ class NewLabelsetArguments:
         self.task_type = task_type
         self.target_names = target_names
         self.datacolumn_id = datacolumn_id
-        self.field_data = field_data
+        self.field_data = [f.to_json() for f in field_data]

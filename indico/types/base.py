@@ -1,6 +1,7 @@
 import inspect
 import json
 from datetime import datetime
+from enum import Enum
 from typing import TYPE_CHECKING, Any, List, cast, get_origin
 
 from indico.types.utils import cc_to_snake
@@ -37,6 +38,7 @@ def valid_type(v: "Any") -> bool:
 
     return (
         (inspect.isclass(v) and issubclass(v, BaseType))
+        or (inspect.isclass(v) and issubclass(v, Enum))
         or v in [str, int, float, bool, JSONType, datetime]
         or get_origin(v) is dict
         or valid_type(list_subtype(v))
@@ -81,7 +83,10 @@ class BaseType:
 
                 subtype = list_subtype(attr_type)
                 if subtype and issubclass(subtype, BaseType):
-                    v = [subtype(**x) for x in cast("Iterable[Any]", v)]
+                    v = [
+                        x if isinstance(x, subtype) else subtype(**x)
+                        for x in cast("Iterable[Any]", v)
+                    ]
 
                 setattr(self, k, v)
 
