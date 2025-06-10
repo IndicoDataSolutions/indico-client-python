@@ -85,14 +85,14 @@ class _ValidationConfig:
     """Base configuration for validation rules."""
 
     setting_name: str
-    setting_value: dict[str, Any]
+    setting_value: Dict[str, Any]
     on_failure: ValidationActionType
 
 
 class ValidationInputConfig(_ValidationConfig, BaseType, Mapping[str, Any]):
     """Configuration that controls which additional validation checks should be run and what actions should be taken in case of their failure."""
 
-    def to_json(self):
+    def to_json(self) -> Dict[str, Any]:
         """
         Convert to JSON serializable format
 
@@ -116,7 +116,7 @@ class ValidationInputConfig(_ValidationConfig, BaseType, Mapping[str, Any]):
     def __len__(self) -> int:
         return len(self.to_json())
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         return self.to_json()[key]
 
 
@@ -138,7 +138,7 @@ class FieldInput(_FieldInput, BaseType):
 
     name: str
 
-    def to_json(self):
+    def to_json(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "required": self.required,
@@ -161,7 +161,7 @@ class NewLabelsetArguments:
         datacolumn_id: int,
         field_data: List[FieldInput],
         num_labelers_required: int = 1,
-    ):
+    ) -> None:
         self.name = name
         self.num_labelers_required = num_labelers_required
         self.task_type = task_type
