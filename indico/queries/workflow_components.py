@@ -368,6 +368,7 @@ class AddModelGroupComponent(GraphQLRequest["Workflow"]):
             "datacolumnId": labelset.datacolumn_id,
             "taskType": labelset.task_type.name,
             "targetNames": labelset.target_names,
+            "fieldData": labelset.field_data,
         }
 
     def __questionnaire_to_json(

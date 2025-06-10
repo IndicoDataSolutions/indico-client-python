@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import Any, Dict, Iterator, List, Mapping
 
 from indico.types.base import BaseType
 from indico.types.model import Model
@@ -72,6 +72,86 @@ class NewQuestionnaireArguments(BaseType):
     users: List[int]
 
 
+class ValidationActionType(Enum):
+    """Determines how validation failures are handled."""
+
+    NO_ACTION = "NO_ACTION"
+    WARN = "WARN"
+    ERROR = "ERROR"
+    REJECT = "REJECT"
+
+
+class _ValidationConfig:
+    """Base configuration for validation rules."""
+
+    setting_name: str
+    setting_value: Dict[str, Any]
+    on_failure: ValidationActionType
+
+
+class ValidationInputConfig(_ValidationConfig, BaseType, Mapping[str, Any]):
+    """Configuration that controls which additional validation checks should be run and what actions should be taken in case of their failure."""
+
+    def to_json(self) -> Dict[str, Any]:
+        """
+        Convert to JSON serializable format
+
+        Returns:
+            dict: JSON-ready python dictionary
+        """
+        return {
+            "settingName": self.setting_name,
+            "settingValue": self.setting_value,
+            "onFailure": (
+                self.on_failure.value
+                if isinstance(self.on_failure, ValidationActionType)
+                else self.on_failure
+            ),
+        }
+
+    # Implement Mapping interface so instances can be expanded with ** in BaseType
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.to_json())
+
+    def __len__(self) -> int:
+        return len(self.to_json())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.to_json()[key]
+
+
+class _FieldInput:
+    """
+    Basic inputs for a new field
+    """
+
+    required: bool
+    multiple: bool
+    datatype: str
+    input_config: Dict[str, Any]
+    format_config: Dict[str, Any]
+    validation_config: List[ValidationInputConfig]
+
+
+class FieldInput(_FieldInput, BaseType):
+    """Field input with name for review UI and workflow result file"""
+
+    name: str
+
+    def to_json(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "required": self.required,
+            "multiple": self.multiple,
+            "datatype": self.datatype,
+            "inputConfig": self.input_config,
+            "formatConfig": self.format_config,
+            "validationConfig": [vc.to_json() for vc in self.validation_config]
+            if self.validation_config
+            else [],
+        }
+
+
 class NewLabelsetArguments:
     def __init__(
         self,
@@ -79,10 +159,12 @@ class NewLabelsetArguments:
         task_type: ModelTaskType,
         target_names: List[str],
         datacolumn_id: int,
+        field_data: List[FieldInput],
         num_labelers_required: int = 1,
-    ):
+    ) -> None:
         self.name = name
         self.num_labelers_required = num_labelers_required
         self.task_type = task_type
         self.target_names = target_names
         self.datacolumn_id = datacolumn_id
+        self.field_data = [f.to_json() for f in field_data]
