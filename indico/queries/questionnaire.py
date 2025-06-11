@@ -77,8 +77,53 @@ class GetQuestionnaireExamples(GraphQLRequest["List[Example]"]):
                 examples(numExamples: $num_examples, datafileId: $datafile_id) {
                     rowIndex
                     datafileId
+                    sourceFileId
+                    datarowId
+                    datapointId
+                    datarowIds
+                    datafileIds
+                    datapointIds
+                    status
                     source
                     id
+                    partial
+                    autolabeled
+                    originalDatafileId
+                    originalDatafileName
+                    context {
+                        id
+                        source
+                        datafileId
+                        spans {
+                            start
+                            end
+                            pageNum
+                        }
+                        bounds {
+                            top
+                            bottom
+                            left
+                            right
+                            value
+                        }
+                    }
+                    contexts {
+                        id
+                        source
+                        datafileId
+                        spans {
+                            start
+                            end
+                            pageNum
+                        }
+                        bounds {
+                            top
+                            bottom
+                            left
+                            right
+                            value
+                        }
+                    }
                 }
             }
         }
