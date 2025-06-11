@@ -142,6 +142,7 @@ def test_get_examples(indico, unlabeled_questionnaire):
         assert isinstance(example.source, str)
         assert isinstance(example.row_index, int)
         assert isinstance(example.datafile_id, int)
+        assert hasattr(example, "source_file_id")
 
 
 def test_add_labels(indico, unlabeled_questionnaire):
@@ -183,3 +184,4 @@ def test_add_labels(indico, unlabeled_questionnaire):
     )
     assert questionnaire.num_total_examples == 3
     assert questionnaire.num_fully_labeled == 1
+
