@@ -35,7 +35,9 @@ class ListModelGroupExamples(PagedRequest["List[Example]"]):
                         examples {
                             id
                             status
-                            datafileId
+                            datafileIds
+                            originalDatafileId
+                            originalDatafileName
                         }
                         pageInfo {
                             startCursor
