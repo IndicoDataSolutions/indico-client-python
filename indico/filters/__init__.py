@@ -147,7 +147,12 @@ class ModelGroupExampleFilter(Filter):
 
     Args:
         file_name (str): examples with input file names containing this string
+        file_type (str): examples with this file type (e.g. "PDF")
+        labeler (List[int]): examples labeled by these users
+        include_class (List[int]): examples that are or are not included in this class
+        exclude_class (List[int]): examples that are or are not excluded from this class
         partial (bool): examples that are or are not partially labeled
+        autolabeled (bool): examples that are or are not autolabeled
         status (str): submissions in this status. Options:
             [COMPLETE, INCOMPLETE]
         text_search (bool): examples that contain this substring in their text
@@ -155,18 +160,37 @@ class ModelGroupExampleFilter(Filter):
         dict containing query filter parameters
     """
 
-    # TODO: extend to support full filter list
-    __options__ = ("file_name", "partial", "status", "text_search")
+    __options__ = (
+        "file_name",
+        "file_type",
+        "labeler",
+        "include_class",
+        "exclude_class",
+        "partial",
+        "autolabeled",
+        "status",
+        "text_search",
+    )
 
     def __init__(
         self,
         file_name: "Optional[str]" = None,
+        file_type: "Optional[str]" = None,
+        labeler: "Optional[List[int]]" = None,
+        include_class: "Optional[List[int]]" = None,
+        exclude_class: "Optional[List[int]]" = None,
+        autolabeled: "Optional[bool]" = None,
         partial: "Optional[bool]" = None,
         status: "Optional[str]" = None,
         text_search: "Optional[str]" = None,
     ):
-        kwargs: "Dict[str, Optional[Union[bool, str]]]" = {
+        kwargs: "Dict[str, Optional[Union[bool, str | List[int]]]]" = {
             "fileName": file_name,
+            "fileType": file_type,
+            "labeler": labeler,
+            "includeClass": include_class,
+            "excludeClass": exclude_class,
+            "autolabeled": autolabeled,
             "partial": partial,
             "textSearch": text_search,
         }
