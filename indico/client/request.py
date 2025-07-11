@@ -104,7 +104,7 @@ class PagedRequest(GraphQLRequest[ResponseType]):
     ) -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
         if nested_keys:
-            composite = raw_response
+            composite: "Any" = raw_response
             for key in nested_keys:
                 if isinstance(composite, list):
                     if not isinstance(key, int):
@@ -169,7 +169,7 @@ class PagedRequestV2(GraphQLRequest[ResponseType]):
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
 
         if nested_keys:
-            composite = raw_response
+            composite: "Any" = raw_response
             for key in nested_keys:
                 if isinstance(composite, list):
                     if not isinstance(key, int):
