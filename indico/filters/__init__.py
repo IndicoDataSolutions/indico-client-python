@@ -184,7 +184,7 @@ class ModelGroupExampleFilter(Filter):
         status: "Optional[str]" = None,
         text_search: "Optional[str]" = None,
     ):
-        kwargs: "Dict[str, Optional[Union[bool, str | List[int]]]]" = {
+        kwargs: "Dict[str, Optional[Union[bool, str, List[int]]]]" = {
             "fileName": file_name,
             "fileType": file_type,
             "labeler": labeler,
