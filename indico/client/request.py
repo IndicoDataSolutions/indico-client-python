@@ -100,7 +100,7 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         super().__init__(query, variables=variables)
 
     def parse_payload(
-        self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
+        self, response: "AnyDict", nested_keys: "Optional[List[str | int]]" = None
     ) -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
         if nested_keys:
