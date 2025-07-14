@@ -70,6 +70,29 @@ class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
         return cast("ResponseType", raw_response)
 
 
+def _parse_nested_response(
+    response: "AnyDict", nested_keys: "List[str | int]"
+) -> "Any":
+    composite: "Any" = response
+    for key in nested_keys:
+        if isinstance(composite, list):
+            if not isinstance(key, int):
+                raise IndicoInputError(
+                    f"Invalid nested key type: {type(key)}",
+                )
+            composite = composite[int(key)]
+            continue
+
+        if isinstance(composite, dict):
+            if key not in composite.keys():
+                raise IndicoInputError(
+                    f"Nested key not found in response: {key}",
+                )
+            composite = composite[key]
+
+    return composite
+
+
 class PagedRequest(GraphQLRequest[ResponseType]):
     """
     To enable pagination, query must include $after as an argument
@@ -100,19 +123,11 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         super().__init__(query, variables=variables)
 
     def parse_payload(
-        self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
+        self, response: "AnyDict", nested_keys: "Optional[List[str | int]]" = None
     ) -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
-
         if nested_keys:
-            composite = raw_response
-            for key in nested_keys:
-                if key not in composite.keys():
-                    raise IndicoInputError(
-                        f"Nested key not found in response: {key}",
-                    )
-                composite = composite[key]
-
+            composite: "Any" = _parse_nested_response(raw_response, nested_keys)
             _pg = composite.get("pageInfo")
         else:
             _pg = next(iter(raw_response.values())).get("pageInfo")
@@ -157,19 +172,12 @@ class PagedRequestV2(GraphQLRequest[ResponseType]):
         super().__init__(query, variables=variables)
 
     def parse_payload(
-        self, response: "AnyDict", nested_keys: "Optional[List[str]]" = None
+        self, response: "AnyDict", nested_keys: "Optional[List[str | int]]" = None
     ) -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
 
         if nested_keys:
-            composite = raw_response
-            for key in nested_keys:
-                if key not in composite.keys():
-                    raise IndicoInputError(
-                        f"Nested key not found in response: {key}",
-                    )
-                composite = composite[key]
-
+            composite: "Any" = _parse_nested_response(raw_response, nested_keys)
             pagination_data = composite
         else:
             pagination_data = next(iter(raw_response.values()))

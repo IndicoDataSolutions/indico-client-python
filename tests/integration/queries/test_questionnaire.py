@@ -139,9 +139,10 @@ def test_get_examples(indico, unlabeled_questionnaire):
     assert len(examples) == 3
     for example in examples:
         assert isinstance(example, Example)
-        assert isinstance(example.source, str)
-        assert isinstance(example.row_index, int)
-        assert isinstance(example.datafile_id, int)
+        assert isinstance(example.contexts, list)
+        assert isinstance(example.datafile_ids, list)
+        assert isinstance(example.original_datafile_id, int)
+        assert isinstance(example.original_datafile_name, str)
 
 
 def test_add_labels(indico, unlabeled_questionnaire):

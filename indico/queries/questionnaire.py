@@ -75,9 +75,15 @@ class GetQuestionnaireExamples(GraphQLRequest["List[Example]"]):
         questionnaires(questionnaireIds: [$questionnaire_id]) {
             questionnaires {
                 examples(numExamples: $num_examples, datafileId: $datafile_id) {
-                    rowIndex
-                    datafileId
-                    source
+                    datafileIds
+                    originalDatafileId
+                    originalDatafileName
+                    contexts {
+                        id
+                        datafileId
+                        source
+                    }
+                    status
                     id
                 }
             }
