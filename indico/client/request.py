@@ -71,7 +71,7 @@ class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
 
 
 def _parse_nested_response(
-    response: "AnyDict", nested_keys: "Optional[List[str | int]]" = None
+    response: "AnyDict", nested_keys: "List[str | int]"
 ) -> "Any":
     composite: "Any" = response
     for key in nested_keys:
