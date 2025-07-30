@@ -155,6 +155,9 @@ class EmailOptions(BaseType):
     include_sections: Optional[IncludeSections]
     unpack: Optional[bool]
     preserve_body_whitespace: Optional[bool]
+    embed_inline_images: Optional[bool]
+    html_renderer_version: Optional[int]
+    msg_converter_version: Optional[int]
 
 
 class OcrOptionsInput:
