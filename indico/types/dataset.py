@@ -84,6 +84,7 @@ class OcrEngine(Enum):
     READAPI = 1
     READAPI_V2 = 2
     READAPI_TABLES_V1 = 3
+    READAPI_TABLES_V2 = 4
 
 
 class OmnipageOcrOptionsInput(BaseType):
