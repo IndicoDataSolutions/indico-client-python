@@ -443,7 +443,7 @@ def test_create_with_email_options_readapi(indico):
         "html_renderer_version": 1,
         "msg_converter_version": 1,
         "header_version": 1,
-        "sanitize_css": False
+        "sanitize_css": False,
     }
     dataset = client.call(
         CreateEmptyDataset(
