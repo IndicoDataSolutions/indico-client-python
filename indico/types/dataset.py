@@ -158,6 +158,8 @@ class EmailOptions(BaseType):
     embed_inline_images: Optional[bool]
     html_renderer_version: Optional[int]
     msg_converter_version: Optional[int]
+    header_version: Optional[int]
+    sanitize_css: Optional[bool]
 
 
 class OcrOptionsInput:
