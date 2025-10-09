@@ -84,6 +84,7 @@ class OcrEngine(Enum):
     READAPI = 1
     READAPI_V2 = 2
     READAPI_TABLES_V1 = 3
+    READAPI_TABLES_V2 = 4
 
 
 class OmnipageOcrOptionsInput(BaseType):
@@ -155,6 +156,11 @@ class EmailOptions(BaseType):
     include_sections: Optional[IncludeSections]
     unpack: Optional[bool]
     preserve_body_whitespace: Optional[bool]
+    embed_inline_images: Optional[bool]
+    html_renderer_version: Optional[int]
+    msg_converter_version: Optional[int]
+    header_version: Optional[int]
+    sanitize_css: Optional[bool]
 
 
 class OcrOptionsInput:

@@ -4,7 +4,7 @@ Getting Started
 Installation
 ============
 
-Requires Python 3.6, 3.7 or 3.8.
+Requires Python 3.10 or newer.
 
 To install the Python Client Library::
 

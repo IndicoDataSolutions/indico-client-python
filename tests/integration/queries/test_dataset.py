@@ -439,6 +439,11 @@ def test_create_with_email_options_readapi(indico):
     email_config = {
         "include_sections": {"header": True, "body": True, "attachments": True},
         "unpack": True,
+        "embed_inline_images": True,
+        "html_renderer_version": 1,
+        "msg_converter_version": 1,
+        "header_version": 1,
+        "sanitize_css": False,
     }
     dataset = client.call(
         CreateEmptyDataset(
