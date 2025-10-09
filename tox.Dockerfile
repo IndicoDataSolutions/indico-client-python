@@ -11,8 +11,6 @@ RUN apt-get update && apt-get install -yqq --no-install-recommends \
 RUN add-apt-repository -y 'ppa:deadsnakes/ppa' && \
     apt-get update && \
     apt-get -yqq install --no-install-recommends \
-        python3.8 \
-        python3.9 \
         python3.10 \
         python3.11 \
         python3.12 \
