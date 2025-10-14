@@ -4,6 +4,7 @@ import json
 from typing import TYPE_CHECKING
 
 from indico.client.request import GraphQLRequest, RequestChain
+from indico.errors import IndicoRequestError
 from indico.queries.storage import UploadBatched, UploadDocument
 from indico.types.jobs import Job
 
@@ -53,6 +54,8 @@ class DocumentExtraction(RequestChain["Job"]):
     """
     Extract raw text from PDF or TIF files.
 
+    WARNING: This route is deprecated and will be removed in a future release.
+
     DocumentExtraction performs Optical Character Recognition (OCR) on PDF or TIF files to
     extract raw text for model training and prediction.
 
@@ -89,10 +92,9 @@ class DocumentExtraction(RequestChain["Job"]):
         upload_batch_size: "Optional[int]" = None,
         ocr_engine: str = "OMNIPAGE",
     ):
-        self.files = files
-        self.json_config = json_config
-        self.upload_batch_size = upload_batch_size
-        self.ocr_engine = ocr_engine
+        raise IndicoRequestError(
+            "Direct document extraction is no longer supported. Please use workflow submission instead."
+        )
 
     def requests(
         self,
