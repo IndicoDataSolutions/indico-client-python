@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -11,7 +11,9 @@ RUN apt-get install -yqq software-properties-common && \
 RUN apt-get update && \
     apt-get -yqq install \
         python3.8 \
+        python3.8-distutils \
         python3.9 \
+        python3.9-distutils \
         python3.10 \
         python3.11 \
         python3.12 \
