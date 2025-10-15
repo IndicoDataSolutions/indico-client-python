@@ -4,8 +4,7 @@ import pytest
 
 from indico.client import IndicoClient
 from indico.errors import IndicoTimeoutError
-from indico.queries import DocumentExtraction, JobStatus
-from indico.types.jobs import Job
+from indico.queries import FormPreprocessing, JobStatus
 
 
 def test_job_wait_on_success(indico):
@@ -13,18 +12,18 @@ def test_job_wait_on_success(indico):
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
 
     jobs = client.call(
-        DocumentExtraction(
+        FormPreprocessing(
             files=[dataset_filepath], json_config='{"preset_config": "simple"}'
         )
     )
 
     assert len(jobs) == 1
     job = jobs[0]
-    assert job.id != None
+    assert job.id is not None
     job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "SUCCESS"
-    assert job.ready == True
-    assert type(job.result["url"]) == str
+    assert job.ready
+    assert job.result["url"] is str
 
 
 def test_job_wait_on_failure(indico):
@@ -32,24 +31,24 @@ def test_job_wait_on_failure(indico):
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
 
     jobs = client.call(
-        DocumentExtraction(
+        FormPreprocessing(
             files=[dataset_filepath], json_config='{"preset_config": "wrong"}'
         )
     )
 
     assert len(jobs) == 1
     job = jobs[0]
-    assert job.id != None
+    assert job.id is not None
     job = client.call(JobStatus(id=job.id, wait=True))
     assert job.status == "FAILURE"
-    assert type(job.result) == dict
+    assert job.result is dict
 
 
 def test_job_timeout(indico):
     client = IndicoClient()
     dataset_filepath = str(Path(__file__).parents[1]) + "/data/mock.pdf"
     job = client.call(
-        DocumentExtraction(
+        FormPreprocessing(
             files=[dataset_filepath], json_config='{"preset_config": "detailed"}'
         )
     )[0]
