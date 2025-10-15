@@ -92,8 +92,14 @@ class DocumentExtraction(RequestChain["Job"]):
         upload_batch_size: "Optional[int]" = None,
         ocr_engine: str = "OMNIPAGE",
     ):
+        self.files = files
+        self.json_config = json_config
+        self.upload_batch_size = upload_batch_size
+        self.ocr_engine = ocr_engine
+
         raise IndicoRequestError(
-            "Direct document extraction is no longer supported. Please use workflow submission instead."
+            "Direct document extraction is no longer supported. Please use workflow submission instead.",
+            410,
         )
 
     def requests(
