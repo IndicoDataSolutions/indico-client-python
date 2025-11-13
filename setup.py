@@ -21,7 +21,7 @@ setup(
     author_email="engineering@indico.io",
     install_requires=[
         "requests>=2.22.0",
-        "setuptools>=41.4.0",
+        "setuptools>=78.1.1",
         'importlib-metadata ~= 1.0 ; python_version < "3.8"',
         "deprecation>=2.1.0",
         "jsons",
@@ -45,5 +45,5 @@ setup(
         "exports": [
             "pandas>=1.0.3",
         ],
-    }
+    },
 )
