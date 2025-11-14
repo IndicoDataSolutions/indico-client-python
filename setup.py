@@ -22,7 +22,7 @@ setup(
     install_requires=[
         "requests>=2.22.0",
         "setuptools>=78.1.1",
-        'importlib-metadata ~= 1.0 ; python_version < "3.8"',
+        'importlib-metadata ~= 7.0 ; python_version < "3.14"',
         "deprecation>=2.1.0",
         "jsons",
         "aiohttp[speedups]",
@@ -30,7 +30,7 @@ setup(
     extras_require={
         "all": [
             "msgpack>=0.5.6",
-            "msgpack-numpy==0.4.4.3",
+            "msgpack-numpy==0.4.8",
             "numpy>=1.16.0",
             "pandas>=1.0.3",
         ],
@@ -39,7 +39,7 @@ setup(
         ],
         "deserialization": [
             "msgpack>=0.5.6",
-            "msgpack-numpy==0.4.4.3",
+            "msgpack-numpy==0.4.8",
             "numpy>=1.16.0",
         ],
         "exports": [
