@@ -50,14 +50,6 @@ class HTTPClient:
     def __init__(self, config: "Optional[IndicoConfig]" = None):
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
-        self._decorate_with_retry = retry(
-            requests.RequestException,
-            count=self.config.retry_count,
-            wait=self.config.retry_wait,
-            backoff=self.config.retry_backoff,
-            jitter=self.config.retry_jitter,
-        )
-        self._make_request = self._decorate_with_retry(self._make_request)  # type: ignore[method-assign]
 
         self.request_session = requests.Session()
         if isinstance(self.config.requests_params, dict):
@@ -169,6 +161,30 @@ class HTTPClient:
         _refreshed: bool = False,
         **request_kwargs: "Any",
     ) -> "Any":
+        return retry(
+            requests.RequestException,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )(
+            self._make_request_once,
+        )(
+            method=method,
+            path=path,
+            headers=headers,
+            _refreshed=_refreshed,
+            **request_kwargs,
+        )
+
+    def _make_request_once(
+        self,
+        method: str,
+        path: str,
+        headers: "Optional[Dict[str, str]]" = None,
+        _refreshed: bool = False,
+        **request_kwargs: "Any",
+    ) -> "Any":
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
@@ -239,14 +255,6 @@ class AIOHTTPClient:
         """
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
-        self._decorate_with_retry = retry(
-            aiohttp.ClientConnectionError,
-            count=self.config.retry_count,
-            wait=self.config.retry_wait,
-            backoff=self.config.retry_backoff,
-            jitter=self.config.retry_jitter,
-        )
-        self._make_request = self._decorate_with_retry(self._make_request)  # type: ignore[method-assign]
 
         self.request_session = aiohttp.ClientSession()
         if isinstance(self.config.requests_params, dict):
@@ -332,6 +340,30 @@ class AIOHTTPClient:
                 f.close()
 
     async def _make_request(
+        self,
+        method: str,
+        path: str,
+        headers: "Optional[Dict[str, str]]" = None,
+        _refreshed: bool = False,
+        **request_kwargs: "Any",
+    ) -> "Any":
+        return await retry(
+            aiohttp.ClientConnectionError,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )(
+            self._make_request_once,
+        )(
+            method=method,
+            path=path,
+            headers=headers,
+            _refreshed=_refreshed,
+            **request_kwargs,
+        )
+
+    async def _make_request_once(
         self,
         method: str,
         path: str,
