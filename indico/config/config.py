@@ -26,6 +26,8 @@ class IndicoConfig:
         retry_wait= (float, optional): Wait this many seconds after the first error before retrying.
         retry_backoff= (float, optional): Multiply the wait time by this amount for each additional error.
         retry_jitter= (float, optional): Add a random amount of time (up to this percent as a decimal) to the wait time to prevent simultaneous retries.
+        socket_connect_timeout= (float, optional): Number of seconds to wait for the a connection to the server.
+        socket_read_timeout= (float, optional): Number of seconds to wait for the server to send a response.
 
     Returns:
         IndicoConfig object
@@ -50,6 +52,13 @@ class IndicoConfig:
         self.retry_wait: float = float(os.getenv("INDICO_RETRY_WAIT", "1"))
         self.retry_backoff: float = float(os.getenv("INDICO_RETRY_BACKOFF", "4"))
         self.retry_jitter: float = float(os.getenv("INDICO_RETRY_JITTER", "1"))
+
+        self.socket_connect_timeout: float = float(
+            os.getenv("INDICO_SOCKET_CONNECT_TIMEOUT", "4")
+        )
+        self.socket_read_timeout: float = float(
+            os.getenv("INDICO_SOCKET_READ_TIMEOUT", "64")
+        )
 
         for key, value in kwargs.items():
             if hasattr(self, key):
