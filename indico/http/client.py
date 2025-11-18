@@ -178,9 +178,7 @@ class HTTPClient:
                 headers=headers,
                 stream=True,
                 timeout=(4, 64),
-                verify=False
-                if not self.config.verify_ssl or not self.request_session.verify
-                else True,
+                verify=(self.config.verify_ssl and self.request_session.verify),
                 **new_kwargs,
             )
 
