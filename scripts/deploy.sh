@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -rf /indico-client/dist
-pip install twine==3.3.0
+uv pip install --system ".[deploy]"
 python setup.py sdist
 echo $TWINE_USERNAME
 echo $TWINE_REPOSITORY

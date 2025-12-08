@@ -18,9 +18,23 @@ pip3 install indico-client
 
 From source:
 
+Using UV (recommended):
+
+```bash
+# Install UV if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+git clone https://github.com/IndicoDataSolutions/indico-client-python.git
+cd indico-client-python
+uv pip install -e ".[all]"
+```
+
+Or using pip:
+
 ```bash
 git clone https://github.com/IndicoDataSolutions/indico-client-python.git
-python3 setup.py install
+cd indico-client-python
+pip install -e ".[all]"
 ```
 
 Running in a Docker container:
@@ -99,6 +113,24 @@ You will also need the following env variables set for the Exchange integration 
 - `EXCH_USER_ID`
 
 ### Running the tests
+
+Using UV (recommended):
+
+1. Install UV if you haven't already
+   `curl -LsSf https://astral.sh/uv/install.sh | sh`
+2. Install the client and test dependencies
+   `uv pip install -e ".[all]" "pytest<8" "requests-mock>=1.8.0" "pytest-asyncio>0.21"`
+3. Run tests
+   `pytest -sv --host <indico_host> tests/`
+   _ Only run unit tests `pytest -sv --host <indico_host> tests/unit/`
+   _ Only run integration tests `pytest -sv --host <indico_host> tests/integration/`
+4. Check typing
+   ```sh
+   uv pip install "mypy==1.8" typing_extensions pandas-stubs types-requests types-pytz types-openpyxl
+   mypy --config-file=pyproject.toml
+   ```
+
+Or using pip:
 
 1. Create a virtual environment
    `python3 -m venv venv`
