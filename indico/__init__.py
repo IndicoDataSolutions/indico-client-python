@@ -4,14 +4,12 @@ from indico.client import *  # noqa: F403
 from indico.client.request import *  # noqa: F403
 
 try:
-    from importlib.metadata import version as _get_version
+    from importlib.metadata import version as _get_version_stdlib
 
-    __version__ = _get_version("indico-client")
+    __version__ = _get_version_stdlib("indico-client")
 except (ImportError, Exception):
     try:
-        from importlib_metadata import (
-            version as _get_version,  # type: ignore[reportMissingImports]
-        )
+        from importlib_metadata import version as _get_version  # type: ignore[reportMissingImports]
 
         __version__ = _get_version("indico-client")
     except (ImportError, Exception):

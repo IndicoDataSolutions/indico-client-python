@@ -49,3 +49,7 @@ profile = "black"
 strict = true
 packages = ["indico"]
 mypy_path = "./stubs:${MYPYPATH}"
+
+[[tool.mypy.overrides]]
+module = "importlib_metadata"
+ignore_missing_imports = true
