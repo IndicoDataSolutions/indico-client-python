@@ -6,7 +6,7 @@ license = { text = "MIT License" }
 authors = [{ name = "indico", email = "engineering@indico.io" }]
 requires-python = ">=3.9"
 classifiers = ["License :: OSI Approved :: MIT License", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13"]
-dependencies = ["requests>=2.22.0", "setuptools>=41.4.0", "deprecation>=2.1.0", "jsons", "aiohttp[speedups]"]
+dependencies = ["requests>=2.22.0", "deprecation>=2.1.0", "jsons", "aiohttp[speedups]"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -22,14 +22,24 @@ Homepage = "https://github.com/IndicoDataSolutions/indico-client-python"
 Documentation = "https://indicodatasolutions.github.io/indico-client-python/"
 
 [build-system]
-requires = ["setuptools>=41.4.0", "versioneer"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
 
-[tool.setuptools]
-packages = { find = { exclude = ["tests*"] } }
+[tool.hatch.build.targets.wheel]
+packages = ["indico"]
 
-[tool.setuptools.package-data]
-"*" = ["*.txt", "*.rst"]
+[tool.hatch.build.targets.sdist]
+include = ["indico", "README.rst", "LICENSE"]
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+fallback-version = "0.0.0"
+vcs = "git"
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
 
 [tool.isort]
 known_first_party = ["indico"]

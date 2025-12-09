@@ -1,14 +1,21 @@
 import logging
 
-from indico._version import get_versions  # type: ignore
+from indico.client import *  # noqa: F403
+from indico.client.request import *  # noqa: F403
+
+try:
+    from importlib.metadata import version as _get_version
+
+    __version__ = _get_version("indico-client")
+except (ImportError, Exception):
+    try:
+        from importlib_metadata import (
+            version as _get_version,  # type: ignore[reportMissingImports]
+        )
+
+        __version__ = _get_version("indico-client")
+    except (ImportError, Exception):
+        __version__ = "0.0.0"
 
 logging.basicConfig()
-Version = version = __version__ = VERSION = get_versions()["version"]
-
-from indico.client import *
-from indico.client.request import *
-
-from ._version import get_versions  # type: ignore
-
-__version__ = get_versions()["version"]
-del get_versions
+Version = version = VERSION = __version__

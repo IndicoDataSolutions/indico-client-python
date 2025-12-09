@@ -934,7 +934,6 @@ dependencies = [
     { name = "deprecation" },
     { name = "jsons" },
     { name = "requests" },
-    { name = "setuptools" },
 ]
 
 [package.optional-dependencies]
@@ -981,11 +980,10 @@ requires-dist = [
     { name = "pandas", marker = "extra == 'datasets'", specifier = ">=1.0.3" },
     { name = "pandas", marker = "extra == 'exports'", specifier = ">=1.0.3" },
     { name = "requests", specifier = ">=2.22.0" },
-    { name = "setuptools", specifier = ">=41.4.0" },
     { name = "tox", marker = "extra == 'test'", specifier = "==4.11.3" },
     { name = "twine", marker = "extra == 'deploy'", specifier = "==3.3.0" },
 ]
-provides-extras = ["all", "datasets", "deserialization", "exports", "test", "deploy"]
+provides-extras = ["all", "datasets", "deploy", "deserialization", "exports", "test"]
 
 [[package]]
 name = "jaraco-classes"
