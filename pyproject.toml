@@ -37,6 +37,7 @@ source = "uv-dynamic-versioning"
 [tool.uv-dynamic-versioning]
 fallback-version = "0.0.0"
 vcs = "git"
+pattern = "^(?P<base>\\d+(?:\\.\\d+)*)(?:-(?P<stage>[a-zA-Z]+)(?P<revision>\\d+)?)?"
 
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
