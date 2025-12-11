@@ -18,9 +18,13 @@ RUN apt-get update && \
         python3.11 \
         python3.12 \
         python3.13 \
-        python3-pip
+        curl && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install tox==4.11.3
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 COPY . /indico-client
 WORKDIR /indico-client
+
+RUN uv pip install --system ".[test]" && \
+    rm -rf /root/.cache/uv
