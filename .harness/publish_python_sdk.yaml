@@ -276,8 +276,8 @@ pipeline:
                           apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
-                          pip3 install twine==3.3.0
-                          python3 setup.py sdist
+                          uv pip install --system ".[deploy]"
+                          uv build --sdist
                           echo "checking dist files at 'dist/*'"
                           twine check dist/*
                           echo "uploading pre-release ${TAG}"
@@ -299,8 +299,8 @@ pipeline:
                           apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
-                          pip3 install twine==3.3.0
-                          python3 setup.py sdist
+                          uv pip install --system ".[deploy]"
+                          uv build --sdist
                           echo "checking dist files at 'dist/*'"
                           twine check dist/*
                           echo "uploading release ${TAG}"
