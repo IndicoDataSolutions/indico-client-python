@@ -64,7 +64,7 @@ def test_get_field_blueprints(mock_field_blueprint_data):
 
 
 def test_list_field_blueprints(mock_field_blueprint_data):
-    query = ListFieldBlueprints()
+    query = ListFieldBlueprints(filters={"uid": "test_uid"})
 
     mock_response = {
         "data": {
@@ -84,6 +84,8 @@ def test_list_field_blueprints(mock_field_blueprint_data):
     assert isinstance(result, list)
     assert len(result) == 1
     assert isinstance(result[0], FieldBlueprint)
+    # Ensure variables were set correctly
+    assert query.variables["filter"] == {"uid": "test_uid"}
 
 
 def test_export_field_blueprints_no_wait():

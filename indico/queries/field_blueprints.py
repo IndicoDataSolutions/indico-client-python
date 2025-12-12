@@ -236,8 +236,8 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
     }
     """
 
-    def __init__(self, limit: int = 100):
-        super().__init__(self.query, variables={"limit": limit})
+    def __init__(self, limit: int = 100, filters: "Optional[AnyDict]" = None):
+        super().__init__(self.query, variables={"limit": limit, "filter": filters})
 
     def process_response(self, response: "Payload") -> "List[FieldBlueprint]":
         response_data = super().parse_payload(
