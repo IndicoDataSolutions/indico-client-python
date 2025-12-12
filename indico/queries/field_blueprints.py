@@ -32,20 +32,40 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
     mutation CreateFieldBlueprint($blueprints: [CreateFieldBlueprintInput]!) {
         createFieldBlueprint(blueprints: $blueprints) {
             blueprints {
-                id
-                uid
+            id
+            uid
+            name
+            version
+            taskType
+            tags
+            enabled
+            fieldConfig {
+                ... on ExtractionFieldConfig {
                 name
-                version
-                taskType
-                description
-                enabled
-                createdAt
-                updatedAt
-                createdBy
-                updatedBy
-                tags
-                fieldConfig
-                promptConfig
+                datatype
+                required
+                multiple
+                }
+                ... on ClassificationFieldConfig {
+                name
+                datatype
+                targetNames
+                }
+            }
+            promptConfig {
+                ... on ExtractionPromptConfig {
+                prompt
+                }
+                ... on ClassificationPromptConfig {
+                targetNames {
+                    prompt
+                    targetName
+                }
+                }
+                ... on SummarizationPromptConfig {
+                prompt
+                }
+            }
             }
         }
     }
@@ -73,7 +93,7 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
         List[FieldBlueprint]: List of retrieved FieldBlueprint objects
     """
 
-    query = """
+    query: str = """
     query GetFieldBlueprints($ids: [Int]!) {
         gallery {
             fieldBlueprint {
@@ -83,15 +103,49 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                     name
                     version
                     taskType
-                    description
+                    tags
                     enabled
                     createdAt
                     updatedAt
                     createdBy
                     updatedBy
-                    tags
-                    fieldConfig
-                    promptConfig
+                    fieldConfig {
+                        ... on ExtractionFieldConfig {
+                            name
+                            datatype
+                            required
+                            multiple
+                            validationConfig {
+                                settingName
+                                settingValue
+                                onFailure
+                            }
+                            formatConfig
+                            inputConfig
+                        }
+                        ... on ClassificationFieldConfig {
+                            name
+                            datatype
+                            targetNames
+                        }
+                    }
+                    promptConfig {
+                        ... on ExtractionPromptConfig {
+                            prompt
+                            targetName
+                            multipleValues
+                            minimumLocationType
+                        }
+                        ... on ClassificationPromptConfig {
+                            targetNames {
+                                prompt
+                                targetName
+                            }
+                        }
+                        ... on SummarizationPromptConfig {
+                            prompt
+                        }
+                    }
                 }
             }
         }
@@ -120,25 +174,59 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
     """
 
     query = """
-    query ListFieldBlueprints($limit: Int, $cursor: String) {
+    query ListFieldBlueprints($size: Int, $cursor: String, $filter: GenericScalar) {
         gallery {
             fieldBlueprint {
-                blueprintsPage(size: $limit, cursor: $cursor) {
+                blueprintsPage(size: $size, cursor: $cursor, filter: $filter) {
                     fieldBlueprints {
                         id
                         uid
                         name
                         version
                         taskType
-                        description
+                        tags
                         enabled
                         createdAt
                         updatedAt
                         createdBy
                         updatedBy
-                        tags
-                        fieldConfig
-                        promptConfig
+                        fieldConfig {
+                            ... on ExtractionFieldConfig {
+                                name
+                                datatype
+                                required
+                                multiple
+                                validationConfig {
+                                    settingName
+                                    settingValue
+                                    onFailure
+                                }
+                                formatConfig
+                                inputConfig
+                            }
+                            ... on ClassificationFieldConfig {
+                                name
+                                datatype
+                                targetNames
+                            }
+                        }
+                        promptConfig {
+                            ... on ExtractionPromptConfig {
+                                prompt
+                                targetName
+                                multipleValues
+                                minimumLocationType
+                            }
+                            ... on ClassificationPromptConfig {
+                                targetNames {
+                                    prompt
+                                    targetName
+                                }
+                            }
+                            ... on SummarizationPromptConfig {
+                                prompt
+                            }
+                        }
                     }
                     cursor
                     total
