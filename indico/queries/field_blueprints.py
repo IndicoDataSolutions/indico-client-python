@@ -53,8 +53,13 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
             promptConfig {
                 ... on ExtractionPromptConfig {
                 prompt
+                targetName
+                multipleValues
+                minimumLocationType
+                localization
                 }
                 ... on ClassificationPromptConfig {
+                globalPrompt
                 targetNames {
                     prompt
                     targetName
@@ -110,6 +115,7 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                     fieldConfig {
                         ... on ExtractionFieldConfig {
                             name
+                            name
                             datatype
                             required
                             multiple
@@ -130,11 +136,13 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                     promptConfig {
                         ... on ExtractionPromptConfig {
                             prompt
+                            localization
                             targetName
                             multipleValues
                             minimumLocationType
                         }
                         ... on ClassificationPromptConfig {
+                            globalPrompt
                             targetNames {
                                 prompt
                                 targetName
@@ -191,6 +199,7 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                         fieldConfig {
                             ... on ExtractionFieldConfig {
                                 name
+                                name
                                 datatype
                                 required
                                 multiple
@@ -211,11 +220,13 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                         promptConfig {
                             ... on ExtractionPromptConfig {
                                 prompt
+                                localization
                                 targetName
                                 multipleValues
                                 minimumLocationType
                             }
                             ... on ClassificationPromptConfig {
+                                globalPrompt
                                 targetNames {
                                     prompt
                                     targetName

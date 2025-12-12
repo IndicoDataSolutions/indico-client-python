@@ -26,7 +26,7 @@ def mock_field_blueprint_data():
         "updatedBy": 1,
         "tags": ["test"],
         "fieldConfig": {"some": "config"},
-        "promptConfig": {"some": "prompt"},
+        "promptConfig": {"localization": "SEARCH", "globalPrompt": "Global prompt"},
     }
 
 
@@ -43,6 +43,9 @@ def test_create_field_blueprint(mock_field_blueprint_data):
     assert len(result) == 1
     assert isinstance(result[0], FieldBlueprint)
     assert result[0].uid == "test_uid"
+    assert result[0].field_config["some"] == "config"
+    assert result[0].prompt_config["localization"] == "SEARCH"
+    assert result[0].prompt_config["globalPrompt"] == "Global prompt"
 
 
 def test_get_field_blueprints(mock_field_blueprint_data):
