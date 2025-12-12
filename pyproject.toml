@@ -54,3 +54,9 @@ mypy_path = "./stubs:${MYPYPATH}"
 [[tool.mypy.overrides]]
 module = "importlib_metadata"
 ignore_missing_imports = true
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-mock>=3.15.1",
+]

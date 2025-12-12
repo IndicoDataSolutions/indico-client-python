@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING
 
-import jsons
-
 from indico.client.request import (
     GraphQLRequest,
     PagedRequestV2,
@@ -174,10 +172,10 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
     """
 
     query = """
-    query ListFieldBlueprints($size: Int, $cursor: String, $filter: GenericScalar) {
+    query ListFieldBlueprints($size: Int, $cursor: String, $filters: [ColumnFilterInput]) {
         gallery {
             fieldBlueprint {
-                blueprintsPage(size: $size, cursor: $cursor, filter: $filter) {
+                blueprintsPage(size: $size, cursor: $cursor, filters: $filters) {
                     fieldBlueprints {
                         id
                         uid
@@ -236,8 +234,8 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
     }
     """
 
-    def __init__(self, limit: int = 100, filters: "Optional[AnyDict]" = None):
-        super().__init__(self.query, variables={"limit": limit, "filter": filters})
+    def __init__(self, limit: int = 100, filters: "Optional[List[AnyDict]]" = None):
+        super().__init__(self.query, variables={"limit": limit, "filters": filters})
 
     def process_response(self, response: "Payload") -> "List[FieldBlueprint]":
         response_data = super().parse_payload(
