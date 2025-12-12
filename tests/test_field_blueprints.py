@@ -1,4 +1,5 @@
 import pytest
+
 from indico.queries.field_blueprints import (
     CreateFieldBlueprint,
     ExportFieldBlueprints,
@@ -26,7 +27,7 @@ def mock_field_blueprint_data():
         "updatedBy": 1,
         "tags": ["test"],
         "fieldConfig": {"some": "config"},
-        "promptConfig": {"localization": "SEARCH", "globalPrompt": "Global prompt"},
+        "promptConfig": {"localization": "SEARCH"},
     }
 
 
@@ -45,7 +46,6 @@ def test_create_field_blueprint(mock_field_blueprint_data):
     assert result[0].uid == "test_uid"
     assert result[0].field_config["some"] == "config"
     assert result[0].prompt_config["localization"] == "SEARCH"
-    assert result[0].prompt_config["globalPrompt"] == "Global prompt"
 
 
 def test_get_field_blueprints(mock_field_blueprint_data):

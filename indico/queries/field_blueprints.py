@@ -44,11 +44,6 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
                 required
                 multiple
                 }
-                ... on ClassificationFieldConfig {
-                name
-                datatype
-                targetNames
-                }
             }
             promptConfig {
                 ... on ExtractionPromptConfig {
@@ -57,13 +52,6 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
                 multipleValues
                 minimumLocationType
                 localization
-                }
-                ... on ClassificationPromptConfig {
-                globalPrompt
-                targetNames {
-                    prompt
-                    targetName
-                }
                 }
                 ... on SummarizationPromptConfig {
                 prompt
@@ -127,11 +115,6 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                             formatConfig
                             inputConfig
                         }
-                        ... on ClassificationFieldConfig {
-                            name
-                            datatype
-                            targetNames
-                        }
                     }
                     promptConfig {
                         ... on ExtractionPromptConfig {
@@ -140,13 +123,6 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                             targetName
                             multipleValues
                             minimumLocationType
-                        }
-                        ... on ClassificationPromptConfig {
-                            globalPrompt
-                            targetNames {
-                                prompt
-                                targetName
-                            }
                         }
                         ... on SummarizationPromptConfig {
                             prompt
@@ -211,11 +187,6 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                                 formatConfig
                                 inputConfig
                             }
-                            ... on ClassificationFieldConfig {
-                                name
-                                datatype
-                                targetNames
-                            }
                         }
                         promptConfig {
                             ... on ExtractionPromptConfig {
@@ -224,13 +195,6 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                                 targetName
                                 multipleValues
                                 minimumLocationType
-                            }
-                            ... on ClassificationPromptConfig {
-                                globalPrompt
-                                targetNames {
-                                    prompt
-                                    targetName
-                                }
                             }
                             ... on SummarizationPromptConfig {
                                 prompt
