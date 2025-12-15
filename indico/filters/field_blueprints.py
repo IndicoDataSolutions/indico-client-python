@@ -40,4 +40,4 @@ class FieldBlueprintFilter(FilterV2):
         }
         # Filter out None values before passing to super (handled in super, but cleaner to map first)
         clean_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        super().__init__(**clean_kwargs)
+        super().__init__(data=None, **clean_kwargs)

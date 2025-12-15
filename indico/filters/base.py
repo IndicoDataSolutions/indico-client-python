@@ -6,7 +6,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import List, Optional
 
 
-class FilterV2(list):
+class FilterV2(list["dict[str, Any]"]):
     """
     Base filter class for V2 filters that serialize to a list of column filters.
     Structure: [{"column": "col_name", "filter": {"value": "val"}}, ...]
@@ -14,7 +14,7 @@ class FilterV2(list):
 
     __options__: "ClassVar[Tuple[Any, ...]]" = tuple()
 
-    def __init__(self, data: "Optional[List[dict]]" = None, **kwargs: "Any"):
+    def __init__(self, data: "Optional[List[dict[str, Any]]]" = None, **kwargs: "Any"):
         # Subclasses should handle complex logic and pass a list of dicts as 'data'.
         # If 'data' is provided, we use it directly.
         # Otherwise, we construct standard filters from kwargs.
