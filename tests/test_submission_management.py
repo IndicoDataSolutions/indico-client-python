@@ -1,4 +1,3 @@
-import pytest
 from indico.queries.submission_management import (
     GetSubmissionManagementFields,
     SubmissionManagementFieldsPage,
@@ -46,4 +45,19 @@ def test_get_submission_management_fields():
     assert query.variables["filters"] == [
         {"column": "status", "filter": {"value": "COMPLETE"}},
         {"column": "fieldId", "filter": {"value": "foo", "fieldId": 123}},
+    ]
+    assert query.variables["size"] == 100
+
+
+def test_get_submission_management_fields_with_size_and_filter_obj():
+    from indico.filters import SubmissionFieldFilter
+
+    query = GetSubmissionManagementFields(
+        workflow_id=1,
+        size=50,
+        filters=SubmissionFieldFilter(status="PENDING"),
+    )
+    assert query.variables["size"] == 50
+    assert query.variables["filters"] == [
+        {"column": "status", "filter": {"value": "PENDING"}}
     ]

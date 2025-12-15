@@ -2,6 +2,24 @@ import datetime
 from typing import TYPE_CHECKING, Dict
 
 from indico.errors import IndicoInputError
+from indico.filters.base import FilterV2
+from indico.filters.field_blueprints import FieldBlueprintFilter
+from indico.filters.submission_fields import SubmissionFieldFilter
+
+__all__ = [
+    "Filter",
+    "DatasetFilter",
+    "SubmissionReviewFilter",
+    "DateRangeFilter",
+    "SubmissionFilter",
+    "ModelGroupExampleFilter",
+    "UserMetricsFilter",
+    "DocumentReportFilter",
+    "ComponentBlueprintFilter",
+    "FilterV2",
+    "FieldBlueprintFilter",
+    "SubmissionFieldFilter",
+]
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, ClassVar, List, Optional, Tuple, Union

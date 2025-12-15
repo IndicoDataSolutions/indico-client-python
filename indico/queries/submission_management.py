@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from indico.client.request import GraphQLRequest
+from indico.filters import SubmissionFieldFilter
 from indico.types import BaseType, JSONType
 from indico.typing import AnyDict
 
@@ -47,14 +48,14 @@ class GetSubmissionManagementFields(GraphQLRequest[SubmissionManagementFieldsPag
         $fieldIds: [Int],
         $filters: [SubmissionColumnFilterInput],
         $cursor: String,
-        $limit: Int
+        $size: Int
     ) {
         submissionManagementFields(
             workflowId: $workflowId,
             fieldIds: $fieldIds,
             filters: $filters,
             cursor: $cursor,
-            size: $limit
+            size: $size
         ) {
             submissions {
                 id
@@ -86,8 +87,8 @@ class GetSubmissionManagementFields(GraphQLRequest[SubmissionManagementFieldsPag
         self,
         workflow_id: int,
         field_ids: "Optional[List[int]]" = None,
-        filters: "Optional[List[AnyDict]]" = None,
-        limit: int = 100,
+        filters: "Union[Optional[List[AnyDict]], SubmissionFieldFilter]" = None,
+        size: int = 100,
         cursor: "Optional[str]" = None,
     ):
         super().__init__(
@@ -96,7 +97,7 @@ class GetSubmissionManagementFields(GraphQLRequest[SubmissionManagementFieldsPag
                 "workflowId": workflow_id,
                 "fieldIds": field_ids,
                 "filters": filters,
-                "limit": limit,
+                "size": size,
                 "cursor": cursor,
             },
         )

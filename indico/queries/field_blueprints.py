@@ -5,6 +5,7 @@ from indico.client.request import (
     PagedRequestV2,
     RequestChain,
 )
+from indico.filters import FieldBlueprintFilter
 from indico.queries.jobs import JobStatus
 from indico.types.field_blueprint import FieldBlueprint
 from indico.types.jobs import Job
@@ -148,8 +149,10 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
     """
     List field blueprints with pagination.
 
-    Options:
+    Args:
         limit (int, default=100): Max number of blueprints to retrieve per page
+        cursor (str, optional): Cursor to fetch results from
+        filters (Union[List[dict], FieldBlueprintFilter], optional): Filters to apply
 
     Returns:
         List[FieldBlueprint]
@@ -209,8 +212,15 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
     }
     """
 
-    def __init__(self, limit: int = 100, filters: "Optional[List[AnyDict]]" = None):
-        super().__init__(self.query, variables={"limit": limit, "filters": filters})
+    def __init__(
+        self,
+        limit: int = 100,
+        cursor: "Optional[str]" = None,
+        filters: "Union[Optional[List[AnyDict]], FieldBlueprintFilter]" = None,
+    ):
+        super().__init__(
+            self.query, variables={"size": limit, "cursor": cursor, "filters": filters}
+        )
 
     def process_response(self, response: "Payload") -> "List[FieldBlueprint]":
         response_data = super().parse_payload(

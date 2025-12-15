@@ -1,5 +1,6 @@
 import pytest
 
+from indico.filters import FieldBlueprintFilter
 from indico.queries.field_blueprints import (
     CreateFieldBlueprint,
     ExportFieldBlueprints,
@@ -65,9 +66,7 @@ def test_get_field_blueprints(mock_field_blueprint_data):
 
 
 def test_list_field_blueprints(mock_field_blueprint_data):
-    query = ListFieldBlueprints(
-        filters=[{"column": "uid", "filter": {"value": "test_uid"}}]
-    )
+    query = ListFieldBlueprints(filters=FieldBlueprintFilter(uid="test_uid"))
 
     mock_response = {
         "data": {
