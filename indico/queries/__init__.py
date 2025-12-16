@@ -11,5 +11,6 @@ from .model_import import *
 from .questionnaire import *
 from .storage import *
 from .submission import *
+from .submission_management import *
 from .workflow import *
 from .workflow_components import *
