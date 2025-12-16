@@ -272,6 +272,8 @@ pipeline:
                         shell: Sh
                         command: |-
                           #!/bin/bash
+                          export TWINE_DISABLE_KEYRING=1
+
                           TAG="<+codebase.tag>"
                           apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
@@ -295,6 +297,8 @@ pipeline:
                         shell: Sh
                         command: |-
                           #!/bin/bash
+                          export TWINE_DISABLE_KEYRING=1
+
                           TAG="<+codebase.tag>"
                           apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
