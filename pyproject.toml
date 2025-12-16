@@ -15,7 +15,7 @@ datasets = ["pandas>=1.0.3"]
 deserialization = ["msgpack>=0.5.6", "msgpack-numpy==0.4.4.3", "numpy>=1.16.0"]
 exports = ["pandas>=1.0.3"]
 test = ["tox==4.11.3"]
-deploy = ["twine==3.3.0"]
+deploy = ["twine==3.3.0", "jaraco.functools"]
 
 [project.urls]
 Homepage = "https://github.com/IndicoDataSolutions/indico-client-python"
@@ -56,7 +56,4 @@ module = "importlib_metadata"
 ignore_missing_imports = true
 
 [dependency-groups]
-dev = [
-    "pytest>=8.4.2",
-    "pytest-mock>=3.15.1",
-]
+dev = ["pytest>=8.4.2", "pytest-mock>=3.15.1"]
