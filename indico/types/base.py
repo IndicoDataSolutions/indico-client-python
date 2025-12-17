@@ -36,7 +36,10 @@ class BaseType(BaseModel):
         # pydantic forces a UTC timezone when validating datetimes provided in epoch
         # time. this isn't backwards compat, so we override the built-in validation for
         # all fields defined with a datetime annotation with our legacy parsing
-        if cls.model_fields[cast(str, info.field_name)].annotation == datetime:
+        if (
+            cls.model_fields[cast(str, info.field_name)].annotation == datetime
+            and v is not None
+        ):
             try:
                 v = datetime.fromtimestamp(float(v))
             except ValueError:
