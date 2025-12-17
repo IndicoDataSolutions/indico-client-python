@@ -268,7 +268,6 @@ class UpdateModelGroupSettings(GraphQLRequest["ModelOptions"]):
             - Object Detection: 'threshold', 'predict_batch_size'
             - Finetune: 'negative_confidence'
             - Document: 'negative_confidence'
-        merge (boolean) : if True, the model training options will be merged with the existing model training options. Defaults to False.
     """
 
     query = """
@@ -276,13 +275,11 @@ class UpdateModelGroupSettings(GraphQLRequest["ModelOptions"]):
             $modelGroupId: Int!,
             $modelTrainingOptions: JSONString,
             $predictOptions: JSONString,
-            $merge: Boolean
         ) {
             updateModelGroupSettings(
                 modelGroupId: $modelGroupId,
                 modelTrainingOptions: $modelTrainingOptions,
                 predictOptions: $predictOptions,
-                merge: $merge
             ) {
                 modelOptions {
                     id
@@ -306,7 +303,6 @@ class UpdateModelGroupSettings(GraphQLRequest["ModelOptions"]):
         model_group_id: int,
         model_training_options: "Optional[Union[str, AnyDict]]" = None,
         predict_options: "Optional[Union[str, AnyDict]]" = None,
-        merge: bool = False,
     ):
         model_training_options_json: "Optional[str]" = None
         if model_training_options:
@@ -328,7 +324,6 @@ class UpdateModelGroupSettings(GraphQLRequest["ModelOptions"]):
                 "modelGroupId": model_group_id,
                 "modelTrainingOptions": model_training_options_json,
                 "predictOptions": predict_options_json,
-                "merge": merge,
             },
         )
 

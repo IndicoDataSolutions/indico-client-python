@@ -26,18 +26,11 @@ class Questionnaire(BaseType):
     question: Question
 
 
-class ExampleContext(BaseType):
-    id: int
-    datafile_id: int
-    source: str
-
-
 class Example(BaseType):
-    datafile_ids: List[int]
-    original_datafile_id: int
-    original_datafile_name: str
-    contexts: List[ExampleContext]
+    row_index: int
+    datafile_id: int
     status: str
+    source: str
     id: int
 
 

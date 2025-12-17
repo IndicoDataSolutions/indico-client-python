@@ -2,6 +2,8 @@ import io
 import warnings
 from typing import TYPE_CHECKING
 
+import pandas as pd
+
 from indico.client import Delay, GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
 from indico.queries.storage import RetrieveStorageObject
@@ -9,8 +11,6 @@ from indico.types.export import Export, LabelResolutionStrategy
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterator, List, Optional, Union
-
-    import pandas as pd
 
     from indico.typing import Payload
 
@@ -148,14 +148,6 @@ class GetExport(GraphQLRequest["Export"]):
 
 class _RetrieveExport(RetrieveStorageObject):
     def process_response(self, response: "Payload") -> "pd.DataFrame":
-        try:
-            import pandas as pd
-        except ImportError as error:
-            raise RuntimeError(
-                "downloading exports requires additional dependencies: "
-                "`pip install indico-client[exports]`"
-            ) from error
-
         raw_response: str = super().process_response(response)
         return pd.read_csv(io.StringIO(raw_response))
 

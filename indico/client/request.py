@@ -2,8 +2,7 @@ from abc import abstractmethod
 from enum import Enum
 from typing import TYPE_CHECKING, Generic, TypeVar, cast
 
-from indico.errors import IndicoInputError, IndicoRequestError
-from indico.typing import AnyDict
+from indico.errors import IndicoRequestError
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, Iterator, List, Optional, Union
@@ -70,29 +69,6 @@ class GraphQLRequest(Generic[ResponseType], HTTPRequest[ResponseType]):
         return cast("ResponseType", raw_response)
 
 
-def _parse_nested_response(
-    response: "AnyDict", nested_keys: "List[str | int]"
-) -> "Any":
-    composite: "Any" = response
-    for key in nested_keys:
-        if isinstance(composite, list):
-            if not isinstance(key, int):
-                raise IndicoInputError(
-                    f"Invalid nested key type: {type(key)}",
-                )
-            composite = composite[int(key)]
-            continue
-
-        if isinstance(composite, dict):
-            if key not in composite.keys():
-                raise IndicoInputError(
-                    f"Nested key not found in response: {key}",
-                )
-            composite = composite[key]
-
-    return composite
-
-
 class PagedRequest(GraphQLRequest[ResponseType]):
     """
     To enable pagination, query must include $after as an argument
@@ -122,16 +98,10 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         self.has_next_page = True
         super().__init__(query, variables=variables)
 
-    def parse_payload(
-        self, response: "AnyDict", nested_keys: "Optional[List[str | int]]" = None
-    ) -> "Any":
+    def parse_payload(self, response: "AnyDict") -> "Any":
         raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
-        if nested_keys:
-            composite: "Any" = _parse_nested_response(raw_response, nested_keys)
-            _pg = composite.get("pageInfo")
-        else:
-            _pg = next(iter(raw_response.values())).get("pageInfo")
 
+        _pg = next(iter(raw_response.values())).get("pageInfo")
         if not _pg:
             raise ValueError("The supplied GraphQL must include 'pageInfo'.")
 
@@ -139,57 +109,6 @@ class PagedRequest(GraphQLRequest[ResponseType]):
         cast("AnyDict", self.variables)["after"] = (
             _pg["endCursor"] if self.has_next_page else None
         )
-
-        return raw_response
-
-
-class PagedRequestV2(GraphQLRequest[ResponseType]):
-    """
-    A new version of PagedRequest that supports pagination using cursor and total.
-    The GraphQL query should follow this structure:
-        query Name(
-            ...
-            $cursor: String
-        ){
-            items(
-                ...
-                cursor: $cursor
-            ){
-                items {...}
-                cursor
-                total
-            }
-        }
-    """
-
-    def __init__(self, query: str, variables: "Optional[AnyDict]" = None):
-        if variables is None:
-            variables = {}
-
-        variables["cursor"] = None
-        self.has_next_page = True
-        self.total = 0
-        super().__init__(query, variables=variables)
-
-    def parse_payload(
-        self, response: "AnyDict", nested_keys: "Optional[List[str | int]]" = None
-    ) -> "Any":
-        raw_response: "AnyDict" = cast("AnyDict", super().parse_payload(response))
-
-        if nested_keys:
-            composite: "Any" = _parse_nested_response(raw_response, nested_keys)
-            pagination_data = composite
-        else:
-            pagination_data = next(iter(raw_response.values()))
-
-        if "cursor" not in pagination_data or "total" not in pagination_data:
-            raise ValueError(
-                "The supplied GraphQL query should respond with 'cursor' and 'total' fields."
-            )
-
-        self.total = pagination_data["total"]
-        self.has_next_page = pagination_data["cursor"] is not None
-        cast("AnyDict", self.variables)["cursor"] = pagination_data["cursor"]
 
         return raw_response
 

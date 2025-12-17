@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 from indico.errors import IndicoInputError
 from indico.types.base import BaseType
@@ -134,27 +134,6 @@ class ReadApiOcrOptionsInput(BaseType):
 class OcrInputLanguage(BaseType):
     name: str
     code: str
-
-
-class IncludeSections(BaseType):
-    header: Optional[bool]
-    body: Optional[bool]
-    attachments: Optional[bool]
-
-
-class EmailOptions(BaseType):
-    """
-    Email options
-
-    Args:
-        include_sections: Sections of the email to include after parsing (header, body, attachments)
-        unpack: Unpack an email and treat it as a multi-file Submission
-        preserve_body_whitespace: Preserve whitespace in the body of the email
-    """
-
-    include_sections: Optional[IncludeSections]
-    unpack: Optional[bool]
-    preserve_body_whitespace: Optional[bool]
 
 
 class OcrOptionsInput:

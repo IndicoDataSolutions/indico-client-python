@@ -18,11 +18,9 @@ class ListModelGroupExamples(PagedRequest["List[Example]"]):
     Options:
         model_group_ids (List[int]): Model group ids to filter by
         filters (ModelGroupExampleFilter or Dict): Example attributes to filter by
-        limit (int, default=1000): Maximum number of Examples to return per page
+        limit (int, default=1000): Maximum number of Examples to return
         orderBy (str, default="ID"): Example attribute to filter by
         desc: (bool, default=True): List in descending order
-        after (int): id to start the pagination from
-        before (int): id to end the pagination at
 
     Returns:
         List[Example]: All the found Example objects
@@ -30,16 +28,14 @@ class ListModelGroupExamples(PagedRequest["List[Example]"]):
     """
 
     query = """
-        query GetExamples($modelGroupId:Int, $orderBy: ExampleOrder, $desc: Boolean, $limit: Int, $filters: ExampleFilter, $after: Int, $before: Int) {
+        query GetExamples($modelGroupId:Int, $orderBy: ExampleOrder, $desc: Boolean, $limit: Int, $filters: ModelGroupExampleFilter, $after: Int, $before: Int) {
             modelGroups(modelGroupIds: [$modelGroupId]) {
                 modelGroups {
-                    pagedExamples(orderBy: $orderBy, desc: $desc, limit: $limit, filters: $filters, after: $after, before: $before) {
+                    pagedExamples(orderBy:$orderBy, desc:$desc, limit: $limit, filters: $filters, after: $after, before: $before) {
                         examples {
                             id
                             status
-                            datafileIds
-                            originalDatafileId
-                            originalDatafileName
+                            datafileId
                         }
                         pageInfo {
                             startCursor
@@ -78,12 +74,5 @@ class ListModelGroupExamples(PagedRequest["List[Example]"]):
         )
 
     def process_response(self, response: "Payload") -> "List[Example]":
-        example_page = super().parse_payload(
-            response, nested_keys=["modelGroups", "modelGroups", 0, "pagedExamples"]
-        )
-        return [
-            Example(**example)
-            for example in example_page["modelGroups"]["modelGroups"][0][
-                "pagedExamples"
-            ]["examples"]
-        ]
+        example_page = super().parse_payload(response)["modelGroups"]["modelGroups"][0]
+        return [Example(**s) for s in example_page["pagedExamples"]["examples"]]

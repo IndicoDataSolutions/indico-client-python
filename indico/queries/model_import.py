@@ -9,7 +9,7 @@ from indico.types.jobs import Job
 from .jobs import JobStatus
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Dict, Iterator, Optional, Union  # noqa: F401
+    from typing import Dict, Iterator, Optional, Union
 
     from indico.typing import Payload
 

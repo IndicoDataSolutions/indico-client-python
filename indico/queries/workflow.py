@@ -66,17 +66,15 @@ class ListWorkflows(GraphQLRequest["List[Workflow]"]):
                         }
 
                     }
-                  componentLinks {
+                  componentLinks{
                     id
                     headComponentId
                     tailComponentId
-                    config
-                    filters {
+                    filters{
                       classes
                     }
 
                   }
-                  datasetId
                 }
             }
         }

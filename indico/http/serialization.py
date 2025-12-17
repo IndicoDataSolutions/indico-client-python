@@ -8,8 +8,10 @@ import json
 import logging
 import traceback
 from collections import defaultdict
-from email.message import EmailMessage
+from email.message import Message
 from typing import TYPE_CHECKING
+
+import msgpack
 
 from indico.errors import IndicoDecodingError
 
@@ -22,6 +24,14 @@ if TYPE_CHECKING:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
+def _parse_header(header: str) -> "Tuple[str, Dict[str, str]]":
+    """Parse a header and return as a tuple of a main value and additional params"""
+    m = Message()
+    m["content-type"] = header
+    params = m.get_params(failobj=[])
+    return params[0][0], dict(params[1:])
+
+
 def decompress(response: "Response") -> bytes:
     response.raw.decode_content = True
     value: bytes = io.BytesIO(response.raw.data).getvalue()
@@ -31,7 +41,7 @@ def decompress(response: "Response") -> bytes:
 def deserialize(
     response: "Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
+    content_type, params = _parse_header(response.headers["Content-Type"])
     content: bytes
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
@@ -57,7 +67,7 @@ def deserialize(
 async def aio_deserialize(
     response: "ClientResponse", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
+    content_type, params = _parse_header(response.headers["Content-Type"])
     content: bytes = await response.read()
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
@@ -78,12 +88,6 @@ async def aio_deserialize(
         )
 
 
-def parse_header(header: str) -> "Tuple[str, Dict[str, str]]":
-    email = EmailMessage()
-    email["Content-Type"] = header
-    return email.get_content_type(), email["Content-Type"].params
-
-
 def raw_bytes(
     content: bytes, charset: "Optional[str]", *args: "Any", **kwargs: "Any"
 ) -> bytes:
@@ -91,14 +95,6 @@ def raw_bytes(
 
 
 def msgpack_deserialization(content: bytes, charset: "Optional[str]" = None) -> "Any":
-    try:
-        import msgpack
-    except ImportError as error:
-        raise RuntimeError(
-            "msgpack deserialization requires additional dependencies: "
-            "`pip install indico-client[deserialization]`"
-        ) from error
-
     return msgpack.unpackb(content)
 
 

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import jsons
+import pandas as pd
 
 from indico.client.request import (
     Delay,
@@ -23,11 +24,7 @@ from indico.types.dataset import Dataset, OcrEngine, OcrInputLanguage
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterator, List, Optional, Union
 
-    from indico.types.dataset import (
-        EmailOptions,
-        OmnipageOcrOptionsInput,
-        ReadApiOcrOptionsInput,
-    )
+    from indico.types.dataset import OmnipageOcrOptionsInput, ReadApiOcrOptionsInput
     from indico.typing import AnyDict, Payload
 
 
@@ -229,7 +226,6 @@ class CreateDataset(RequestChain["Dataset"]):
         omnipage_ocr_options: "Optional[OmnipageOcrOptionsInput]" = None,
         read_api_ocr_options: "Optional[ReadApiOcrOptionsInput]" = None,
         request_interval: "Union[int, float]" = 5,
-        email_options: "Optional[EmailOptions]" = None,
     ):
         self.files = files
         self.name = name
@@ -242,7 +238,6 @@ class CreateDataset(RequestChain["Dataset"]):
         self.omnipage_ocr_options = omnipage_ocr_options
         self.read_api_ocr_options = read_api_ocr_options
         self.request_interval = request_interval
-        self.email_options = email_options
         if omnipage_ocr_options is not None and read_api_ocr_options is not None:
             raise IndicoInputError(
                 "Must supply either omnipage or readapi options but not both."
@@ -259,15 +254,6 @@ class CreateDataset(RequestChain["Dataset"]):
                 )
 
             self.dataset_type = "IMAGE"
-
-            try:
-                import pandas as pd
-            except ImportError as error:
-                raise RuntimeError(
-                    "creating image datasets requires additional dependencies:"
-                    "`pip install indico-client[datasets]`"
-                ) from error
-
             # Assume image filenames are in the same directory as the csv with
             # image labels and that there is a column representing their name
             df = pd.read_csv(self.files)
@@ -302,7 +288,6 @@ class CreateDataset(RequestChain["Dataset"]):
             readapi_ocr_options=self.read_api_ocr_options,
             omnipage_ocr_options=self.omnipage_ocr_options,
             ocr_engine=self.ocr_engine,
-            email_options=self.email_options,
         )
         yield _AddFiles(
             dataset_id=self.previous.id, metadata=file_metadata, autoprocess=True
@@ -401,7 +386,6 @@ class CreateEmptyDataset(GraphQLRequest["Dataset"]):
         ocr_engine: "Optional[OcrEngine]" = None,
         omnipage_ocr_options: "Optional[OmnipageOcrOptionsInput]" = None,
         readapi_ocr_options: "Optional[ReadApiOcrOptionsInput]" = None,
-        email_options: "Optional[EmailOptions]" = None,
     ):
         if not dataset_type:
             dataset_type = "TEXT"
@@ -412,8 +396,7 @@ class CreateEmptyDataset(GraphQLRequest["Dataset"]):
                     "ocrEngine": ocr_engine.name,
                     "omnipageOptions": omnipage_ocr_options,
                     "readapiOptions": readapi_ocr_options,
-                },
-                "emailOptions": email_options,
+                }
             }
         super().__init__(
             self.query,
