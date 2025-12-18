@@ -304,6 +304,8 @@ pipeline:
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
                           uv pip install --system ".[deploy]"
+                          uv pip install --system -U jaraco.functools
+
                           uv build --sdist
                           echo "checking dist files at 'dist/*'"
                           twine check dist/*
