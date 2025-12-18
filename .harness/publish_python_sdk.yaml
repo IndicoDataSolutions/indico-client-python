@@ -272,18 +272,19 @@ pipeline:
                         shell: Sh
                         command: |-
                           #!/bin/bash
-                          export TWINE_DISABLE_KEYRING=1
-
                           TAG="<+codebase.tag>"
                           apt-get update && apt-get install -y git
                           git fetch origin tag $TAG
                           rm -rf /indico-client/dist
-                          uv pip install --system ".[deploy]"
+                          uv pip install --system -U "twine>=6"
+
                           uv build --sdist
+
                           echo "checking dist files at 'dist/*'"
-                          twine check dist/*
+                          python -m twine check dist/*
+
                           echo "uploading pre-release ${TAG}"
-                          twine upload -u __token__ -p <+stage.variables.pypi_token> dist/*
+                          python -m twine upload -u __token__ -p "<+stage.variables.pypi_token>" dist/*
                       when:
                         stageStatus: Success
                         condition: <+pipeline.variables.RUN_PRERELEASE> == "TRUE"
