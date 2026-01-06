@@ -1,43 +1,31 @@
 from typing import TYPE_CHECKING
 
-from indico.filters.base import FilterV2
-
 if TYPE_CHECKING:
-    from typing import List, Optional, Union
+    from typing import Any, List, Optional
 
 
-class FieldBlueprintFilter(FilterV2):
+class FieldBlueprintFilter(dict):
     """
     Filter for querying Field Blueprints.
 
-    Args:
-        uid (str): Filter by unique identifier
-        name (str): Filter by name
-        id (int): Filter by ID
-        task_type (str): Filter by task type
-        enabled (bool): Filter by enabled status
-        tags (str | List[str]): Filter by tags
+    Usage:
+        Logical: FieldBlueprintFilter(op="and", filters=[...])
+        Condition: FieldBlueprintFilter(op="eq", field="field_blueprint.uid", value="123")
     """
-
-    __options__ = ("uid", "name", "id", "taskType", "enabled", "tags")
 
     def __init__(
         self,
-        uid: "Optional[str]" = None,
-        name: "Optional[str]" = None,
-        id: "Optional[int]" = None,
-        task_type: "Optional[str]" = None,
-        enabled: "Optional[bool]" = None,
-        tags: "Optional[Union[str, List[str]]]" = None,
+        op: "Optional[str]" = None,
+        filters: "Optional[List[dict]]" = None,
+        field: "Optional[str]" = None,
+        value: "Optional[Any]" = None,
     ):
-        kwargs = {
-            "uid": uid,
-            "name": name,
-            "id": id,
-            "taskType": task_type,
-            "enabled": enabled,
-            "tags": tags,
+        data = {
+            "op": op,
+            "filters": filters,
+            "field": field,
+            "value": value,
         }
-        # Filter out None values before passing to super (handled in super, but cleaner to map first)
-        clean_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        super().__init__(data=None, **clean_kwargs)
+        # Remove None values to keep payload clean
+        clean_data = {k: v for k, v in data.items() if v is not None}
+        super().__init__(**clean_data)

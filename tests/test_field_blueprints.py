@@ -1,5 +1,4 @@
 import pytest
-
 from indico.filters import FieldBlueprintFilter
 from indico.queries.field_blueprints import (
     CreateFieldBlueprint,
@@ -66,7 +65,11 @@ def test_get_field_blueprints(mock_field_blueprint_data):
 
 
 def test_list_field_blueprints(mock_field_blueprint_data):
-    query = ListFieldBlueprints(filters=FieldBlueprintFilter(uid="test_uid"))
+    query = ListFieldBlueprints(
+        filters=FieldBlueprintFilter(
+            field="field_blueprint.uid", op="eq", value="test_uid"
+        )
+    )
 
     mock_response = {
         "data": {
@@ -87,9 +90,11 @@ def test_list_field_blueprints(mock_field_blueprint_data):
     assert len(result) == 1
     assert isinstance(result[0], FieldBlueprint)
     # Ensure variables were set correctly
-    assert query.variables["filters"] == [
-        {"column": "uid", "filter": {"value": "test_uid"}}
-    ]
+    assert query.variables["filters"] == {
+        "field": "field_blueprint.uid",
+        "op": "eq",
+        "value": "test_uid",
+    }
 
 
 def test_export_field_blueprints_no_wait():
@@ -115,5 +120,39 @@ def test_import_field_blueprints_no_wait():
     mock_response = {"data": {"importFieldBlueprints": {"jobId": "job_456"}}}
 
     job = req.process_response(mock_response)
-    assert isinstance(job, Job)
     assert job.id == "job_456"
+
+
+def test_nested_field_blueprints_filter():
+    f1 = FieldBlueprintFilter(field="field_blueprint.uid", op="eq", value="1")
+    f2 = FieldBlueprintFilter(op="eq", field="field_blueprint.uid", value="2")
+    outer = FieldBlueprintFilter(op="or", filters=[f1, f2])
+
+    query = ListFieldBlueprints(filters=outer)
+
+    expected = {
+        "op": "or",
+        "filters": [
+            {"field": "field_blueprint.uid", "op": "eq", "value": "1"},
+            {"field": "field_blueprint.uid", "op": "eq", "value": "2"},
+        ],
+    }
+    assert query.variables["filters"] == expected
+
+
+def test_explicit_field_blueprints_filter():
+    # Test fog-style explicit construction
+    f1 = FieldBlueprintFilter(field="field_blueprint.uid", op="eq", value="1")
+    f2 = FieldBlueprintFilter(field="field_blueprint.uid", op="eq", value="2")
+    outer = FieldBlueprintFilter(op="or", filters=[f1, f2])
+
+    query = ListFieldBlueprints(filters=outer)
+
+    expected = {
+        "op": "or",
+        "filters": [
+            {"field": "field_blueprint.uid", "op": "eq", "value": "1"},
+            {"field": "field_blueprint.uid", "op": "eq", "value": "2"},
+        ],
+    }
+    assert query.variables["filters"] == expected

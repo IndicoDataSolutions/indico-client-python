@@ -159,7 +159,7 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
     """
 
     query = """
-    query ListFieldBlueprints($size: Int, $cursor: String, $filters: [ColumnFilterInput]) {
+    query ListFieldBlueprints($size: Int, $cursor: String, $filters: FilterInput) {
         gallery {
             fieldBlueprint {
                 blueprintsPage(size: $size, cursor: $cursor, filters: $filters) {
@@ -216,7 +216,7 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
         self,
         limit: int = 100,
         cursor: "Optional[str]" = None,
-        filters: "Union[Optional[List[AnyDict]], FieldBlueprintFilter]" = None,
+        filters: "Union[Optional[AnyDict], FieldBlueprintFilter]" = None,
     ):
         super().__init__(
             self.query, variables={"size": limit, "cursor": cursor, "filters": filters}
