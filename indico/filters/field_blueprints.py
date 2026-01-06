@@ -1,10 +1,10 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List, Optional
 
 if TYPE_CHECKING:
-    from typing import Any, List, Optional
+    from typing import Any, Optional
 
 
-class FieldBlueprintFilter(dict):
+class FieldBlueprintFilter(dict[str, Any]):
     """
     Filter for querying Field Blueprints.
 
@@ -15,10 +15,10 @@ class FieldBlueprintFilter(dict):
 
     def __init__(
         self,
-        op: "Optional[str]" = None,
-        filters: "Optional[List[dict]]" = None,
-        field: "Optional[str]" = None,
-        value: "Optional[Any]" = None,
+        op: Optional[str] = None,
+        filters: Optional[List["FieldBlueprintFilter"]] = None,
+        field: Optional[str] = None,
+        value: Optional[Any] = None,
     ):
         data = {
             "op": op,
