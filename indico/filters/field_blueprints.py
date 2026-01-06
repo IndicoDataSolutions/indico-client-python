@@ -15,6 +15,20 @@ class FieldBlueprintFilter(dict[str, Any]):
     :param field: The database field path to filter on. Required if `op` is a comparison.
         Format: "table.column" or "table.column.nested.key" (for JSONB).
         Examples: "field_blueprint.uid", "field_blueprint.prompt_config.prompt"
+
+        Queryable Fields:
+        - "field_blueprint.id" (Int)
+        - "field_blueprint.uid" (String)
+        - "field_blueprint.name" (String)
+        - "field_blueprint.version" (String)
+        - "field_blueprint.task_type" (Enum: GENAI_ANNOTATION, SUMMARIZATION)
+        - "field_blueprint.tags" (List[String])
+        - "field_blueprint.enabled" (Boolean)
+        - "field_blueprint.field_config" (JSONB)
+        - "field_blueprint.prompt_config" (JSONB)
+
+        Note: JSONB fields (field_config, prompt_config) support nested path querying.
+        e.g., "field_blueprint.prompt_config.target_name"
     :param value: The value to filter by. Required if `op` is a comparison.
         - For "eq", "neq", "gt", "lt", "ge", "le": A scalar value (str, int, float, etc.)
         - For "in": A list of values
