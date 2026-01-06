@@ -51,20 +51,11 @@ def test_doc_report_filter():
 
 
 def test_field_blueprint_filter():
-    f = FieldBlueprintFilter(uid="123", name="test")
-    # Verify it acts as a list
-    assert isinstance(f, list)
+    f = FieldBlueprintFilter(field="uid", op="eq", value="123")
+    # Verify it acts as a dict
+    assert isinstance(f, dict)
     # Verify content
-    expected = [
-        {"column": "uid", "filter": {"value": "123"}},
-        {"column": "name", "filter": {"value": "test"}},
-    ]
-    # Check if items are in the list (order might vary depending on dictionary order,
-    # but kwargs usually preserve insertion order in modern Python, and here they are passed in order)
-    # To be safe, we can check lengths and items
-    assert len(f) == 2
-    for item in expected:
-        assert item in f
+    assert f == {"field": "uid", "op": "eq", "value": "123"}
 
     # Test invalid option
     with pytest.raises(TypeError):
@@ -106,13 +97,14 @@ def test_submission_field_filter():
     } in f
 
 
-def test_field_blueprint_filter_tags_list():
-    # Test passing a list
-    f = FieldBlueprintFilter(tags=["foo", "bar"])
-    expected = [
-        {"column": "tags", "filter": {"value": "foo"}},
-        {"column": "tags", "filter": {"value": "bar"}},
-    ]
-    assert len(f) == 2
-    for item in expected:
-        assert item in f
+def test_field_blueprint_filter_nested():
+    # Test nested filters
+    f1 = FieldBlueprintFilter(field="field_blueprint.tags", op="in", value=["fixture"])
+    f_outer = FieldBlueprintFilter(op="and", filters=[f1])
+
+    assert f_outer == {
+        "op": "and",
+        "filters": [
+            {"field": "field_blueprint.tags", "op": "in", "value": ["fixture"]}
+        ],
+    }
