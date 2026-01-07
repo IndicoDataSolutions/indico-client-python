@@ -1,43 +1,59 @@
-from typing import TYPE_CHECKING
-
-from indico.filters.base import FilterV2
+from typing import TYPE_CHECKING, Any, List, Optional
 
 if TYPE_CHECKING:
-    from typing import List, Optional, Union
+    from typing import Any, Optional
 
 
-class FieldBlueprintFilter(FilterV2):
+class FieldBlueprintFilter(dict[str, Any]):
     """
     Filter for querying Field Blueprints.
 
     Args:
-        uid (str): Filter by unique identifier
-        name (str): Filter by name
-        id (int): Filter by ID
-        task_type (str): Filter by task type
-        enabled (bool): Filter by enabled status
-        tags (str | List[str]): Filter by tags
+        op (str, optional): The operator to apply. Use `FieldBlueprintFilter.LogicalOp` or `FieldBlueprintFilter.ComparisonOp` constants.
+        filters (list, optional): A list of `FieldBlueprintFilter` instances. Required if `op` is LogicalOp.
+        field (str, optional): The database field path to filter on. Use `FieldBlueprintFilter.Field` constants.
+        value (Any, optional): The value to filter by. Required if `op` is ComparisonOp.
     """
 
-    __options__ = ("uid", "name", "id", "taskType", "enabled", "tags")
+    class Field:
+        ID = "field_blueprint.id"
+        UID = "field_blueprint.uid"
+        NAME = "field_blueprint.name"
+        VERSION = "field_blueprint.version"
+        TASK_TYPE = "field_blueprint.task_type"
+        TAGS = "field_blueprint.tags"
+        ENABLED = "field_blueprint.enabled"
+        FIELD_CONFIG = "field_blueprint.field_config"
+        PROMPT_CONFIG = "field_blueprint.prompt_config"
+
+    class LogicalOp:
+        AND = "and"
+        OR = "or"
+        NOT = "not"
+
+    class ComparisonOp:
+        EQ = "eq"
+        NEQ = "neq"
+        GT = "gt"
+        LT = "lt"
+        GE = "ge"
+        LE = "le"
+        IN = "in"
+        CONTAINS = "contains"
 
     def __init__(
         self,
-        uid: "Optional[str]" = None,
-        name: "Optional[str]" = None,
-        id: "Optional[int]" = None,
-        task_type: "Optional[str]" = None,
-        enabled: "Optional[bool]" = None,
-        tags: "Optional[Union[str, List[str]]]" = None,
+        op: Optional[str] = None,
+        filters: Optional[List["FieldBlueprintFilter"]] = None,
+        field: Optional[str] = None,
+        value: Optional[Any] = None,
     ):
-        kwargs = {
-            "uid": uid,
-            "name": name,
-            "id": id,
-            "taskType": task_type,
-            "enabled": enabled,
-            "tags": tags,
+        data = {
+            "op": op,
+            "filters": filters,
+            "field": field,
+            "value": value,
         }
-        # Filter out None values before passing to super (handled in super, but cleaner to map first)
-        clean_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        super().__init__(data=None, **clean_kwargs)
+        # Remove None values to keep payload clean
+        clean_data = {k: v for k, v in data.items() if v is not None}
+        super().__init__(**clean_data)
