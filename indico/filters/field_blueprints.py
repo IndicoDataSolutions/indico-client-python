@@ -8,10 +8,11 @@ class FieldBlueprintFilter(dict[str, Any]):
     """
     Filter for querying Field Blueprints.
 
-    :param op: The operator to apply. Use `FieldBlueprintFilter.LogicalOp` or `FieldBlueprintFilter.ComparisonOp` constants.
-    :param filters: A list of `FieldBlueprintFilter` instances. Required if `op` is LogicalOp.
-    :param field: The database field path to filter on. Use `FieldBlueprintFilter.Field` constants.
-    :param value: The value to filter by. Required if `op` is ComparisonOp.
+    Args:
+        op (str, optional): The operator to apply. Use `FieldBlueprintFilter.LogicalOp` or `FieldBlueprintFilter.ComparisonOp` constants.
+        filters (list, optional): A list of `FieldBlueprintFilter` instances. Required if `op` is LogicalOp.
+        field (str, optional): The database field path to filter on. Use `FieldBlueprintFilter.Field` constants.
+        value (Any, optional): The value to filter by. Required if `op` is ComparisonOp.
     """
 
     class Field:
