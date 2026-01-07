@@ -8,36 +8,37 @@ class FieldBlueprintFilter(dict[str, Any]):
     """
     Filter for querying Field Blueprints.
 
-    :param op: The operator to apply.
-        - Logical: "and", "or", "not" (requires `filters`)
-        - Comparison: "eq", "neq", "gt", "lt", "ge", "le", "in", "contains" (requires `field` and `value`)
-    :param filters: A list of `FieldBlueprintFilter` instances. Required if `op` is logical (e.g., "and").
-    :param field: The database field path to filter on. Required if `op` is a comparison.
-        Format: "table.column" or "table.column.nested.key" (for JSONB).
-        Examples: "field_blueprint.uid", "field_blueprint.prompt_config.prompt"
-
-        Queryable Fields:
-        - "field_blueprint.id" (Int)
-        - "field_blueprint.uid" (String)
-        - "field_blueprint.name" (String)
-        - "field_blueprint.version" (String)
-        - "field_blueprint.task_type" (Enum: GENAI_ANNOTATION, SUMMARIZATION)
-        - "field_blueprint.tags" (List[String])
-        - "field_blueprint.enabled" (Boolean)
-        - "field_blueprint.field_config" (JSONB)
-        - "field_blueprint.prompt_config" (JSONB)
-
-        Note: JSONB fields (field_config, prompt_config) support nested path querying.
-        e.g., "field_blueprint.prompt_config.target_name"
-    :param value: The value to filter by. Required if `op` is a comparison.
-        - For "eq", "neq", "gt", "lt", "ge", "le": A scalar value (str, int, float, etc.)
-        - For "in": A list of values
-        - For "contains": A string substring
-
-    Usage:
-        Logical: FieldBlueprintFilter(op="and", filters=[...])
-        Condition: FieldBlueprintFilter(op="eq", field="field_blueprint.uid", value="123")
+    :param op: The operator to apply. Use `FieldBlueprintFilter.LogicalOp` or `FieldBlueprintFilter.ComparisonOp` constants.
+    :param filters: A list of `FieldBlueprintFilter` instances. Required if `op` is LogicalOp.
+    :param field: The database field path to filter on. Use `FieldBlueprintFilter.Field` constants.
+    :param value: The value to filter by. Required if `op` is ComparisonOp.
     """
+
+    class Field:
+        ID = "field_blueprint.id"
+        UID = "field_blueprint.uid"
+        NAME = "field_blueprint.name"
+        VERSION = "field_blueprint.version"
+        TASK_TYPE = "field_blueprint.task_type"
+        TAGS = "field_blueprint.tags"
+        ENABLED = "field_blueprint.enabled"
+        FIELD_CONFIG = "field_blueprint.field_config"
+        PROMPT_CONFIG = "field_blueprint.prompt_config"
+
+    class LogicalOp:
+        AND = "and"
+        OR = "or"
+        NOT = "not"
+
+    class ComparisonOp:
+        EQ = "eq"
+        NEQ = "neq"
+        GT = "gt"
+        LT = "lt"
+        GE = "ge"
+        LE = "le"
+        IN = "in"
+        CONTAINS = "contains"
 
     def __init__(
         self,

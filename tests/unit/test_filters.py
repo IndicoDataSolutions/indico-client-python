@@ -51,11 +51,15 @@ def test_doc_report_filter():
 
 
 def test_field_blueprint_filter():
-    f = FieldBlueprintFilter(field="uid", op="eq", value="123")
+    f = FieldBlueprintFilter(
+        field=FieldBlueprintFilter.Field.UID,
+        op=FieldBlueprintFilter.ComparisonOp.EQ,
+        value="123",
+    )
     # Verify it acts as a dict
     assert isinstance(f, dict)
     # Verify content
-    assert f == {"field": "uid", "op": "eq", "value": "123"}
+    assert f == {"field": "field_blueprint.uid", "op": "eq", "value": "123"}
 
     # Test invalid option
     with pytest.raises(TypeError):
@@ -99,8 +103,12 @@ def test_submission_field_filter():
 
 def test_field_blueprint_filter_nested():
     # Test nested filters
-    f1 = FieldBlueprintFilter(field="field_blueprint.tags", op="in", value=["fixture"])
-    f_outer = FieldBlueprintFilter(op="and", filters=[f1])
+    f1 = FieldBlueprintFilter(
+        field=FieldBlueprintFilter.Field.TAGS,
+        op=FieldBlueprintFilter.ComparisonOp.IN,
+        value=["fixture"],
+    )
+    f_outer = FieldBlueprintFilter(op=FieldBlueprintFilter.LogicalOp.AND, filters=[f1])
 
     assert f_outer == {
         "op": "and",
