@@ -26,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # here to avoid circular imports
 class GetIPAVersion(GraphQLRequest[str]):
     query = """
-        "query getIPAVersion {
+        query getIPAVersion {
             ipaVersion
         }
     """
