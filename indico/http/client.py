@@ -17,7 +17,7 @@ from indico.errors import (
 )
 from indico.http.serialization import aio_deserialize, deserialize
 
-from .retry import aioretry
+from .retry import retry
 
 if TYPE_CHECKING:  # pragma: no cover
     from http.cookiejar import Cookie
@@ -161,6 +161,30 @@ class HTTPClient:
         _refreshed: bool = False,
         **request_kwargs: "Any",
     ) -> "Any":
+        return retry(
+            requests.RequestException,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )(
+            self._make_request_once,
+        )(
+            method=method,
+            path=path,
+            headers=headers,
+            _refreshed=_refreshed,
+            **request_kwargs,
+        )
+
+    def _make_request_once(
+        self,
+        method: str,
+        path: str,
+        headers: "Optional[Dict[str, str]]" = None,
+        _refreshed: bool = False,
+        **request_kwargs: "Any",
+    ) -> "Any":
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
@@ -169,9 +193,11 @@ class HTTPClient:
                 f"{self.base_url}{path}",
                 headers=headers,
                 stream=True,
-                verify=False
-                if not self.config.verify_ssl or not self.request_session.verify
-                else True,
+                timeout=(
+                    self.config.socket_connect_timeout,
+                    self.config.socket_read_timeout,
+                ),
+                verify=(self.config.verify_ssl and self.request_session.verify),
                 **new_kwargs,
             )
 
@@ -316,8 +342,31 @@ class AIOHTTPClient:
             for f in files:
                 f.close()
 
-    @aioretry(aiohttp.ClientConnectionError, aiohttp.ServerDisconnectedError)
     async def _make_request(
+        self,
+        method: str,
+        path: str,
+        headers: "Optional[Dict[str, str]]" = None,
+        _refreshed: bool = False,
+        **request_kwargs: "Any",
+    ) -> "Any":
+        return await retry(
+            aiohttp.ClientConnectionError,
+            count=self.config.retry_count,
+            wait=self.config.retry_wait,
+            backoff=self.config.retry_backoff,
+            jitter=self.config.retry_jitter,
+        )(
+            self._make_request_once,
+        )(
+            method=method,
+            path=path,
+            headers=headers,
+            _refreshed=_refreshed,
+            **request_kwargs,
+        )
+
+    async def _make_request_once(
         self,
         method: str,
         path: str,
@@ -346,6 +395,10 @@ class AIOHTTPClient:
             async with getattr(self.request_session, method)(
                 f"{self.base_url}{path}",
                 headers=headers,
+                timeout=aiohttp.ClientTimeout(
+                    sock_connect=self.config.socket_connect_timeout,
+                    sock_read=self.config.socket_read_timeout,
+                ),
                 verify_ssl=self.config.verify_ssl,
                 **request_kwargs,
             ) as response:

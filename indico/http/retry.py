@@ -1,85 +1,99 @@
 import asyncio
 import time
 from functools import wraps
-from random import randint
-from typing import TYPE_CHECKING
+from inspect import iscoroutinefunction
+from random import random
+from typing import TYPE_CHECKING, overload
 
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import Awaitable, Callable, Optional, Tuple, Type, TypeVar, Union
+if TYPE_CHECKING:
+    import sys
+    from collections.abc import Awaitable, Callable
+    from typing import Type
 
-    from typing_extensions import ParamSpec
+    if sys.version_info >= (3, 10):
+        from typing import ParamSpec, TypeVar
+    else:
+        from typing_extensions import ParamSpec, TypeVar
 
-    P = ParamSpec("P")
-    T = TypeVar("T")
+    ArgumentsType = ParamSpec("ArgumentsType")
+    ReturnType = TypeVar("ReturnType")
 
 
 def retry(
-    *ExceptionTypes: "Type[Exception]", tries: int = 3, delay: int = 1, backoff: int = 2
-) -> "Callable[[Callable[P, T]], Callable[P, T]]":
+    *errors: "Type[Exception]",
+    count: int,
+    wait: float,
+    backoff: float,
+    jitter: float,
+) -> "Callable[[Callable[ArgumentsType, ReturnType]], Callable[ArgumentsType, ReturnType]]":  # noqa: E501
     """
-    Retry with exponential backoff
+    Decorate a function or coroutine to retry when it raises specified errors,
+    apply exponential backoff and jitter to the wait time,
+    and raise the last error if it retries too many times.
 
-    Original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
-    """
-
-    def retry_decorator(f: "Callable[P, T]") -> "Callable[P, T]":
-        @wraps(f)
-        def retry_fn(*args: "P.args", **kwargs: "P.kwargs") -> "T":
-            n_tries, n_delay = tries, delay
-            while n_tries > 1:
-                try:
-                    return f(*args, **kwargs)
-                except ExceptionTypes:
-                    time.sleep(n_delay)
-                    n_tries -= 1
-                    n_delay *= backoff
-            return f(*args, **kwargs)
-
-        return retry_fn
-
-    return retry_decorator
-
-
-def aioretry(
-    *ExceptionTypes: "Type[Exception]",
-    tries: int = 3,
-    delay: "Union[int, Tuple[int, int]]" = 1,
-    backoff: int = 2,
-    condition: "Optional[Callable[[Exception], bool]]" = None,
-) -> "Callable[[Callable[P, Awaitable[T]]], Callable[P, Awaitable[T]]]":
-    """
-    Retry with exponential backoff
-
-    Original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
-    Options:
-        condition: Callable to evaluate if an exception of a given type
-            is retryable for additional handling
-        delay: an initial time to wait (seconds). If a tuple, choose a random number
-            in that range to start. This can helps prevent retries at the exact
-            same time across multiple concurrent function calls
+    Arguments:
+        errors:  Retry the function when it raises one of these errors.
+        count:   Retry the function this many times.
+        wait:    Wait this many seconds after the first error before retrying.
+        backoff: Multiply the wait time by this amount for each additional error.
+        jitter:  Add a random amount of time (up to this percent as a decimal)
+                 to the wait time to prevent simultaneous retries.
     """
 
-    def retry_decorator(f: "Callable[P, Awaitable[T]]") -> "Callable[P, Awaitable[T]]":
-        @wraps(f)
-        async def retry_fn(*args: "P.args", **kwargs: "P.kwargs") -> "T":
-            n_tries = tries
-            if isinstance(delay, tuple):
-                # pick a random number to sleep
-                n_delay = randint(*delay)
-            else:
-                n_delay = delay
-            while True:
-                try:
-                    return await f(*args, **kwargs)
-                except ExceptionTypes as e:
-                    if condition and not condition(e):
-                        raise
-                    await asyncio.sleep(n_delay)
-                    n_tries -= 1
-                    n_delay *= backoff
-                    if n_tries <= 0:
-                        raise
+    def wait_time(times_retried: int) -> float:
+        """
+        Calculate the sleep time based on number of times retried.
+        """
+        return wait * backoff**times_retried * (1 + jitter * random())
 
-        return retry_fn
+    @overload
+    def retry_decorator(
+        decorated: "Callable[ArgumentsType, Awaitable[ReturnType]]",
+    ) -> "Callable[ArgumentsType, Awaitable[ReturnType]]": ...
+
+    @overload
+    def retry_decorator(
+        decorated: "Callable[ArgumentsType, ReturnType]",
+    ) -> "Callable[ArgumentsType, ReturnType]": ...
+
+    def retry_decorator(
+        decorated: "Callable[ArgumentsType, ReturnType]",
+    ) -> "Callable[ArgumentsType, Awaitable[ReturnType]] | Callable[ArgumentsType, ReturnType]":  # noqa: E501
+        """
+        Decorate either a function or coroutine as appropriate.
+        """
+        if iscoroutinefunction(decorated):
+
+            @wraps(decorated)
+            async def retrying_coroutine(  # type: ignore[return]
+                *args: "ArgumentsType.args", **kwargs: "ArgumentsType.kwargs"
+            ) -> "ReturnType":
+                for times_retried in range(count + 1):
+                    try:
+                        return await decorated(*args, **kwargs)  # type: ignore[no-any-return]
+                    except errors:
+                        if times_retried >= count:
+                            raise
+
+                    await asyncio.sleep(wait_time(times_retried))
+
+            return retrying_coroutine
+
+        else:
+
+            @wraps(decorated)
+            def retrying_function(  # type: ignore[return]
+                *args: "ArgumentsType.args", **kwargs: "ArgumentsType.kwargs"
+            ) -> "ReturnType":
+                for times_retried in range(count + 1):
+                    try:
+                        return decorated(*args, **kwargs)
+                    except errors:
+                        if times_retried >= count:
+                            raise
+
+                    time.sleep(wait_time(times_retried))
+
+            return retrying_function
 
     return retry_decorator
