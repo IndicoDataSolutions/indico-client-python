@@ -11,6 +11,7 @@ from indico.types import (
     NewQuestionnaireArguments,
     Workflow,
 )
+from indico.types.workflow import ComponentValidationResult
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterator, List, Optional, Union
@@ -535,6 +536,223 @@ class AddStaticModelComponent(RequestChain["Workflow"]):
         yield _AddWorkflowComponent(
             after_component_id=self.after_component_id,
             after_component_link=self.after_component_link_id,
+            workflow_id=self.workflow_id,
+            component=self.component,
+        )
+
+
+class ValidateComponentUpdate(GraphQLRequest["ComponentValidationResult"]):
+    """
+    Validate a component update before applying it.
+    Returns information about components that will be deleted, links that will be
+    removed/updated/added as a result of the update.
+
+    Args:
+        component_id(int): the id of the component to validate.
+        workflow_id(int): the id of the workflow containing the component.
+        component(dict): the component data with config to validate.
+
+    Returns:
+        ComponentValidationResult: validation result containing:
+            - valid: whether the update is valid
+            - components_to_delete: list of components that will be deleted
+            - links_to_remove: list of links that will be removed
+            - links_to_update: list of links that will be updated
+            - links_to_add: list of links that will be added
+    """
+
+    query = """
+        query validateComponentUpdate(
+            $componentId: Int!,
+            $workflowId: Int!,
+            $component: JSONString!
+        ) {
+            validateComponentUpdate(
+                componentId: $componentId,
+                workflowId: $workflowId,
+                component: $component
+            ) {
+                valid
+                componentsToDelete {
+                    id
+                    name
+                    componentType
+                    modelGroupName
+                    reason
+                }
+                linksToRemove {
+                    id
+                    headId
+                    tailId
+                    config
+                }
+                linksToUpdate {
+                    id
+                    headId
+                    tailId
+                    config
+                }
+                linksToAdd {
+                    headId
+                    tailId
+                    config
+                }
+            }
+        }
+    """
+
+    def __init__(
+        self,
+        component_id: int,
+        workflow_id: int,
+        component: "AnyDict",
+    ):
+        super().__init__(
+            self.query,
+            variables={
+                "componentId": component_id,
+                "workflowId": workflow_id,
+                "component": jsons.dumps(component),
+            },
+        )
+
+    def process_response(self, response: "Payload") -> "ComponentValidationResult":
+        return ComponentValidationResult(
+            **super().parse_payload(response)["validateComponentUpdate"]
+        )
+
+
+class _UpdateComponent(GraphQLRequest["Workflow"]):
+    query = """
+        mutation updateComponent(
+            $componentId: Int!,
+            $workflowId: Int!,
+            $component: JSONString!
+        ) {
+            updateComponent(
+                componentId: $componentId,
+                workflowId: $workflowId,
+                component: $component
+            ) {
+                workflow {
+                    id
+                    name
+                    status
+                    reviewEnabled
+                    autoReviewEnabled
+                    createdAt
+                    createdBy
+                    submissionRunnable
+                    components {
+                        id
+                        componentType
+                        reviewable
+                        filteredClasses
+                        ... on ContentLengthComponent {
+                            minimum
+                            maximum
+                        }
+                        ... on ModelGroupComponent {
+                            taskType
+                            modelType
+                            modelGroup {
+                                status
+                                id
+                                name
+                                taskType
+                                questionnaireId
+                                classNames
+                                selectedModel {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                    componentLinks {
+                        id
+                        headComponentId
+                        tailComponentId
+                        config
+                        filters {
+                            classes
+                        }
+                    }
+                    datasetId
+                }
+            }
+        }
+    """
+
+    def __init__(
+        self,
+        component_id: int,
+        workflow_id: int,
+        component: "AnyDict",
+    ):
+        super().__init__(
+            self.query,
+            variables={
+                "componentId": component_id,
+                "workflowId": workflow_id,
+                "component": jsons.dumps(component),
+            },
+        )
+
+    def process_response(self, response: "Payload") -> "Workflow":
+        return Workflow(
+            **super().parse_payload(response)["updateComponent"]["workflow"]
+        )
+
+
+class UpdateComponent(RequestChain["Workflow"]):
+    """
+    Update a component in a workflow.
+
+    Args:
+        component_id(int): the id of the component to update.
+        workflow_id(int): the id of the workflow containing the component.
+        component(dict): the component data with config to update.
+        auto_validate(bool): if True, validates the update first and raises
+            IndicoInputError if validation fails. Defaults to False.
+
+    Returns:
+        Workflow: the updated workflow.
+    """
+
+    previous: "Any" = None
+
+    def __init__(
+        self,
+        component_id: int,
+        workflow_id: int,
+        component: "AnyDict",
+        auto_validate: bool = True,
+    ):
+        self.component_id = component_id
+        self.workflow_id = workflow_id
+        self.component = component
+        self.auto_validate = auto_validate
+
+    def requests(
+        self,
+    ) -> "Iterator[Union[ValidateComponentUpdate, _UpdateComponent]]":
+        if self.auto_validate:
+            yield ValidateComponentUpdate(
+                component_id=self.component_id,
+                workflow_id=self.workflow_id,
+                component=self.component,
+            )
+            if not self.previous.valid:
+                raise IndicoInputError(
+                    "Component update validation failed. "
+                    f"Components to delete: {len(self.previous.components_to_delete)}, "
+                    f"Links to remove: {len(self.previous.links_to_remove)}, "
+                    f"Links to update: {len(self.previous.links_to_update)}, "
+                    f"Links to add: {len(self.previous.links_to_add)}"
+                )
+
+        yield _UpdateComponent(
+            component_id=self.component_id,
             workflow_id=self.workflow_id,
             component=self.component,
         )
