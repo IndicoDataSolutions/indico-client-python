@@ -13,17 +13,4 @@ from .output_file import *  # noqa
 from .questionnaire import Example  # noqa
 from .submission_file import *  # noqa
 from .submission import *  # noqa
-from .workflow import (  # noqa
-    ComponentFamily,
-    ComponentToDeleteInfo,
-    ComponentValidationResult,
-    LinkedLabelGroup,
-    LinkedLabelStrategy,
-    LinkInfoBase,
-    LinkToAddInfo,
-    LinkToRemoveInfo,
-    LinkToUpdateInfo,
-    Workflow,
-    WorkflowComponent,
-    WorkflowComponentLinks,
-)
+from .workflow import *  # noqa
