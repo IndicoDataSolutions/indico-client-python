@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List
 
 from indico.types import BaseType, ModelGroup
 from indico.types.base import JSONType
@@ -13,7 +13,7 @@ class ComponentToDeleteInfo(BaseType):
     id: int
     name: str
     component_type: str
-    model_group_name: Optional[str]
+    model_group_name: str
     reason: str
 
 
