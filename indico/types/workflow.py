@@ -9,6 +9,40 @@ if TYPE_CHECKING:  # pragma: no cover
     from indico.typing import AnyDict
 
 
+class ComponentToDeleteInfo(BaseType):
+    id: int
+    name: str
+    component_type: str
+    model_group_name: str
+    reason: str
+
+
+class LinkInfoBase(BaseType):
+    head_id: int
+    tail_id: int
+    config: JSONType
+
+
+class LinkToAddInfo(LinkInfoBase):
+    pass
+
+
+class LinkToRemoveInfo(LinkInfoBase):
+    id: int
+
+
+class LinkToUpdateInfo(LinkInfoBase):
+    id: int
+
+
+class ComponentValidationResult(BaseType):
+    valid: bool
+    components_to_delete: List[ComponentToDeleteInfo]
+    links_to_remove: List[LinkToRemoveInfo]
+    links_to_update: List[LinkToUpdateInfo]
+    links_to_add: List[LinkToAddInfo]
+
+
 class WorkflowComponent(BaseType):
     """
     A component, such as a Model Group or Content Length filter, that is present on a workflow.
