@@ -295,7 +295,9 @@ class WaitForSubmissions(RequestChain["List[Submission]"]):
         self.timeout = timeout
         self.status_check = partial(ne, "PROCESSING")
         self.status_getter = partial(
-            ListSubmissions, submission_ids=self.submission_ids, limit=None
+            ListSubmissions,
+            submission_ids=self.submission_ids,
+            limit=len(self.submission_ids),
         )
 
     def requests(self) -> "Iterator[ListSubmissions]":
