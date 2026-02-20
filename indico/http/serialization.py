@@ -3,7 +3,6 @@ Handles deserialization / decoding of responses
 """
 
 import gzip
-import io
 import json
 import logging
 import traceback
@@ -16,28 +15,21 @@ from indico.errors import IndicoDecodingError
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
-    from aiohttp import ClientResponse
-    from requests import Response
+    import httpx
 
 logger = logging.getLogger(__name__)
 
-
-def decompress(response: "Response") -> bytes:
-    response.raw.decode_content = True
-    value: bytes = io.BytesIO(response.raw.data).getvalue()
-    return gzip.decompress(value)
+GZIP_CONTENT_TYPES = ("application/x-gzip", "application/gzip")
 
 
 def deserialize(
-    response: "Response", force_json: bool = False, force_decompress: bool = False
+    response: "httpx.Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
-    content: bytes
+    content_type, params = parse_header(response.headers.get("content-type", ""))
+    content: bytes = response.content
 
-    if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
-        content = decompress(response)
-    else:
-        content = response.content
+    if force_decompress or content_type in GZIP_CONTENT_TYPES:
+        content = gzip.decompress(content)
 
     charset = params.get("charset", "utf-8")
 
@@ -55,13 +47,13 @@ def deserialize(
 
 
 async def aio_deserialize(
-    response: "ClientResponse", force_json: bool = False, force_decompress: bool = False
+    response: "httpx.Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
-    content: bytes = await response.read()
+    content_type, params = parse_header(response.headers.get("content-type", ""))
+    content: bytes = response.content
 
-    if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
-        content = gzip.decompress(io.BytesIO(content).getvalue())
+    if force_decompress or content_type in GZIP_CONTENT_TYPES:
+        content = gzip.decompress(content)
 
     charset: str = params.get("charset", "utf-8")
 

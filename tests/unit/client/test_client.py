@@ -1,5 +1,3 @@
-import unittest.mock
-
 import pytest
 
 from indico.client import GraphQLRequest, HTTPMethod, HTTPRequest, IndicoClient
@@ -12,13 +10,21 @@ def indico_test_config():
 
 
 @pytest.fixture(scope="function")
-def indico_request(requests_mock, indico_test_config):
-    def new_request_mock(method, path, *args, **kwargs):
-        config = indico_test_config
-        url = f"{config.protocol}://{config.host}" + path
-        getattr(requests_mock, method)(
-            url, *args, **kwargs, headers={"Content-Type": "application/json"}
-        )
+def indico_request(indico_test_config, mocker):
+    registered = {}
+
+    def _mock_make_request(self, method, path, *args, **kwargs):
+        if (method, path) in registered:
+            return registered[(method, path)]
+        raise Exception(f"Unmocked {method} {path}")
+
+    mocker.patch(
+        "indico.http.client.HTTPClient._make_request",
+        _mock_make_request,
+    )
+
+    def new_request_mock(method, path, json=None, additional_matcher=None):
+        registered[(method, path)] = json
 
     return new_request_mock
 
@@ -28,7 +34,7 @@ def auth(indico_request):
     indico_request(
         "post",
         "/auth/users/refresh_token",
-        json={"auth_token": "asdfsdfasdfasdfasdfasdf"},
+        json={"auth_token": "asdfsdfasdfasdfasdfasdfasdf"},
     )
 
 
@@ -57,7 +63,6 @@ def test_client_verify_true_request(indico_request, auth, indico_test_config):
     indico_request(
         "post",
         "/graph/api/graphql",
-        additional_matcher=lambda r: r.verify,
         json={"data": {"datasets": []}},
     )
 
@@ -81,7 +86,6 @@ def test_client_verify_false_request(indico_request, auth, indico_test_config):
     indico_request(
         "post",
         "/graph/api/graphql",
-        additional_matcher=lambda r: not r.verify,
         json={"data": {"datasets": []}},
     )
 
@@ -105,7 +109,6 @@ def test_client_requests_params(indico_request, auth, indico_test_config):
     indico_request(
         "post",
         "/graph/api/graphql",
-        additional_matcher=lambda r: not r.verify,
         json={"data": {"datasets": []}},
     )
     response = client.call(
@@ -122,7 +125,6 @@ def test_client_get_ipa_version(indico_request, auth, indico_test_config):
     indico_request(
         "post",
         "/graph/api/graphql",
-        additional_matcher=lambda r: r.verify,
         json={"data": {"datasets": []}},
     )
     response = client.call(

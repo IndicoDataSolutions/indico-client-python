@@ -13,7 +13,7 @@ def indico_test_config():
 
 
 @pytest.fixture(scope="function")
-def indico_request(requests_mock, indico_test_config, monkeypatch):
+def indico_request(indico_test_config, monkeypatch):
     registered = {}
 
     async def _mock_make_request(self, method, path, *args, **kwargs):

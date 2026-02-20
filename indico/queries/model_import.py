@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, cast
 
-import requests
+import httpx
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
@@ -37,7 +37,7 @@ class _UploadSMExport(GraphQLRequest[str]):
             file_content = file.read()
 
         headers = {"Content-Type": "application/zip"}
-        export_response = requests.put(signed_url, data=file_content, headers=headers)
+        export_response = httpx.put(signed_url, content=file_content, headers=headers)
 
         if export_response.status_code != 200:
             raise IndicoRequestError(

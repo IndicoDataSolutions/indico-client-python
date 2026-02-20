@@ -22,11 +22,10 @@ def mock_loader():
         if charset:
             charset = f"; charset={charset}"
 
-        response_mock.headers = {"Content-Type": f"{mime}{charset}"}
+        response_mock.headers = {"content-type": f"{mime}{charset}"}
         with open(path, "rb") as f:
             content = f.read()
         response_mock.content = content
-        response_mock.raw.data = content
         return response_mock
 
     return _mock_loader

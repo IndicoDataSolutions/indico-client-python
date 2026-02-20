@@ -21,7 +21,8 @@ class IndicoConfig:
         api_token_path= (str, optional): Path to the Indico API token file indico_api_token.txt. Defaults to user's home directory. Ignored if api_token is provided.
         api_token= (str, optional): The actual text of the API Token. Takes precedence over api_token_path
         verify_ssl= (bool, optional): Whether to verify the host's SSL certificate. Default=True
-        requests_params= (dict, optional): Dictionary of requests. Session parameters to set
+        requests_params= (dict, optional): Dictionary of httpx Client parameters to set
+        enable_http2= (bool, optional): Enable HTTP/2 for async client. Default=False (HTTP/1.1).
 
     Returns:
         IndicoConfig object
@@ -41,6 +42,7 @@ class IndicoConfig:
         self.verify_ssl: bool = True
         self.requests_params: "Optional[AnyDict]" = None
         self._disable_cookie_domain: bool = False
+        self.enable_http2: bool = False
 
         for key, value in kwargs.items():
             if hasattr(self, key):

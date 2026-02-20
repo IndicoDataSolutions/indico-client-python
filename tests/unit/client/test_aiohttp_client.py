@@ -20,9 +20,8 @@ async def test_handle_files_correct_filename():
         with client._handle_files(request_kwargs) as file_args:
             assert len(file_args) == 1
             for arg in file_args:
-                fields = arg._fields
-                for field in fields:
-                    field_dict = field[0]
-                    filename = field_dict.get("filename")
-                    assert filename == "testfile.txt"
-    await client.request_session.close()
+                assert "files" in arg
+                assert "file" in arg["files"]
+                filename = arg["files"]["file"][0]
+                assert filename == "testfile.txt"
+    await client.request_session.aclose()

@@ -119,7 +119,7 @@ Using UV (recommended):
 1. Install UV if you haven't already
    `curl -LsSf https://astral.sh/uv/install.sh | sh`
 2. Install the client and test dependencies
-   `uv pip install -e ".[all]" "pytest<8" "requests-mock>=1.8.0" "pytest-asyncio>0.21"`
+   `uv pip install -e ".[all]" "pytest<8" "pytest-mock>=3.15.0" "pytest-asyncio>0.21"`
 3. Run tests
    `pytest -sv --host <indico_host> tests/`
    _ Only run unit tests `pytest -sv --host <indico_host> tests/unit/`
@@ -139,7 +139,7 @@ Or using pip:
 3. Install the client
    `pip3 install --editable .[all]`
 4. Install test deps
-   `pip3 install "pytest<8" "requests-mock>=1.8.0" "pytest-asyncio>0.21"`
+   `pip3 install "pytest<8" "pytest-mock>=3.15.0" "pytest-asyncio>0.21"`
 5. Run tests
    `pytest -sv --host <indico_host> tests/`
    _ Only run unit tests `pytest -sv --host <indico_host> tests/unit/`

@@ -183,7 +183,7 @@ class AsyncIndicoClient:
         return self
 
     async def cleanup(self) -> None:
-        await self._http.request_session.close()
+        await self._http.request_session.aclose()
 
     async def _handle_request_chain(
         self,
