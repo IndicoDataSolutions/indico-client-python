@@ -92,15 +92,33 @@ class OcrEngine(Enum):
     READAPI_TABLES_V2 = 4
 
 
-class OmnipageOcrOptionsInput(BaseType):
+class BaseOCROptions(BaseType):
+    """
+    Base OCR options shared across engines.
+
+    Args:
+        auto_rotate(bool): Auto rotate.
+        upscale_images(bool): Scale up low resolution images.
+        spreadsheet_converter_version(int): Spreadsheet converter version.
+        languages(List[str]): List of languages to use.
+    """
+
+    auto_rotate: bool
+    upscale_images: bool
+    spreadsheet_converter_version: int
+    languages: List[str]
+
+
+class OmnipageOcrOptionsInput(BaseOCROptions):
     """
     Omnipage specific OCR options for dataset creation.
 
     Args:
-        auto_rotate(bool): auto rotate.
-        single_colum(bool): Read table as a single column.
-        upscale_images(bool): Scale up low-resolution images.
-        languages(List[OmnipageLanguageCode]): List of languages to use in ocr.
+        auto_rotate(bool): Auto rotate.
+        upscale_images(bool): Scale up low resolution images.
+        spreadsheet_converter_version(int): Spreadsheet converter version.
+        languages(List[str]): List of languages to use.
+        single_column(bool): Read table as a single column.
         cells(bool): Return table information for post-processing rules
         force_render(bool): Force rednering.
         native_layout(bool): Native layout.
@@ -109,11 +127,7 @@ class OmnipageOcrOptionsInput(BaseType):
 
     """
 
-    auto_rotate: bool
     single_column: bool
-    upscale_images: bool
-    spreadsheet_converter_version: int
-    languages: List[str]
     cells: bool
     force_render: bool
     native_layout: bool
@@ -122,83 +136,64 @@ class OmnipageOcrOptionsInput(BaseType):
     split_version: int
 
 
-class ReadApiOcrOptionsInput(BaseType):
+class ReadApiOcrOptionsInput(BaseOCROptions):
     """
     Read API OCR options.
 
     Args:
-        auto_rotate(bool): Auto rotate
-        single_column(bool): Read table as a single column.
+        auto_rotate(bool): Auto rotate.
         upscale_images(bool): Scale up low resolution images.
         spreadsheet_converter_version(int): Spreadsheet converter version.
         languages(List[str]): List of languages to use.
         excel_tables(bool): Enable excel tables processing.
         excel_tables_type(ExcelTablesType): Excel tables processing type (NATIVE or RENDERED).
+        single_column(bool): Read table as a single column.
     """
 
-    auto_rotate: bool
     single_column: bool
-    upscale_images: bool
-    spreadsheet_converter_version: int
-    languages: List[str]
     excel_tables: bool
     excel_tables_type: ExcelTablesType
 
 
-class ReadApiV2OcrOptionsInput(BaseType):
+class ReadApiV2OcrOptionsInput(ReadApiOcrOptionsInput):
     """
     Read API v2 OCR options.
 
     Args:
-        auto_rotate(bool): Auto rotate
-        single_column(bool): Read table as a single column.
+        auto_rotate(bool): Auto rotate.
         upscale_images(bool): Scale up low resolution images.
         spreadsheet_converter_version(int): Spreadsheet converter version.
         languages(List[str]): List of languages to use.
         excel_tables(bool): Enable excel tables processing.
         excel_tables_type(ExcelTablesType): Excel tables processing type (NATIVE or RENDERED).
+        single_column(bool): Read table as a single column.
     """
 
-    auto_rotate: bool
-    single_column: bool
-    upscale_images: bool
-    spreadsheet_converter_version: int
-    languages: List[str]
-    excel_tables: bool
-    excel_tables_type: ExcelTablesType
 
-
-class ReadApiTablesV1OcrOptionsInput(BaseType):
+class ReadApiTablesV1OcrOptionsInput(ReadApiOcrOptionsInput):
     """
     Read API tables v1 OCR options.
 
     Args:
-        auto_rotate(bool): Auto rotate
-        single_column(bool): Read table as a single column.
+        auto_rotate(bool): Auto rotate.
         upscale_images(bool): Scale up low resolution images.
         spreadsheet_converter_version(int): Spreadsheet converter version.
         languages(List[str]): List of languages to use.
         excel_tables(bool): Enable excel tables processing.
         excel_tables_type(ExcelTablesType): Excel tables processing type (NATIVE or RENDERED).
+        single_column(bool): Read table as a single column.
         table_read_order(TableReadOrder): Read table by row or column.
     """
 
-    auto_rotate: bool
-    single_column: bool
-    upscale_images: bool
-    spreadsheet_converter_version: int
-    languages: List[str]
-    excel_tables: bool
-    excel_tables_type: ExcelTablesType
     table_read_order: TableReadOrder
 
 
-class ReadApiTablesV2OcrOptionsInput(BaseType):
+class ReadApiTablesV2OcrOptionsInput(BaseOCROptions):
     """
     Read API tables v2 OCR options.
 
     Args:
-        auto_rotate(bool): Auto rotate
+        auto_rotate(bool): Auto rotate.
         upscale_images(bool): Scale up low resolution images.
         spreadsheet_converter_version(int): Spreadsheet converter version.
         languages(List[str]): List of languages to use.
@@ -210,10 +205,6 @@ class ReadApiTablesV2OcrOptionsInput(BaseType):
         include_key_value_pairs(bool): Recognize and extract key-value pairs.
     """
 
-    auto_rotate: bool
-    upscale_images: bool
-    spreadsheet_converter_version: int
-    languages: List[str]
     excel_tables: bool
     excel_tables_type: ExcelTablesType
     table_read_order: TableReadOrder
