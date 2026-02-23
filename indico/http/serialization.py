@@ -2,6 +2,7 @@
 Handles deserialization / decoding of responses
 """
 
+import asyncio
 import gzip
 import json
 import logging
@@ -22,21 +23,18 @@ logger = logging.getLogger(__name__)
 GZIP_CONTENT_TYPES = ("application/x-gzip", "application/gzip")
 
 
-def deserialize(
-    response: "httpx.Response", force_json: bool = False, force_decompress: bool = False
+def _deserialize_impl(
+    content_type: str,
+    params: "Dict[str, str]",
+    content: bytes,
+    force_json: bool,
+    force_decompress: bool,
 ) -> "Any":
-    content_type, params = parse_header(response.headers.get("content-type", ""))
-    content: bytes = response.content
-
     if force_decompress or content_type in GZIP_CONTENT_TYPES:
         content = gzip.decompress(content)
-
     charset = params.get("charset", "utf-8")
-
-    # For storage object for example where the content is json based on url ending
     if force_json:
         content_type = "application/json"
-
     try:
         return _SERIALIZATION_FNS[content_type](content, charset)
     except Exception:
@@ -44,30 +42,30 @@ def deserialize(
         raise IndicoDecodingError(
             content_type, charset, content.decode("ascii", "ignore")
         )
+
+
+def deserialize(
+    response: "httpx.Response", force_json: bool = False, force_decompress: bool = False
+) -> "Any":
+    content_type, params = parse_header(response.headers.get("content-type", ""))
+    return _deserialize_impl(
+        content_type, params, response.content, force_json, force_decompress
+    )
 
 
 async def aio_deserialize(
     response: "httpx.Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
     content_type, params = parse_header(response.headers.get("content-type", ""))
-    content: bytes = response.content
-
-    if force_decompress or content_type in GZIP_CONTENT_TYPES:
-        content = gzip.decompress(content)
-
-    charset: str = params.get("charset", "utf-8")
-
-    # For storage object for example where the content is json based on url ending
-    if force_json:
-        content_type = "application/json"
-
-    try:
-        return _SERIALIZATION_FNS[content_type](content, charset)
-    except Exception:
-        logger.debug(traceback.format_exc())
-        raise IndicoDecodingError(
-            content_type, charset, content.decode("ascii", "ignore")
-        )
+    content = response.content
+    return await asyncio.to_thread(
+        _deserialize_impl,
+        content_type,
+        params,
+        content,
+        force_json,
+        force_decompress,
+    )
 
 
 def parse_header(header: str) -> "Tuple[str, Dict[str, str]]":

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from indico.errors import IndicoDecodingError
-from indico.http.serialization import deserialize
+from indico.http.serialization import aio_deserialize, deserialize
 
 
 @pytest.fixture(scope="function")
@@ -96,3 +96,11 @@ def test_deserialize_unknown(mock_loader):
         assert isinstance(e, IndicoDecodingError)
     finally:
         logging.getLogger("indicoio.client.serialization").setLevel(logging.DEBUG)
+
+
+@pytest.mark.asyncio
+async def test_aio_deserialize_same_result_as_deserialize(mock_loader):
+    response = mock_loader("application/json", "utf-8")
+    sync_result = deserialize(response)
+    async_result = await aio_deserialize(response)
+    assert sync_result == async_result
