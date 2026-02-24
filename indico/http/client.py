@@ -72,6 +72,9 @@ class HTTPClient:
         return self._make_request("post", *args, params=params, **kwargs)
 
     def get_short_lived_access_token(self) -> "AnyDict":
+        # If the cookie here is already due to _disable_cookie_domain set and we try to
+        # pop it later it will error out because we have two cookies with the same
+        # name. We just remove the old one here as we are about to refresh it.
         if "auth_token" in self.request_session.cookies:
             self.request_session.cookies.pop("auth_token")
 
@@ -81,6 +84,7 @@ class HTTPClient:
             _refreshed=True,
         )
 
+        # Disable cookie domain in cases where the domain won't match due to using short name domains
         if self.config._disable_cookie_domain:
             value = self.request_session.cookies.get("auth_token", None)
             if not value:
@@ -102,6 +106,8 @@ class HTTPClient:
     @contextmanager
     def _handle_files(self, req_kwargs: "AnyDict") -> "Iterator[AnyDict]":
         streams = None
+        # deepcopying buffers is not supported
+        # so, remove "streams" before the deepcopy.
         if "streams" in req_kwargs:
             if req_kwargs["streams"] is not None:
                 streams = req_kwargs["streams"].copy()
@@ -117,6 +123,7 @@ class HTTPClient:
                 path = Path(filepath)
                 fd = path.open("rb")
                 files.append(fd)
+                # follow the convention of adding (n) after a duplicate filename
                 if path.stem in dup_counts:
                     file_arg[path.stem + f"({dup_counts[path.stem]})"] = fd
                     dup_counts[path.stem] += 1
@@ -126,6 +133,7 @@ class HTTPClient:
 
         if streams is not None and len(streams) > 0:
             for filename in streams:
+                # similar operation as above.
                 stream = streams[filename]
                 files.append(stream)
                 if filename in dup_counts:
@@ -168,6 +176,7 @@ class HTTPClient:
         json: bool = ".json" in Path(path).suffixes
         decompress: bool = Path(path).suffix == ".gz"
 
+        # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
             self.get_short_lived_access_token()
             return self._make_request(
@@ -262,6 +271,7 @@ class AIOHTTPClient:
             path = Path(filepath)
             fd = path.open("rb")
             files.append(fd)
+            # follow the convention of adding (n) after a duplicate filename
             _add_suffix = f".{path.suffix}" if path.suffix else ""
             if path.stem in dup_counts:
                 name = path.stem + f"({dup_counts[path.stem]})" + _add_suffix
@@ -272,6 +282,7 @@ class AIOHTTPClient:
             file_args.append({"files": {"file": (name, fd)}})
 
         for filename, stream in (req_kwargs.pop("streams", {}) or {}).items():
+            # similar operation as above.
             files.append(stream)
             if filename in dup_counts:
                 name = filename + f"({dup_counts[filename]})"
