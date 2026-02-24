@@ -9,7 +9,7 @@ pytestmark = pytest.mark.asyncio(scope="module")
 
 @pytest.fixture(scope="function")
 def indico_test_config():
-    return IndicoConfig(protocol="mock", host="mock")
+    return IndicoConfig(protocol="mock", host="mock", api_token="mock")
 
 
 @pytest.fixture(scope="function")
@@ -58,7 +58,7 @@ async def test_client_basic_http_request(indico_request, auth, indico_test_confi
 
 
 async def test_client_creation_error_handling(indico_test_config):
-    client = AsyncIndicoClient()
+    client = AsyncIndicoClient(config=indico_test_config)
     with pytest.raises(IndicoError):
         await client.call(HTTPRequest(method=HTTPMethod.GET, path="/users/details"))
 

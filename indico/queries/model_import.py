@@ -42,7 +42,7 @@ class _UploadSMExport(GraphQLRequest[str]):
         if export_response.status_code != 200:
             raise IndicoRequestError(
                 f"Failed to upload static model export: {export_response.text}",
-                export_response.status_code,
+                export_response.status_code or 0,
             )
         return storage_uri
 

@@ -22,21 +22,23 @@ logger = logging.getLogger(__name__)
 
 
 def decompress(response: "Response") -> bytes:
-    response.raw.decode_content = True
-    value: bytes = io.BytesIO(response.raw.data).getvalue()
+    raw = response.raw
+    assert raw is not None
+    raw.decode_content = True
+    value: bytes = io.BytesIO(raw.data).getvalue()
     return gzip.decompress(value)
 
 
 def deserialize(
     response: "Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
+    content_type, params = parse_header(str(response.headers["Content-Type"]))
     content: bytes
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = decompress(response)
     else:
-        content = response.content
+        content = response.content or b""
 
     charset = params.get("charset", "utf-8")
 
@@ -56,8 +58,8 @@ def deserialize(
 async def aio_deserialize(
     response: "Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
-    content: bytes = response.content
+    content_type, params = parse_header(str(response.headers["Content-Type"]))
+    content: bytes = response.content or b""
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = gzip.decompress(io.BytesIO(content).getvalue())

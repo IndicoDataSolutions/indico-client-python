@@ -24,6 +24,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, Iterator, List, Optional, Union
     from urllib.request import Request
 
+    from niquests.cookies import RequestsCookieJar
+
     from indico.client.request import HTTPRequest, ResponseType
     from indico.typing import AnyDict
 
@@ -72,11 +74,12 @@ class HTTPClient:
         return self._make_request("post", *args, params=params, **kwargs)
 
     def get_short_lived_access_token(self) -> "AnyDict":
+        cookies = cast("RequestsCookieJar", self.request_session.cookies)
         # If the cookie here is already due to _disable_cookie_domain set and we try to
         # pop it later it will error out because we have two cookies with the same
         # name. We just remove the old one here as we are about to refresh it.
-        if "auth_token" in self.request_session.cookies:
-            self.request_session.cookies.pop("auth_token")
+        if "auth_token" in cookies:
+            cookies.pop("auth_token")
 
         r = self.post(
             "/auth/users/refresh_token",
@@ -86,12 +89,12 @@ class HTTPClient:
 
         # Disable cookie domain in cases where the domain won't match due to using short name domains
         if self.config._disable_cookie_domain:
-            value = self.request_session.cookies.get("auth_token", None)
+            value = cookies.get("auth_token", None)  # type: ignore[no-untyped-call]
             if not value:
                 raise IndicoAuthenticationFailed()
-            self.request_session.cookies.pop("auth_token")
+            cookies.pop("auth_token")
             self.request_session.cookies.set_cookie(
-                niquests.cookies.create_cookie(name="auth_token", value=value)  # type: ignore
+                niquests.cookies.create_cookie(name="auth_token", value=value)  # type: ignore[no-untyped-call]
             )
 
         return cast("AnyDict", r)
@@ -186,12 +189,12 @@ class HTTPClient:
             raise IndicoAuthenticationFailed()
 
         if response.status_code == 503 and "Retry-After" in response.headers:
-            raise IndicoHibernationError(after=response.headers.get("Retry-After"))
+            raise IndicoHibernationError(after=int(response.headers["Retry-After"]))
 
         if response.status_code >= 500:
             raise IndicoRequestError(
                 code=response.status_code,
-                error=response.reason,
+                error=response.reason or "",
                 extras=repr(response.content),
             )
 
@@ -331,20 +334,22 @@ class AIOHTTPClient:
                 **request_kwargs,
             )
 
-            if response.status_code == 401 and not _refreshed:
+            status_code = response.status_code or 0
+
+            if status_code == 401 and not _refreshed:
                 await self.get_short_lived_access_token()
                 return await self._make_request(
                     method, path, headers, _refreshed=True, **request_kwargs
                 )
-            if response.status_code == 401 and _refreshed:
+            if status_code == 401 and _refreshed:
                 raise IndicoAuthenticationFailed()
 
-            if response.status_code == 503 and "Retry-After" in response.headers:
-                raise IndicoHibernationError(after=response.headers.get("Retry-After"))
+            if status_code == 503 and "Retry-After" in response.headers:
+                raise IndicoHibernationError(after=int(response.headers["Retry-After"]))
 
-            if response.status_code >= 500:
+            if status_code >= 500:
                 raise IndicoRequestError(
-                    code=response.status_code,
+                    code=status_code,
                     error=response.reason or "",
                     extras=repr(response.content),
                 )
@@ -353,7 +358,7 @@ class AIOHTTPClient:
                 response, force_json=json, force_decompress=decompress
             )
 
-            if response.status_code >= 400:
+            if status_code >= 400:
                 if isinstance(content, dict):
                     error = (
                         f"{content.pop('error_type', 'Unknown Error')}, "
@@ -364,8 +369,6 @@ class AIOHTTPClient:
                     error = content
                     extras = None
 
-                raise IndicoRequestError(
-                    error=error, code=response.status_code, extras=extras
-                )
+                raise IndicoRequestError(error=error, code=status_code, extras=extras)
 
             return content
