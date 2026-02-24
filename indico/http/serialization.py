@@ -16,8 +16,7 @@ from indico.errors import IndicoDecodingError
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
-    from aiohttp import ClientResponse
-    from requests import Response
+    from niquests import Response
 
 logger = logging.getLogger(__name__)
 
@@ -55,17 +54,16 @@ def deserialize(
 
 
 async def aio_deserialize(
-    response: "ClientResponse", force_json: bool = False, force_decompress: bool = False
+    response: "Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
     content_type, params = parse_header(response.headers["Content-Type"])
-    content: bytes = await response.read()
+    content: bytes = response.content
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = gzip.decompress(io.BytesIO(content).getvalue())
 
     charset: str = params.get("charset", "utf-8")
 
-    # For storage object for example where the content is json based on url ending
     if force_json:
         content_type = "application/json"
 
