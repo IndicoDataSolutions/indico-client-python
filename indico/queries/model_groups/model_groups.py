@@ -311,9 +311,9 @@ class UpdateModelGroupSettings(GraphQLRequest["ModelOptions"]):
         model_training_options_json: "Optional[str]" = None
         if model_training_options:
             if isinstance(model_training_options, dict):
-                model_training_options = json.dumps(model_training_options)
+                model_training_options_json = json.dumps(model_training_options)
             else:
-                model_training_options = model_training_options
+                model_training_options_json = model_training_options
 
         predict_options_json: "Optional[str]" = None
         if predict_options:
