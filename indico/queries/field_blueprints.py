@@ -54,9 +54,6 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
                 minimumLocationType
                 localization
                 }
-                ... on SummarizationPromptConfig {
-                prompt
-                }
             }
             }
         }
@@ -124,9 +121,6 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                             targetName
                             multipleValues
                             minimumLocationType
-                        }
-                        ... on SummarizationPromptConfig {
-                            prompt
                         }
                     }
                 }
@@ -198,9 +192,6 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                                 targetName
                                 multipleValues
                                 minimumLocationType
-                            }
-                            ... on SummarizationPromptConfig {
-                                prompt
                             }
                         }
                     }
