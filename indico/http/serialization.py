@@ -16,28 +16,29 @@ from indico.errors import IndicoDecodingError
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
-    from aiohttp import ClientResponse
-    from requests import Response
+    from niquests import Response
 
 logger = logging.getLogger(__name__)
 
 
 def decompress(response: "Response") -> bytes:
-    response.raw.decode_content = True
-    value: bytes = io.BytesIO(response.raw.data).getvalue()
+    raw = response.raw
+    assert raw is not None
+    raw.decode_content = True
+    value: bytes = io.BytesIO(raw.data).getvalue()
     return gzip.decompress(value)
 
 
 def deserialize(
     response: "Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
+    content_type, params = parse_header(str(response.headers["Content-Type"]))
     content: bytes
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = decompress(response)
     else:
-        content = response.content
+        content = response.content or b""
 
     charset = params.get("charset", "utf-8")
 
@@ -55,17 +56,16 @@ def deserialize(
 
 
 async def aio_deserialize(
-    response: "ClientResponse", force_json: bool = False, force_decompress: bool = False
+    response: "Response", force_json: bool = False, force_decompress: bool = False
 ) -> "Any":
-    content_type, params = parse_header(response.headers["Content-Type"])
-    content: bytes = await response.read()
+    content_type, params = parse_header(str(response.headers["Content-Type"]))
+    content: bytes = response.content or b""
 
     if force_decompress or content_type in ["application/x-gzip", "application/gzip"]:
         content = gzip.decompress(io.BytesIO(content).getvalue())
 
     charset: str = params.get("charset", "utf-8")
 
-    # For storage object for example where the content is json based on url ending
     if force_json:
         content_type = "application/json"
 
