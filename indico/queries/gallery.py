@@ -4,7 +4,7 @@ from indico.client.request import GraphQLRequest, PagedRequestV2
 from indico.types.component_blueprint import BlueprintPage, BlueprintTags
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Optional
+    from typing import Any, Dict, Optional, Union
 
     from indico.typing import Payload
 
@@ -53,7 +53,7 @@ class ListGallery(PagedRequestV2[BlueprintPage]):
 
     def __init__(
         self,
-        filters: "Optional[str]" = None,
+        filters: "Optional[Union[Dict[str, Any], str]]" = None,
         limit: int = 100,
         order_by: str = "name",
         desc: bool = False,

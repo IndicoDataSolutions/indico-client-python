@@ -27,6 +27,9 @@ if TYPE_CHECKING:  # pragma: no cover
         EmailOptions,
         OmnipageOcrOptionsInput,
         ReadApiOcrOptionsInput,
+        ReadApiTablesV1OcrOptionsInput,
+        ReadApiTablesV2OcrOptionsInput,
+        ReadApiV2OcrOptionsInput,
     )
     from indico.typing import AnyDict, Payload
 
@@ -206,9 +209,12 @@ class CreateDataset(RequestChain["Dataset"]):
         from_local_images (bool, optional): Flag whether files are local images or not. Defaults to False.
         image_filename_col (str, optional): Image filename column. Defaults to 'filename'.
         batch_size (int, optional): Size of file batch to upload at a time. Defaults to 20.
-        ocr_engine (OcrEngine, optional): Specify an OCR engine [OMNIPAGE, READAPI, READAPI_V2, READAPI_TABLES_V1]. Defaults to None.
+        ocr_engine (OcrEngine, optional): Specify an OCR engine [OMNIPAGE, READAPI, READAPI_V2, READAPI_TABLES_V1, READAPI_TABLES_V2]. Defaults to None.
         omnipage_ocr_options (OmnipageOcrOptionsInput, optional): If using Omnipage, specify Omnipage OCR options. Defaults to None.
         read_api_ocr_options: (ReadApiOcrOptionsInput, optional): If using ReadAPI, specify ReadAPI OCR options. Defaults to None.
+        read_api_v2_ocr_options: (ReadApiV2OcrOptionsInput, optional): If using ReadAPI v2, specify ReadAPI v2 OCR options. Defaults to None.
+        read_api_tables_v1_ocr_options: (ReadApiTablesV1OcrOptionsInput, optional): If using ReadAPI tables v1, specify ReadAPI tables v1 OCR options. Defaults to None.
+        read_api_tables_v2_ocr_options: (ReadApiTablesV2OcrOptionsInput, optional): If using ReadAPI tables v2, specify ReadAPI tables v2 OCR options. Defaults to None.
         request_interval (int or float, optional): The maximum time in between retry calls when waiting. Defaults to 5 seconds.
 
     Returns:
@@ -228,6 +234,9 @@ class CreateDataset(RequestChain["Dataset"]):
         ocr_engine: "Optional[OcrEngine]" = None,
         omnipage_ocr_options: "Optional[OmnipageOcrOptionsInput]" = None,
         read_api_ocr_options: "Optional[ReadApiOcrOptionsInput]" = None,
+        read_api_v2_ocr_options: "Optional[ReadApiV2OcrOptionsInput]" = None,
+        read_api_tables_v1_ocr_options: "Optional[ReadApiTablesV1OcrOptionsInput]" = None,
+        read_api_tables_v2_ocr_options: "Optional[ReadApiTablesV2OcrOptionsInput]" = None,
         request_interval: "Union[int, float]" = 5,
         email_options: "Optional[EmailOptions]" = None,
     ):
@@ -241,11 +250,26 @@ class CreateDataset(RequestChain["Dataset"]):
         self.ocr_engine = ocr_engine
         self.omnipage_ocr_options = omnipage_ocr_options
         self.read_api_ocr_options = read_api_ocr_options
+        self.read_api_v2_ocr_options = read_api_v2_ocr_options
+        self.read_api_tables_v1_ocr_options = read_api_tables_v1_ocr_options
+        self.read_api_tables_v2_ocr_options = read_api_tables_v2_ocr_options
         self.request_interval = request_interval
         self.email_options = email_options
-        if omnipage_ocr_options is not None and read_api_ocr_options is not None:
+        if (
+            sum(
+                opt is not None
+                for opt in [
+                    omnipage_ocr_options,
+                    read_api_ocr_options,
+                    read_api_v2_ocr_options,
+                    read_api_tables_v1_ocr_options,
+                    read_api_tables_v2_ocr_options,
+                ]
+            )
+            > 1
+        ):
             raise IndicoInputError(
-                "Must supply either omnipage or readapi options but not both."
+                "Must supply only one of omnipage, readapi, readapi v2, readapi tables v1, or readapi tables v2 options."
             )
         super().__init__()
 
@@ -300,6 +324,9 @@ class CreateDataset(RequestChain["Dataset"]):
             name=self.name,
             dataset_type=self.dataset_type,
             readapi_ocr_options=self.read_api_ocr_options,
+            readapi_v2_ocr_options=self.read_api_v2_ocr_options,
+            readapi_tables_v1_ocr_options=self.read_api_tables_v1_ocr_options,
+            readapi_tables_v2_ocr_options=self.read_api_tables_v2_ocr_options,
             omnipage_ocr_options=self.omnipage_ocr_options,
             ocr_engine=self.ocr_engine,
             email_options=self.email_options,
@@ -401,6 +428,9 @@ class CreateEmptyDataset(GraphQLRequest["Dataset"]):
         ocr_engine: "Optional[OcrEngine]" = None,
         omnipage_ocr_options: "Optional[OmnipageOcrOptionsInput]" = None,
         readapi_ocr_options: "Optional[ReadApiOcrOptionsInput]" = None,
+        readapi_v2_ocr_options: "Optional[ReadApiV2OcrOptionsInput]" = None,
+        readapi_tables_v1_ocr_options: "Optional[ReadApiTablesV1OcrOptionsInput]" = None,
+        readapi_tables_v2_ocr_options: "Optional[ReadApiTablesV2OcrOptionsInput]" = None,
         email_options: "Optional[EmailOptions]" = None,
     ):
         if not dataset_type:
@@ -412,6 +442,9 @@ class CreateEmptyDataset(GraphQLRequest["Dataset"]):
                     "ocrEngine": ocr_engine.name,
                     "omnipageOptions": omnipage_ocr_options,
                     "readapiOptions": readapi_ocr_options,
+                    "readapiV2Options": readapi_v2_ocr_options,
+                    "readapiTablesV1Options": readapi_tables_v1_ocr_options,
+                    "readapiTablesV2Options": readapi_tables_v2_ocr_options,
                 },
                 "emailOptions": email_options,
             }

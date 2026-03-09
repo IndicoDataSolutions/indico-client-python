@@ -287,15 +287,22 @@ class WaitForSubmissions(RequestChain["List[Submission]"]):
         }
     """
 
-    def __init__(self, submission_ids: "List[int]", timeout: "Union[int, float]" = 60):
+    def __init__(
+        self, submission_ids: "Union[int, List[int]]", timeout: "Union[int, float]" = 60
+    ):
         if not submission_ids:
             raise IndicoInputError("Please provide submission ids")
 
         self.submission_ids = submission_ids
         self.timeout = timeout
         self.status_check = partial(ne, "PROCESSING")
+        num_submissions = (
+            1 if isinstance(self.submission_ids, int) else len(self.submission_ids)
+        )
         self.status_getter = partial(
-            ListSubmissions, submission_ids=self.submission_ids, limit=None
+            ListSubmissions,
+            submission_ids=self.submission_ids,
+            limit=num_submissions,
         )
 
     def requests(self) -> "Iterator[ListSubmissions]":
