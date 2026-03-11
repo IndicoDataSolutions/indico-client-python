@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, cast
 
-import requests
+import niquests
 
 from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
@@ -37,12 +37,12 @@ class _UploadSMExport(GraphQLRequest[str]):
             file_content = file.read()
 
         headers = {"Content-Type": "application/zip"}
-        export_response = requests.put(signed_url, data=file_content, headers=headers)
+        export_response = niquests.put(signed_url, data=file_content, headers=headers)
 
         if export_response.status_code != 200:
             raise IndicoRequestError(
                 f"Failed to upload static model export: {export_response.text}",
-                export_response.status_code,
+                export_response.status_code or 0,
             )
         return storage_uri
 
