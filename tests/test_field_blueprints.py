@@ -69,9 +69,17 @@ def test_field_blueprint_queries_use_description_in_prompt_config():
 
 
 def test_field_blueprint_queries_use_scalar_validation_config():
-    for query in (GetFieldBlueprints.query, ListFieldBlueprints.query):
+    for query in (
+        CreateFieldBlueprint.query,
+        GetFieldBlueprints.query,
+        ListFieldBlueprints.query,
+    ):
         assert "validationConfig" in query
+        assert "formatConfig" in query
+        assert "inputConfig" in query
         assert "validationConfig {" not in query
+        assert "formatConfig {" not in query
+        assert "inputConfig {" not in query
 
 
 def test_get_field_blueprints(mock_field_blueprint_data):

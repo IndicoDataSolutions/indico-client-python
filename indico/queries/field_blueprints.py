@@ -44,6 +44,9 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
                 datatype
                 required
                 multiple
+                validationConfig
+                formatConfig
+                inputConfig
                 }
             }
             promptConfig {
@@ -100,7 +103,6 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                     updatedBy
                     fieldConfig {
                         ... on ExtractionFieldConfig {
-                            name
                             name
                             datatype
                             required
@@ -167,7 +169,6 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                         updatedBy
                         fieldConfig {
                             ... on ExtractionFieldConfig {
-                                name
                                 name
                                 datatype
                                 required
