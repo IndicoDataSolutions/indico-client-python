@@ -28,7 +28,10 @@ def mock_field_blueprint_data():
         "updatedBy": 1,
         "tags": ["test"],
         "fieldConfig": {"some": "config"},
-        "promptConfig": {"localization": "SEARCH"},
+        "promptConfig": {
+            "description": "Find organization names in the document",
+            "localization": "SEARCH",
+        },
     }
 
 
@@ -47,6 +50,39 @@ def test_create_field_blueprint(mock_field_blueprint_data):
     assert result[0].uid == "test_uid"
     assert result[0].field_config["some"] == "config"
     assert result[0].prompt_config["localization"] == "SEARCH"
+    assert (
+        result[0].prompt_config["description"]
+        == "Find organization names in the document"
+    )
+
+
+def test_create_field_blueprint_normalizes_legacy_prompt_key():
+    blueprints = [
+        {
+            "name": "legacy_prompt_blueprint",
+            "taskType": "GENAI_ANNOTATION",
+            "promptConfig": {
+                "prompt": "Extract the party name",
+                "localization": "SEARCH",
+            },
+        }
+    ]
+    query = CreateFieldBlueprint(blueprints)
+
+    normalized_prompt_config = query.variables["blueprints"][0]["promptConfig"]
+    assert normalized_prompt_config["description"] == "Extract the party name"
+    assert "prompt" not in normalized_prompt_config
+
+
+def test_field_blueprint_queries_use_description_in_prompt_config():
+    for query in (
+        CreateFieldBlueprint.query,
+        GetFieldBlueprints.query,
+        ListFieldBlueprints.query,
+    ):
+        assert "description" in query
+        assert "\n                prompt\n" not in query
+        assert "\n                            prompt\n" not in query
 
 
 def test_get_field_blueprints(mock_field_blueprint_data):

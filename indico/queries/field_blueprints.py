@@ -48,7 +48,7 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
             }
             promptConfig {
                 ... on ExtractionPromptConfig {
-                prompt
+                description
                 targetName
                 multipleValues
                 minimumLocationType
@@ -61,9 +61,25 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
     """
 
     def __init__(self, blueprints: "List[AnyDict]"):
+        normalized_blueprints = []
+        for blueprint in blueprints:
+            normalized_blueprint = dict(blueprint)
+            prompt_config = normalized_blueprint.get("promptConfig")
+            if isinstance(prompt_config, dict):
+                normalized_prompt_config = dict(prompt_config)
+                if (
+                    "description" not in normalized_prompt_config
+                    and "prompt" in normalized_prompt_config
+                ):
+                    normalized_prompt_config["description"] = (
+                        normalized_prompt_config.pop("prompt")
+                    )
+                normalized_blueprint["promptConfig"] = normalized_prompt_config
+            normalized_blueprints.append(normalized_blueprint)
+
         super().__init__(
             self.query,
-            variables={"blueprints": blueprints},
+            variables={"blueprints": normalized_blueprints},
         )
 
     def process_response(self, response: "Payload") -> "List[FieldBlueprint]":
@@ -116,7 +132,7 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                     }
                     promptConfig {
                         ... on ExtractionPromptConfig {
-                            prompt
+                            description
                             localization
                             targetName
                             multipleValues
@@ -187,7 +203,7 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                         }
                         promptConfig {
                             ... on ExtractionPromptConfig {
-                                prompt
+                                description
                                 localization
                                 targetName
                                 multipleValues
