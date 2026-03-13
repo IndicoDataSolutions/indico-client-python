@@ -44,11 +44,14 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
                 datatype
                 required
                 multiple
+                validationConfig
+                formatConfig
+                inputConfig
                 }
             }
             promptConfig {
                 ... on ExtractionPromptConfig {
-                prompt
+                description
                 targetName
                 multipleValues
                 minimumLocationType
@@ -101,22 +104,17 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                     fieldConfig {
                         ... on ExtractionFieldConfig {
                             name
-                            name
                             datatype
                             required
                             multiple
-                            validationConfig {
-                                settingName
-                                settingValue
-                                onFailure
-                            }
+                            validationConfig
                             formatConfig
                             inputConfig
                         }
                     }
                     promptConfig {
                         ... on ExtractionPromptConfig {
-                            prompt
+                            description
                             localization
                             targetName
                             multipleValues
@@ -172,22 +170,17 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                         fieldConfig {
                             ... on ExtractionFieldConfig {
                                 name
-                                name
                                 datatype
                                 required
                                 multiple
-                                validationConfig {
-                                    settingName
-                                    settingValue
-                                    onFailure
-                                }
+                                validationConfig
                                 formatConfig
                                 inputConfig
                             }
                         }
                         promptConfig {
                             ... on ExtractionPromptConfig {
-                                prompt
+                                description
                                 localization
                                 targetName
                                 multipleValues
