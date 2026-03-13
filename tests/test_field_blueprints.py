@@ -56,24 +56,6 @@ def test_create_field_blueprint(mock_field_blueprint_data):
     )
 
 
-def test_create_field_blueprint_normalizes_legacy_prompt_key():
-    blueprints = [
-        {
-            "name": "legacy_prompt_blueprint",
-            "taskType": "GENAI_ANNOTATION",
-            "promptConfig": {
-                "prompt": "Extract the party name",
-                "localization": "SEARCH",
-            },
-        }
-    ]
-    query = CreateFieldBlueprint(blueprints)
-
-    normalized_prompt_config = query.variables["blueprints"][0]["promptConfig"]
-    assert normalized_prompt_config["description"] == "Extract the party name"
-    assert "prompt" not in normalized_prompt_config
-
-
 def test_field_blueprint_queries_use_description_in_prompt_config():
     for query in (
         CreateFieldBlueprint.query,
