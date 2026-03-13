@@ -65,6 +65,7 @@ def test_field_blueprint_queries_use_description_in_prompt_config():
         assert "description" in query
         assert "\n                prompt\n" not in query
         assert "\n                            prompt\n" not in query
+        assert "\n                                prompt\n" not in query
 
 
 def test_get_field_blueprints(mock_field_blueprint_data):
