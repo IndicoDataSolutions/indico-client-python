@@ -105,11 +105,7 @@ class GetFieldBlueprints(GraphQLRequest["List[FieldBlueprint]"]):
                             datatype
                             required
                             multiple
-                            validationConfig {
-                                settingName
-                                settingValue
-                                onFailure
-                            }
+                            validationConfig
                             formatConfig
                             inputConfig
                         }
@@ -176,11 +172,7 @@ class ListFieldBlueprints(PagedRequestV2["List[FieldBlueprint]"]):
                                 datatype
                                 required
                                 multiple
-                                validationConfig {
-                                    settingName
-                                    settingValue
-                                    onFailure
-                                }
+                                validationConfig
                                 formatConfig
                                 inputConfig
                             }

@@ -68,6 +68,12 @@ def test_field_blueprint_queries_use_description_in_prompt_config():
         assert "\n                                prompt\n" not in query
 
 
+def test_field_blueprint_queries_use_scalar_validation_config():
+    for query in (GetFieldBlueprints.query, ListFieldBlueprints.query):
+        assert "validationConfig" in query
+        assert "validationConfig {" not in query
+
+
 def test_get_field_blueprints(mock_field_blueprint_data):
     query = GetFieldBlueprints(ids=[1])
 
