@@ -42,6 +42,32 @@ class SubmissionRetries(BaseType):
     submission_id: int
 
 
+class SubmissionCancellationSkipped(BaseType):
+    """
+    Information about a submission that was skipped during cancellation.
+
+    Attributes:
+        submission_id (int): The ID of the submission that was not cancelled.
+        reason (str): The reason it was skipped.
+    """
+
+    submission_id: int
+    reason: str
+
+
+class SubmissionCancellationResult(BaseType):
+    """
+    Result payload from a submission cancellation request.
+
+    Attributes:
+        cancelled (List[int]): Submission IDs that were successfully cancelled.
+        skipped (List[SubmissionCancellationSkipped]): Submission IDs that were skipped.
+    """
+
+    cancelled: List[int]
+    skipped: List[SubmissionCancellationSkipped]
+
+
 class SubmissionReview(BaseType):
     f"""
     Information about a submission's Reviews.
