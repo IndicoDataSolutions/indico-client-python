@@ -38,10 +38,6 @@ class CreateFieldBlueprint(GraphQLRequest["List[FieldBlueprint]"]):
             taskType
             tags
             enabled
-            createdAt
-            updatedAt
-            createdBy
-            updatedBy
             fieldConfig {
                 ... on ExtractionFieldConfig {
                 name
