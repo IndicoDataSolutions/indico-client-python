@@ -7,7 +7,12 @@ from indico.client.request import Delay, GraphQLRequest, PagedRequest, RequestCh
 from indico.errors import IndicoInputError, IndicoTimeoutError
 from indico.filters import SubmissionFilter
 from indico.queries import JobStatus
-from indico.types import Job, Submission, SubmissionReviewFull
+from indico.types import (
+    Job,
+    Submission,
+    SubmissionCancellationResult,
+    SubmissionReviewFull,
+)
 from indico.types.submission import VALID_SUBMISSION_STATUSES
 from indico.types.utils import Timer
 
@@ -626,3 +631,36 @@ class RetrySubmission(GraphQLRequest["List[Submission]"]):
         return [
             Submission(**s) for s in super().parse_payload(response)["retrySubmissions"]
         ]
+
+
+class CancelSubmissions(GraphQLRequest["SubmissionCancellationResult"]):
+    """
+    Given a list of submission ids, cancel those active submissions.
+
+    Args:
+        submission_ids (List[int]): the given submission ids to cancel.
+    """
+
+    query = """
+    mutation cancelSubmissions($submissionIds:[Int]!){
+      cancelSubmissions(submissionIds: $submissionIds){
+        cancelled
+        skipped{
+          submissionId
+          reason
+        }
+      }
+    }
+    """
+
+    def __init__(self, submission_ids: "List[int]"):
+        if submission_ids is None or len(submission_ids) < 1:
+            raise IndicoInputError("You must specify submission ids")
+        if len(set(submission_ids)) != len(submission_ids):
+            raise IndicoInputError("Cannot include duplicate submission ids")
+
+        super().__init__(self.query, variables={"submissionIds": submission_ids})
+
+    def process_response(self, response: "Payload") -> "SubmissionCancellationResult":
+        payload = super().parse_payload(response)["cancelSubmissions"]
+        return SubmissionCancellationResult(**payload)
