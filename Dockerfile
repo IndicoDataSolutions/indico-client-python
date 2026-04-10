@@ -1,4 +1,4 @@
-FROM python:3.14.4
+FROM python:3.13
 
 ENV INDICO_HOST="try.indico.io"
 
