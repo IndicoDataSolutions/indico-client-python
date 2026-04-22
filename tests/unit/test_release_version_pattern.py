@@ -1,6 +1,10 @@
 import re
-import tomllib
 from pathlib import Path
+
+try:  # pragma: no cover - exercised indirectly on Python <3.11 tox envs
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover
+    import tomli as tomllib
 
 
 def _load_release_pattern() -> str:
