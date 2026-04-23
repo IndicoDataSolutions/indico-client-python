@@ -13,12 +13,17 @@ Covered flows:
 
 import io
 import json
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 
 import pytest
 
 from indico.client import IndicoClient
 from indico.client.request import HTTPMethod
 from indico.config import IndicoConfig
+from indico.errors import IndicoRequestError
+from indico.queries.model_import import _UploadSMExport
 from indico.queries.storage import (
     CreateStorageURLs,
     RetrieveStorageObject,
@@ -179,3 +184,104 @@ def test_retrieve_storage_object_fetches_content(mock_request, client):
         RetrieveStorageObject("indico-file:///storage/submissions/1/2/result.json")
     )
     assert result == payload
+
+
+def test_retrieve_storage_object_follows_redirects():
+    """Storage GET requests follow redirects in redirect-mode deployments."""
+    payload = {"status": "complete", "results": [{"text": "redirected"}]}
+    refresh_path = "/auth/users/refresh_token"
+    source_path = "/storage/submissions/1/2/result.json"
+    redirected_path = "/storage/signed/submissions/1/2/result.json"
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):  # noqa: N802
+            if self.path != refresh_path:
+                self.send_response(404)
+                self.end_headers()
+                return
+            body = json.dumps({"auth_token": "tok"}).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self):  # noqa: N802
+            if self.path == source_path:
+                self.send_response(302)
+                self.send_header(
+                    "Location",
+                    f"http://{self.server.server_address[0]}:{self.server.server_address[1]}{redirected_path}",
+                )
+                self.end_headers()
+                return
+            if self.path == redirected_path:
+                body = json.dumps(payload).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            self.send_response(404)
+            self.end_headers()
+
+        def log_message(self, format, *args):  # noqa: A003
+            return
+
+    with HTTPServer(("127.0.0.1", 0), Handler) as server:
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            host = f"{server.server_address[0]}:{server.server_address[1]}"
+            client = IndicoClient(config=IndicoConfig(protocol="http", host=host))
+            result = client.call(RetrieveStorageObject("indico-file:///storage/submissions/1/2/result.json"))
+            assert result == payload
+        finally:
+            server.shutdown()
+            thread.join(timeout=5)
+
+
+def test_upload_static_model_export_puts_zip_to_signed_url(tmp_path, requests_mock):
+    """Static model export upload uses the signed URL with zip content-type."""
+    export_path = tmp_path / "model.zip"
+    export_bytes = b"zip-bytes"
+    export_path.write_bytes(export_bytes)
+    signed_url = "https://signed.example/upload"
+    storage_uri = "indico-file:///storage/exports/model.zip"
+
+    requests_mock.put(signed_url, status_code=200, text="")
+
+    request = _UploadSMExport(str(export_path))
+    result = request.process_response(
+        {"data": {"exportUpload": {"signedUrl": signed_url, "storageUri": storage_uri}}}
+    )
+
+    assert result == storage_uri
+    assert len(requests_mock.request_history) == 1
+    put_call = requests_mock.request_history[0]
+    assert put_call.method == "PUT"
+    assert put_call.headers["Content-Type"] == "application/zip"
+    assert put_call.body == export_bytes
+
+
+def test_upload_static_model_export_raises_on_put_failure(tmp_path, requests_mock):
+    """A failing signed-url PUT raises IndicoRequestError."""
+    export_path = tmp_path / "model.zip"
+    export_path.write_bytes(b"zip-bytes")
+    signed_url = "https://signed.example/upload"
+
+    requests_mock.put(signed_url, status_code=403, text="forbidden")
+
+    request = _UploadSMExport(str(Path(export_path)))
+    with pytest.raises(IndicoRequestError):
+        request.process_response(
+            {
+                "data": {
+                    "exportUpload": {
+                        "signedUrl": signed_url,
+                        "storageUri": "indico-file:///storage/exports/model.zip",
+                    }
+                }
+            }
+        )
