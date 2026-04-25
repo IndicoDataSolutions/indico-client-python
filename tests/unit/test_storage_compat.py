@@ -51,7 +51,7 @@ STORAGE_SERVICE_UPLOAD_RESPONSE = [
 
 @pytest.fixture
 def cfg():
-    return IndicoConfig(protocol="mock", host="mock")
+    return IndicoConfig(protocol="mock", host="mock", api_token="test-token")
 
 
 @pytest.fixture
@@ -150,7 +150,7 @@ def test_create_storage_urls_builds_indico_file_uris(mock_request, client):
     assert result == ["indico-file:///storage/uploads/42/abc-uuid"]
 
 
-def test_create_storage_urls_round_trips_through_retrieve(mock_request, client):
+def test_create_storage_urls_round_trips_through_retrieve():
     """A URI from CreateStorageURLs can be fed directly into RetrieveStorageObject."""
     uri = "indico-file:///storage/uploads/42/abc-uuid"
     req = RetrieveStorageObject(uri)
@@ -234,7 +234,9 @@ def test_retrieve_storage_object_follows_redirects():
         thread.start()
         try:
             host = f"{server.server_address[0]}:{server.server_address[1]}"
-            client = IndicoClient(config=IndicoConfig(protocol="http", host=host))
+            client = IndicoClient(
+                config=IndicoConfig(protocol="http", host=host, api_token="test-token")
+            )
             result = client.call(
                 RetrieveStorageObject(
                     "indico-file:///storage/submissions/1/2/result.json"
