@@ -77,9 +77,9 @@ def test_list_gallery_pagination(indico):
     if len(blueprints) >= 2:
         # Check that we have unique blueprints
         blueprint_ids = [bp.id for bp in blueprints]
-        assert len(blueprint_ids) == len(
-            set(blueprint_ids)
-        ), "Duplicate blueprints found in pagination"
+        assert len(blueprint_ids) == len(set(blueprint_ids)), (
+            "Duplicate blueprints found in pagination"
+        )
 
 
 def test_get_gallery_tags(indico):

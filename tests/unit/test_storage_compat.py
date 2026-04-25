@@ -235,7 +235,11 @@ def test_retrieve_storage_object_follows_redirects():
         try:
             host = f"{server.server_address[0]}:{server.server_address[1]}"
             client = IndicoClient(config=IndicoConfig(protocol="http", host=host))
-            result = client.call(RetrieveStorageObject("indico-file:///storage/submissions/1/2/result.json"))
+            result = client.call(
+                RetrieveStorageObject(
+                    "indico-file:///storage/submissions/1/2/result.json"
+                )
+            )
             assert result == payload
         finally:
             server.shutdown()
