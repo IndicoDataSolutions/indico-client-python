@@ -56,4 +56,10 @@ module = "importlib_metadata"
 ignore_missing_imports = true
 
 [dependency-groups]
-dev = ["pytest>=8.4.2", "pytest-mock>=3.15.1"]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-asyncio>0.21",
+    "pytest-mock>=3.15.1",
+    "requests-mock>=1.8.0",
+    "msgpack>=0.5.6",
+]
