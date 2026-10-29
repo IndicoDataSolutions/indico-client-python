@@ -1,12 +1,10 @@
 import io
-from pathlib import Path
 from typing import Any, Dict
 
 import pytest
 import requests_mock as requests_mock_lib
 
 from indico.client import HTTPMethod, HTTPRequest, IndicoClient
-from indico.config import IndicoConfig
 from indico.errors import IndicoDecodingError, IndicoRequestError
 from indico.http.client import AIOHTTPClient
 from tests.fixtures.transport import FakeAioResponse, FakeAioSession
@@ -19,21 +17,13 @@ TEXT = {"Content-Type": "text/plain"}
 JSON = {"Content-Type": "application/json"}
 OCTET = {"Content-Type": "application/octet-stream"}
 REDIRECT = {"Location": OTHER_URL, "Content-Type": "text/plain"}
-MOCK_CONFIG = IndicoConfig(protocol="mock", host="mock", api_token="test")
-SECURE_CONFIG = IndicoConfig(protocol="https", host="app.test", api_token="test")
 JSON_ERROR = b'{"error_type": "NotFound", "message": "missing", "detail": 1}'
 
 ERROR_CASES = [
     pytest.param(
-        True,
-        JSON_ERROR,
-        JSON,
-        "Error: NotFound, missing\n\tExtras: {'detail': 1}",
-        id="raw-json",
+        JSON_ERROR, JSON, "Error: NotFound, missing\n\tExtras: {'detail': 1}", id="json"
     ),
-    pytest.param(True, b"bad\xff", OCTET, "Error: bad\ufffd\n", id="raw-text"),
-    pytest.param(True, b'["x"]', JSON, 'Error: ["x"]\n', id="raw-json-list"),
-    pytest.param(False, b"bad\xff", OCTET, "Error: b'bad\\xff'\n", id="non-raw-bytes"),
+    pytest.param(b"bad\xff", OCTET, "Error: b'bad\\xff'\n", id="bytes"),
 ]
 
 
@@ -86,30 +76,17 @@ def test_unfollowable_redirect_without_opt_out_is_returned(
     assert client.call(HTTPRequest[Any](HTTPMethod.GET, PATH)) == {"cached": True}
 
 
-@pytest.mark.parametrize("indico_test_config", [MOCK_CONFIG, SECURE_CONFIG])
-def test_explicit_timeout_wins_over_read_timeout(
-    client: IndicoClient,
-    requests_mock: requests_mock_lib.Mocker,
-    indico_test_config: IndicoConfig,
-) -> None:
-    base = f"{indico_test_config.protocol}://{indico_test_config.host}"
-    requests_mock.get(base + PATH, content=BODY, headers=TEXT)
-    assert client.call(raw_get(read_timeout=600, timeout=5)) == BODY
-    assert requests_mock.last_request.timeout == 5
-
-
-@pytest.mark.parametrize("raw_response, body, headers, expected", ERROR_CASES)
+@pytest.mark.parametrize("body, headers, expected", ERROR_CASES)
 def test_client_error_body(
     client: IndicoClient,
     requests_mock: requests_mock_lib.Mocker,
-    raw_response: bool,
     body: bytes,
     headers: Dict[str, str],
     expected: str,
 ) -> None:
     requests_mock.get(URL, status_code=404, content=body, headers=headers)
     with pytest.raises(IndicoRequestError) as error:
-        client.call(HTTPRequest[Any](HTTPMethod.GET, PATH, raw_response=raw_response))
+        client.call(raw_get())
     assert expected in str(error.value)
 
 
@@ -146,38 +123,6 @@ async def test_async_raw_survives_auth_refresh(
 
 
 @pytest.mark.asyncio
-async def test_async_raw_forwarded_per_file(
-    aio_http: AIOHTTPClient, fake_aio_session: FakeAioSession, tmp_path: Path
-) -> None:
-    upload = tmp_path / "model.zip"
-    upload.write_bytes(b"zip")
-    fake_aio_session.responses.append(FakeAioResponse(body=BODY))
-    request = HTTPRequest[Any](
-        HTTPMethod.POST, PATH, raw_response=True, files=[str(upload)]
-    )
-    assert await aio_http.execute_request(request) == [BODY]
-
-
-@pytest.mark.asyncio
-async def test_async_raw_file_upload_survives_auth_refresh(
-    aio_http: AIOHTTPClient, fake_aio_session: FakeAioSession, tmp_path: Path
-) -> None:
-    upload = tmp_path / "model.zip"
-    upload.write_bytes(b"zip")
-    fake_aio_session.responses.extend(
-        [
-            FakeAioResponse(status=401),
-            FakeAioResponse(body=b'{"auth_token": "t"}', headers=JSON),
-            FakeAioResponse(body=BODY),
-        ]
-    )
-    request = HTTPRequest[Any](
-        HTTPMethod.POST, PATH, raw_response=True, files=[str(upload)]
-    )
-    assert await aio_http.execute_request(request) == [BODY]
-
-
-@pytest.mark.asyncio
 async def test_async_stream_upload_is_not_resent_after_auth_refresh(
     aio_http: AIOHTTPClient, fake_aio_session: FakeAioSession
 ) -> None:
@@ -205,20 +150,10 @@ async def test_async_redirect_is_not_followed(
 
 
 @pytest.mark.asyncio
-async def test_async_explicit_timeout_wins_over_read_timeout(
-    aio_http: AIOHTTPClient, fake_aio_session: FakeAioSession
-) -> None:
-    fake_aio_session.responses.append(FakeAioResponse(body=BODY))
-    assert await aio_http.execute_request(raw_get(read_timeout=600, timeout=5)) == BODY
-    assert fake_aio_session.calls[-1].kwargs["timeout"] == 5
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("raw_response, body, headers, expected", ERROR_CASES)
+@pytest.mark.parametrize("body, headers, expected", ERROR_CASES)
 async def test_async_client_error_body(
     aio_http: AIOHTTPClient,
     fake_aio_session: FakeAioSession,
-    raw_response: bool,
     body: bytes,
     headers: Dict[str, str],
     expected: str,
@@ -227,7 +162,5 @@ async def test_async_client_error_body(
         FakeAioResponse(status=404, body=body, headers=headers)
     )
     with pytest.raises(IndicoRequestError) as error:
-        await aio_http.execute_request(
-            HTTPRequest[Any](HTTPMethod.GET, PATH, raw_response=raw_response)
-        )
+        await aio_http.execute_request(raw_get())
     assert expected in str(error.value)

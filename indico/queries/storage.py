@@ -1,8 +1,6 @@
 import io
 import json
-import posixpath
 from typing import TYPE_CHECKING
-from urllib.parse import unquote, urlsplit, urlunsplit
 
 from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
@@ -12,36 +10,20 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from indico.typing import AnyDict
 
-__all__ = [
-    "URL_PREFIX",
-    "CreateStorageURLs",
-    "RetrieveStorageObject",
-    "UploadBatched",
-    "UploadDocument",
-]
-
 URL_PREFIX = "indico-file:///storage"
-STORAGE_PATH_PREFIX = "/storage/"
-DOT_SEGMENTS = {".", ".."}
 
 
 def storage_path(url: str) -> str:
-    """Reduce a platform storage URL to its path and query so it targets the configured host.
+    """Accept a platform storage URL only when it is a `/storage/` path on the configured host.
 
     Raises:
-        IndicoRequestError: if the path is not under `/storage/` or has `.`/`..` segments, even percent-encoded.
+        IndicoRequestError: if the URL does not start with `/storage/`.
     """
-    parts = urlsplit(url)
-    decoded = unquote(parts.path)
-    if (
-        not posixpath.normpath(decoded).startswith(STORAGE_PATH_PREFIX)
-        or not parts.path.startswith(STORAGE_PATH_PREFIX)
-        or DOT_SEGMENTS.intersection(decoded.split("/"))
-    ):
+    if not url.startswith("/storage/"):
         raise IndicoRequestError(
-            code="FAILURE", error=f"Unexpected storage URL path: {parts.path!r}"
+            code="FAILURE", error=f"Unexpected storage URL: {url!r}"
         )
-    return urlunsplit(("", "", parts.path, parts.query, ""))
+    return url
 
 
 class RetrieveStorageObject(HTTPRequest["Any"]):

@@ -90,16 +90,6 @@ async def aio_deserialize(
         )
 
 
-def decode_raw_error(content: bytes) -> "Any":
-    """Read an undecoded error body as a JSON object when it is one, else as replacement-decoded text."""
-    text = content.decode("utf-8", "replace")
-    try:
-        parsed = json.loads(text)
-    except ValueError:
-        return text
-    return parsed if isinstance(parsed, dict) else text
-
-
 def parse_header(header: str) -> "Tuple[str, Dict[str, str]]":
     email = EmailMessage()
     email["Content-Type"] = header

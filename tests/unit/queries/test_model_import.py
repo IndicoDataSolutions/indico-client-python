@@ -8,11 +8,11 @@ import requests_mock as requests_mock_lib
 
 from indico.client import AsyncIndicoClient, IndicoClient
 from indico.errors import IndicoAuthenticationFailed, IndicoRequestError
-from indico.queries.model_import import UPLOAD_READ_TIMEOUT, UploadStaticModelExport
+from indico.queries.model_import import UploadStaticModelExport
 from tests.fixtures.transport import FakeAioResponse, FakeAioSession, RequestMocker
 
 NAME = "3f8a1c2e-4b5d-6e7f-8a9b-0c1d2e3f4a5b.indico"
-UPLOAD_URL = f"https://elsewhere/storage/static_uploads/upload?name={NAME}"
+UPLOAD_URL = f"/storage/static_uploads/upload?name={NAME}"
 STORAGE_URI = f"indico-blob:///static_uploads/{NAME}"
 PROXY_PATH = "/storage/static_uploads/upload"
 PROXY_URL = f"mock://mock{PROXY_PATH}"
@@ -61,7 +61,6 @@ def test_upload_proxied(
     assert "auth_token=tok" in proxy.last_request.headers["Cookie"]
     assert proxy.last_request.qs == {"name": [NAME]}
     assert b"zip-bytes" in proxy.last_request.body
-    assert proxy.last_request.timeout == (None, UPLOAD_READ_TIMEOUT)
 
 
 def test_upload_resent_after_auth_refresh(
@@ -130,12 +129,8 @@ def test_upload_auto_process(
 @pytest.mark.parametrize(
     "upload_url, proxy_status",
     [
-        (None, None),
         (UPLOAD_URL, 413),
-        ("https://h/not-storage/upload", None),
-        ("https://h/storage/static_uploads/upload", None),
-        ("https://h/storage/static_uploads/upload?name=", None),
-        ("https://h/storage/static_uploads/upload?other=x", None),
+        ("https://h/storage/static_uploads/upload?name=x", None),
     ],
 )
 def test_upload_failures(
@@ -214,9 +209,7 @@ async def test_upload_proxied_async(
         f"{PROXY_URL}?name={NAME}",
         False,
     )
-    assert upload.kwargs["timeout"] == aiohttp.ClientTimeout(
-        total=None, sock_read=UPLOAD_READ_TIMEOUT
-    )
+    assert upload.kwargs["timeout"] == aiohttp.ClientTimeout(total=None)
     assert upload.body is not None
     assert b'filename="model.zip"' in upload.body
     assert b"zip-bytes" in upload.body

@@ -1,7 +1,7 @@
 import inspect
 import json
 import warnings
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import pytest
 import requests_mock as requests_mock_lib
@@ -16,8 +16,8 @@ from indico.queries.model_export import (
 from indico.types.model_export import ModelExport
 from tests.fixtures.transport import FakeAioResponse, FakeAioSession, RequestMocker
 
-DOWNLOAD_URL = "https://elsewhere/storage/exports/model.zip?token=abc"
-DOWNLOAD_PROXY_URL = "mock://mock/storage/exports/model.zip"
+DOWNLOAD_URL = "/storage/models/exports/7/model.zip"
+DOWNLOAD_PROXY_URL = f"mock://mock{DOWNLOAD_URL}"
 GRAPHQL_URL = "mock://mock/graph/api/graphql"
 JSON = {"Content-Type": "application/json"}
 BODY = b"\xff\xfezip"
@@ -167,7 +167,6 @@ def test_download_model_export(
     assert client.call(chain) == BODY
     assert graphql.call_count == int(by_id)
     assert "auth_token=tok" in download.last_request.headers["Cookie"]
-    assert download.last_request.qs == {"token": ["abc"]}
 
 
 def test_download_model_export_id_zero_is_fetched(
@@ -218,7 +217,7 @@ async def test_download_model_export_async_does_not_follow_redirects(
     )
     with pytest.raises(IndicoRequestError, match="302"):
         await aio_client.call(DownloadModelExport(export_id=7))
-    assert fake_aio_session.calls[-1].url == DOWNLOAD_PROXY_URL + "?token=abc"
+    assert fake_aio_session.calls[-1].url == DOWNLOAD_PROXY_URL
     assert fake_aio_session.calls[-1].kwargs["allow_redirects"] is False
 
 
@@ -267,37 +266,3 @@ def test_download_model_export_needs_exactly_one_source(
 ) -> None:
     with pytest.raises(IndicoInputError, match="exactly one"):
         DownloadModelExport(**kwargs)
-
-
-@pytest.mark.parametrize(
-    "module, exported, hidden",
-    [
-        (
-            "indico.queries.model_export",
-            [
-                "CreateModelExport",
-                "DownloadModelExport",
-                "GetModelExports",
-                "ModelExport",
-            ],
-            ["storage_path", "RetrieveStorageObject", "warnings"],
-        ),
-        (
-            "indico.queries.model_import",
-            ["UploadStaticModelExport", "ProcessStaticModelExport"],
-            ["storage_path", "upload_storage_path", "urlsplit", "HTTPRequest"],
-        ),
-        (
-            "indico.queries.storage",
-            ["RetrieveStorageObject", "UploadDocument", "URL_PREFIX"],
-            ["storage_path", "STORAGE_PATH_PREFIX", "urlsplit", "posixpath"],
-        ),
-    ],
-)
-def test_star_import_exports(
-    module: str, exported: List[str], hidden: List[str]
-) -> None:
-    namespace: Dict[str, Any] = {}
-    exec(f"from {module} import *", namespace)
-    assert set(exported) <= namespace.keys()
-    assert not set(hidden) & namespace.keys()

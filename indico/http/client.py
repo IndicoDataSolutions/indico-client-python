@@ -15,7 +15,7 @@ from indico.errors import (
     IndicoHibernationError,
     IndicoRequestError,
 )
-from indico.http.serialization import aio_deserialize, decode_raw_error, deserialize
+from indico.http.serialization import aio_deserialize, deserialize
 
 from .retry import aioretry
 
@@ -40,11 +40,8 @@ def redirect_error(status: int, headers: "Mapping[str, str]") -> IndicoRequestEr
     )
 
 
-def client_error(content: "Any", status: int, raw_response: bool) -> IndicoRequestError:
+def client_error(content: "Any", status: int) -> IndicoRequestError:
     """Build the error for a 4xx response, using the platform's `error_type` and `message` when present."""
-    if raw_response:
-        content = decode_raw_error(content)
-
     if isinstance(content, dict):
         error = (
             f"{content.pop('error_type', 'Unknown Error')}, "
@@ -53,17 +50,6 @@ def client_error(content: "Any", status: int, raw_response: bool) -> IndicoReque
         return IndicoRequestError(error=error, code=status, extras=content)
 
     return IndicoRequestError(error=content, code=status, extras=None)
-
-
-def flatten_responses(responses: "List[Any]") -> "List[Any]":
-    """Merge per-file upload responses into one list, keeping non-list bodies (such as raw bytes) whole."""
-    merged: "List[Any]" = []
-    for response in responses:
-        if isinstance(response, list):
-            merged.extend(response)
-        else:
-            merged.append(response)
-    return merged
 
 
 class CookiePolicyOverride(DefaultCookiePolicy):
@@ -138,14 +124,9 @@ class HTTPClient:
                 method=request.method.value.lower(),
                 path=request.path,
                 raw_response=request.raw_response,
-                **{**self.timeout_kwargs(request.read_timeout), **request.kwargs},
+                **request.kwargs,
             )
         )
-
-    def timeout_kwargs(self, read_timeout: "Optional[float]") -> "AnyDict":
-        if read_timeout is None:
-            return {}
-        return {"timeout": (None, read_timeout)}
 
     @contextmanager
     def _handle_files(self, req_kwargs: "AnyDict") -> "Iterator[AnyDict]":
@@ -253,11 +234,11 @@ class HTTPClient:
             response,
             force_json=json,
             force_decompress=decompress,
-            raw_response=raw_response,
+            raw_response=raw_response and response.status_code < 400,
         )
 
         if response.status_code >= 400:
-            raise client_error(content, response.status_code, raw_response)
+            raise client_error(content, response.status_code)
 
         return content
 
@@ -310,14 +291,9 @@ class AIOHTTPClient:
                 method=request.method.value.lower(),
                 path=request.path,
                 raw_response=request.raw_response,
-                **{**self.timeout_kwargs(request.read_timeout), **request.kwargs},
+                **request.kwargs,
             )
         )
-
-    def timeout_kwargs(self, read_timeout: "Optional[float]") -> "AnyDict":
-        if read_timeout is None:
-            return {}
-        return {"timeout": aiohttp.ClientTimeout(total=None, sock_read=read_timeout)}
 
     @contextmanager
     def _handle_files(
@@ -388,6 +364,7 @@ class AIOHTTPClient:
 
         with self._handle_files(request_kwargs) as file_args:
             if file_args:
+                request_kwargs.setdefault("timeout", aiohttp.ClientTimeout(total=None))
                 try:
                     resps = await asyncio.gather(
                         *(
@@ -422,7 +399,7 @@ class AIOHTTPClient:
                         files=files,
                         **request_kwargs,
                     )
-                return flatten_responses(resps)
+                return [resp for resp_set in resps for resp in resp_set]
 
             async with getattr(self.request_session, method)(
                 f"{self.base_url}{path}",
@@ -463,10 +440,10 @@ class AIOHTTPClient:
                     response,
                     force_json=json,
                     force_decompress=decompress,
-                    raw_response=raw_response,
+                    raw_response=raw_response and response.status < 400,
                 )
 
                 if response.status >= 400:
-                    raise client_error(content, response.status, raw_response)
+                    raise client_error(content, response.status)
 
                 return content

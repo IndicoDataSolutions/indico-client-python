@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING, cast
-from urllib.parse import parse_qs, urlsplit
 
 from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
@@ -13,21 +12,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterator, List, Optional, Union  # noqa: F401
 
     from indico.typing import AnyDict, Payload
-
-
-__all__ = ["ProcessStaticModelExport", "UploadStaticModelExport"]
-
-# Outlasts the platform's 300s wait while it stores the finished upload.
-UPLOAD_READ_TIMEOUT = 600.0
-
-
-def upload_storage_path(upload_url: str) -> str:
-    """Reduce the platform's upload URL to its `/storage/` path, refusing one without the `name` it is stored under."""
-    if not parse_qs(urlsplit(upload_url).query).get("name"):
-        raise IndicoRequestError(
-            code="FAILURE", error="The platform's upload url has no `name` parameter"
-        )
-    return storage_path(upload_url)
 
 
 class _GetExportUpload(GraphQLRequest["ExportUpload"]):
@@ -126,12 +110,10 @@ class UploadStaticModelExport(RequestChain["Union[Job, str]"]):
     ) -> "Iterator[Union[_GetExportUpload, HTTPRequest[List[AnyDict]], ProcessStaticModelExport, JobStatus]]":
         yield _GetExportUpload()
         upload: ExportUpload = self.previous
-        upload_path = upload_storage_path(upload.upload_url)
 
         yield HTTPRequest["List[AnyDict]"](
             HTTPMethod.POST,
-            upload_path,
-            read_timeout=UPLOAD_READ_TIMEOUT,
+            storage_path(upload.upload_url),
             files=[self.file_path],
             allow_redirects=False,
         )

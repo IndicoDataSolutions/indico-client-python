@@ -29,8 +29,6 @@ class HTTPRequest(Generic[ResponseType]):
     Args:
         raw_response (bool): return the body as bytes, skipping content-type decoding,
             `.json` forcing and gzip decompression. Defaults to False
-        read_timeout (float): seconds to wait between reads of the response, with no
-            limit on the total request time. Defaults to the client's own timeouts
     """
 
     def __init__(
@@ -39,13 +37,11 @@ class HTTPRequest(Generic[ResponseType]):
         path: str,
         *,
         raw_response: bool = False,
-        read_timeout: "Optional[float]" = None,
         **kwargs: "Any",
     ):
         self.method: HTTPMethod = method
         self.path: str = path
         self.raw_response: bool = raw_response
-        self.read_timeout: "Optional[float]" = read_timeout
         self._kwargs: "AnyDict" = kwargs
 
     @property
