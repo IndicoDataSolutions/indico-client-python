@@ -29,8 +29,14 @@ def decompress(response: "Response") -> bytes:
 
 
 def deserialize(
-    response: "Response", force_json: bool = False, force_decompress: bool = False
+    response: "Response",
+    force_json: bool = False,
+    force_decompress: bool = False,
+    raw_response: bool = False,
 ) -> "Any":
+    if raw_response:
+        return response.content
+
     content_type, params = parse_header(response.headers["Content-Type"])
     content: bytes
 
@@ -55,8 +61,14 @@ def deserialize(
 
 
 async def aio_deserialize(
-    response: "ClientResponse", force_json: bool = False, force_decompress: bool = False
+    response: "ClientResponse",
+    force_json: bool = False,
+    force_decompress: bool = False,
+    raw_response: bool = False,
 ) -> "Any":
+    if raw_response:
+        return await response.read()
+
     content_type, params = parse_header(response.headers["Content-Type"])
     content: bytes = await response.read()
 
@@ -76,6 +88,16 @@ async def aio_deserialize(
         raise IndicoDecodingError(
             content_type, charset, content.decode("ascii", "ignore")
         )
+
+
+def decode_raw_error(content: bytes) -> "Any":
+    """Read an undecoded error body as a JSON object when it is one, else as replacement-decoded text."""
+    text = content.decode("utf-8", "replace")
+    try:
+        parsed = json.loads(text)
+    except ValueError:
+        return text
+    return parsed if isinstance(parsed, dict) else text
 
 
 def parse_header(header: str) -> "Tuple[str, Dict[str, str]]":

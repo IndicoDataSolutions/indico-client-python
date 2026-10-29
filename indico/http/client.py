@@ -5,6 +5,7 @@ from copy import deepcopy
 from http.cookiejar import DefaultCookiePolicy
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
+from urllib.parse import urlsplit
 
 import aiohttp
 import requests
@@ -15,21 +16,57 @@ from indico.errors import (
     IndicoHibernationError,
     IndicoRequestError,
 )
-from indico.http.serialization import aio_deserialize, deserialize
+from indico.http.serialization import aio_deserialize, decode_raw_error, deserialize
 
 from .retry import aioretry
 
 if TYPE_CHECKING:  # pragma: no cover
     from http.cookiejar import Cookie
     from io import IOBase
-    from typing import Any, Dict, Iterator, List, Optional, Union
+    from typing import Any, Dict, Iterator, List, Mapping, Optional, Tuple, Union
     from urllib.request import Request
+
+    from requests import PreparedRequest
 
     from indico.client.request import HTTPRequest, ResponseType
     from indico.typing import AnyDict
 
 
 logger = logging.getLogger(__file__)
+
+
+def redirect_error(status: int, headers: "Mapping[str, str]") -> IndicoRequestError:
+    """Build the error raised when a request made with `allow_redirects=False` is redirected."""
+    return IndicoRequestError(
+        code=status,
+        error=f"Refusing to follow redirect to {headers.get('Location')!r}",
+    )
+
+
+def client_error(content: "Any", status: int, raw_response: bool) -> IndicoRequestError:
+    """Build the error for a 4xx response, using the platform's `error_type` and `message` when present."""
+    if raw_response:
+        content = decode_raw_error(content)
+
+    if isinstance(content, dict):
+        error = (
+            f"{content.pop('error_type', 'Unknown Error')}, "
+            f"{content.pop('message', '')}"
+        )
+        return IndicoRequestError(error=error, code=status, extras=content)
+
+    return IndicoRequestError(error=content, code=status, extras=None)
+
+
+def flatten_responses(responses: "List[Any]") -> "List[Any]":
+    """Merge per-file upload responses into one list, keeping non-list bodies (such as raw bytes) whole."""
+    merged: "List[Any]" = []
+    for response in responses:
+        if isinstance(response, list):
+            merged.extend(response)
+        else:
+            merged.append(response)
+    return merged
 
 
 class CookiePolicyOverride(DefaultCookiePolicy):
@@ -46,12 +83,45 @@ class CookiePolicyOverride(DefaultCookiePolicy):
         return True
 
 
+DEFAULT_PORTS = {"http": 80, "https": 443}
+
+
+def url_origin(url: str) -> "Tuple[str, Optional[str], Optional[int]]":
+    """Return the (scheme, hostname, port) a URL targets, filling in the scheme's default port."""
+    parts = urlsplit(url)
+    scheme = parts.scheme.lower()
+    return scheme, parts.hostname, parts.port or DEFAULT_PORTS.get(scheme)
+
+
+class HostBoundSession(requests.Session):
+    """A session that only sends its cookies to the configured scheme, host and port, redirects included."""
+
+    def __init__(self, base_url: str):
+        super().__init__()
+        self.origin = url_origin(base_url)
+
+    def drop_foreign_cookies(self, prepared: "PreparedRequest") -> None:
+        if url_origin(prepared.url or "") != self.origin:
+            prepared.headers.pop("Cookie", None)
+
+    def prepare_request(self, request: "requests.Request") -> "PreparedRequest":
+        prepared = super().prepare_request(request)
+        self.drop_foreign_cookies(prepared)
+        return prepared
+
+    def rebuild_auth(
+        self, prepared_request: "PreparedRequest", response: "requests.Response"
+    ) -> None:
+        super().rebuild_auth(prepared_request, response)  # type: ignore[no-untyped-call]
+        self.drop_foreign_cookies(prepared_request)
+
+
 class HTTPClient:
     def __init__(self, config: "Optional[IndicoConfig]" = None):
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
 
-        self.request_session = requests.Session()
+        self.request_session = HostBoundSession(self.base_url)
         if isinstance(self.config.requests_params, dict):
             for param in self.config.requests_params.keys():
                 setattr(self.request_session, param, self.config.requests_params[param])
@@ -101,9 +171,17 @@ class HTTPClient:
     def execute_request(self, request: "HTTPRequest[ResponseType]") -> "ResponseType":
         return request.process_response(
             self._make_request(
-                method=request.method.value.lower(), path=request.path, **request.kwargs
+                method=request.method.value.lower(),
+                path=request.path,
+                raw_response=request.raw_response,
+                **{**self.timeout_kwargs(request.read_timeout), **request.kwargs},
             )
         )
+
+    def timeout_kwargs(self, read_timeout: "Optional[float]") -> "AnyDict":
+        if read_timeout is None:
+            return {}
+        return {"timeout": (None, read_timeout)}
 
     @contextmanager
     def _handle_files(self, req_kwargs: "AnyDict") -> "Iterator[AnyDict]":
@@ -159,6 +237,7 @@ class HTTPClient:
         path: str,
         headers: "Optional[Dict[str, str]]" = None,
         _refreshed: bool = False,
+        raw_response: bool = False,
         **request_kwargs: "Any",
     ) -> "Any":
         logger.debug(
@@ -177,12 +256,18 @@ class HTTPClient:
 
         json: bool = ".json" in Path(path).suffixes
         decompress: bool = Path(path).suffix == ".gz"
+        allow_redirects: bool = request_kwargs.get("allow_redirects", True)
 
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
             self.get_short_lived_access_token()
             return self._make_request(
-                method, path, headers, _refreshed=True, **request_kwargs
+                method,
+                path,
+                headers,
+                _refreshed=True,
+                raw_response=raw_response,
+                **request_kwargs,
             )
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
@@ -197,24 +282,18 @@ class HTTPClient:
                 extras=repr(response.content),
             )
 
+        if 300 <= response.status_code < 400 and not allow_redirects:
+            raise redirect_error(response.status_code, response.headers)
+
         content: "Any" = deserialize(
-            response, force_json=json, force_decompress=decompress
+            response,
+            force_json=json,
+            force_decompress=decompress,
+            raw_response=raw_response,
         )
 
         if response.status_code >= 400:
-            if isinstance(content, dict):
-                error = (
-                    f"{content.pop('error_type', 'Unknown Error')}, "
-                    f"{content.pop('message', '')}"
-                )
-                extras = content
-            else:
-                error = content
-                extras = None
-
-            raise IndicoRequestError(
-                error=error, code=response.status_code, extras=extras
-            )
+            raise client_error(content, response.status_code, raw_response)
 
         return content
 
@@ -264,9 +343,17 @@ class AIOHTTPClient:
     ) -> "ResponseType":
         return request.process_response(
             await self._make_request(
-                method=request.method.value.lower(), path=request.path, **request.kwargs
+                method=request.method.value.lower(),
+                path=request.path,
+                raw_response=request.raw_response,
+                **{**self.timeout_kwargs(request.read_timeout), **request.kwargs},
             )
         )
+
+    def timeout_kwargs(self, read_timeout: "Optional[float]") -> "AnyDict":
+        if read_timeout is None:
+            return {}
+        return {"timeout": aiohttp.ClientTimeout(total=None, sock_read=read_timeout)}
 
     @contextmanager
     def _handle_files(
@@ -323,6 +410,7 @@ class AIOHTTPClient:
         path: str,
         headers: "Optional[Dict[str, str]]" = None,
         _refreshed: bool = False,
+        raw_response: bool = False,
         **request_kwargs: "Any",
     ) -> "Any":
         logger.debug(
@@ -330,18 +418,47 @@ class AIOHTTPClient:
         )
         json: bool = ".json" in Path(path).suffixes
         decompress: bool = Path(path).suffix == ".gz"
+        allow_redirects: bool = request_kwargs.get("allow_redirects", True)
+        files = request_kwargs.get("files")
+        has_streams = bool(request_kwargs.get("streams"))
 
         with self._handle_files(request_kwargs) as file_args:
             if file_args:
-                resps = await asyncio.gather(
-                    *(
-                        self._make_request(
-                            method, path, headers, **request_kwargs, data=data
+                try:
+                    resps = await asyncio.gather(
+                        *(
+                            self._make_request(
+                                method,
+                                path,
+                                headers,
+                                _refreshed=True,
+                                raw_response=raw_response,
+                                **request_kwargs,
+                                data=data,
+                            )
+                            for data in file_args
                         )
-                        for data in file_args
                     )
-                )
-                return [resp for resp_set in resps for resp in resp_set]
+                except IndicoAuthenticationFailed as auth_error:
+                    if _refreshed:
+                        raise
+                    if has_streams:
+                        raise IndicoRequestError(
+                            code=401,
+                            error="Authentication expired during a stream upload; "
+                            "consumed streams cannot be resent, retry the request",
+                        ) from auth_error
+                    await self.get_short_lived_access_token()
+                    return await self._make_request(
+                        method,
+                        path,
+                        headers,
+                        _refreshed=True,
+                        raw_response=raw_response,
+                        files=files,
+                        **request_kwargs,
+                    )
+                return flatten_responses(resps)
 
             async with getattr(self.request_session, method)(
                 f"{self.base_url}{path}",
@@ -353,7 +470,12 @@ class AIOHTTPClient:
                 if response.status == 401 and not _refreshed:
                     await self.get_short_lived_access_token()
                     return await self._make_request(
-                        method, path, headers, _refreshed=True, **request_kwargs
+                        method,
+                        path,
+                        headers,
+                        _refreshed=True,
+                        raw_response=raw_response,
+                        **request_kwargs,
                     )
                 elif response.status == 401 and _refreshed:
                     raise IndicoAuthenticationFailed()
@@ -370,23 +492,17 @@ class AIOHTTPClient:
                         extras=repr(response.content),
                     )
 
+                if 300 <= response.status < 400 and not allow_redirects:
+                    raise redirect_error(response.status, response.headers)
+
                 content: "Any" = await aio_deserialize(
-                    response, force_json=json, force_decompress=decompress
+                    response,
+                    force_json=json,
+                    force_decompress=decompress,
+                    raw_response=raw_response,
                 )
 
                 if response.status >= 400:
-                    if isinstance(content, dict):
-                        error = (
-                            f"{content.pop('error_type', 'Unknown Error')}, "
-                            f"{content.pop('message', '')}"
-                        )
-                        extras = content
-                    else:
-                        error = content
-                        extras = None
-
-                    raise IndicoRequestError(
-                        error=error, code=response.status, extras=extras
-                    )
+                    raise client_error(content, response.status, raw_response)
 
                 return content

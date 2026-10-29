@@ -1,35 +1,7 @@
 import unittest.mock
 
-import pytest
-
 from indico.client import GraphQLRequest, HTTPMethod, HTTPRequest, IndicoClient
 from indico.config import IndicoConfig
-
-
-@pytest.fixture(scope="function")
-def indico_test_config():
-    return IndicoConfig(protocol="mock", host="mock")
-
-
-@pytest.fixture(scope="function")
-def indico_request(requests_mock, indico_test_config):
-    def new_request_mock(method, path, *args, **kwargs):
-        config = indico_test_config
-        url = f"{config.protocol}://{config.host}" + path
-        getattr(requests_mock, method)(
-            url, *args, **kwargs, headers={"Content-Type": "application/json"}
-        )
-
-    return new_request_mock
-
-
-@pytest.fixture(scope="function")
-def auth(indico_request):
-    indico_request(
-        "post",
-        "/auth/users/refresh_token",
-        json={"auth_token": "asdfsdfasdfasdfasdfasdf"},
-    )
 
 
 def test_client_basic_http_request(indico_request, auth, indico_test_config):

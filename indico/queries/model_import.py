@@ -1,50 +1,50 @@
 from typing import TYPE_CHECKING, cast
+from urllib.parse import parse_qs, urlsplit
 
-import requests
-
-from indico.client.request import GraphQLRequest, RequestChain
+from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
 from indico.types.jobs import Job
+from indico.types.model_export import ExportUpload
 
 from .jobs import JobStatus
+from .storage import storage_path
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Dict, Iterator, Optional, Union  # noqa: F401
+    from typing import Iterator, List, Optional, Union  # noqa: F401
 
-    from indico.typing import Payload
+    from indico.typing import AnyDict, Payload
 
 
-class _UploadSMExport(GraphQLRequest[str]):
+__all__ = ["ProcessStaticModelExport", "UploadStaticModelExport"]
+
+# Outlasts the platform's 300s wait while it stores the finished upload.
+UPLOAD_READ_TIMEOUT = 600.0
+
+
+def upload_storage_path(upload_url: str) -> str:
+    """Reduce the platform's upload URL to its `/storage/` path, refusing one without the `name` it is stored under."""
+    if not parse_qs(urlsplit(upload_url).query).get("name"):
+        raise IndicoRequestError(
+            code="FAILURE", error="The platform's upload url has no `name` parameter"
+        )
+    return storage_path(upload_url)
+
+
+class _GetExportUpload(GraphQLRequest["ExportUpload"]):
     query = """
         query exportUpload {
             exportUpload {
-                signedUrl
+                uploadUrl
                 storageUri
             }
         }
     """
 
-    def __init__(self, file_path: str):
-        self.file_path = file_path
+    def __init__(self) -> None:
         super().__init__(self.query)
 
-    def process_response(self, response: "Payload") -> str:
-        resp: "Dict[str, str]" = super().parse_payload(response)["exportUpload"]
-        signed_url = resp["signedUrl"]
-        storage_uri = resp["storageUri"]
-
-        with open(self.file_path, "rb") as file:
-            file_content = file.read()
-
-        headers = {"Content-Type": "application/zip"}
-        export_response = requests.put(signed_url, data=file_content, headers=headers)
-
-        if export_response.status_code != 200:
-            raise IndicoRequestError(
-                f"Failed to upload static model export: {export_response.text}",
-                export_response.status_code,
-            )
-        return storage_uri
+    def process_response(self, response: "Payload") -> ExportUpload:
+        return ExportUpload(**super().parse_payload(response)["exportUpload"])
 
 
 class ProcessStaticModelExport(GraphQLRequest["Job"]):
@@ -123,17 +123,29 @@ class UploadStaticModelExport(RequestChain["Union[Job, str]"]):
 
     def requests(
         self,
-    ) -> "Iterator[Union[_UploadSMExport, ProcessStaticModelExport, JobStatus]]":
-        if self.auto_process:
-            yield _UploadSMExport(self.file_path)
-            yield ProcessStaticModelExport(
-                storage_uri=self.previous, workflow_id=cast(int, self.workflow_id)
+    ) -> "Iterator[Union[_GetExportUpload, HTTPRequest[List[AnyDict]], ProcessStaticModelExport, JobStatus]]":
+        yield _GetExportUpload()
+        upload: ExportUpload = self.previous
+        upload_path = upload_storage_path(upload.upload_url)
+
+        yield HTTPRequest["List[AnyDict]"](
+            HTTPMethod.POST,
+            upload_path,
+            read_timeout=UPLOAD_READ_TIMEOUT,
+            files=[self.file_path],
+            allow_redirects=False,
+        )
+
+        if not self.auto_process:
+            self.result = upload.storage_uri
+            return
+
+        yield ProcessStaticModelExport(
+            storage_uri=upload.storage_uri, workflow_id=cast(int, self.workflow_id)
+        )
+        yield JobStatus(self.previous.id)
+        if self.previous.status == "FAILURE":
+            raise IndicoRequestError(
+                code="FAILURE",
+                error=f"Failed to process static model export: {self.previous.result['message']}",
             )
-            yield JobStatus(self.previous.id)
-            if self.previous.status == "FAILURE":
-                raise IndicoRequestError(
-                    code="FAILURE",
-                    error=f"Failed to process static model export: {self.previous.result['message']}",
-                )
-        else:
-            yield _UploadSMExport(self.file_path)
