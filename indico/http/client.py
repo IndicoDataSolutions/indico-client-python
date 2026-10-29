@@ -5,7 +5,6 @@ from copy import deepcopy
 from http.cookiejar import DefaultCookiePolicy
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
-from urllib.parse import urlsplit
 
 import aiohttp
 import requests
@@ -23,10 +22,8 @@ from .retry import aioretry
 if TYPE_CHECKING:  # pragma: no cover
     from http.cookiejar import Cookie
     from io import IOBase
-    from typing import Any, Dict, Iterator, List, Mapping, Optional, Tuple, Union
+    from typing import Any, Dict, Iterator, List, Mapping, Optional, Union
     from urllib.request import Request
-
-    from requests import PreparedRequest
 
     from indico.client.request import HTTPRequest, ResponseType
     from indico.typing import AnyDict
@@ -83,45 +80,12 @@ class CookiePolicyOverride(DefaultCookiePolicy):
         return True
 
 
-DEFAULT_PORTS = {"http": 80, "https": 443}
-
-
-def url_origin(url: str) -> "Tuple[str, Optional[str], Optional[int]]":
-    """Return the (scheme, hostname, port) a URL targets, filling in the scheme's default port."""
-    parts = urlsplit(url)
-    scheme = parts.scheme.lower()
-    return scheme, parts.hostname, parts.port or DEFAULT_PORTS.get(scheme)
-
-
-class HostBoundSession(requests.Session):
-    """A session that only sends its cookies to the configured scheme, host and port, redirects included."""
-
-    def __init__(self, base_url: str):
-        super().__init__()
-        self.origin = url_origin(base_url)
-
-    def drop_foreign_cookies(self, prepared: "PreparedRequest") -> None:
-        if url_origin(prepared.url or "") != self.origin:
-            prepared.headers.pop("Cookie", None)
-
-    def prepare_request(self, request: "requests.Request") -> "PreparedRequest":
-        prepared = super().prepare_request(request)
-        self.drop_foreign_cookies(prepared)
-        return prepared
-
-    def rebuild_auth(
-        self, prepared_request: "PreparedRequest", response: "requests.Response"
-    ) -> None:
-        super().rebuild_auth(prepared_request, response)  # type: ignore[no-untyped-call]
-        self.drop_foreign_cookies(prepared_request)
-
-
 class HTTPClient:
     def __init__(self, config: "Optional[IndicoConfig]" = None):
         self.config = config or IndicoConfig()
         self.base_url = f"{self.config.protocol}://{self.config.host}"
 
-        self.request_session = HostBoundSession(self.base_url)
+        self.request_session = requests.Session()
         if isinstance(self.config.requests_params, dict):
             for param in self.config.requests_params.keys():
                 setattr(self.request_session, param, self.config.requests_params[param])

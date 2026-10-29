@@ -21,7 +21,6 @@ OCTET = {"Content-Type": "application/octet-stream"}
 REDIRECT = {"Location": OTHER_URL, "Content-Type": "text/plain"}
 MOCK_CONFIG = IndicoConfig(protocol="mock", host="mock", api_token="test")
 SECURE_CONFIG = IndicoConfig(protocol="https", host="app.test", api_token="test")
-PORT_CONFIG = IndicoConfig(protocol="http", host="app.test:8080", api_token="test")
 JSON_ERROR = b'{"error_type": "NotFound", "message": "missing", "detail": 1}'
 
 ERROR_CASES = [
@@ -85,57 +84,6 @@ def test_unfollowable_redirect_without_opt_out_is_returned(
 ) -> None:
     requests_mock.get(URL, status_code=304, json={"cached": True}, headers=JSON)
     assert client.call(HTTPRequest[Any](HTTPMethod.GET, PATH)) == {"cached": True}
-
-
-@pytest.mark.parametrize(
-    "indico_test_config, url, sent",
-    [
-        (MOCK_CONFIG, URL, True),
-        (MOCK_CONFIG, OTHER_URL, False),
-        (MOCK_CONFIG, "mock://mock.other/storage/x", False),
-        (SECURE_CONFIG, f"https://app.test{PATH}", True),
-        (SECURE_CONFIG, f"https://app.test:443{PATH}", True),
-        (SECURE_CONFIG, f"http://app.test{PATH}", False),
-        (SECURE_CONFIG, f"http://app.test:443{PATH}", False),
-        (SECURE_CONFIG, f"https://app.test:8443{PATH}", False),
-        (PORT_CONFIG, f"http://app.test:8080{PATH}", True),
-        (PORT_CONFIG, f"http://app.test{PATH}", False),
-    ],
-)
-def test_auth_cookie_only_sent_to_configured_host(
-    client: IndicoClient, requests_mock: requests_mock_lib.Mocker, url: str, sent: bool
-) -> None:
-    requests_mock.get(url, text="ok")
-    client._http.request_session.get(url)
-    cookie = requests_mock.last_request.headers.get("Cookie", "")
-    assert ("auth_token=tok" in cookie) is sent
-
-
-@pytest.mark.parametrize(
-    "indico_test_config, location, sent",
-    [
-        (MOCK_CONFIG, OTHER_URL, False),
-        (SECURE_CONFIG, "http://app.test/storage/y", False),
-        (SECURE_CONFIG, "http://app.test:443/storage/y", False),
-        (SECURE_CONFIG, "https://app.test:8443/storage/y", False),
-        (SECURE_CONFIG, "https://app.test/storage/y", True),
-    ],
-)
-def test_followed_redirect_auth_cookie(
-    client: IndicoClient,
-    requests_mock: requests_mock_lib.Mocker,
-    indico_test_config: IndicoConfig,
-    location: str,
-    sent: bool,
-) -> None:
-    base = f"{indico_test_config.protocol}://{indico_test_config.host}"
-    requests_mock.get(
-        base + PATH, status_code=302, headers={"Location": location, **TEXT}
-    )
-    target = requests_mock.get(location, content=BODY, headers=TEXT)
-    assert client.call(raw_get()) == BODY
-    cookie = target.last_request.headers.get("Cookie", "")
-    assert ("auth_token=tok" in cookie) is sent
 
 
 @pytest.mark.parametrize("indico_test_config", [MOCK_CONFIG, SECURE_CONFIG])
