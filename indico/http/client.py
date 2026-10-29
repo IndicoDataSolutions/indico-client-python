@@ -364,7 +364,6 @@ class AIOHTTPClient:
 
         with self._handle_files(request_kwargs) as file_args:
             if file_args:
-                request_kwargs.setdefault("timeout", aiohttp.ClientTimeout(total=None))
                 try:
                     resps = await asyncio.gather(
                         *(

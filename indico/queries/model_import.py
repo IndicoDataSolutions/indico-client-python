@@ -116,6 +116,7 @@ class UploadStaticModelExport(RequestChain["Union[Job, str]"]):
             storage_path(upload.upload_url),
             files=[self.file_path],
             allow_redirects=False,
+            timeout=None,
         )
 
         if not self.auto_process:

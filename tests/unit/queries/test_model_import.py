@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import aiohttp
 import pytest
 import requests_mock as requests_mock_lib
 
@@ -209,7 +208,7 @@ async def test_upload_proxied_async(
         f"{PROXY_URL}?name={NAME}",
         False,
     )
-    assert upload.kwargs["timeout"] == aiohttp.ClientTimeout(total=None)
+    assert upload.kwargs["timeout"] is None
     assert upload.body is not None
     assert b'filename="model.zip"' in upload.body
     assert b"zip-bytes" in upload.body
