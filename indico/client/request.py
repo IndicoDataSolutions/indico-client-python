@@ -23,9 +23,25 @@ class HTTPMethod(Enum):
 
 
 class HTTPRequest(Generic[ResponseType]):
-    def __init__(self, method: HTTPMethod, path: str, **kwargs: "Any"):
+    """
+    A request against the configured platform host.
+
+    Args:
+        raw_response (bool): return the body as bytes, skipping content-type decoding,
+            `.json` forcing and gzip decompression. Defaults to False
+    """
+
+    def __init__(
+        self,
+        method: HTTPMethod,
+        path: str,
+        *,
+        raw_response: bool = False,
+        **kwargs: "Any",
+    ):
         self.method: HTTPMethod = method
         self.path: str = path
+        self.raw_response: bool = raw_response
         self._kwargs: "AnyDict" = kwargs
 
     @property

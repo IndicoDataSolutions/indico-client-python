@@ -14,6 +14,7 @@ Python Client Library Classes
     exports
     filters
     integration
+    model-exports
     model-groups
     jobs
     storage

@@ -22,7 +22,7 @@ from .retry import aioretry
 if TYPE_CHECKING:  # pragma: no cover
     from http.cookiejar import Cookie
     from io import IOBase
-    from typing import Any, Dict, Iterator, List, Optional, Union
+    from typing import Any, Dict, Iterator, List, Mapping, Optional, Union
     from urllib.request import Request
 
     from indico.client.request import HTTPRequest, ResponseType
@@ -30,6 +30,26 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 logger = logging.getLogger(__file__)
+
+
+def redirect_error(status: int, headers: "Mapping[str, str]") -> IndicoRequestError:
+    """Build the error raised when a request made with `allow_redirects=False` is redirected."""
+    return IndicoRequestError(
+        code=status,
+        error=f"Refusing to follow redirect to {headers.get('Location')!r}",
+    )
+
+
+def client_error(content: "Any", status: int) -> IndicoRequestError:
+    """Build the error for a 4xx response, using the platform's `error_type` and `message` when present."""
+    if isinstance(content, dict):
+        error = (
+            f"{content.pop('error_type', 'Unknown Error')}, "
+            f"{content.pop('message', '')}"
+        )
+        return IndicoRequestError(error=error, code=status, extras=content)
+
+    return IndicoRequestError(error=content, code=status, extras=None)
 
 
 class CookiePolicyOverride(DefaultCookiePolicy):
@@ -101,7 +121,10 @@ class HTTPClient:
     def execute_request(self, request: "HTTPRequest[ResponseType]") -> "ResponseType":
         return request.process_response(
             self._make_request(
-                method=request.method.value.lower(), path=request.path, **request.kwargs
+                method=request.method.value.lower(),
+                path=request.path,
+                raw_response=request.raw_response,
+                **request.kwargs,
             )
         )
 
@@ -159,6 +182,7 @@ class HTTPClient:
         path: str,
         headers: "Optional[Dict[str, str]]" = None,
         _refreshed: bool = False,
+        raw_response: bool = False,
         **request_kwargs: "Any",
     ) -> "Any":
         logger.debug(
@@ -177,12 +201,18 @@ class HTTPClient:
 
         json: bool = ".json" in Path(path).suffixes
         decompress: bool = Path(path).suffix == ".gz"
+        allow_redirects: bool = request_kwargs.get("allow_redirects", True)
 
         # If auth expired refresh
         if response.status_code == 401 and not _refreshed:
             self.get_short_lived_access_token()
             return self._make_request(
-                method, path, headers, _refreshed=True, **request_kwargs
+                method,
+                path,
+                headers,
+                _refreshed=True,
+                raw_response=raw_response,
+                **request_kwargs,
             )
         elif response.status_code == 401 and _refreshed:
             raise IndicoAuthenticationFailed()
@@ -197,24 +227,18 @@ class HTTPClient:
                 extras=repr(response.content),
             )
 
+        if 300 <= response.status_code < 400 and not allow_redirects:
+            raise redirect_error(response.status_code, response.headers)
+
         content: "Any" = deserialize(
-            response, force_json=json, force_decompress=decompress
+            response,
+            force_json=json,
+            force_decompress=decompress,
+            raw_response=raw_response and response.status_code < 400,
         )
 
         if response.status_code >= 400:
-            if isinstance(content, dict):
-                error = (
-                    f"{content.pop('error_type', 'Unknown Error')}, "
-                    f"{content.pop('message', '')}"
-                )
-                extras = content
-            else:
-                error = content
-                extras = None
-
-            raise IndicoRequestError(
-                error=error, code=response.status_code, extras=extras
-            )
+            raise client_error(content, response.status_code)
 
         return content
 
@@ -264,7 +288,10 @@ class AIOHTTPClient:
     ) -> "ResponseType":
         return request.process_response(
             await self._make_request(
-                method=request.method.value.lower(), path=request.path, **request.kwargs
+                method=request.method.value.lower(),
+                path=request.path,
+                raw_response=request.raw_response,
+                **request.kwargs,
             )
         )
 
@@ -323,6 +350,7 @@ class AIOHTTPClient:
         path: str,
         headers: "Optional[Dict[str, str]]" = None,
         _refreshed: bool = False,
+        raw_response: bool = False,
         **request_kwargs: "Any",
     ) -> "Any":
         logger.debug(
@@ -330,17 +358,46 @@ class AIOHTTPClient:
         )
         json: bool = ".json" in Path(path).suffixes
         decompress: bool = Path(path).suffix == ".gz"
+        allow_redirects: bool = request_kwargs.get("allow_redirects", True)
+        files = request_kwargs.get("files")
+        has_streams = bool(request_kwargs.get("streams"))
 
         with self._handle_files(request_kwargs) as file_args:
             if file_args:
-                resps = await asyncio.gather(
-                    *(
-                        self._make_request(
-                            method, path, headers, **request_kwargs, data=data
+                try:
+                    resps = await asyncio.gather(
+                        *(
+                            self._make_request(
+                                method,
+                                path,
+                                headers,
+                                _refreshed=True,
+                                raw_response=raw_response,
+                                **request_kwargs,
+                                data=data,
+                            )
+                            for data in file_args
                         )
-                        for data in file_args
                     )
-                )
+                except IndicoAuthenticationFailed as auth_error:
+                    if _refreshed:
+                        raise
+                    if has_streams:
+                        raise IndicoRequestError(
+                            code=401,
+                            error="Authentication expired during a stream upload; "
+                            "consumed streams cannot be resent, retry the request",
+                        ) from auth_error
+                    await self.get_short_lived_access_token()
+                    return await self._make_request(
+                        method,
+                        path,
+                        headers,
+                        _refreshed=True,
+                        raw_response=raw_response,
+                        files=files,
+                        **request_kwargs,
+                    )
                 return [resp for resp_set in resps for resp in resp_set]
 
             async with getattr(self.request_session, method)(
@@ -353,7 +410,12 @@ class AIOHTTPClient:
                 if response.status == 401 and not _refreshed:
                     await self.get_short_lived_access_token()
                     return await self._make_request(
-                        method, path, headers, _refreshed=True, **request_kwargs
+                        method,
+                        path,
+                        headers,
+                        _refreshed=True,
+                        raw_response=raw_response,
+                        **request_kwargs,
                     )
                 elif response.status == 401 and _refreshed:
                     raise IndicoAuthenticationFailed()
@@ -370,23 +432,17 @@ class AIOHTTPClient:
                         extras=repr(response.content),
                     )
 
+                if 300 <= response.status < 400 and not allow_redirects:
+                    raise redirect_error(response.status, response.headers)
+
                 content: "Any" = await aio_deserialize(
-                    response, force_json=json, force_decompress=decompress
+                    response,
+                    force_json=json,
+                    force_decompress=decompress,
+                    raw_response=raw_response and response.status < 400,
                 )
 
                 if response.status >= 400:
-                    if isinstance(content, dict):
-                        error = (
-                            f"{content.pop('error_type', 'Unknown Error')}, "
-                            f"{content.pop('message', '')}"
-                        )
-                        extras = content
-                    else:
-                        error = content
-                        extras = None
-
-                    raise IndicoRequestError(
-                        error=error, code=response.status, extras=extras
-                    )
+                    raise client_error(content, response.status)
 
                 return content

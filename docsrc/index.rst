@@ -19,6 +19,7 @@ Reference
     exports
     filters
     integration
+    model-exports
     model-groups
     jobs
     storage
