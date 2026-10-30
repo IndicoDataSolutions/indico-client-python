@@ -28,7 +28,13 @@ class _GetExportUpload(GraphQLRequest["ExportUpload"]):
         super().__init__(self.query)
 
     def process_response(self, response: "Payload") -> ExportUpload:
-        return ExportUpload(**super().parse_payload(response)["exportUpload"])
+        upload = ExportUpload(**super().parse_payload(response)["exportUpload"])
+        if not upload.upload_url:
+            raise IndicoRequestError(
+                code="FAILURE",
+                error="The platform returned no upload URL for the static model export.",
+            )
+        return upload
 
 
 class ProcessStaticModelExport(GraphQLRequest["Job"]):

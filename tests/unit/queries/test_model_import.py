@@ -130,6 +130,7 @@ def test_upload_auto_process(
     [
         (UPLOAD_URL, 413),
         ("https://h/storage/static_uploads/upload?name=x", None),
+        (None, None),
     ],
 )
 def test_upload_failures(
@@ -151,12 +152,14 @@ def test_upload_failures(
             headers={"Content-Type": "text/plain"},
         )
 
-    with pytest.raises(IndicoRequestError):
+    with pytest.raises(IndicoRequestError) as exc_info:
         client.call(
             UploadStaticModelExport(
                 file_path=zip_path, auto_process=True, workflow_id=1
             )
         )
+    if upload_url is None:
+        assert "upload URL" in str(exc_info.value)
     assert graphql.call_count == 1
     transfers = [r for r in requests_mock.request_history if r.path == PROXY_PATH]
     assert len(transfers) == int(bool(proxy_status))
