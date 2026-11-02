@@ -359,45 +359,22 @@ class AIOHTTPClient:
         json: bool = ".json" in Path(path).suffixes
         decompress: bool = Path(path).suffix == ".gz"
         allow_redirects: bool = request_kwargs.get("allow_redirects", True)
-        files = request_kwargs.get("files")
-        has_streams = bool(request_kwargs.get("streams"))
 
         with self._handle_files(request_kwargs) as file_args:
             if file_args:
-                try:
-                    resps = await asyncio.gather(
-                        *(
-                            self._make_request(
-                                method,
-                                path,
-                                headers,
-                                _refreshed=True,
-                                raw_response=raw_response,
-                                **request_kwargs,
-                                data=data,
-                            )
-                            for data in file_args
+                resps = await asyncio.gather(
+                    *(
+                        self._make_request(
+                            method,
+                            path,
+                            headers,
+                            raw_response=raw_response,
+                            **request_kwargs,
+                            data=data,
                         )
+                        for data in file_args
                     )
-                except IndicoAuthenticationFailed as auth_error:
-                    if _refreshed:
-                        raise
-                    if has_streams:
-                        raise IndicoRequestError(
-                            code=401,
-                            error="Authentication expired during a stream upload; "
-                            "consumed streams cannot be resent, retry the request",
-                        ) from auth_error
-                    await self.get_short_lived_access_token()
-                    return await self._make_request(
-                        method,
-                        path,
-                        headers,
-                        _refreshed=True,
-                        raw_response=raw_response,
-                        files=files,
-                        **request_kwargs,
-                    )
+                )
                 return [resp for resp_set in resps for resp in resp_set]
 
             async with getattr(self.request_session, method)(

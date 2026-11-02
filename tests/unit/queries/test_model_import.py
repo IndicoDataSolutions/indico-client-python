@@ -6,7 +6,7 @@ import pytest
 import requests_mock as requests_mock_lib
 
 from indico.client import AsyncIndicoClient, IndicoClient
-from indico.errors import IndicoAuthenticationFailed, IndicoRequestError
+from indico.errors import IndicoRequestError
 from indico.queries.model_import import UploadStaticModelExport
 from tests.fixtures.transport import FakeAioResponse, FakeAioSession, RequestMocker
 
@@ -215,42 +215,6 @@ async def test_upload_proxied_async(
     assert upload.body is not None
     assert b'filename="model.zip"' in upload.body
     assert b"zip-bytes" in upload.body
-
-
-@pytest.mark.asyncio
-async def test_upload_async_resent_after_auth_refresh(
-    aio_client: AsyncIndicoClient, fake_aio_session: FakeAioSession, zip_path: str
-) -> None:
-    fake_aio_session.responses.extend(
-        upload_exchange(
-            FakeAioResponse(status=401),
-            FakeAioResponse(body=b'{"auth_token": "t2"}', headers=JSON_HEADERS),
-            RAINBOW_OK,
-        )
-    )
-
-    result = await aio_client.call(UploadStaticModelExport(file_path=zip_path))
-
-    assert result == STORAGE_URI
-    uploads = [call for call in fake_aio_session.calls if PROXY_PATH in call.url]
-    assert [b"zip-bytes" in (call.body or b"") for call in uploads] == [True, True]
-
-
-@pytest.mark.asyncio
-async def test_upload_async_auth_failure_after_refresh(
-    aio_client: AsyncIndicoClient, fake_aio_session: FakeAioSession, zip_path: str
-) -> None:
-    fake_aio_session.responses.extend(
-        upload_exchange(
-            FakeAioResponse(status=401),
-            FakeAioResponse(body=b'{"auth_token": "t2"}', headers=JSON_HEADERS),
-            FakeAioResponse(status=401),
-        )
-    )
-
-    with pytest.raises(IndicoAuthenticationFailed):
-        await aio_client.call(UploadStaticModelExport(file_path=zip_path))
-    assert fake_aio_session.responses == []
 
 
 @pytest.mark.asyncio

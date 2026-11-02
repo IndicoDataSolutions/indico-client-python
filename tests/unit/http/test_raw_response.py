@@ -1,4 +1,3 @@
-import io
 from typing import Any, Dict
 
 import pytest
@@ -120,21 +119,6 @@ async def test_async_raw_survives_auth_refresh(
     )
     assert await aio_http.execute_request(raw_get()) == BODY
     assert [call.method for call in fake_aio_session.calls] == ["get", "post", "get"]
-
-
-@pytest.mark.asyncio
-async def test_async_stream_upload_is_not_resent_after_auth_refresh(
-    aio_http: AIOHTTPClient, fake_aio_session: FakeAioSession
-) -> None:
-    fake_aio_session.responses.extend(
-        [FakeAioResponse(status=401), FakeAioResponse(body=BODY)]
-    )
-    request = HTTPRequest[Any](
-        HTTPMethod.POST, PATH, streams={"model.zip": io.BytesIO(b"zip")}
-    )
-    with pytest.raises(IndicoRequestError, match="cannot be resent"):
-        await aio_http.execute_request(request)
-    assert len(fake_aio_session.calls) == 1
 
 
 @pytest.mark.asyncio
