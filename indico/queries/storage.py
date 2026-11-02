@@ -11,6 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from indico.typing import AnyDict
 
 URL_PREFIX = "indico-file:///storage"
+UNSET: "Any" = object()
 
 
 def storage_path(url: str) -> str:
@@ -38,6 +39,7 @@ class RetrieveStorageObject(HTTPRequest["Any"]):
         storage_object (str or dict): either a string or dict with a url of the storage object to be retrieved. If a dict then "url" should be used as the key for the storage object url.
         raw_response (bool): return the body as bytes without content-type based decoding. Defaults to False
         allow_redirects (bool): follow redirects; proxied downloads pass False so the session cookie never leaves the host. Defaults to True
+        timeout (float or None): client timeout in seconds, None disables it; left to the client default when omitted
 
     Returns:
         contents (dict): Contents of the storage object, most often JSON
@@ -48,6 +50,7 @@ class RetrieveStorageObject(HTTPRequest["Any"]):
         storage_object: "Union[AnyDict, str]",
         raw_response: bool = False,
         allow_redirects: bool = True,
+        timeout: "Any" = UNSET,
     ):
         if isinstance(storage_object, dict):
             try:
@@ -65,11 +68,13 @@ class RetrieveStorageObject(HTTPRequest["Any"]):
             url = storage_object
 
         url = url.replace("indico-file://", "")
+        extra: "Dict[str, Any]" = {} if timeout is UNSET else {"timeout": timeout}
         super().__init__(
             method=HTTPMethod.GET,
             path=url,
             raw_response=raw_response,
             allow_redirects=allow_redirects,
+            **extra,
         )
 
 

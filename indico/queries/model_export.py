@@ -187,6 +187,9 @@ class DownloadModelExport(RequestChain[bytes]):
             )
 
         yield RetrieveStorageObject(
-            storage_path(download_url), raw_response=True, allow_redirects=False
+            storage_path(download_url),
+            raw_response=True,
+            allow_redirects=False,
+            timeout=None,
         )
         self.result = self.previous

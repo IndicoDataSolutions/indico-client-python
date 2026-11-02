@@ -221,6 +221,19 @@ async def test_download_model_export_async_does_not_follow_redirects(
     assert fake_aio_session.calls[-1].kwargs["allow_redirects"] is False
 
 
+@pytest.mark.asyncio
+async def test_download_model_export_async_sends_no_timeout(
+    aio_client: AsyncIndicoClient, fake_aio_session: FakeAioSession
+) -> None:
+    fake_aio_session.responses.append(FakeAioResponse(body=BODY))
+    await aio_client.call(
+        DownloadModelExport(
+            export=ModelExport(**export_record("COMPLETE", DOWNLOAD_URL))
+        )
+    )
+    assert fake_aio_session.calls[-1].kwargs["timeout"] is None
+
+
 @pytest.mark.parametrize(
     "payload, match",
     [
