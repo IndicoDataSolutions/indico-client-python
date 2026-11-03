@@ -234,7 +234,7 @@ class HTTPClient:
 
         content: "Any" = deserialize(
             response,
-            force_json=json,
+            force_json=json and response.status_code < 400,
             force_decompress=decompress,
             raw_response=raw_response and response.status_code < 400,
         )
@@ -417,7 +417,7 @@ class AIOHTTPClient:
 
                 content: "Any" = await aio_deserialize(
                     response,
-                    force_json=json,
+                    force_json=json and response.status < 400,
                     force_decompress=decompress,
                     raw_response=raw_response and response.status < 400,
                 )
