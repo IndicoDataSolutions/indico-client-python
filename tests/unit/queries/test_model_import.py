@@ -8,6 +8,7 @@ import requests_mock as requests_mock_lib
 from indico.client import AsyncIndicoClient, IndicoClient
 from indico.errors import IndicoRequestError
 from indico.queries.model_import import UploadStaticModelExport
+from tests.fixtures.graphql import JSON_HEADERS, RAINBOW_LIST
 from tests.fixtures.transport import FakeAioResponse, FakeAioSession, RequestMocker
 
 NAME = "3f8a1c2e-4b5d-6e7f-8a9b-0c1d2e3f4a5b.indico"
@@ -15,15 +16,6 @@ UPLOAD_URL = f"/storage/static_uploads/upload?name={NAME}"
 STORAGE_URI = f"indico-blob:///static_uploads/{NAME}"
 PROXY_PATH = "/storage/static_uploads/upload"
 PROXY_URL = f"mock://mock{PROXY_PATH}"
-JSON_HEADERS = {"Content-Type": "application/json"}
-RAINBOW_LIST = [
-    {
-        "path": "/static_uploads/x.indico",
-        "name": "m.indico",
-        "size": 3,
-        "upload_type": "user",
-    }
-]
 
 
 def export_upload_payload(upload_url: Optional[str]) -> Dict[str, Any]:

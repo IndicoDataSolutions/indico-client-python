@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING, cast
 
-from indico.client.request import GraphQLRequest, HTTPMethod, HTTPRequest, RequestChain
+from indico.client.request import GraphQLRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
 from indico.types.jobs import Job
 from indico.types.model_export import ExportUpload
 
 from .jobs import JobStatus
-from .storage import storage_path
+from .storage import ProxiedUpload, parse_export_upload
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterator, List, Optional, Union  # noqa: F401
@@ -28,13 +28,9 @@ class _GetExportUpload(GraphQLRequest["ExportUpload"]):
         super().__init__(self.query)
 
     def process_response(self, response: "Payload") -> ExportUpload:
-        upload = ExportUpload(**super().parse_payload(response)["exportUpload"])
-        if not upload.upload_url:
-            raise IndicoRequestError(
-                code="FAILURE",
-                error="The platform returned no upload URL for the static model export.",
-            )
-        return upload
+        return parse_export_upload(
+            super().parse_payload(response)["exportUpload"], "static model export"
+        )
 
 
 class ProcessStaticModelExport(GraphQLRequest["Job"]):
@@ -113,17 +109,11 @@ class UploadStaticModelExport(RequestChain["Union[Job, str]"]):
 
     def requests(
         self,
-    ) -> "Iterator[Union[_GetExportUpload, HTTPRequest[List[AnyDict]], ProcessStaticModelExport, JobStatus]]":
+    ) -> "Iterator[Union[_GetExportUpload, ProxiedUpload, ProcessStaticModelExport, JobStatus]]":
         yield _GetExportUpload()
         upload: ExportUpload = self.previous
 
-        yield HTTPRequest["List[AnyDict]"](
-            HTTPMethod.POST,
-            storage_path(upload.upload_url),
-            files=[self.file_path],
-            allow_redirects=False,
-            timeout=None,
-        )
+        yield ProxiedUpload(upload, self.file_path)
 
         if not self.auto_process:
             self.result = upload.storage_uri

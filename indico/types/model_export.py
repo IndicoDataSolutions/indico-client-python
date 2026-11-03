@@ -24,7 +24,7 @@ class ModelExport(BaseType):
 
 class ExportUpload(BaseType):
     """
-    Where to upload a static model export and the storage uri it will have.
+    Where to upload a file through the proxied storage endpoint and the storage uri it will have.
     """
 
     upload_url: str

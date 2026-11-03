@@ -148,3 +148,28 @@ async def test_async_client_error_body(
     with pytest.raises(IndicoRequestError) as error:
         await aio_http.execute_request(raw_get())
     assert expected in str(error.value)
+
+
+JSON_PATH = "/storage/fields/blueprints/export/x.json"
+JSON_URL = f"mock://mock{JSON_PATH}"
+HTML_403 = b"<html><body><h1>403 Forbidden</h1></body></html>"
+HTML = {"Content-Type": "text/html"}
+
+
+def test_html_error_on_json_path_is_request_error(
+    client: IndicoClient, requests_mock: requests_mock_lib.Mocker
+) -> None:
+    requests_mock.get(JSON_URL, status_code=403, content=HTML_403, headers=HTML)
+    with pytest.raises(IndicoRequestError, match="403"):
+        client.call(HTTPRequest[Any](HTTPMethod.GET, JSON_PATH))
+
+
+@pytest.mark.asyncio
+async def test_async_html_error_on_json_path_is_request_error(
+    aio_http: AIOHTTPClient, fake_aio_session: FakeAioSession
+) -> None:
+    fake_aio_session.responses.append(
+        FakeAioResponse(status=403, body=HTML_403, headers=HTML)
+    )
+    with pytest.raises(IndicoRequestError, match="403"):
+        await aio_http.execute_request(HTTPRequest[Any](HTTPMethod.GET, JSON_PATH))

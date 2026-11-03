@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from indico.client.request import HTTPMethod, HTTPRequest, RequestChain
 from indico.errors import IndicoInputError, IndicoRequestError
+from indico.types.model_export import ExportUpload
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Dict, Iterator, List, Optional, Type, Union
@@ -25,6 +26,30 @@ def storage_path(url: str) -> str:
             code="FAILURE", error=f"Unexpected storage URL: {url!r}"
         )
     return url
+
+
+def parse_export_upload(data: "Optional[AnyDict]", subject: str) -> ExportUpload:
+    """Build an ExportUpload from a GraphQL payload, rejecting a null payload or missing upload URL."""
+    upload = ExportUpload(**(data or {}))
+    if not getattr(upload, "upload_url", None):
+        raise IndicoRequestError(
+            code="FAILURE",
+            error=f"The platform returned no upload URL for the {subject}.",
+        )
+    return upload
+
+
+class ProxiedUpload(HTTPRequest["List[AnyDict]"]):
+    """Upload a file to a platform-issued `/storage/` path without following redirects."""
+
+    def __init__(self, upload: ExportUpload, file_path: str):
+        super().__init__(
+            HTTPMethod.POST,
+            storage_path(upload.upload_url),
+            files=[file_path],
+            allow_redirects=False,
+            timeout=None,
+        )
 
 
 class RetrieveStorageObject(HTTPRequest["Any"]):
