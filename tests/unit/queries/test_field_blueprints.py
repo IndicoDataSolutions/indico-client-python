@@ -12,6 +12,7 @@ from indico.queries.field_blueprints import (
     ExportFieldBlueprints,
     UploadFieldBlueprints,
 )
+from indico.queries.storage import parse_export_upload
 from indico.types.jobs import Job
 from tests.fixtures.graphql import (
     HTML_HEADERS,
@@ -120,6 +121,14 @@ def test_upload_refuses_bad_upload_url(
         client.call(UploadFieldBlueprints(file_path=blueprint_path, auto_import=True))
     assert graphql.call_count == 1
     assert transfers(requests_mock, UPLOAD_PATH) == []
+
+
+@pytest.mark.parametrize("payload", [None, {}, {"storageUri": STORAGE_URI}])
+def test_parse_export_upload_rejects_missing_payload(
+    payload: Optional[Dict[str, Any]],
+) -> None:
+    with pytest.raises(IndicoRequestError, match="upload URL"):
+        parse_export_upload(payload, "field blueprint import")
 
 
 def test_upload_does_not_follow_redirects(

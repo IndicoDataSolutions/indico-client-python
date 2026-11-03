@@ -28,10 +28,10 @@ def storage_path(url: str) -> str:
     return url
 
 
-def parse_export_upload(data: "AnyDict", subject: str) -> ExportUpload:
-    """Build an ExportUpload from a GraphQL payload, rejecting a missing upload URL."""
-    upload = ExportUpload(**data)
-    if not upload.upload_url:
+def parse_export_upload(data: "Optional[AnyDict]", subject: str) -> ExportUpload:
+    """Build an ExportUpload from a GraphQL payload, rejecting a null payload or missing upload URL."""
+    upload = ExportUpload(**(data or {}))
+    if not getattr(upload, "upload_url", None):
         raise IndicoRequestError(
             code="FAILURE",
             error=f"The platform returned no upload URL for the {subject}.",
