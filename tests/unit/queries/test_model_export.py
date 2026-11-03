@@ -14,12 +14,11 @@ from indico.queries.model_export import (
     GetModelExports,
 )
 from indico.types.model_export import ModelExport
+from tests.fixtures.graphql import JSON_HEADERS, graphql_responses
 from tests.fixtures.transport import FakeAioResponse, FakeAioSession, RequestMocker
 
 DOWNLOAD_URL = "/storage/models/exports/7/model.zip"
 DOWNLOAD_PROXY_URL = f"mock://mock{DOWNLOAD_URL}"
-GRAPHQL_URL = "mock://mock/graph/api/graphql"
-JSON = {"Content-Type": "application/json"}
 BODY = b"\xff\xfezip"
 
 
@@ -42,14 +41,6 @@ def exports_payload(*exports: Dict[str, Any]) -> Dict[str, Any]:
 
 def export_payload(status: str, download_url: Optional[str]) -> Dict[str, Any]:
     return exports_payload(export_record(status, download_url))
-
-
-def graphql_responses(
-    requests_mock: requests_mock_lib.Mocker, *bodies: Dict[str, Any]
-) -> Any:
-    return requests_mock.post(
-        GRAPHQL_URL, [{"json": body, "headers": JSON} for body in bodies]
-    )
 
 
 @pytest.mark.parametrize(
@@ -137,7 +128,7 @@ def test_create_then_download_model_export(
         {"data": {"createModelExport": created}},
         export_payload("COMPLETE", DOWNLOAD_URL),
     )
-    requests_mock.get(DOWNLOAD_PROXY_URL, content=BODY, headers=JSON)
+    requests_mock.get(DOWNLOAD_PROXY_URL, content=BODY, headers=JSON_HEADERS)
     [export] = client.call(CreateModelExport(model_id=1))
     assert client.call(DownloadModelExport(export=export)) == BODY
 
@@ -177,7 +168,7 @@ def test_download_model_export_id_zero_is_fetched(
     graphql = indico_request(
         "post", "/graph/api/graphql", json=export_payload("COMPLETE", DOWNLOAD_URL)
     )
-    requests_mock.get(DOWNLOAD_PROXY_URL, content=BODY, headers=JSON)
+    requests_mock.get(DOWNLOAD_PROXY_URL, content=BODY, headers=JSON_HEADERS)
     assert client.call(DownloadModelExport(export_id=0)) == BODY
     assert graphql.last_request.json()["variables"] == {"exportIds": [0]}
 
@@ -209,7 +200,7 @@ async def test_download_model_export_async_does_not_follow_redirects(
         [
             FakeAioResponse(
                 body=json.dumps(export_payload("COMPLETE", DOWNLOAD_URL)).encode(),
-                headers=JSON,
+                headers=JSON_HEADERS,
             ),
             FakeAioResponse(status=302, headers={"Location": "mock://other/x"}),
             FakeAioResponse(body=BODY),

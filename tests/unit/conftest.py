@@ -7,9 +7,8 @@ import requests_mock as requests_mock_lib
 from indico.client import AsyncIndicoClient, IndicoClient
 from indico.config import IndicoConfig
 from indico.http.client import AIOHTTPClient
+from tests.fixtures.graphql import JSON_HEADERS
 from tests.fixtures.transport import FakeAioResponse, FakeAioSession, RequestMocker
-
-JSON_HEADERS = {"Content-Type": "application/json"}
 
 
 @pytest.fixture(scope="function")

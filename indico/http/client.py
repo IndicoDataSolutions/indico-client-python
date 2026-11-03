@@ -5,6 +5,7 @@ from copy import deepcopy
 from http.cookiejar import DefaultCookiePolicy
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
+from urllib.parse import urlsplit
 
 import aiohttp
 import requests
@@ -199,8 +200,9 @@ class HTTPClient:
                 **new_kwargs,
             )
 
-        json: bool = ".json" in Path(path).suffixes
-        decompress: bool = Path(path).suffix == ".gz"
+        url_path = Path(urlsplit(path).path)
+        json: bool = ".json" in url_path.suffixes
+        decompress: bool = url_path.suffix == ".gz"
         allow_redirects: bool = request_kwargs.get("allow_redirects", True)
 
         # If auth expired refresh
@@ -356,8 +358,9 @@ class AIOHTTPClient:
         logger.debug(
             f"[{method}] {path}\n\t Headers: {headers}\n\tRequest Args:{request_kwargs}"
         )
-        json: bool = ".json" in Path(path).suffixes
-        decompress: bool = Path(path).suffix == ".gz"
+        url_path = Path(urlsplit(path).path)
+        json: bool = ".json" in url_path.suffixes
+        decompress: bool = url_path.suffix == ".gz"
         allow_redirects: bool = request_kwargs.get("allow_redirects", True)
 
         with self._handle_files(request_kwargs) as file_args:

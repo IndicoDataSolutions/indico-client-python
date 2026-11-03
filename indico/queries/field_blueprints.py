@@ -5,13 +5,21 @@ from indico.client.request import (
     PagedRequestV2,
     RequestChain,
 )
+from indico.errors import IndicoInputError, IndicoRequestError
 from indico.filters import FieldBlueprintFilter
 from indico.queries.jobs import JobStatus
+from indico.queries.storage import (
+    ProxiedUpload,
+    RetrieveStorageObject,
+    parse_export_upload,
+    storage_path,
+)
 from indico.types.field_blueprint import FieldBlueprint
 from indico.types.jobs import Job
+from indico.types.model_export import ExportUpload
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterator, List, Optional, Union
+    from typing import Any, Iterator, List, Optional, Union
 
     from indico.typing import AnyDict, Payload
 
@@ -244,7 +252,8 @@ class ExportFieldBlueprints(RequestChain["Job"]):
         wait (bool, optional): Wait for the export job to complete. Defaults to True.
 
     Returns:
-        Job: The export job
+        Job: The export job. Its `result["download_url"]` is a `/storage/...` path;
+            fetch the export with `DownloadFieldBlueprintExport`.
     """
 
     def __init__(
@@ -300,3 +309,111 @@ class ImportFieldBlueprints(RequestChain["Job"]):
         yield _ImportFieldBlueprints(storage_uri=self.storage_uri)
         if self.wait:
             yield JobStatus(id=self.previous.id, wait=True)
+
+
+class _GetFieldBlueprintImportUpload(GraphQLRequest["ExportUpload"]):
+    query = """
+    mutation GetImportUploadSignedUrl {
+        getImportUploadSignedUrl {
+            uploadUrl
+            storageUri
+        }
+    }
+    """
+
+    def __init__(self) -> None:
+        super().__init__(self.query)
+
+    def process_response(self, response: "Payload") -> ExportUpload:
+        return parse_export_upload(
+            super().parse_payload(response)["getImportUploadSignedUrl"],
+            "field blueprint import",
+        )
+
+
+class UploadFieldBlueprints(RequestChain["Union[Job, str]"]):
+    """
+    Upload a field blueprint import file through the authenticated client session.
+
+    Args:
+        file_path (str): path to the JSON file of blueprints, e.g. one fetched with
+            `DownloadFieldBlueprintExport`.
+        auto_import (bool, optional): import the uploaded file with `ImportFieldBlueprints`. Defaults to False.
+        wait (bool, optional): with `auto_import`, wait for the import job to complete. Defaults to True.
+
+    Returns:
+        str: the storage uri of the uploaded file, or with `auto_import` the import Job.
+
+    Raises:
+        IndicoRequestError: if the platform returns no `/storage/` upload path, the upload
+            is redirected, or the waited import job status is FAILURE.
+    """
+
+    def __init__(self, file_path: str, auto_import: bool = False, wait: bool = True):
+        self.file_path = file_path
+        self.auto_import = auto_import
+        self.wait = wait
+        super().__init__()
+
+    def requests(
+        self,
+    ) -> "Iterator[Union[_GetFieldBlueprintImportUpload, ProxiedUpload, ImportFieldBlueprints]]":
+        yield _GetFieldBlueprintImportUpload()
+        upload: ExportUpload = self.previous
+
+        yield ProxiedUpload(upload, self.file_path)
+
+        if not self.auto_import:
+            self.result = upload.storage_uri
+            return
+
+        yield ImportFieldBlueprints(storage_uri=upload.storage_uri, wait=self.wait)
+        job: Job = self.previous
+        if getattr(job, "status", None) == "FAILURE":
+            result = getattr(job, "result", None)
+            message = result.get("message") if isinstance(result, dict) else None
+            detail = f": {message}" if message else ""
+            raise IndicoRequestError(
+                code="FAILURE",
+                error=f"Failed to import field blueprints{detail}",
+            )
+
+
+class DownloadFieldBlueprintExport(RequestChain["Any"]):
+    """
+    Download a finished field blueprint export through the authenticated client session.
+
+    Args:
+        job (Job): the finished job from `ExportFieldBlueprints(wait=True)`.
+
+    Returns:
+        dict: the parsed export file.
+
+    Raises:
+        IndicoRequestError: if the job did not succeed, its `download_url` is not a
+            `/storage/` path, or the download is redirected.
+        IndicoInputError: if the job result has no `download_url`.
+    """
+
+    def __init__(self, job: Job):
+        self.job = job
+        super().__init__()
+
+    def requests(self) -> "Iterator[RetrieveStorageObject]":
+        if getattr(self.job, "status", None) != "SUCCESS":
+            raise IndicoRequestError(
+                code=400,
+                error="The field blueprint export job must reach SUCCESS before it can be downloaded",
+            )
+
+        result = getattr(self.job, "result", None)
+        download_url = result.get("download_url") if isinstance(result, dict) else None
+        if not download_url:
+            raise IndicoInputError(
+                "The field blueprint export job result has no download_url; "
+                "pass the job from ExportFieldBlueprints(wait=True)"
+            )
+
+        yield RetrieveStorageObject(
+            storage_path(download_url), allow_redirects=False, timeout=None
+        )
