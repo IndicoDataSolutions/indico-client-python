@@ -152,6 +152,71 @@ Or using pip:
 
 Alternatively, run all the unit tests via `docker compose run --rm tester`
 
+# Releasing
+
+Pushing a version tag runs `.github/workflows/release.yml`. It runs the tests, builds, checks the built version equals the tag, waits for approval, and publishes to PyPI through trusted publishing.
+
+### Release with the script
+
+```sh
+# Check everything without tagging or pushing
+scripts/release.sh 7.11.0 --dry-run
+# Tag HEAD and push the tag, after a confirmation prompt
+scripts/release.sh 7.11.0
+# Skip the confirmation prompt (required when not run from a terminal)
+scripts/release.sh 7.11.0 --yes
+# Allow a version below the highest X.Y.Z tagged on origin
+scripts/release.sh 7.10.1 --allow-older
+```
+
+Manual equivalent:
+
+```sh
+git tag 7.11.0
+git push origin refs/tags/7.11.0
+```
+
+### Tag rules
+
+- No `v` prefix, lowercase, no leading zeros. Accepted shapes:
+  - `7.11.0` release
+  - `7.11.0-alpha1` publishes as `7.11.0a1`
+  - `7.11.0-beta1` publishes as `7.11.0b1`
+  - `7.11.0-rc1` publishes as `7.11.0rc1`
+  - `7.11.0-a1` publishes as `7.11.0a1`
+  - `7.11.0-b1` publishes as `7.11.0b1`
+  - `7.11.0.post1` post release
+  - `7.11.0.dev1` dev release
+- The script refuses a version whose `X.Y.Z` is below the highest `X.Y.Z` already tagged on origin. `--allow-older` overrides this.
+- A `.postN` release needs its base version tag (`7.11.0` for `7.11.0.post1`) to exist on origin.
+- A version already published under another spelling is refused (`7.11.0-a1` when `7.11.0-alpha1` exists).
+- Tag the exact commit to release. It must already be on origin; it need not be the tip of master.
+- One tag per commit.
+- Push one tag at a time, never `git push --tags`.
+- A PyPI version cannot be reused.
+
+### Approval
+
+- Two teams own releases. Their members push version tags and approve publishing:
+  - QA: `qa@indicodata.ai`, GitHub team `qa-indicodata-ai`
+  - Intake: `intake@indicodata.ai`, GitHub team `intake-indicodata-ai`
+- This is a deployment approval on the `pypi` environment, not a pull request review.
+- After the tests and build pass, the publish job pauses. A member of either team opens the workflow run in the Actions tab and chooses "Review deployments".
+- The approver confirms the tag is on the intended commit and the version is right.
+- If the environment has "Prevent self-review" on, the approver must be someone other than the person who pushed the tag.
+
+### If it fails
+
+- Before upload nothing is published. Cancel the workflow run first if it is still running or waiting for approval, because deleting the tag does not cancel it. Then delete the tag and tag again:
+
+```sh
+git tag -d 7.11.0
+git push origin :refs/tags/7.11.0
+```
+
+- At upload, re-run the failed job.
+- If the re-run fails with "File already exists", part of the release is already on PyPI. Publish a `.postN` release instead.
+
 # Contributing
 
 This repository adheres (as best as possible) to the following standards:
