@@ -156,6 +156,6 @@ Alternatively, run all the unit tests via `docker compose run --rm tester`
 
 This repository adheres (as best as possible) to the following standards:
 
-- Python Black Formatter
+- Python formatting with `ruff format`
   - Line Width=88
 - [Google Docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)

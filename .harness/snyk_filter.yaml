@@ -1,6 +1,0 @@
-container:
-  enabled: false
-  exemptions: []
-oss:
-  enabled: true
-  exemptions: []
