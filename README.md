@@ -154,7 +154,7 @@ Alternatively, run all the unit tests via `docker compose run --rm tester`
 
 # Releasing
 
-Pushing a version tag runs `.github/workflows/release.yml`. It runs the tests, builds, checks the built version equals the tag, waits for approval, and publishes to PyPI through trusted publishing.
+Pushing a version tag runs `.github/workflows/release.yml`. It runs the tests, builds, checks the built version equals the tag, waits for approval, publishes to PyPI through trusted publishing, and creates a GitHub Release with generated notes. Alpha, beta, rc and dev tags are marked as pre-releases.
 
 ### Release with the script
 
@@ -215,6 +215,7 @@ git push origin :refs/tags/7.11.0
 ```
 
 - At upload, re-run the failed job.
+- If only the GitHub Release job fails, the package is already on PyPI. Re-run that job; do not delete the tag.
 - If the re-run fails with "File already exists", part of the release is already on PyPI. Publish a `.postN` release instead.
 
 # Contributing
